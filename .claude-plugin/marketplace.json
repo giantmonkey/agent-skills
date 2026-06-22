@@ -1,24 +1,12 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "agent-skills",
-  "description": "Open source agent skills by Giant Monkey.",
+  "description": "The Gomus museum-ticketing web components integration skill, by Giant Monkey.",
   "owner": {
     "name": "Giant Monkey",
     "email": "dev@giantmonkey.de"
   },
   "plugins": [
-    {
-      "name": "conventional-commit",
-      "source": "./skills/conventional-commit",
-      "description": "Writes a Conventional Commits message from your staged changes.",
-      "version": "1.0.0",
-      "author": {
-        "name": "Giant Monkey"
-      },
-      "homepage": "https://github.com/giantmonkey/agent-skills/tree/main/skills/conventional-commit",
-      "license": "MIT",
-      "category": "git"
-    },
     {
       "name": "go-webcomponents",
       "source": "./skills/go-webcomponents",

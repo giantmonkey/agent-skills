@@ -1,92 +1,47 @@
-# Agent Skills
+# go-webcomponents skill
 
-A marketplace of open source agent skills by [Giant Monkey](https://github.com/giantmonkey).
+An AI integration skill for the **Gomus museum-ticketing web components** (`<go-*>` custom elements), by [Giant Monkey](https://github.com/giantmonkey).
 
-Skills teach your AI coding agent a specific trick: how to write a commit message, run a deploy, review a PR your way. Install the ones you want and the agent picks them up automatically.
+It teaches your AI assistant how to embed and use the components — every public tag with its attributes and events, the ticket-selection filters, integration flows, and version migration. The docs are generated from the library's own source, and the compiled bundle ships alongside them so the assistant can dig into real behaviour when the docs fall short.
 
-Two ways to install: as **Claude Code plugins** (one command inside Claude Code) or with **`npx skills`** (works across agents). Pick whichever fits.
+Works with any AI: install into Claude Code, Cursor, and 70+ other agents via `npx skills`, install as a Claude Code plugin, or point any chat assistant at the docs.
 
-## Install with Claude Code
+## Install
 
-Add this repo as a plugin marketplace once:
+### Claude Code (plugin)
 
 ```
 /plugin marketplace add giantmonkey/agent-skills
+/plugin install go-webcomponents@agent-skills
 ```
 
-Then install any skill from the [table below](#whats-inside):
-
-```
-/plugin install conventional-commit@agent-skills
-```
-
-Browse everything available with `/plugin` and the marketplace UI.
-
-## Install with npx skills
-
-Grab one skill straight into Claude Code, no prompts:
+### Any agent (npx skills)
 
 ```bash
-npx skills add github.com/giantmonkey/agent-skills --skill conventional-commit -a claude-code
+npx skills add github.com/giantmonkey/agent-skills --skill go-webcomponents -a claude-code
 ```
 
-Or add every skill in the repo and pick interactively:
+Drop `-a claude-code` to be prompted for your agent (Cursor, Windsurf, and others are supported).
 
-```bash
-npx skills add github.com/giantmonkey/agent-skills
+### ChatGPT / Gemini / other chat assistants
+
+Point the assistant at the docs and ask it to follow them:
+
 ```
-
-`npx skills` works with other agents too. Drop the `-a claude-code` flag and it'll ask where to install.
-
-## What's inside
-
-| Skill | What it does |
-| --- | --- |
-| [`conventional-commit`](skills/conventional-commit/) | Writes a Conventional Commits message from your staged changes. |
-| [`go-webcomponents`](skills/go-webcomponents/) | Integrate the Gomus museum-ticketing web components (`<go-*>` custom elements) into any site. |
-
-## Contributing a skill
-
-1. Create a folder under `skills/<your-skill>/`.
-2. Add a `SKILL.md` with YAML frontmatter:
-
-   ```markdown
-   ---
-   name: your-skill
-   description: One line — what this skill does and when an agent should invoke it. Be specific about the trigger words.
-   ---
-
-   # Your Skill
-
-   The instructions the agent follows.
-   ```
-
-3. The folder name and the `name:` field must match. Lowercase, kebab-case.
-4. Add a `VERSION` file starting at `1.0.0`.
-5. Copy [`scripts/check-update.sh`](scripts/check-update.sh) into your skill's `scripts/` folder. Installed copies check it once a day and tell users to run `npx skills update` when the version changes.
-6. Optional: drop supporting files (`references/`, `scripts/`, etc.) next to `SKILL.md`. They get copied with the skill.
-7. Add a row to the [table above](#whats-inside) and a plugin entry to [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) so it shows up for Claude Code users.
-8. Open a PR.
-
-### Writing a good description
-
-The `description:` is the only thing the agent sees when deciding whether to use your skill. Make it earn its place. Say what the skill does and name the words a user would say to trigger it. Vague descriptions never get invoked.
-
-## Updating a skill
-
-Bump the skill's `VERSION` file in the same PR as your change. That's what triggers the update notice for everyone who has it installed. No bump, no notice.
+https://github.com/giantmonkey/agent-skills/tree/main/skills/go-webcomponents
+```
 
 ## Installing an older version
 
-`main` always holds the latest skill. Each release is also git-tagged `<skill>-v<version>` (e.g. `go-webcomponents-v3.6.0`), so you can install the version that matches the library you run:
+`main` always holds the latest skill, matching the latest `@gomusdev/web-components` release. Each release is git-tagged `go-webcomponents-v<version>`, so you can install the version that matches the library you run:
 
-- Pull just that skill at the tag with degit, then move it into your agent's skills directory (e.g. `~/.claude/skills/`):
+- Pull it at the tag with degit, then move it into your agent's skills directory (e.g. `~/.claude/skills/`):
 
   ```bash
   npx degit giantmonkey/agent-skills/skills/go-webcomponents#go-webcomponents-v3.6.0 go-webcomponents
   ```
 
-- Or download the skill bundle attached to the matching [GitHub Release](https://github.com/giantmonkey/agent-skills/releases) and unzip it there.
+- Or download the bundle attached to the matching [GitHub Release](https://github.com/giantmonkey/agent-skills/releases) and unzip it there.
 
 - Claude Code plugin users can pin the marketplace to the tag:
 
@@ -94,24 +49,9 @@ Bump the skill's `VERSION` file in the same PR as your change. That's what trigg
   /plugin marketplace add https://github.com/giantmonkey/agent-skills.git#go-webcomponents-v3.6.0
   ```
 
-## Layout
+## How it's maintained
 
-```
-agent-skills/
-├── .claude-plugin/
-│   └── marketplace.json     ← lists each skill as an installable plugin
-├── scripts/
-│   └── check-update.sh      ← template, copy into new skills
-└── skills/
-    └── <skill-name>/
-        ├── SKILL.md
-        ├── VERSION
-        ├── scripts/
-        │   └── check-update.sh
-        └── ... supporting files ...
-```
-
-This is the flat catalog layout `npx skills` expects, with a marketplace manifest layered on top for Claude Code.
+The skill is auto-generated from the gomus-webcomponents source and published here by CI on every release. Don't edit `skills/go-webcomponents/` by hand — fixes belong in the library's docs upstream, and the next release regenerates everything here.
 
 ## License
 
