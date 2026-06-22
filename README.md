@@ -19,7 +19,7 @@ npx skills add github.com/giantmonkey/agent-skills --skill go-webcomponents
 
 ```
 /plugin marketplace add giantmonkey/agent-skills
-/plugin install go-webcomponents@agent-skills
+/plugin install go-webcomponents@giantmonkey
 ```
 
 

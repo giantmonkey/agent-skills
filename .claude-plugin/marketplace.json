@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "agent-skills",
+  "name": "giantmonkey",
   "description": "The Gomus museum-ticketing web components integration skill, by Giant Monkey.",
   "owner": {
     "name": "Giant Monkey",
