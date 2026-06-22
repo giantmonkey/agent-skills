@@ -8,6 +8,13 @@ Works with any AI: install into Claude Code, Cursor, and 70+ other agents via `n
 
 ## Install
 
+### Any agent (npx skills)
+
+```bash
+npx skills add github.com/giantmonkey/agent-skills --skill go-webcomponents 
+```
+
+
 ### Claude Code (plugin)
 
 ```
@@ -15,13 +22,6 @@ Works with any AI: install into Claude Code, Cursor, and 70+ other agents via `n
 /plugin install go-webcomponents@agent-skills
 ```
 
-### Any agent (npx skills)
-
-```bash
-npx skills add github.com/giantmonkey/agent-skills --skill go-webcomponents -a claude-code
-```
-
-Drop `-a claude-code` to be prompted for your agent (Cursor, Windsurf, and others are supported).
 
 ### ChatGPT / Gemini / other chat assistants
 
