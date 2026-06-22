@@ -49,10 +49,6 @@ https://github.com/giantmonkey/agent-skills/tree/main/skills/go-webcomponents
   /plugin marketplace add https://github.com/giantmonkey/agent-skills.git#go-webcomponents-v3.6.0
   ```
 
-## How it's maintained
-
-The skill is auto-generated from the gomus-webcomponents source and published here by CI on every release. Don't edit `skills/go-webcomponents/` by hand — fixes belong in the library's docs upstream, and the next release regenerates everything here.
-
 ## License
 
 MIT.
