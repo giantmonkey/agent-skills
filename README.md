@@ -43,6 +43,7 @@ npx skills add github.com/giantmonkey/agent-skills
 | Skill | What it does |
 | --- | --- |
 | [`conventional-commit`](skills/conventional-commit/) | Writes a Conventional Commits message from your staged changes. |
+| [`go-webcomponents`](skills/go-webcomponents/) | Integrate the Gomus museum-ticketing web components (`<go-*>` custom elements) into any site. |
 
 ## Contributing a skill
 
@@ -74,6 +75,24 @@ The `description:` is the only thing the agent sees when deciding whether to use
 ## Updating a skill
 
 Bump the skill's `VERSION` file in the same PR as your change. That's what triggers the update notice for everyone who has it installed. No bump, no notice.
+
+## Installing an older version
+
+`main` always holds the latest skill. Each release is also git-tagged `<skill>-v<version>` (e.g. `go-webcomponents-v3.6.0`), so you can install the version that matches the library you run:
+
+- Pull just that skill at the tag with degit, then move it into your agent's skills directory (e.g. `~/.claude/skills/`):
+
+  ```bash
+  npx degit giantmonkey/agent-skills/skills/go-webcomponents#go-webcomponents-v3.6.0 go-webcomponents
+  ```
+
+- Or download the skill bundle attached to the matching [GitHub Release](https://github.com/giantmonkey/agent-skills/releases) and unzip it there.
+
+- Claude Code plugin users can pin the marketplace to the tag:
+
+  ```
+  /plugin marketplace add https://github.com/giantmonkey/agent-skills.git#go-webcomponents-v3.6.0
+  ```
 
 ## Layout
 

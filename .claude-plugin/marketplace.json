@@ -18,6 +18,17 @@
       "homepage": "https://github.com/giantmonkey/agent-skills/tree/main/skills/conventional-commit",
       "license": "MIT",
       "category": "git"
+    },
+    {
+      "name": "go-webcomponents",
+      "source": "./skills/go-webcomponents",
+      "description": "Gomus museum-ticketing web components — integration reference for embedding go-* custom elements in any HTML page.",
+      "author": {
+        "name": "Giant Monkey"
+      },
+      "homepage": "https://github.com/giantmonkey/agent-skills/tree/main/skills/go-webcomponents",
+      "license": "MIT",
+      "category": "integration"
     }
   ]
 }
