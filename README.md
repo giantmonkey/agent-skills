@@ -1,36 +1,50 @@
-# agent-skills
+# Agent Skills
 
-Open source agent skills by [Giant Monkey](https://github.com/giantmonkey). Installable via [`npx skills`](https://github.com/vercel-labs/skills).
+A marketplace of open source agent skills by [Giant Monkey](https://github.com/giantmonkey).
 
-## Install
+Skills teach your AI coding agent a specific trick: how to write a commit message, run a deploy, review a PR your way. Install the ones you want and the agent picks them up automatically.
 
-### Quick install for Claude Code
+Two ways to install: as **Claude Code plugins** (one command inside Claude Code) or with **`npx skills`** (works across agents). Pick whichever fits.
 
-Install one skill straight into Claude Code, no prompts:
+## Install with Claude Code
 
-```bash
-npx skills add github.com/giantmonkey/agent-skills --skill <skill-name> -a claude-code
+Add this repo as a plugin marketplace once:
+
+```
+/plugin marketplace add giantmonkey/agent-skills
 ```
 
-Swap in any skill name from the [table below](#available-skills). The `-a claude-code` flag targets Claude Code so the skill lands in `~/.claude/skills/`.
+Then install any skill from the [table below](#whats-inside):
 
-### All skills
+```
+/plugin install conventional-commit@agent-skills
+```
 
-Add every skill in the repo:
+Browse everything available with `/plugin` and the marketplace UI.
+
+## Install with npx skills
+
+Grab one skill straight into Claude Code, no prompts:
+
+```bash
+npx skills add github.com/giantmonkey/agent-skills --skill conventional-commit -a claude-code
+```
+
+Or add every skill in the repo and pick interactively:
 
 ```bash
 npx skills add github.com/giantmonkey/agent-skills
 ```
 
-The CLI clones the repo, finds every `SKILL.md` under `skills/`, and prompts you to choose which skills and which agents to install to.
+`npx skills` works with other agents too. Drop the `-a claude-code` flag and it'll ask where to install.
 
-## Available skills
+## What's inside
 
-| Skill | Description |
+| Skill | What it does |
 | --- | --- |
-| _Coming soon_ | |
+| [`conventional-commit`](skills/conventional-commit/) | Writes a Conventional Commits message from your staged changes. |
 
-## How to contribute
+## Contributing a skill
 
 1. Create a folder under `skills/<your-skill>/`.
 2. Add a `SKILL.md` with YAML frontmatter:
@@ -38,29 +52,37 @@ The CLI clones the repo, finds every `SKILL.md` under `skills/`, and prompts you
    ```markdown
    ---
    name: your-skill
-   description: One line — what this skill does and when an agent should invoke it. Be specific about trigger keywords.
+   description: One line — what this skill does and when an agent should invoke it. Be specific about the trigger words.
    ---
 
    # Your Skill
 
-   Body of the skill.
+   The instructions the agent follows.
    ```
 
-3. The folder name and `name:` field must match (lowercase kebab-case).
-4. Optional: drop supporting files (e.g. `references/`, `scripts/`) alongside `SKILL.md` — they're copied with the skill.
-5. Add a `VERSION` file (start at `1.0.0`) and copy [`scripts/check-update.sh`](scripts/check-update.sh) into your skill's `scripts/` folder. Installed copies check it once a day and tell users to run `npx skills update` when it changes.
-6. Add a row to the table above and open a PR.
+3. The folder name and the `name:` field must match. Lowercase, kebab-case.
+4. Add a `VERSION` file starting at `1.0.0`.
+5. Copy [`scripts/check-update.sh`](scripts/check-update.sh) into your skill's `scripts/` folder. Installed copies check it once a day and tell users to run `npx skills update` when the version changes.
+6. Optional: drop supporting files (`references/`, `scripts/`, etc.) next to `SKILL.md`. They get copied with the skill.
+7. Add a row to the [table above](#whats-inside) and a plugin entry to [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) so it shows up for Claude Code users.
+8. Open a PR.
+
+### Writing a good description
+
+The `description:` is the only thing the agent sees when deciding whether to use your skill. Make it earn its place. Say what the skill does and name the words a user would say to trigger it. Vague descriptions never get invoked.
 
 ## Updating a skill
 
-Bump the skill's `VERSION` file in the same PR as your change. That's what triggers the update notice for everyone who has the skill installed. No bump, no notice.
+Bump the skill's `VERSION` file in the same PR as your change. That's what triggers the update notice for everyone who has it installed. No bump, no notice.
 
 ## Layout
 
 ```
 agent-skills/
+├── .claude-plugin/
+│   └── marketplace.json     ← lists each skill as an installable plugin
 ├── scripts/
-│   └── check-update.sh   ← template, copy into new skills
+│   └── check-update.sh      ← template, copy into new skills
 └── skills/
     └── <skill-name>/
         ├── SKILL.md
@@ -70,4 +92,8 @@ agent-skills/
         └── ... supporting files ...
 ```
 
-This is the flat catalog layout the `npx skills` CLI expects.
+This is the flat catalog layout `npx skills` expects, with a marketplace manifest layered on top for Claude Code.
+
+## License
+
+MIT.
