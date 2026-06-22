@@ -51,4 +51,4 @@ https://github.com/giantmonkey/agent-skills/tree/main/skills/go-webcomponents
 
 ## License
 
-MIT.
+Proprietary — © 2026 Giant Monkey GmbH. All rights reserved. See [LICENSE](LICENSE).

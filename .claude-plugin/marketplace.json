@@ -15,7 +15,7 @@
         "name": "Giant Monkey"
       },
       "homepage": "https://github.com/giantmonkey/agent-skills/tree/main/skills/go-webcomponents",
-      "license": "MIT",
+      "license": "LicenseRef-Proprietary",
       "category": "integration"
     }
   ]
