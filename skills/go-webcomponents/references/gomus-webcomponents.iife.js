@@ -12000,8 +12000,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					ticketId
 				}).map((x) => x.totalCapacity)) ?? 0;
 			},
-			timeslotsOn(date) {
-				const bySlot = group(this.timeslots().filter((x) => x.timeSlot.startsWith(date.toString())), (r) => r.timeSlot);
+			timeslotsOn(date, ticketIds) {
+				let rows = this.timeslots().filter((x) => x.timeSlot.startsWith(date.toString()));
+				if (ticketIds) rows = rows.filter((x) => x.tickets.some((t) => ticketIds.includes(t)));
+				const bySlot = group(rows, (r) => r.timeSlot);
 				return Object.values(bySlot).map((slotRows) => {
 					return max$2(unique(slotRows.flatMap((r) => r.tickets)).map((t) => min$2(slotRows.filter((r) => r.tickets.includes(t)), (r) => r.capacity)).filter((r) => r !== null), (r) => r.capacity) ?? slotRows[0];
 				}).sort((a, b) => a.timeSlot.localeCompare(b.timeSlot));
@@ -12203,7 +12205,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if (lsItems.length === 0) cart.clearItems();
 			else cart.items = lsItems.map(generateCartItem).filter(defined);
 			cart.clearCoupons();
-			lsCoupons.forEach((coupon) => cart.addCoupon(coupon));
+			lsCoupons.forEach((coupon) => cart.addCoupon(typeof coupon === "string" ? {
+				code: coupon,
+				kind: "actionToken"
+			} : coupon));
 			return cart.items;
 		} catch (e) {
 			console.error(e);
@@ -12263,6 +12268,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			get totalQuantity() {
 				return sum(this.items, (item) => item.quantity);
 			},
+			get valueVoucherCents() {
+				return sum(this.coupons.filter((c) => c.kind === "valueVoucher"), (c) => c.valueCents ?? 0);
+			},
+			get amountToPayCents() {
+				return Math.max(0, this.totalPriceCents - this.valueVoucherCents);
+			},
 			/**
 			* Generates a formatted string representation of the current object.
 			*/
@@ -12279,10 +12290,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					comment: null,
 					reference: null,
 					payment_mode_id: this.paymentModeId ?? shop.settings?.defaultPaymentModeId,
-					coupons: this.coupons,
+					coupons: this.coupons.map((c) => c.code),
 					donations: [],
 					affiliate: {},
-					total: this.totalPriceCents
+					total: this.amountToPayCents
 				};
 			},
 			get totalFormatted() {
@@ -12301,11 +12312,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			addItems(items) {
 				items.forEach((item) => this.addItem(item));
 			},
-			addCoupon(token) {
-				if (!this.coupons.includes(token)) this.coupons.push(token);
+			addCoupon(item) {
+				const coupon = {
+					...item,
+					code: item.code.toUpperCase()
+				};
+				if (!this.coupons.some((c) => c.code === coupon.code)) this.coupons.push(coupon);
 			},
-			removeCoupon(token) {
-				const index = this.coupons.indexOf(token);
+			removeCoupon(code) {
+				const upper = code.toUpperCase();
+				const index = this.coupons.findIndex((c) => c.code === upper);
 				if (index > -1) this.coupons.splice(index, 1);
 			},
 			clearCoupons() {
@@ -14924,8 +14940,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	function createDisplayCart(baseCart, apiItems) {
 		const displayCart = createCart();
-		const appliedCoupons = /* @__PURE__ */ new Set();
-		baseCart.coupons.forEach((coupon) => displayCart.addCoupon(coupon));
+		const echoed = new Set(apiItems.map((i) => i.attributes.coupon).filter(Boolean).map((c) => c.toUpperCase()));
+		baseCart.coupons.forEach((coupon) => displayCart.addCoupon({
+			...coupon,
+			applied: coupon.kind !== "actionToken" || echoed.has(coupon.code)
+		}));
 		apiItems.forEach((apiItem) => {
 			const attrs = apiItem.attributes;
 			const scalePriceId = getScalePriceId(attrs);
@@ -14937,16 +14956,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				});
 				return;
 			}
-			if (attrs.coupon) {
-				displayCart.addCoupon(attrs.coupon);
-				appliedCoupons.add(attrs.coupon);
-			}
 			displayCart.addItem(createDisplayCartItem(itemInBaseCart, attrs));
 		});
-		return {
-			cart: displayCart,
-			appliedCoupons
-		};
+		return displayCart;
 	}
 	function createDisplayCartItem(cartItem, attrs) {
 		const quantity = resolveApiQuantity(attrs);
@@ -14976,13 +14988,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		set displayCart(value) {
 			set(this.#displayCart, value, true);
 		}
-		#appliedCoupons = /* @__PURE__ */ state(proxy(/* @__PURE__ */ new Set()));
-		get appliedCoupons() {
-			return get$2(this.#appliedCoupons);
-		}
-		set appliedCoupons(value) {
-			set(this.#appliedCoupons, value, true);
-		}
 		#preview = /* @__PURE__ */ state(false);
 		get preview() {
 			return get$2(this.#preview);
@@ -14991,7 +14996,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			set(this.#preview, value, true);
 		}
 		get totalPriceCents() {
-			return this.displayCart?.totalPriceCents ?? 0;
+			return this.displayCart?.amountToPayCents ?? 0;
 		}
 		get subtotalPriceCents() {
 			return shop.cart?.totalPriceCents ?? 0;
@@ -15011,14 +15016,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					items,
 					coupons
 				});
-				if (!response || "error" in response) {
-					if (response && "error" in response) console.error("(go-cart) Unable to fetch discounted cart data", response.error);
-					this.displayCart = mc;
+				if (response?.data) {
+					this.displayCart = createDisplayCart(mc, response.data.items ?? []);
 					return;
 				}
-				const result = createDisplayCart(mc, response.data.items ?? []);
-				this.displayCart = result.cart;
-				this.appliedCoupons = result.appliedCoupons;
+				console.error("(go-cart) Unable to fetch discounted cart data", response?.error);
+				this.displayCart = mc;
 			} catch (error) {
 				console.error("(go-cart) Unable to fetch discounted cart data", error);
 				this.displayCart = mc;
@@ -15448,7 +15451,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var node = first_child(fragment);
 		var consequent_1 = ($$anchor) => {
 			var ol = root_2$8();
-			each(ol, 20, () => get$2(details).displayCart.coupons, (coupon) => coupon, ($$anchor, coupon) => {
+			each(ol, 21, () => get$2(details).displayCart.coupons, (coupon) => coupon.code, ($$anchor, coupon) => {
 				var li = root_1$12();
 				let classes;
 				var article = child(li);
@@ -15462,7 +15465,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					var button = child(li_2);
 					reset(li_2);
 					template_effect(($0) => set_attribute(button, "aria-label", $0), [() => shop.t("cart.coupons.remove")]);
-					delegated("click", button, () => shop.cart?.removeCoupon(coupon));
+					delegated("click", button, () => shop.cart?.removeCoupon(get$2(coupon).code));
 					append($$anchor, li_2);
 				};
 				if_block(node_1, ($$render) => {
@@ -15471,10 +15474,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				reset(ul);
 				reset(article);
 				reset(li);
-				template_effect(($0) => {
-					classes = set_class(li, 1, "go-cart-coupon", null, classes, $0);
-					set_text(text, coupon);
-				}, [() => ({ "go-cart-coupon-inactive": !get$2(details).appliedCoupons.has(coupon) })]);
+				template_effect(() => {
+					classes = set_class(li, 1, "go-cart-coupon", null, classes, { "go-cart-coupon-inactive": !get$2(coupon).applied });
+					set_text(text, get$2(coupon).code);
+				});
 				append($$anchor, li);
 			});
 			reset(ol);
@@ -15524,7 +15527,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		user_effect(() => {
 			if (!shop.cart) return;
 			shop.cart.items.map((i) => i.uuid + ":" + i.quantity + ":" + i.time);
-			shop.cart.coupons.join("|");
+			shop.cart.coupons.map((c) => c.code).join("|");
 			untrack(() => details.calculateDisplayCart());
 		});
 		async function flushCoupons() {
@@ -15542,6 +15545,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const innerForm = submit.closest("go-form");
 			if (innerForm && $$props.$$host.contains(innerForm)) return;
 			const ok = await flushCoupons();
+			if (!ok) return;
 			$$props.$$host.dispatchEvent(new CustomEvent("go-submit", {
 				detail: { ok },
 				bubbles: true,
@@ -15705,13 +15709,27 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var APPLY_ORDER_DISCOUNT = "TokenActions::ApplyOrderDiscount";
 	async function redeem(token) {
 		if (!shop.cart) throw new Error("(go-coupon-redemption): cart not found");
+		const cart = shop.cart;
 		const couponSale = await shop.asyncFetch(() => shop.getCouponSaleByBarcode(token));
 		if (!couponSale?.is_valid) return fail([shop.t("cart.coupon.form.errors.notValid")]);
 		if (couponSale.value_action === APPLY_ORDER_DISCOUNT) {
-			shop.cart.addCoupon(token);
+			cart.addCoupon({
+				code: token,
+				kind: "actionToken"
+			});
 			return { success: true };
-		} else if (couponSale.is_voucher_for) return applyVoucher(token, couponSale);
-		else return fail([shop.t("cart.coupon.form.errors.notValid")]);
+		}
+		if (couponSale.is_voucher_for) return applyVoucher(token, couponSale);
+		if (couponSale.value_cents && couponSale.value_cents > 0) return applyValueCoupon(token, couponSale.value_cents);
+		return fail([shop.t("cart.coupon.form.errors.notValid")]);
+	}
+	function applyValueCoupon(token, valueCents) {
+		shop.cart.addCoupon({
+			code: token,
+			kind: "valueVoucher",
+			valueCents
+		});
+		return { success: true };
 	}
 	async function applyVoucher(token, couponSale) {
 		const ticket = (await shop.asyncFetch(() => shop.tickets({ "by_ticket_ids[]": [couponSale.is_voucher_for] }))).find((t) => t.id === couponSale.is_voucher_for);
@@ -15721,7 +15739,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			price_cents: 0
 		};
 		shop.cart.addItem(createCartItem(createUITicket(voucherTicket), { quantity: 1 }));
-		shop.cart.addCoupon(token);
+		shop.cart.addCoupon({
+			code: token,
+			kind: "serviceVoucher"
+		});
 		return { success: true };
 	}
 	function fail(errors) {
@@ -32405,262 +32426,19 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"coupon"
 	];
 	//#endregion
-	//#region src/components/ticketSelection/filters/ticket/timeslot.ts
-	var filter$11 = {
-		name: "ticket:timeslot",
-		calendarEndpoint: "tickets",
-		apiToken: "time_slot",
-		requires: [{
-			kind: "tsd",
-			field: "selectedDate"
-		}, {
-			kind: "tsd",
-			field: "selectedTimeslot"
-		}],
-		isCalendarVisible: () => true,
-		isTimeslotsVisible: (tsd) => Boolean(tsd.selectedDate),
-		isTicketsVisible: (tsd) => Boolean(tsd.selectedDate && tsd.selectedTimeslot),
-		async loadTimeslots(tsd) {
-			if (!tsd?.selectedDate) return;
-			const { quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
-				by_bookable: true,
-				valid_at: tsd.selectedDate.toString(),
-				by_ticket_type: "time_slot",
-				"by_museum_ids[]": tsd.museumIds,
-				"by_exhibition_ids[]": tsd.exhibitionIds,
-				"by_ticket_ids[]": tsd.ticketIds,
-				"by_ticket_group_ids[]": tsd.ticketGroupIds
-			}));
-			shop.capacityManager.addQuotas(quotas);
-		},
-		async loadProducts(segment) {
-			const tsd = segment.ticketSelectionDetails;
-			if (!tsd?.selectedDate || !tsd.selectedTimeslot) return;
-			const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
-				by_bookable: true,
-				valid_at: tsd.selectedDate.toString(),
-				by_ticket_type: "time_slot",
-				"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
-				"by_exhibition_ids[]": tsd.exhibitionIds,
-				"by_ticket_ids[]": tsd.ticketIds,
-				"by_ticket_group_ids[]": segment.ticketGroupIds ?? tsd.ticketGroupIds
-			}));
-			shop.capacityManager.addQuotas(quotas);
-			const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, tsd.selectedTime), tsd.selectedTime);
-			for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: tsd.selectedTime }));
-		}
-	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/ticket/day.ts
-	var filter$10 = {
-		name: "ticket:day",
-		calendarEndpoint: "tickets",
-		apiToken: "normal",
-		requires: [{
-			kind: "tsd",
-			field: "selectedDate"
-		}],
-		isCalendarVisible: () => true,
-		isTimeslotsVisible: () => false,
-		isTicketsVisible: (tsd) => Boolean(tsd.selectedDate),
-		async loadTimeslots() {},
-		async loadProducts(segment) {
-			const tsd = segment.ticketSelectionDetails;
-			if (!tsd?.selectedDate) return;
-			const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
-				by_bookable: true,
-				valid_at: tsd.selectedDate.toString(),
-				"by_ticket_types[]": ["normal"],
-				"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
-				"by_exhibition_ids[]": tsd.exhibitionIds,
-				"by_ticket_ids[]": tsd.ticketIds,
-				"by_ticket_group_ids[]": segment.ticketGroupIds ?? tsd.ticketGroupIds
-			}));
-			shop.capacityManager.addQuotas(quotas);
-			const firstQuota = Object.values(quotas)[0];
-			const timeslot = firstQuota ? Object.keys(firstQuota.capacities)[0] : void 0;
-			const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, timeslot), timeslot);
-			for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: timeslot }));
-		}
-	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/ticket/annual.ts
-	var filter$9 = {
-		name: "ticket:annual",
-		calendarEndpoint: null,
-		apiToken: "annual",
-		requires: [],
-		isCalendarVisible: () => false,
-		isTimeslotsVisible: () => false,
-		isTicketsVisible: () => true,
-		async loadTimeslots() {},
-		async loadProducts(segment) {
-			const tsd = segment.ticketSelectionDetails;
-			if (!tsd) return;
-			const tickets = await shop.asyncFetch(() => shop.tickets({
-				by_bookable: true,
-				"by_ticket_types[]": ["annual"],
-				"by_ticket_ids[]": tsd.ticketIds,
-				"by_ticket_group_ids[]": segment.ticketGroupIds ?? tsd.ticketGroupIds
-			}));
-			for (const t of Object.values(tickets)) segment.preCart.addItem(createCartItem(createUITicket(t)));
-		}
-	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/event/admission.ts
-	var filter$8 = {
-		name: "event:admission",
-		calendarEndpoint: "events",
-		requires: [{
-			kind: "tsd",
-			field: "eventIds"
-		}, {
-			kind: "tsd",
-			field: "selectedDate"
-		}],
-		isCalendarVisible: () => true,
-		isTimeslotsVisible: (tsd) => Boolean(tsd.selectedDate),
-		isTicketsVisible: (tsd) => Boolean(tsd.selectedDate && tsd.selectedTimeslot),
-		async loadTimeslots(tsd) {
-			if (!tsd?.eventIds?.length || !tsd.selectedDate) return;
-			const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
-			if (!event.tickets?.length) return;
-			const { quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
-				"by_ticket_ids[]": event.tickets,
-				by_bookable: true,
-				valid_at: tsd.selectedDate.toString()
-			}));
-			shop.capacityManager.addQuotas(quotas);
-		},
-		async loadProducts(segment) {
-			const tsd = segment.ticketSelectionDetails;
-			if (!tsd?.eventIds?.length || !tsd.selectedDate) return;
-			if (!(await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]))).tickets?.length) return;
-			const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
-				by_bookable: true,
-				valid_at: tsd.selectedDate.toString(),
-				date_id: segment.dateId
-			}));
-			shop.capacityManager.addQuotas(quotas);
-			const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, tsd.selectedTime), tsd.selectedTime);
-			for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: tsd.selectedTime }));
-		}
-	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/event/admission-day.ts
-	var filter$7 = {
-		name: "event:admission:day",
-		calendarEndpoint: "events",
-		requires: [{
-			kind: "tsd",
-			field: "eventIds"
-		}, {
-			kind: "tsd",
-			field: "selectedDate"
-		}],
-		isCalendarVisible: () => true,
-		isTimeslotsVisible: () => false,
-		isTicketsVisible: (tsd) => Boolean(tsd.selectedDate),
-		async loadTimeslots() {},
-		async loadProducts(segment) {
-			const tsd = segment.ticketSelectionDetails;
-			if (!tsd?.eventIds?.length || !tsd.selectedDate) return;
-			const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
-			if (!event.tickets?.length) return;
-			const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
-				"by_ticket_ids[]": event.tickets,
-				"by_ticket_types[]": ["normal"],
-				by_bookable: true,
-				valid_at: tsd.selectedDate.toString()
-			}));
-			shop.capacityManager.addQuotas(quotas);
-			const firstQuota = Object.values(quotas)[0];
-			const time = firstQuota ? Object.keys(firstQuota.capacities)[0] : void 0;
-			const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, time), time);
-			for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time }));
-		}
-	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/event/admission-timeslot.ts
-	var filter$6 = {
-		name: "event:admission:timeslot",
-		calendarEndpoint: "events",
-		requires: [
-			{
-				kind: "tsd",
-				field: "eventIds"
-			},
-			{
-				kind: "tsd",
-				field: "selectedDate"
-			},
-			{
-				kind: "tsd",
-				field: "selectedTimeslot"
-			}
-		],
-		isCalendarVisible: () => true,
-		isTimeslotsVisible: (tsd) => Boolean(tsd.selectedDate),
-		isTicketsVisible: (tsd) => Boolean(tsd.selectedDate && tsd.selectedTimeslot),
-		async loadTimeslots(tsd) {
-			if (!tsd?.eventIds?.length || !tsd.selectedDate) return;
-			const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
-			if (!event.tickets?.length) return;
-			const { quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
-				"by_ticket_ids[]": event.tickets,
-				by_ticket_type: "time_slot",
-				by_bookable: true,
-				valid_at: tsd.selectedDate.toString()
-			}));
-			shop.capacityManager.addQuotas(quotas);
-		},
-		async loadProducts(segment) {
-			const tsd = segment.ticketSelectionDetails;
-			if (!tsd?.eventIds?.length || !tsd.selectedDate || !tsd.selectedTimeslot) return;
-			const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
-			if (!event.tickets?.length) return;
-			const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
-				"by_ticket_ids[]": event.tickets,
-				by_ticket_type: "time_slot",
-				by_bookable: true,
-				valid_at: tsd.selectedDate.toString()
-			}));
-			shop.capacityManager.addQuotas(quotas);
-			const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, tsd.selectedTime), tsd.selectedTime);
-			for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time: tsd.selectedTime }));
-		}
-	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/event/price.ts
-	var filter$5 = {
-		name: "event:price",
-		calendarEndpoint: "events",
-		requires: [{
-			kind: "tsd",
-			field: "eventIds"
-		}, {
-			kind: "segment",
-			field: "dateId"
-		}],
-		isCalendarVisible: () => false,
-		isTimeslotsVisible: () => false,
-		isTicketsVisible: (tsd) => Boolean(tsd.eventIds?.length),
-		loadTimeslots: async () => {},
-		async loadProducts(segment) {
-			const tsd = segment.ticketSelectionDetails;
-			if (!tsd?.eventIds?.length || segment.dateId === void 0) return;
-			const date = await shop.asyncFetch(() => shop.getEventDetailsOnDate(tsd.eventIds[0], segment.dateId));
-			if (!date.prices?.length) return;
-			for (const price of date.prices) {
-				const ticket = createUIEventTicket(price, date.id, { event_title: date.event_title });
-				segment.preCart.addItem(createCartItem(ticket, { time: date.start_time }));
-			}
-			if (date.seats) shop.capacityManager.addSeats(date.id, date.seats);
-		}
-	};
-	//#endregion
 	//#region src/components/ticketSelection/filters/_helpers.ts
 	var TWO_HOURS_MS = 7200 * 1e3;
+	/**
+	* Load quotas fetched by a filter's loadTimeslots into the shared quota store and
+	* record which ticket ids this selection loaded for its picker. timeslotsOn() reads
+	* tsd.timeslotTicketIds, so only these tickets' slots render — a foreign
+	* segment/selection sharing the store can't leak in. Appends, so multiple active
+	* filters accumulate within one render pass (<go-timeslots> resets the list first).
+	*/
+	function loadPickerQuotas(tsd, quotas) {
+		shop.capacityManager.addQuotas(quotas);
+		tsd.timeslotTicketIds = [...tsd.timeslotTicketIds, ...Object.values(quotas).flatMap((q) => q.ticket_ids)];
+	}
 	function filterDatesInWindow(dates, selectedDate, selectedTime) {
 		const selectedMs = Date.parse(selectedTime);
 		return dates.filter((d) => {
@@ -32680,18 +32458,251 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			"by_ticket_ids[]": tsd.ticketIds,
 			"by_ticket_group_ids[]": tsd.ticketGroupIds
 		}));
-		shop.capacityManager.addQuotas(quotas);
+		loadPickerQuotas(tsd, quotas);
 	}
 	//#endregion
 	//#region src/components/ticketSelection/filters/registry.ts
 	var REGISTRY = {
-		"ticket:timeslot": filter$11,
-		"ticket:day": filter$10,
-		"ticket:annual": filter$9,
-		"event:admission": filter$8,
-		"event:admission:day": filter$7,
-		"event:admission:timeslot": filter$6,
-		"event:price": filter$5,
+		"ticket:timeslot": {
+			name: "ticket:timeslot",
+			calendarEndpoint: "tickets",
+			apiToken: "time_slot",
+			requires: [{
+				kind: "tsd",
+				field: "selectedDate"
+			}, {
+				kind: "tsd",
+				field: "selectedTimeslot"
+			}],
+			isCalendarVisible: () => true,
+			isTimeslotsVisible: (tsd) => Boolean(tsd.selectedDate),
+			isTicketsVisible: (tsd) => Boolean(tsd.selectedDate && tsd.selectedTimeslot),
+			async loadTimeslots(tsd) {
+				if (!tsd?.selectedDate) return;
+				const { quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
+					by_bookable: true,
+					valid_at: tsd.selectedDate.toString(),
+					by_ticket_type: "time_slot",
+					"by_museum_ids[]": tsd.museumIds,
+					"by_exhibition_ids[]": tsd.exhibitionIds,
+					"by_ticket_ids[]": tsd.ticketIds,
+					"by_ticket_group_ids[]": tsd.ticketGroupIds
+				}));
+				loadPickerQuotas(tsd, quotas);
+			},
+			async loadProducts(segment) {
+				const tsd = segment.ticketSelectionDetails;
+				if (!tsd?.selectedDate || !tsd.selectedTimeslot) return;
+				const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
+					by_bookable: true,
+					valid_at: tsd.selectedDate.toString(),
+					by_ticket_type: "time_slot",
+					"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
+					"by_exhibition_ids[]": tsd.exhibitionIds,
+					"by_ticket_ids[]": tsd.ticketIds,
+					"by_ticket_group_ids[]": segment.ticketGroupIds ?? tsd.ticketGroupIds
+				}));
+				shop.capacityManager.addQuotas(quotas);
+				const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, tsd.selectedTime), tsd.selectedTime);
+				for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: tsd.selectedTime }));
+			}
+		},
+		"ticket:day": {
+			name: "ticket:day",
+			calendarEndpoint: "tickets",
+			apiToken: "normal",
+			requires: [{
+				kind: "tsd",
+				field: "selectedDate"
+			}],
+			isCalendarVisible: () => true,
+			isTimeslotsVisible: () => false,
+			isTicketsVisible: (tsd) => Boolean(tsd.selectedDate),
+			async loadTimeslots() {},
+			async loadProducts(segment) {
+				const tsd = segment.ticketSelectionDetails;
+				if (!tsd?.selectedDate) return;
+				const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
+					by_bookable: true,
+					valid_at: tsd.selectedDate.toString(),
+					"by_ticket_types[]": ["normal"],
+					"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
+					"by_exhibition_ids[]": tsd.exhibitionIds,
+					"by_ticket_ids[]": tsd.ticketIds,
+					"by_ticket_group_ids[]": segment.ticketGroupIds ?? tsd.ticketGroupIds
+				}));
+				shop.capacityManager.addQuotas(quotas);
+				const firstQuota = Object.values(quotas)[0];
+				const timeslot = firstQuota ? Object.keys(firstQuota.capacities)[0] : void 0;
+				const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, timeslot), timeslot);
+				for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: timeslot }));
+			}
+		},
+		"ticket:annual": {
+			name: "ticket:annual",
+			calendarEndpoint: null,
+			apiToken: "annual",
+			requires: [],
+			isCalendarVisible: () => false,
+			isTimeslotsVisible: () => false,
+			isTicketsVisible: () => true,
+			async loadTimeslots() {},
+			async loadProducts(segment) {
+				const tsd = segment.ticketSelectionDetails;
+				if (!tsd) return;
+				const tickets = await shop.asyncFetch(() => shop.tickets({
+					by_bookable: true,
+					"by_ticket_types[]": ["annual"],
+					"by_ticket_ids[]": tsd.ticketIds,
+					"by_ticket_group_ids[]": segment.ticketGroupIds ?? tsd.ticketGroupIds
+				}));
+				for (const t of Object.values(tickets)) segment.preCart.addItem(createCartItem(createUITicket(t)));
+			}
+		},
+		"event:admission": {
+			name: "event:admission",
+			calendarEndpoint: "events",
+			requires: [{
+				kind: "tsd",
+				field: "eventIds"
+			}, {
+				kind: "tsd",
+				field: "selectedDate"
+			}],
+			isCalendarVisible: () => true,
+			isTimeslotsVisible: (tsd) => Boolean(tsd.selectedDate),
+			isTicketsVisible: (tsd) => Boolean(tsd.selectedDate && tsd.selectedTimeslot),
+			async loadTimeslots(tsd) {
+				if (!tsd?.eventIds?.length || !tsd.selectedDate) return;
+				const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
+				if (!event.tickets?.length) return;
+				const { quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
+					"by_ticket_ids[]": event.tickets,
+					by_bookable: true,
+					valid_at: tsd.selectedDate.toString()
+				}));
+				loadPickerQuotas(tsd, quotas);
+			},
+			async loadProducts(segment) {
+				const tsd = segment.ticketSelectionDetails;
+				if (!tsd?.eventIds?.length || !tsd.selectedDate) return;
+				if (!(await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]))).tickets?.length) return;
+				const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
+					by_bookable: true,
+					valid_at: tsd.selectedDate.toString(),
+					date_id: segment.dateId
+				}));
+				shop.capacityManager.addQuotas(quotas);
+				const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, tsd.selectedTime), tsd.selectedTime);
+				for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: tsd.selectedTime }));
+			}
+		},
+		"event:admission:day": {
+			name: "event:admission:day",
+			calendarEndpoint: "events",
+			requires: [{
+				kind: "tsd",
+				field: "eventIds"
+			}, {
+				kind: "tsd",
+				field: "selectedDate"
+			}],
+			isCalendarVisible: () => true,
+			isTimeslotsVisible: () => false,
+			isTicketsVisible: (tsd) => Boolean(tsd.selectedDate),
+			async loadTimeslots() {},
+			async loadProducts(segment) {
+				const tsd = segment.ticketSelectionDetails;
+				if (!tsd?.eventIds?.length || !tsd.selectedDate) return;
+				const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
+				if (!event.tickets?.length) return;
+				const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
+					"by_ticket_ids[]": event.tickets,
+					"by_ticket_types[]": ["normal"],
+					by_bookable: true,
+					valid_at: tsd.selectedDate.toString()
+				}));
+				shop.capacityManager.addQuotas(quotas);
+				const firstQuota = Object.values(quotas)[0];
+				const time = firstQuota ? Object.keys(firstQuota.capacities)[0] : void 0;
+				const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, time), time);
+				for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time }));
+			}
+		},
+		"event:admission:timeslot": {
+			name: "event:admission:timeslot",
+			calendarEndpoint: "events",
+			requires: [
+				{
+					kind: "tsd",
+					field: "eventIds"
+				},
+				{
+					kind: "tsd",
+					field: "selectedDate"
+				},
+				{
+					kind: "tsd",
+					field: "selectedTimeslot"
+				}
+			],
+			isCalendarVisible: () => true,
+			isTimeslotsVisible: (tsd) => Boolean(tsd.selectedDate),
+			isTicketsVisible: (tsd) => Boolean(tsd.selectedDate && tsd.selectedTimeslot),
+			async loadTimeslots(tsd) {
+				if (!tsd?.eventIds?.length || !tsd.selectedDate) return;
+				const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
+				if (!event.tickets?.length) return;
+				const { quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
+					"by_ticket_ids[]": event.tickets,
+					by_ticket_type: "time_slot",
+					by_bookable: true,
+					valid_at: tsd.selectedDate.toString()
+				}));
+				loadPickerQuotas(tsd, quotas);
+			},
+			async loadProducts(segment) {
+				const tsd = segment.ticketSelectionDetails;
+				if (!tsd?.eventIds?.length || !tsd.selectedDate || !tsd.selectedTimeslot) return;
+				const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
+				if (!event.tickets?.length) return;
+				const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
+					"by_ticket_ids[]": event.tickets,
+					by_ticket_type: "time_slot",
+					by_bookable: true,
+					valid_at: tsd.selectedDate.toString()
+				}));
+				shop.capacityManager.addQuotas(quotas);
+				const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, tsd.selectedTime), tsd.selectedTime);
+				for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time: tsd.selectedTime }));
+			}
+		},
+		"event:price": {
+			name: "event:price",
+			calendarEndpoint: "events",
+			requires: [{
+				kind: "tsd",
+				field: "eventIds"
+			}, {
+				kind: "segment",
+				field: "dateId"
+			}],
+			isCalendarVisible: () => false,
+			isTimeslotsVisible: () => false,
+			isTicketsVisible: (tsd) => Boolean(tsd.eventIds?.length),
+			loadTimeslots: async () => {},
+			async loadProducts(segment) {
+				const tsd = segment.ticketSelectionDetails;
+				if (!tsd?.eventIds?.length || segment.dateId === void 0) return;
+				const date = await shop.asyncFetch(() => shop.getEventDetailsOnDate(tsd.eventIds[0], segment.dateId));
+				if (!date.prices?.length) return;
+				for (const price of date.prices) {
+					const ticket = createUIEventTicket(price, date.id, { event_title: date.event_title });
+					segment.preCart.addItem(createCartItem(ticket, { time: date.start_time }));
+				}
+				if (date.seats) shop.capacityManager.addSeats(date.id, date.seats);
+			}
+		},
 		"events:admission": {
 			name: "events:admission",
 			calendarEndpoint: "events",
@@ -32942,6 +32953,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		set selectedTimeslot(value) {
 			set(this.#selectedTimeslot, value, true);
 		}
+		timeslotTicketIds = [];
 		#selectedTime = /* @__PURE__ */ user_derived(() => this.selectedTimeslot);
 		get selectedTime() {
 			return get$2(this.#selectedTime);
@@ -36322,7 +36334,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				this.timeslots = [];
 				return;
 			}
-			this.timeslots = shop.capacityManager.quotaManager.timeslotsOn(date).map((x) => ({
+			this.timeslots = shop.capacityManager.quotaManager.timeslotsOn(date, this.tsd?.timeslotTicketIds).map((x) => ({
 				...x,
 				startAt: x.timeSlot,
 				timeFormatted: x.timeSlot.substring(11, 16),
@@ -36344,6 +36356,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const filters = tsd.filters;
 			const date = tsd.selectedDate;
 			untrack(async () => {
+				tsd.timeslotTicketIds = [];
 				if (filters?.length && date) await Promise.all(filters.map((f) => getFilter(f).loadTimeslots(tsd)));
 				details.recalculateCapacities();
 			});

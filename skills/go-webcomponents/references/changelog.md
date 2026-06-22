@@ -4,6 +4,36 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v3.8.1
+
+_Released 2026-06-22_
+
+Fixes the timeslot picker showing slots that belong to a different ticket segment or selection on the page.
+
+## Fixed
+
+- `<go-timeslots>`: the picker no longer shows timeslots that belong to another segment or to a different `<go-ticket-selection>` on the page. Previously, when a selection combined a timeslot segment with a day-ticket segment (e.g. an audio guide), the day ticket's quota — typically a single slot at midnight — surfaced in the timeslot picker as a bogus selectable time; slots from a second selection or a previous page could leak in the same way. The picker now shows only the timeslots loaded for that selection. No markup or attribute changes — embeds need no updates.
+
+---
+
+# v3.8.0
+
+_Released 2026-06-22_
+
+Gift-card vouchers (Wertgutschein) can now be redeemed in the cart, and their credit is deducted from the amount left to pay.
+
+## New
+
+- `<go-coupon-redemption>` now redeems **Wertgutschein** (value-voucher) codes — gift-card credit applied toward the cart total — in addition to action tokens and service vouchers.
+
+## Changed (behavior)
+
+- Cart totals now account for value-voucher credit: `<go-cart-total-amount>` shows the amount left to pay after subtracting any redeemed Wertgutschein balance, and that credit is included in `<go-cart-discounted-amount>`.
+- A value voucher always renders active in `<go-cart-coupons>` (never `go-cart-coupon-inactive`), because it is applied client-side and the backend never echoes it back.
+- `go-submit` no longer fires when a coupon redemption fails. An invalid code now blocks checkout — `<go-coupon-redemption>` shows the error inline and the cart stays put. (Previously `go-submit` fired with `detail.ok === false`, leaving each integrator to detect and abort.)
+
+---
+
 # v3.5.0
 
 _Released 2026-06-15_

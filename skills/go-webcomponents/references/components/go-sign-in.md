@@ -53,14 +53,18 @@ A failed sign-in emits no event; the API errors are shown inline through the for
 
 ## Styling
 
-No dedicated style classes — target the `go-sign-in` element itself. The fields render through
-`<go-form>`; style the inner controls with the `label-class` / `input-class` attributes on
-`<go-field>` (see the `<go-form>` doc).
+The form renders through the shared form subcomponents; style their hooks:
+
+- `go-sign-in` — root element
+- `.go-field` / `.go-field.is-invalid` — each field, and its invalid state
+- `.go-field-errors` — per-field validation messages
+- `.go-form-feedback`, `.go-success-feedback`, `.go-error-feedback-api-errors` — feedback blocks
+
+Per field, pass `label-class` / `input-class` on a `<go-field>` to set the label and control classes directly.
 
 ```css
-go-sign-in {
-  display: block;
-  max-width: 24rem;
+.go-field.is-invalid {
+  border-color: #c00;
 }
 ```
 
@@ -77,7 +81,9 @@ doc.
 ## Conditional rendering with `<go-if>`
 
 `<go-sign-in>` is a form, so a `<go-if>` placed inside it (in `custom` mode) can read the live
-field values from `data.formData`, keyed by field name (`email`, `password`):
+field values from `data.formData`, keyed by each field's `apiKey`. For the sign-in fields the
+`apiKey` matches the field key, so the values are `data.formData?.email` and
+`data.formData?.password`:
 
 ```html
 <go-sign-in custom>
@@ -92,6 +98,10 @@ field values from `data.formData`, keyed by field name (`email`, `password`):
 
 ## Localization
 
-| Key                    | Description             |
-| ---------------------- | ----------------------- |
-| `common.actions.login` | Label for submit button |
+| Key                               | Description                                    |
+| --------------------------------- | ---------------------------------------------- |
+| `common.actions.login`            | Label for submit button                        |
+| `user.registration.form.email`    | Email field label                              |
+| `user.registration.form.password` | Password field label                           |
+| `common.fieldErrors.required`     | Validation message for an empty required field |
+| `user.fieldErrors.emailValid`     | Validation message for an invalid email        |
