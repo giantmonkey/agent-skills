@@ -4,6 +4,120 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v3.10.1
+
+_Released 2026-07-02_
+
+Fixes stale capacity in `<go-ticket-selection>` when the cart changes on the same page.
+
+## Fixed
+
+- `<go-ticket-selection>`: ticket rows and the timeslot picker now refresh their available capacity live when the cart changes. Previously, on a page embedding the selection next to `<go-cart>`, editing or removing a cart item never re-derived the selection's capacity: a row that went booked-out stayed at quantity `0` even after the visitor freed the seats (until a date change or reload), and the timeslot picker kept showing already-consumed slots as available — and freed slots as sold-out. No markup or attribute changes — embeds need no updates.
+
+---
+
+# v3.10.0
+
+_Released 2026-07-01_
+
+Item quantities in `<go-tickets>` and `<go-cart>` are now picked with an accessible `− qty +` stepper instead of a `<select>` dropdown — on by default, with a config flag to opt back out.
+
+## New
+
+- `go.config({ quantityStepper })` — toggles the item quantity control library-wide. Defaults to `true` (the new stepper); set it to `false` to keep the legacy `<select>` dropdown in `<go-tickets>` and `<go-cart>`.
+
+## Changed (behavior)
+
+- The per-item quantity control in `<go-tickets>` and `<go-cart>` is now a `− qty +` stepper built to the WAI-ARIA spinbutton pattern: the value is an editable `role="spinbutton"` field (type a number, or use `↑` / `↓` / `Home` / `End`) and the `−` / `+` buttons disable at the available bounds. Pressing `+` from `0` jumps to the ticket's minimum party size; `−` at that minimum returns to `0`.
+- In `<go-cart>`, `−` can now take a line down to `0` without removing it — the line stays in the cart at `0`, and only the ✕ button removes it. (The legacy `<select>` had no `0` option; removal was ✕-only.)
+
+## Breaking → migration
+
+### Quantity control markup changed from `<select>` to a stepper
+
+`<go-tickets>` and `<go-cart>` now render the quantity control as a `− qty +` stepper by default, so the old `<select>` style hooks (`.go-tickets-item-select`, `.go-cart-item-select`) no longer match. Restyle against the new hooks, or opt back out of the stepper.
+
+Before:
+
+```css
+.go-tickets-item-select {
+  /* … */
+}
+.go-cart-item-select {
+  /* … */
+}
+```
+
+After:
+
+```css
+.go-quantity-stepper {
+  /* the − qty + wrapper (role="group") */
+}
+.go-quantity-stepper-decrement,
+.go-quantity-stepper-increment {
+  /* the − and + buttons */
+}
+.go-quantity-stepper-value {
+  /* the editable spinbutton input */
+}
+```
+
+Or, drop-in (restore the old `<select>` and its classes):
+
+```js
+go.config({ quantityStepper: false })
+```
+
+---
+
+# v3.9.0
+
+_Released 2026-06-30_
+
+A new opt-in per-ticket info button: a `<go-ticket-segment>` can now fetch and show
+each ticket's extra content — such as a reduction reason — behind an accessible toggle.
+
+## New
+
+- `<go-ticket-segment>` gains a `with-content` attribute — an opt-in per-ticket info
+  button for any segment that loads standard tickets: the `ticket:*` filters
+  (`ticket:timeslot`, `ticket:day`, `ticket:annual`) and the event-admission filters
+  (`event:admission`, `event:admission:day`, `event:admission:timeslot`, and their
+  `events:` multi-date variants). The price filters (`event:price`, `events:price`)
+  are excluded — those tickets carry no content. When a ticket carries a reduction
+  reason, the row renders an accessible toggle button (`button.go-ticket-info-icon`,
+  with `aria-expanded` / `aria-controls`) that expands a panel showing the translated
+  reason. Off by default — no extra request is made unless you add the attribute, and
+  the content is best-effort, so a failed fetch simply renders no info buttons and
+  never blanks the ticket list.
+
+---
+
+# v3.8.3
+
+_Released 2026-06-30_
+
+Loading the components under a strict Content Security Policy no longer triggers a violation — you no longer need `'unsafe-eval'` in your `script-src`.
+
+## Fixed
+
+- Embedding the components on a page with a strict CSP (`script-src` without `'unsafe-eval'`) no longer raises a `securitypolicyviolation`. The bundle previously probed for runtime code evaluation as it loaded, which strict policies reported as a violation; it no longer does. If `'unsafe-eval'` was in your `script-src` only for the gomus components, you can remove it.
+
+---
+
+# v3.8.2
+
+_Released 2026-06-22_
+
+Fixes an `event:admission` segment listing tickets that don't belong to the event.
+
+## Fixed
+
+- `event:admission`: the segment now offers **only the selected event's own admission tickets**. Previously its product loader fetched every bookable shop ticket valid that day (other events, general admission), so an unrelated ticket sharing the event's timeslot could appear in the segment — and could be added to the cart as if it admitted to the event. The loader now scopes its request to the event's tickets, matching the timeslot picker and the `event:admission:day` / `event:admission:timeslot` filters. No markup or attribute changes — embeds need no updates.
+
+---
+
 # v3.8.1
 
 _Released 2026-06-22_

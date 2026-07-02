@@ -1,4 +1,8 @@
 (function() {
+	//#region src/zod-config.ts
+	var g = globalThis;
+	(g.__zod_globalConfig ??= {}).jitless = true;
+	//#endregion
 	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/disclose-version.js
 	if (typeof window !== "undefined") ((window.__svelte ??= {}).v ??= /* @__PURE__ */ new Set()).add("5");
 	//#endregion
@@ -1455,7 +1459,7 @@
 			if (effect_tracking()) {
 				get$2(version);
 				render_effect(() => {
-					if (subscribers === 0) stop = untrack(() => start(() => increment(version)));
+					if (subscribers === 0) stop = untrack(() => start(() => increment$1(version)));
 					subscribers += 1;
 					return () => {
 						queue_micro_task(() => {
@@ -1463,7 +1467,7 @@
 							if (subscribers === 0) {
 								stop?.();
 								stop = void 0;
-								increment(version);
+								increment$1(version);
 							}
 						});
 					};
@@ -2202,7 +2206,7 @@
 	* Silently (without using `get`) increment a source
 	* @param {Source<number>} source
 	*/
-	function increment(source) {
+	function increment$1(source) {
 		set(source, source.v + 1);
 	}
 	/**
@@ -2292,11 +2296,11 @@
 					if (prop in target) {
 						const s = with_parent(() => /* @__PURE__ */ state(UNINITIALIZED, stack));
 						sources.set(prop, s);
-						increment(version);
+						increment$1(version);
 					}
 				} else {
 					set(s, UNINITIALIZED);
-					increment(version);
+					increment$1(version);
 				}
 				return true;
 			},
@@ -2378,7 +2382,7 @@
 						var n = Number(prop);
 						if (Number.isInteger(n) && n >= ls.v) set(ls, n + 1);
 					}
-					increment(version);
+					increment$1(version);
 				}
 				return true;
 			},
@@ -11800,7 +11804,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				normal: "day",
 				annual: "annual"
 			}[apiTicket.ticket_type],
-			shop_order: apiTicket.shop_order ?? 0
+			shop_order: apiTicket.shop_order ?? 0,
+			content: void 0
 		};
 	}
 	function initUITimeslotTickets(tickets, selectedTime = "") {
@@ -13532,13 +13537,19 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ticketsAndQuotas(params) {
 			return this.fetchAndCache(TICKET_AND_QUOTAS_ENDPOINT, `ticketsAndQuotas-${JSON.stringify(params)}`, "", {
 				cache: 60,
-				query: params
+				query: assign({ per_page: 100 }, params ?? {})
 			});
 		}
 		tickets(params) {
 			return this.fetchAndCache(TICKETS_ENDPOINT, `tickets-${JSON.stringify(params)}`, "tickets", {
 				cache: 60,
-				query: params
+				query: assign({ per_page: 100 }, params ?? {})
+			});
+		}
+		ticketsContent(ticketIds) {
+			return this.fetchAndCache("/api/v4/tickets/content", `ticketsContent-${JSON.stringify(ticketIds)}`, "data", {
+				cache: 300,
+				query: assign({ "ticket_ids[]": ticketIds }, { per_page: 100 })
 			});
 		}
 		signIn(params) {
@@ -13587,7 +13598,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		getDates(query) {
 			return this.fetchAndCache("/api/v4/dates", `dates-${JSON.stringify(query)}`, "dates", {
-				query,
+				query: assign({ per_page: 100 }, query),
 				cache: 60
 			});
 		}
@@ -13673,7 +13684,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				console.warn("(fetchAndCache) Couldn't fetch, Shop not loaded!");
 				return get$2(this.#data)[dataKey];
 			}
-			const query = assign({ per_page: 1e3 }, options.query);
+			const query = options.query;
 			const fetchId = endpoint + JSON.stringify(query);
 			const isNotFetchedYet = !this.#fetchStatus[fetchId];
 			const isCacheExpired = this.#fetchStatus[fetchId]?.fetchedAt < Date.now() - options.cache * 1e3;
@@ -13683,10 +13694,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return get$2(this.#data)[dataKey];
 		}
 		get museums() {
-			return this.fetchAndCache("/api/v4/museums", "museums", "museums");
+			return this.fetchAndCache("/api/v4/museums", "museums", "museums", { query: { per_page: 100 } });
 		}
 		get exhibitions() {
-			return this.fetchAndCache("/api/v4/exhibitions", "exhibitions", "exhibitions");
+			return this.fetchAndCache("/api/v4/exhibitions", "exhibitions", "exhibitions", { query: { per_page: 100 } });
 		}
 		getEvent(id) {
 			return this.fetchAndCache(`/api/v4/events/${id}`, `single_event_${id}`, "event");
@@ -13704,31 +13715,35 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return this.fetchAndCache(`/api/v4/coupon_sales/barcode/${token}`, `coupon_sale_barcode_${token}`, "coupon_sale");
 		}
 		getCoupons() {
-			return this.fetchAndCache("/api/v4/coupons", "coupons", "coupons", { query: { online_available: true } });
+			return this.fetchAndCache("/api/v4/coupons", "coupons", "coupons", { query: {
+				online_available: true,
+				per_page: 100
+			} });
 		}
 		getEventDetailsOnDate(eventId, dateId) {
 			return this.fetchAndCache(`/api/v4/events/${eventId}/dates/${dateId}`, `/api/v4/events/${eventId}/dates/${dateId}`, "date");
 		}
 		get events() {
-			return this.fetchAndCache("/api/v4/events", "events", "events");
+			return this.fetchAndCache("/api/v4/events", "events", "events", { query: { per_page: 100 } });
 		}
 		get upcomingEvents() {
 			return this.fetchAndCache("/api/v4/events", "events", "events", { query: {
 				by_bookable: true,
-				with_bookings_in_future: 1
+				with_bookings_in_future: 1,
+				per_page: 100
 			} });
 		}
 		get tours() {
-			return this.fetchAndCache("/api/v4/tours", "tours", "tours");
+			return this.fetchAndCache("/api/v4/tours", "tours", "tours", { query: { per_page: 100 } });
 		}
 		get merchandises() {
-			return this.fetchAndCache("/api/v4/merchandises", "merchandises", "merchandises");
+			return this.fetchAndCache("/api/v4/merchandises", "merchandises", "merchandises", { query: { per_page: 100 } });
 		}
 		get customerSalutations() {
 			return this.fetchAndCache("/api/v3/customer_salutations", "customerSalutations", "customer_salutations");
 		}
 		get countries() {
-			return this.fetchAndCache("/api/v3/countries", "countries", "countries");
+			return this.fetchAndCache("/api/v3/countries", "countries", "countries", { query: { per_page: 100 } });
 		}
 		get locales() {
 			return this.fetchAndCache("/api/v4/locales", "locales", "locales_options");
@@ -13894,12 +13909,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			window.location.assign(url);
 		},
 		forms: {},
-		fields: {}
+		fields: {},
+		quantityStepper: true
 	};
 	var ConfigStoreSvelte = class {
 		defaultConfig = assign(defaultConfig, window.customOptions);
 		override = this.defaultConfig;
-		#options = /* @__PURE__ */ state(proxy({}));
+		#options = /* @__PURE__ */ state(proxy(this.defaultConfig));
 		get options() {
 			return get$2(this.#options);
 		}
@@ -13975,7 +13991,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var getPersonalizationDetails = createGetDetails(KEY$5);
 	//#endregion
 	//#region src/components/annualTicketPersonalization/components/AnnualTicketPersonalization.svelte
-	var root$52 = /* @__PURE__ */ from_html(`<li><a> </a></li>`);
+	var root$53 = /* @__PURE__ */ from_html(`<li><a> </a></li>`);
 	var root_1$17 = /* @__PURE__ */ from_html(`<ul class="go-annual-ticket"><li class="go-annual-ticket-title"> </li> <li class="go-annual-ticket-personalization-count"> </li> <!></ul>`);
 	function AnnualTicketPersonalization($$anchor, $$props) {
 		push($$props, true);
@@ -14010,7 +14026,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				reset(li_1);
 				var node_2 = sibling(li_1, 2);
 				var consequent = ($$anchor) => {
-					var li_2 = root$52();
+					var li_2 = root$53();
 					var a = child(li_2);
 					var text_2 = child(a, true);
 					reset(a);
@@ -14685,7 +14701,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	//#endregion
 	//#region src/components/forms/ui/generic/Form.svelte
-	var root$51 = /* @__PURE__ */ from_html(`<go-all-fields></go-all-fields> <go-form-feedback><go-errors-feedback></go-errors-feedback> <go-success-feedback></go-success-feedback></go-form-feedback> <go-submit> </go-submit>`, 3);
+	var root$52 = /* @__PURE__ */ from_html(`<go-all-fields></go-all-fields> <go-form-feedback><go-errors-feedback></go-errors-feedback> <go-success-feedback></go-success-feedback></go-form-feedback> <go-submit> </go-submit>`, 3);
 	function Form($$anchor, $$props) {
 		push($$props, true);
 		let formId = prop($$props, "formId", 7), custom = prop($$props, "custom", 7);
@@ -14730,7 +14746,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
-			var fragment_1 = root$51();
+			var fragment_1 = root$52();
 			var go_submit = sibling(sibling(first_child(fragment_1), 2), 2);
 			var text = child(go_submit, true);
 			reset(go_submit);
@@ -14757,7 +14773,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}, [], ["details"]));
 	//#endregion
 	//#region src/components/auth/passwordReset/PasswordReset.svelte
-	var root$50 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
+	var root$51 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
 	function PasswordReset($$anchor, $$props) {
 		push($$props, true);
 		let custom = prop($$props, "custom", 7, false);
@@ -14790,7 +14806,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var go_form = root$50();
+		var go_form = root$51();
 		set_custom_element_data(go_form, "formId", "passwordReset");
 		template_effect(() => set_custom_element_data(go_form, "custom", custom()));
 		event("submit", go_form, passwordReset);
@@ -15033,7 +15049,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var getCartDetails = createGetDetails(KEY$3);
 	//#endregion
 	//#region src/components/cart/components/itemTitles/Coupon.svelte
-	var root$49 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span>`);
+	var root$50 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span>`);
 	function Coupon($$anchor, $$props) {
 		push($$props, true);
 		let cartItem = prop($$props, "cartItem", 7);
@@ -15046,7 +15062,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var span = root$49();
+		var span = root$50();
 		var text = child(span, true);
 		reset(span);
 		template_effect(() => set_text(text, cartItem().product.title));
@@ -15056,7 +15072,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	create_custom_element(Coupon, { cartItem: {} }, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/cart/components/itemTitles/Event.svelte
-	var root$48 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span><span class="go-cart-item-time" data-testid="cart-item-time"> </span>`, 1);
+	var root$49 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span><span class="go-cart-item-time" data-testid="cart-item-time"> </span>`, 1);
 	var root_1$16 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"><span class="go-cart-item-title-event-title"> </span><span class="go-cart-item-title-ticket-title"> </span></span><!>`, 1);
 	function Event$2($$anchor, $$props) {
 		push($$props, true);
@@ -15083,7 +15099,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reset(span);
 		var node = sibling(span);
 		var consequent = ($$anchor) => {
-			var fragment_1 = root$48();
+			var fragment_1 = root$49();
 			var span_3 = first_child(fragment_1);
 			var text_2 = child(span_3, true);
 			reset(span_3);
@@ -15112,7 +15128,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	create_custom_element(Event$2, { cartItem: {} }, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/cart/components/itemTitles/Ticket.svelte
-	var root$47 = /* @__PURE__ */ from_html(`<span class="go-cart-item-time" data-testid="cart-item-time"> </span>`);
+	var root$48 = /* @__PURE__ */ from_html(`<span class="go-cart-item-time" data-testid="cart-item-time"> </span>`);
 	var root_1$15 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <!>`, 1);
 	var root_2$11 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span> <!>`, 1);
 	function Ticket($$anchor, $$props) {
@@ -15139,7 +15155,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			reset(span_1);
 			var node_1 = sibling(span_1, 2);
 			var consequent = ($$anchor) => {
-				var span_2 = root$47();
+				var span_2 = root$48();
 				var text_2 = child(span_2, true);
 				reset(span_2);
 				template_effect(($0) => set_text(text_2, $0), [() => formatTime(cartItem().time)]);
@@ -15162,6 +15178,208 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return pop($$exports);
 	}
 	create_custom_element(Ticket, { cartItem: {} }, [], [], { mode: "open" });
+	//#endregion
+	//#region src/lib/models/cart/quantityStepper.ts
+	/** `+`: from `0` jump to the order minimum (at least `1`); otherwise step up by one. Capped at `max`. */
+	function increment(value, { min, max }) {
+		const target = value === 0 ? Math.max(min, 1) : value + 1;
+		return target > max ? value : target;
+	}
+	/** `−`: from the order minimum drop straight to `0` (skipping the invalid `1..min-1` band); otherwise step down by one. */
+	function decrement(value, { min }) {
+		return value <= min ? 0 : value - 1;
+	}
+	/** Clamp a typed value into `{0} ∪ [min, max]`: `≤0` → `0`, `0<v<min` rounds up to `min`, `>max` → `max`. */
+	function clampTyped(raw, { min, max }) {
+		if (!Number.isFinite(raw) || raw <= 0) return 0;
+		let v = Math.floor(raw);
+		if (v < min) v = min;
+		if (v > max) v = max;
+		return v;
+	}
+	/** Whether `value` is a committable quantity for these bounds. */
+	function isValid(value, { min, max }) {
+		if (value < 0 || value > max) return false;
+		return value === 0 || value >= min;
+	}
+	/** Whether `+` can change the value (false → the button is `aria-disabled`). */
+	function canIncrement(value, bounds) {
+		return increment(value, bounds) > value;
+	}
+	/** Whether `−` can change the value (false → the button is `aria-disabled`). */
+	function canDecrement(value) {
+		return value > 0;
+	}
+	//#endregion
+	//#region src/components/shared/quantityStepper/QuantityStepper.svelte
+	var root$47 = /* @__PURE__ */ from_html(`<div class="go-quantity-stepper" role="group"><button type="button" class="go-quantity-stepper-button go-quantity-stepper-decrement" tabindex="-1"><span aria-hidden="true">−</span></button> <input class="go-quantity-stepper-value" type="text" role="spinbutton" inputmode="numeric" autocomplete="off"/> <button type="button" class="go-quantity-stepper-button go-quantity-stepper-increment" tabindex="-1"><span aria-hidden="true">+</span></button></div>`);
+	function QuantityStepper($$anchor, $$props) {
+		const inputId = props_id();
+		push($$props, true);
+		let value = prop($$props, "value", 7), min = prop($$props, "min", 7), max = prop($$props, "max", 7), label = prop($$props, "label", 7), decreaseLabel = prop($$props, "decreaseLabel", 7), increaseLabel = prop($$props, "increaseLabel", 7), onChange = prop($$props, "onChange", 7);
+		let inputEl;
+		let invalid = /* @__PURE__ */ state(false);
+		const decDisabled = /* @__PURE__ */ user_derived(() => !canDecrement(value()));
+		const incDisabled = /* @__PURE__ */ user_derived(() => !canIncrement(value(), {
+			min: min(),
+			max: max()
+		}));
+		function emit(next) {
+			if (next !== value()) onChange()(next);
+		}
+		function stepDown() {
+			if (canDecrement(value())) emit(decrement(value(), {
+				min: min(),
+				max: max()
+			}));
+		}
+		function stepUp() {
+			if (canIncrement(value(), {
+				min: min(),
+				max: max()
+			})) emit(increment(value(), {
+				min: min(),
+				max: max()
+			}));
+		}
+		function commitTyped() {
+			const next = clampTyped(parseInt(inputEl.value, 10), {
+				min: min(),
+				max: max()
+			});
+			set(invalid, false);
+			inputEl.value = String(next);
+			emit(next);
+		}
+		function onInput() {
+			const raw = inputEl.value.trim();
+			set(invalid, !(/^\d+$/.test(raw) && isValid(parseInt(raw, 10), {
+				min: min(),
+				max: max()
+			})));
+		}
+		function onKeydown(e) {
+			switch (e.key) {
+				case "ArrowUp":
+					e.preventDefault();
+					stepUp();
+					break;
+				case "ArrowDown":
+					e.preventDefault();
+					stepDown();
+					break;
+				case "Home":
+					e.preventDefault();
+					emit(0);
+					break;
+				case "End":
+					e.preventDefault();
+					emit(max());
+					break;
+				case "Enter":
+					e.preventDefault();
+					commitTyped();
+					break;
+			}
+		}
+		var $$exports = {
+			get value() {
+				return value();
+			},
+			set value($$value) {
+				value($$value);
+				flushSync();
+			},
+			get min() {
+				return min();
+			},
+			set min($$value) {
+				min($$value);
+				flushSync();
+			},
+			get max() {
+				return max();
+			},
+			set max($$value) {
+				max($$value);
+				flushSync();
+			},
+			get label() {
+				return label();
+			},
+			set label($$value) {
+				label($$value);
+				flushSync();
+			},
+			get decreaseLabel() {
+				return decreaseLabel();
+			},
+			set decreaseLabel($$value) {
+				decreaseLabel($$value);
+				flushSync();
+			},
+			get increaseLabel() {
+				return increaseLabel();
+			},
+			set increaseLabel($$value) {
+				increaseLabel($$value);
+				flushSync();
+			},
+			get onChange() {
+				return onChange();
+			},
+			set onChange($$value) {
+				onChange($$value);
+				flushSync();
+			}
+		};
+		var div = root$47();
+		var button = child(div);
+		var input = sibling(button, 2);
+		remove_input_defaults(input);
+		set_attribute(input, "aria-valuemin", 0);
+		bind_this(input, ($$value) => inputEl = $$value, () => inputEl);
+		var button_1 = sibling(input, 2);
+		reset(div);
+		template_effect(() => {
+			set_attribute(div, "aria-label", label());
+			set_attribute(button, "title", decreaseLabel());
+			set_attribute(button, "aria-controls", inputId);
+			set_attribute(button, "aria-disabled", get$2(decDisabled));
+			set_attribute(input, "id", inputId);
+			set_attribute(input, "aria-label", label());
+			set_value(input, value());
+			set_attribute(input, "aria-valuenow", value());
+			set_attribute(input, "aria-valuemax", max());
+			set_attribute(input, "aria-invalid", get$2(invalid) ? "true" : void 0);
+			set_attribute(button_1, "title", increaseLabel());
+			set_attribute(button_1, "aria-controls", inputId);
+			set_attribute(button_1, "aria-disabled", get$2(incDisabled));
+		});
+		delegated("click", button, stepDown);
+		delegated("input", input, onInput);
+		delegated("change", input, commitTyped);
+		event("blur", input, commitTyped);
+		delegated("keydown", input, onKeydown);
+		delegated("click", button_1, stepUp);
+		append($$anchor, div);
+		return pop($$exports);
+	}
+	delegate([
+		"click",
+		"input",
+		"change",
+		"keydown"
+	]);
+	create_custom_element(QuantityStepper, {
+		value: {},
+		min: {},
+		max: {},
+		label: {},
+		decreaseLabel: {},
+		increaseLabel: {},
+		onChange: {}
+	}, [], [], { mode: "open" });
 	//#endregion
 	//#region src/lib/models/cart/selectOptions.ts
 	function generateQuantityOptions(from, to, options = { floor: 0 }) {
@@ -15187,12 +15405,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root$46 = /* @__PURE__ */ from_html(`<s class="go-cart-item-price-original"> </s> <span class="go-cart-item-price-discounted"> </span>`, 1);
 	var root_1$14 = /* @__PURE__ */ from_html(`<span class="go-cart-item-price-discounted"> </span>`);
 	var root_2$10 = /* @__PURE__ */ from_html(`<span> </span>`);
-	var root_3$6 = /* @__PURE__ */ from_html(`<option> </option>`);
-	var root_4$3 = /* @__PURE__ */ from_html(`<select class="go-cart-item-select"></select>`);
-	var root_5$2 = /* @__PURE__ */ from_html(`<li class="go-cart-item-remove"><button class="go-cart-remove">⨉</button></li>`);
+	var root_3$7 = /* @__PURE__ */ from_html(`<option> </option>`);
+	var root_4$4 = /* @__PURE__ */ from_html(`<select class="go-cart-item-select"></select>`);
+	var root_5$3 = /* @__PURE__ */ from_html(`<li class="go-cart-item-remove"><button class="go-cart-remove">⨉</button></li>`);
 	var root_6$2 = /* @__PURE__ */ from_html(`<article class="go-cart-item-content"><ul><li class="go-cart-item-title-container"><!></li> <li class="go-cart-item-price"><!></li> <li class="go-cart-item-count"><!></li> <!> <li class="go-cart-item-sum"> </li></ul></article>`);
 	function Item$1($$anchor, $$props) {
 		push($$props, true);
+		const useStepper = /* @__PURE__ */ user_derived(() => configStore.config.quantityStepper);
 		let displayItem = prop($$props, "displayItem", 7), displayCart = prop($$props, "displayCart", 7), preview = prop($$props, "preview", 7);
 		let capacity = /* @__PURE__ */ state(void 0);
 		const itemInMaincart = /* @__PURE__ */ user_derived(() => shop.cart?.items.find((item) => item.uuid === (displayItem().display?.reference_uuid ?? displayItem().uuid)));
@@ -15203,14 +15422,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				set(capacity, shop.capacityManager.capacity(displayCart(), displayItem(), emptyCart), true);
 			});
 		});
-		function update(target) {
-			const el = target;
+		function updateQuantity(nextLineQuantity) {
 			if (!get$2(itemInMaincart)) {
 				console.error("(CartItem) Could not find main item for line", displayItem());
 				return;
 			}
-			const nextLineQuantity = parseInt(el.value, 10);
 			get$2(itemInMaincart).quantity = Math.max(0, get$2(itemInMaincart).quantity - displayItem().quantity + nextLineQuantity);
+		}
+		function update(target) {
+			updateQuantity(parseInt(target.value, 10));
 		}
 		function del() {
 			if (!get$2(itemInMaincart)) {
@@ -15246,7 +15466,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		var fragment = comment();
 		var node = first_child(fragment);
-		var consequent_6 = ($$anchor) => {
+		var consequent_7 = ($$anchor) => {
 			var article = root_6$2();
 			var ul = child(article);
 			var li = child(ul);
@@ -15309,10 +15529,38 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				template_effect(() => set_text(text_3, displayItem().quantity));
 				append($$anchor, span_2);
 			};
+			var consequent_5 = ($$anchor) => {
+				{
+					let $0 = /* @__PURE__ */ user_derived(() => displayItem().quantity ?? 0);
+					let $1 = /* @__PURE__ */ user_derived(() => shop.t("quantity.decrease"));
+					let $2 = /* @__PURE__ */ user_derived(() => shop.t("quantity.increase"));
+					QuantityStepper($$anchor, {
+						get value() {
+							return get$2($0);
+						},
+						get min() {
+							return get$2(capacity).min;
+						},
+						get max() {
+							return get$2(capacity).max;
+						},
+						get label() {
+							return displayItem().product.title;
+						},
+						get decreaseLabel() {
+							return get$2($1);
+						},
+						get increaseLabel() {
+							return get$2($2);
+						},
+						onChange: updateQuantity
+					});
+				}
+			};
 			var alternate_1 = ($$anchor) => {
-				var select = root_4$3();
+				var select = root_4$4();
 				each(select, 21, () => generateQuantityOptions(get$2(capacity).min, get$2(capacity).max, { floor: 1 }), (q) => q.value, ($$anchor, q) => {
-					var option = root_3$6();
+					var option = root_3$7();
 					var text_4 = child(option, true);
 					reset(option);
 					var option_value = {};
@@ -15330,12 +15578,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			};
 			if_block(node_3, ($$render) => {
 				if (preview()) $$render(consequent_4);
+				else if (get$2(useStepper)) $$render(consequent_5, 1);
 				else $$render(alternate_1, -1);
 			});
 			reset(li_2);
 			var node_4 = sibling(li_2, 2);
-			var consequent_5 = ($$anchor) => {
-				var li_3 = root_5$2();
+			var consequent_6 = ($$anchor) => {
+				var li_3 = root_5$3();
 				var button = child(li_3);
 				reset(li_3);
 				template_effect(($0) => set_attribute(button, "aria-label", $0), [() => shop.t("cart.item.remove")]);
@@ -15343,7 +15592,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				append($$anchor, li_3);
 			};
 			if_block(node_4, ($$render) => {
-				if (!preview()) $$render(consequent_5);
+				if (!preview()) $$render(consequent_6);
 			});
 			var li_4 = sibling(node_4, 2);
 			var text_5 = child(li_4, true);
@@ -15354,7 +15603,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, article);
 		};
 		if_block(node, ($$render) => {
-			if (get$2(capacity)) $$render(consequent_6);
+			if (get$2(capacity)) $$render(consequent_7);
 		});
 		append($$anchor, fragment);
 		return pop($$exports);
@@ -16850,11 +17099,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				s = this.#source(0);
 				sources.set(key, s);
 				set(this.#size, super.size);
-				increment(version);
+				increment$1(version);
 			} else if (prev_res !== value) {
-				increment(s);
+				increment$1(s);
 				var v_reactions = version.reactions === null ? null : new Set(version.reactions);
-				if (v_reactions === null || !s.reactions?.every((r) => v_reactions.has(r))) increment(version);
+				if (v_reactions === null || !s.reactions?.every((r) => v_reactions.has(r))) increment$1(version);
 			}
 			return res;
 		}
@@ -16869,7 +17118,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 			if (res) {
 				set(this.#size, super.size);
-				increment(this.#version);
+				increment$1(this.#version);
 			}
 			return res;
 		}
@@ -16879,7 +17128,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var sources = this.#sources;
 			set(this.#size, 0);
 			for (var s of sources.values()) set(s, -1);
-			increment(this.#version);
+			increment$1(this.#version);
 			sources.clear();
 		}
 		#read_all() {
@@ -30297,9 +30546,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root$15 = /* @__PURE__ */ from_html(`<span class="go-field-star" aria-hidden="true">*</span>`);
 	var root_1$7 = /* @__PURE__ */ from_html(` <!>`, 1);
 	var root_2$6 = /* @__PURE__ */ from_html(`<label><!></label> <input/>`, 1);
-	var root_3$5 = /* @__PURE__ */ from_html(`<label><!></label> <textarea></textarea>`, 1);
-	var root_4$2 = /* @__PURE__ */ from_html(`<figure role="status" aria-live="polite"><img class="go-file-preview"/> <figcaption class="go-file-preview-caption"> </figcaption></figure>`);
-	var root_5$1 = /* @__PURE__ */ from_html(`<label><!></label> <input/> <!>`, 1);
+	var root_3$6 = /* @__PURE__ */ from_html(`<label><!></label> <textarea></textarea>`, 1);
+	var root_4$3 = /* @__PURE__ */ from_html(`<figure role="status" aria-live="polite"><img class="go-file-preview"/> <figcaption class="go-file-preview-caption"> </figcaption></figure>`);
+	var root_5$2 = /* @__PURE__ */ from_html(`<label><!></label> <input/> <!>`, 1);
 	var root_6$1 = /* @__PURE__ */ from_html(`<label><input/> <span class="go-checkbox-label"><!></span></label>`);
 	var root_7$1 = /* @__PURE__ */ from_html(`<img src="" alt=""/> <option> </option>`, 1);
 	var root_8$1 = /* @__PURE__ */ from_html(`<option disabled="" hidden="" selected=""> </option> <!>`, 1);
@@ -30349,7 +30598,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		const textarea = ($$anchor) => {
-			var fragment_2 = root_3$5();
+			var fragment_2 = root_3$6();
 			var label_2 = first_child(fragment_2);
 			labelText(child(label_2));
 			reset(label_2);
@@ -30370,7 +30619,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_2);
 		};
 		const file = ($$anchor) => {
-			var fragment_3 = root_5$1();
+			var fragment_3 = root_5$2();
 			var label_3 = first_child(fragment_3);
 			labelText(child(label_3));
 			reset(label_3);
@@ -30392,7 +30641,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}), void 0, void 0, void 0, void 0, true);
 			var node_4 = sibling(input_2, 2);
 			var consequent_1 = ($$anchor) => {
-				var figure = root_4$2();
+				var figure = root_4$3();
 				var img = child(figure);
 				var figcaption = sibling(img, 2);
 				var text_1 = child(figcaption, true);
@@ -30709,7 +30958,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root$14 = /* @__PURE__ */ from_html(`<span> </span>`);
 	var root_1$6 = /* @__PURE__ */ from_html(`<li> </li>`);
 	var root_2$5 = /* @__PURE__ */ from_html(`<ul class="go-field-errors"></ul>`);
-	var root_3$4 = /* @__PURE__ */ from_html(`<!> <!> <!>`, 1);
+	var root_3$5 = /* @__PURE__ */ from_html(`<!> <!> <!>`, 1);
 	function Field($$anchor, $$props) {
 		push($$props, true);
 		let key = prop($$props, "key", 7), required = prop($$props, "required", 7, false), labelClass = prop($$props, "labelClass", 7), inputClass = prop($$props, "inputClass", 7);
@@ -30767,7 +31016,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var fragment = root_3$4();
+		var fragment = root_3$5();
 		var node = first_child(fragment);
 		InputAndLabel(node, {
 			get describedByIds() {
@@ -30867,7 +31116,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root$12 = /* @__PURE__ */ from_html(`<p aria-hidden="true"> </p>`);
 	var root_1$5 = /* @__PURE__ */ from_html(`<li> </li>`);
 	var root_2$4 = /* @__PURE__ */ from_html(`<ul class="go-error-feedback-api-errors"></ul>`);
-	var root_3$3 = /* @__PURE__ */ from_html(`<div><p aria-live="assertive" class="sr-only"><!></p> <!> <!></div>`);
+	var root_3$4 = /* @__PURE__ */ from_html(`<div><p aria-live="assertive" class="sr-only"><!></p> <!> <!></div>`);
 	function ErrorsFeedback($$anchor, $$props) {
 		push($$props, true);
 		const _details = getDetails$1($$props.$$host);
@@ -30888,7 +31137,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			$$props.$$host.classList.toggle("go-feedback", true);
 			$$props.$$host.setAttribute("data-num-errors", get$2(numErrors).toString());
 		});
-		var div = root_3$3();
+		var div = root_3$4();
 		var p = child(div);
 		var node = child(p);
 		var consequent = ($$anchor) => {
@@ -32429,6 +32678,33 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#region src/components/ticketSelection/filters/_helpers.ts
 	var TWO_HOURS_MS = 7200 * 1e3;
 	/**
+	* When a segment opts into content attributes (with-content), batch-fetch
+	* tickets/content for the given tickets and merge each entry's `content` onto
+	* the matching ticket by id (mirrors the legacy `ticket.content = item.content`).
+	* Mutates the tickets in place; call before adding them to the preCart so the
+	* content is present on first render. No-op — and no request — when the segment
+	* hasn't enabled the feature or there are no tickets to enrich.
+	*
+	* Best-effort: the content is an optional, additive sidecar, so a failed or
+	* absent fetch degrades to "no info buttons" and must never empty the ticket
+	* list (see audit finding IB-01). Note this does NOT cover a hung request — a
+	* never-settling fetch is a separate core-infra concern (IB-05).
+	*/
+	async function enrichTicketsWithContent(segment, tickets) {
+		if (!segment.withContent) return;
+		const ids = tickets.map((t) => t.id).filter((id) => typeof id === "number");
+		if (!ids.length) return;
+		try {
+			const entries = await shop.asyncFetch(() => shop.ticketsContent(ids)) ?? [];
+			const byId = new Map(entries.map((e) => [e.id, e.content]));
+			for (const ticket of tickets) {
+				if (typeof ticket.id !== "number") continue;
+				const content = byId.get(ticket.id);
+				if (content) ticket.content = content;
+			}
+		} catch {}
+	}
+	/**
 	* Load quotas fetched by a filter's loadTimeslots into the shared quota store and
 	* record which ticket ids this selection loaded for its picker. timeslotsOn() reads
 	* tsd.timeslotTicketIds, so only these tickets' slots render — a foreign
@@ -32504,6 +32780,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				}));
 				shop.capacityManager.addQuotas(quotas);
 				const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, tsd.selectedTime), tsd.selectedTime);
+				await enrichTicketsWithContent(segment, uiTickets);
 				for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: tsd.selectedTime }));
 			}
 		},
@@ -32535,6 +32812,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				const firstQuota = Object.values(quotas)[0];
 				const timeslot = firstQuota ? Object.keys(firstQuota.capacities)[0] : void 0;
 				const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, timeslot), timeslot);
+				await enrichTicketsWithContent(segment, uiTickets);
 				for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: timeslot }));
 			}
 		},
@@ -32556,7 +32834,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					"by_ticket_ids[]": tsd.ticketIds,
 					"by_ticket_group_ids[]": segment.ticketGroupIds ?? tsd.ticketGroupIds
 				}));
-				for (const t of Object.values(tickets)) segment.preCart.addItem(createCartItem(createUITicket(t)));
+				const uiTickets = Object.values(tickets).map((t) => createUITicket(t));
+				await enrichTicketsWithContent(segment, uiTickets);
+				for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket));
 			}
 		},
 		"event:admission": {
@@ -32586,14 +32866,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			async loadProducts(segment) {
 				const tsd = segment.ticketSelectionDetails;
 				if (!tsd?.eventIds?.length || !tsd.selectedDate) return;
-				if (!(await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]))).tickets?.length) return;
+				const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
+				if (!event.tickets?.length) return;
 				const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
+					"by_ticket_ids[]": event.tickets,
 					by_bookable: true,
-					valid_at: tsd.selectedDate.toString(),
-					date_id: segment.dateId
+					valid_at: tsd.selectedDate.toString()
 				}));
 				shop.capacityManager.addQuotas(quotas);
 				const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, tsd.selectedTime), tsd.selectedTime);
+				await enrichTicketsWithContent(segment, uiTickets);
 				for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: tsd.selectedTime }));
 			}
 		},
@@ -32626,6 +32908,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				const firstQuota = Object.values(quotas)[0];
 				const time = firstQuota ? Object.keys(firstQuota.capacities)[0] : void 0;
 				const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, time), time);
+				await enrichTicketsWithContent(segment, uiTickets);
 				for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time }));
 			}
 		},
@@ -32674,6 +32957,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				}));
 				shop.capacityManager.addQuotas(quotas);
 				const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, tsd.selectedTime), tsd.selectedTime);
+				await enrichTicketsWithContent(segment, uiTickets);
 				for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time: tsd.selectedTime }));
 			}
 		},
@@ -32741,6 +33025,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					}));
 					shop.capacityManager.addQuotas(quotas);
 					const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, date.start_time), date.start_time);
+					await enrichTicketsWithContent(segment, uiTickets);
 					for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: date.start_time }));
 				}
 			}
@@ -32786,6 +33071,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					const firstQuota = Object.values(quotas)[0];
 					const time = firstQuota ? Object.keys(firstQuota.capacities)[0] : date.start_time;
 					const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, time), time);
+					await enrichTicketsWithContent(segment, uiTickets);
 					for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time }));
 				}
 			}
@@ -32829,6 +33115,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					}));
 					shop.capacityManager.addQuotas(quotas);
 					const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, date.start_time), date.start_time);
+					await enrichTicketsWithContent(segment, uiTickets);
 					for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time: date.start_time }));
 				}
 			}
@@ -33278,7 +33565,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root$9 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <span class="go-cart-item-time" data-testid="cart-item-time"> </span>`, 1);
 	var root_1$4 = /* @__PURE__ */ from_html(`<br/> <span class="go-order-item-quantities"> </span>`, 1);
 	var root_2$3 = /* @__PURE__ */ from_html(`<a aria-label="iCal link"> </a>`);
-	var root_3$2 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count">1</li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span> <!> <!> <a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"></li> <li class="go-order-breakdown-ical"><!></li></ul></article></li>`);
+	var root_3$3 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count">1</li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span> <!> <!> <a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"></li> <li class="go-order-breakdown-ical"><!></li></ul></article></li>`);
 	function Event$1($$anchor, $$props) {
 		push($$props, true);
 		let item = prop($$props, "item", 7), orderDetails = prop($$props, "orderDetails", 7);
@@ -33298,7 +33585,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var li = root_3$2();
+		var li = root_3$3();
 		var article = child(li);
 		var ul = child(article);
 		var li_1 = sibling(child(ul), 2);
@@ -33383,9 +33670,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root$8 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date"> </span> <span class="go-cart-item-time"> </span>`, 1);
 	var root_1$3 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date"> </span>`);
 	var root_2$2 = /* @__PURE__ */ from_html(`<!> <br/> <a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a>`, 1);
-	var root_3$1 = /* @__PURE__ */ from_html(`<br/> <a class="go-ticket-personalization"> </a>`, 1);
-	var root_4$1 = /* @__PURE__ */ from_html(`<a aria-label="passbook link"><img alt="apple wallet icon"/></a>`);
-	var root_5 = /* @__PURE__ */ from_html(`<a aria-label="iCal link"> </a>`);
+	var root_3$2 = /* @__PURE__ */ from_html(`<br/> <a class="go-ticket-personalization"> </a>`, 1);
+	var root_4$2 = /* @__PURE__ */ from_html(`<a aria-label="passbook link"><img alt="apple wallet icon"/></a>`);
+	var root_5$1 = /* @__PURE__ */ from_html(`<a aria-label="iCal link"> </a>`);
 	var root_6 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count"></li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span> <!></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"><!></li> <li class="go-order-breakdown-ical"><!></li></ul></article></li>`);
 	var root_7 = /* @__PURE__ */ from_html(`<a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a>`);
 	var root_8 = /* @__PURE__ */ from_html(`<a class="go-ticket-personalization"> </a>`);
@@ -33470,7 +33757,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					append($$anchor, fragment_2);
 				};
 				var alternate = ($$anchor) => {
-					var fragment_4 = root_3$1();
+					var fragment_4 = root_3$2();
 					var a_1 = sibling(first_child(fragment_4), 2);
 					var text_5 = child(a_1, true);
 					reset(a_1);
@@ -33491,7 +33778,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				var li_4 = sibling(li_3, 2);
 				var node_4 = child(li_4);
 				var consequent_3 = ($$anchor) => {
-					var a_2 = root_4$1();
+					var a_2 = root_4$2();
 					var img = child(a_2);
 					reset(a_2);
 					template_effect(() => {
@@ -33507,7 +33794,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				var li_5 = sibling(li_4, 2);
 				var node_5 = child(li_5);
 				var consequent_4 = ($$anchor) => {
-					var a_3 = root_5();
+					var a_3 = root_5$1();
 					var text_7 = child(a_3, true);
 					reset(a_3);
 					template_effect(($0) => {
@@ -34077,6 +34364,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		set museumIds(value) {
 			set(this.#museumIds, value, true);
 		}
+		#withContent = /* @__PURE__ */ state(false);
+		get withContent() {
+			return get$2(this.#withContent);
+		}
+		set withContent(value) {
+			set(this.#withContent, value, true);
+		}
 		constructor(filters, tsdWrapper) {
 			this.filters = filters === void 0 ? void 0 : Array.isArray(filters) ? filters : [filters];
 			this.#ticketSelectionDetails = /* @__PURE__ */ user_derived(() => tsdWrapper.value);
@@ -34107,7 +34401,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#region src/components/ticketSelection/subcomponents/tickets/subcomponents/segment/TicketSegment.svelte
 	function TicketSegment($$anchor, $$props) {
 		push($$props, true);
-		const filters = prop($$props, "filters", 7), dateId = prop($$props, "dateId", 7), query = prop($$props, "query", 7), limit = prop($$props, "limit", 7), ticketGroupIds = prop($$props, "ticketGroupIds", 7), languageIds = prop($$props, "languageIds", 7), catchWordIds = prop($$props, "catchWordIds", 7), museumIds = prop($$props, "museumIds", 7);
+		const filters = prop($$props, "filters", 7), dateId = prop($$props, "dateId", 7), query = prop($$props, "query", 7), limit = prop($$props, "limit", 7), ticketGroupIds = prop($$props, "ticketGroupIds", 7), languageIds = prop($$props, "languageIds", 7), catchWordIds = prop($$props, "catchWordIds", 7), museumIds = prop($$props, "museumIds", 7), withContent = prop($$props, "withContent", 7);
 		function parseFilters(value) {
 			if (!value) return void 0;
 			const out = value.split(",").map((s) => s.trim()).filter(Boolean);
@@ -34126,6 +34420,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			details.languageIds = parseIds(languageIds());
 			details.catchWordIds = parseIds(catchWordIds());
 			details.museumIds = parseIds(museumIds());
+			details.withContent = Boolean(withContent());
 		});
 		user_effect(() => {
 			details.dateId;
@@ -34136,6 +34431,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			details.catchWordIds;
 			details.query;
 			details.limit;
+			details.withContent;
 			tsd?.filters;
 			tsd?.selectedTimeslot;
 			tsd?.selectedTime;
@@ -34210,6 +34506,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			set museumIds($$value) {
 				museumIds($$value);
 				flushSync();
+			},
+			get withContent() {
+				return withContent();
+			},
+			set withContent($$value) {
+				withContent($$value);
+				flushSync();
 			}
 		});
 	}
@@ -34253,6 +34556,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			attribute: "museum-ids",
 			reflect: true,
 			type: "String"
+		},
+		withContent: {
+			attribute: "with-content",
+			reflect: true,
+			type: "Boolean"
 		}
 	}, [], ["details"]));
 	//#endregion
@@ -36123,9 +36431,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#endregion
 	//#region src/components/ticketSelection/subcomponents/tickets/subcomponents/segment/Item.svelte
 	var root$3 = /* @__PURE__ */ from_html(`<span class="go-tickets-item-title-event-title"> </span> <span class="go-tickets-item-title-product-title"> </span>`, 1);
-	var root_1$2 = /* @__PURE__ */ from_html(`<option> </option>`);
-	var root_2$1 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-tickets-item-title"><!></li> <li class="go-tickets-item-description" data-go-tickets-description=""></li> <li class="go-tickets-item-price" data-go-tickets-price=""> </li> <li class="go-tickets-item-quality" data-go-tickets-quality=""><select class="go-tickets-item-select"></select></li></ul></article></li>`);
+	var root_1$2 = /* @__PURE__ */ from_html(`<li class="go-tickets-item-info"><button type="button" data-testid="ticket-info-toggle"></button></li>`);
+	var root_2$1 = /* @__PURE__ */ from_html(`<li class="go-ticket-additional-info" data-testid="ticket-additional-info"> </li>`);
+	var root_3$1 = /* @__PURE__ */ from_html(`<option> </option>`);
+	var root_4$1 = /* @__PURE__ */ from_html(`<select class="go-tickets-item-select"></select>`);
+	var root_5 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-tickets-item-title"><!></li> <!> <li class="go-tickets-item-description" data-go-tickets-description=""></li> <!> <li class="go-tickets-item-price" data-go-tickets-price=""> </li> <li class="go-tickets-item-quality" data-go-tickets-quality=""><!></li></ul></article></li>`);
 	function Item($$anchor, $$props) {
+		const uid = props_id();
 		push($$props, true);
 		const scaled_title = ($$anchor) => {
 			var fragment = root$3();
@@ -36148,9 +36460,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, text_2);
 		};
 		let item = prop($$props, "item", 7), details = prop($$props, "details", 7);
+		const useStepper = /* @__PURE__ */ user_derived(() => configStore.config.quantityStepper);
 		let capacity = /* @__PURE__ */ state(void 0);
+		let infoExpanded = /* @__PURE__ */ state(false);
+		const reductionReason = /* @__PURE__ */ user_derived(() => item().product?.content?.reduction_reason);
+		const infoPanelId = `go-ticket-info-${uid}`;
 		user_effect(() => {
 			details().preCart.items.map((i) => i.quantity);
+			shop.cart?.items.map((i) => i.quantity);
 			untrack(() => {
 				set(capacity, shop.capacityManager.capacity(shop.cart, item(), details().preCart), true);
 			});
@@ -36178,55 +36495,122 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		var fragment_2 = comment();
 		var node = first_child(fragment_2);
-		var consequent = ($$anchor) => {
-			var li = root_2$1();
+		var consequent_3 = ($$anchor) => {
+			var li = root_5();
 			var article = child(li);
 			var ul = child(article);
 			var li_1 = child(ul);
 			var node_1 = child(li_1);
 			titleSnippet(node_1);
 			reset(li_1);
-			var li_2 = sibling(li_1, 2);
-			html$2(li_2, () => purify.sanitize(item().product.description), true);
-			reset(li_2);
-			var li_3 = sibling(li_2, 2);
-			var text_3 = child(li_3, true);
-			reset(li_3);
-			var li_4 = sibling(li_3, 2);
-			var select = child(li_4);
-			each(select, 21, () => generateQuantityOptions(get$2(capacity).min, get$2(capacity).max), (q) => q.value, ($$anchor, q) => {
-				var option = root_1$2();
-				var text_4 = child(option, true);
-				reset(option);
-				var option_value = {};
-				template_effect(() => {
-					set_selected(option, item().quantity === get$2(q).value);
-					set_text(text_4, get$2(q).label);
-					if (option_value !== (option_value = get$2(q).value)) option.value = (option.__value = get$2(q).value) ?? "";
-				});
-				append($$anchor, option);
+			var node_2 = sibling(li_1, 2);
+			var consequent = ($$anchor) => {
+				var li_2 = root_1$2();
+				var button = child(li_2);
+				reset(li_2);
+				template_effect(($0) => {
+					set_class(button, 1, clsx(["go-ticket-info-icon", get$2(infoExpanded) && "is-active"]));
+					set_attribute(button, "aria-expanded", get$2(infoExpanded));
+					set_attribute(button, "aria-controls", infoPanelId);
+					set_attribute(button, "aria-label", $0);
+				}, [() => shop.t("ticket.list.additionalInfo")]);
+				delegated("click", button, () => set(infoExpanded, !get$2(infoExpanded)));
+				append($$anchor, li_2);
+			};
+			if_block(node_2, ($$render) => {
+				if (get$2(reductionReason)) $$render(consequent);
 			});
-			reset(select);
-			reset(li_4);
+			var li_3 = sibling(node_2, 2);
+			html$2(li_3, () => purify.sanitize(item().product.description), true);
+			reset(li_3);
+			var node_3 = sibling(li_3, 2);
+			var consequent_1 = ($$anchor) => {
+				var li_4 = root_2$1();
+				var text_3 = child(li_4, true);
+				reset(li_4);
+				template_effect(($0) => {
+					set_attribute(li_4, "id", infoPanelId);
+					set_attribute(li_4, "hidden", !get$2(infoExpanded));
+					set_text(text_3, $0);
+				}, [() => shop.t(get$2(reductionReason))]);
+				append($$anchor, li_4);
+			};
+			if_block(node_3, ($$render) => {
+				if (get$2(reductionReason)) $$render(consequent_1);
+			});
+			var li_5 = sibling(node_3, 2);
+			var text_4 = child(li_5, true);
+			reset(li_5);
+			var li_6 = sibling(li_5, 2);
+			var node_4 = child(li_6);
+			var consequent_2 = ($$anchor) => {
+				{
+					let $0 = /* @__PURE__ */ user_derived(() => shop.t("quantity.decrease"));
+					let $1 = /* @__PURE__ */ user_derived(() => shop.t("quantity.increase"));
+					QuantityStepper($$anchor, {
+						get value() {
+							return item().quantity;
+						},
+						get min() {
+							return get$2(capacity).min;
+						},
+						get max() {
+							return get$2(capacity).max;
+						},
+						get label() {
+							return item().product.title;
+						},
+						get decreaseLabel() {
+							return get$2($0);
+						},
+						get increaseLabel() {
+							return get$2($1);
+						},
+						onChange: (q) => item().quantity = q
+					});
+				}
+			};
+			var alternate = ($$anchor) => {
+				var select = root_4$1();
+				each(select, 21, () => generateQuantityOptions(get$2(capacity).min, get$2(capacity).max), (q) => q.value, ($$anchor, q) => {
+					var option = root_3$1();
+					var text_5 = child(option, true);
+					reset(option);
+					var option_value = {};
+					template_effect(() => {
+						set_selected(option, item().quantity === get$2(q).value);
+						set_text(text_5, get$2(q).label);
+						if (option_value !== (option_value = get$2(q).value)) option.value = (option.__value = get$2(q).value) ?? "";
+					});
+					append($$anchor, option);
+				});
+				reset(select);
+				template_effect(($0) => set_attribute(select, "aria-label", $0), [() => shop.t("cart.content.table.edit")]);
+				delegated("change", select, (e) => update(item(), e.target, details()?.ticketSelectionDetails));
+				append($$anchor, select);
+			};
+			if_block(node_4, ($$render) => {
+				if (get$2(useStepper)) $$render(consequent_2);
+				else $$render(alternate, -1);
+			});
+			reset(li_6);
 			reset(ul);
 			reset(article);
 			reset(li);
-			template_effect(($0) => {
+			template_effect(() => {
 				set_class(article, 1, clsx(["go-tickets-item", get$2(capacity).bookedOut && "is-booked-out"]));
 				set_attribute(article, "data-testid", item().uuid);
-				set_text(text_3, item().price_formatted);
-				set_attribute(select, "aria-label", $0);
-			}, [() => shop.t("cart.content.table.edit")]);
-			delegated("change", select, (e) => update(item(), e.target, details()?.ticketSelectionDetails));
+				set_text(text_4, item().price_formatted);
+			});
 			append($$anchor, li);
 		};
 		if_block(node, ($$render) => {
-			if (get$2(capacity) && !get$2(capacity).unavailable) $$render(consequent);
+			if (get$2(capacity) && !get$2(capacity).unavailable) $$render(consequent_3);
 		});
 		append($$anchor, fragment_2);
 		return pop($$exports);
 	}
-	delegate(["change"]);
+	delegate(["click", "change"]);
 	create_custom_element(Item, {
 		item: {},
 		details: {}
@@ -36334,7 +36718,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				this.timeslots = [];
 				return;
 			}
-			this.timeslots = shop.capacityManager.quotaManager.timeslotsOn(date, this.tsd?.timeslotTicketIds).map((x) => ({
+			const quotaManager = shop.capacityManager.quotaManager;
+			quotaManager.clearPrecart();
+			for (const item of shop.cart?.items ?? []) {
+				const product = item.product;
+				if (isUITicket(product)) quotaManager.setPrecartItemQuantity(product.id, item.quantity ?? 0);
+			}
+			this.timeslots = quotaManager.timeslotsOn(date, this.tsd?.timeslotTicketIds).map((x) => ({
 				...x,
 				startAt: x.timeSlot,
 				timeFormatted: x.timeSlot.substring(11, 16),
@@ -36360,6 +36750,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				if (filters?.length && date) await Promise.all(filters.map((f) => getFilter(f).loadTimeslots(tsd)));
 				details.recalculateCapacities();
 			});
+		});
+		user_effect(() => {
+			shop.cart?.items.map((i) => i.quantity);
+			untrack(() => details.recalculateCapacities());
 		});
 		const dispatchTimeslotSelect = (target, selected) => {
 			if (!target || !("dispatchEvent" in target)) return;

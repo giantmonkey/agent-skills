@@ -78,15 +78,16 @@ how many items are in the cart:
 
 ## Attributes
 
-| Attribute | Type    | Default | Description                                                                                                | Since    |
-| --------- | ------- | ------- | ---------------------------------------------------------------------------------------------------------- | -------- |
-| `preview` | boolean | `false` | Read-only cart view — hides each item's quantity selector and remove button, and the coupon remove buttons | `v1.3.0` |
+| Attribute | Type    | Default | Description                                                                                               | Since    |
+| --------- | ------- | ------- | --------------------------------------------------------------------------------------------------------- | -------- |
+| `preview` | boolean | `false` | Read-only cart view — hides each item's quantity control and remove button, and the coupon remove buttons | `v1.3.0` |
 
 ## Styling
 
 Each subcomponent renders stable class hooks:
 
 - `.go-cart-item` — one per cart line; `.go-cart-item-price-original` (struck-through pre-discount price) and `.go-cart-item-price-discounted` appear when a line is discounted
+- `.go-quantity-stepper` — each item's `− qty +` quantity stepper (the default control): `.go-quantity-stepper-button` (both buttons; `.go-quantity-stepper-decrement` / `.go-quantity-stepper-increment` target each) and `.go-quantity-stepper-value` (the editable spinbutton input). `−` can take a line down to `0` without removing it — only the ✕ removes a line. With `go.config({ quantityStepper: false })` the item renders a `.go-cart-item-select` `<select>` instead (`Since UNRELEASED`)
 - `.go-cart-remove` — the ✕ button on items and coupons
 - `.go-cart-coupon` — one per coupon row
 - `.go-cart-coupon.go-cart-coupon-inactive` — a coupon the backend did not apply (`Since v1.53.0`); style it greyed-out / struck-through
@@ -111,7 +112,7 @@ re-priced cart from it and render nothing on their own. `<go-cart-counter>` and
 
 | Tag                           | Renders                                                                   |
 | ----------------------------- | ------------------------------------------------------------------------- |
-| `<go-cart-items>`             | Item table (header + line per item, with quantity selector + remove)      |
+| `<go-cart-items>`             | Item table (header + line per item, with quantity stepper + remove)       |
 | `<go-cart-coupons>`           | One row per coupon. Inactive coupons get `go-cart-coupon-inactive`        |
 | `<go-cart-subtotal-amount>`   | Pre-discount total (sum of original line prices)                          |
 | `<go-cart-discounted-amount>` | Saved amount, prefixed with a `−` sign                                    |
@@ -221,7 +222,6 @@ The item-count events fire on `document`, so listen there:
 document.addEventListener('go-cart-item-added', event => {
   // event.detail is the new number of items in the cart
   console.log(event.detail)
-
 })
 ```
 

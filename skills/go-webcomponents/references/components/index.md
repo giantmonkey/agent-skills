@@ -1,6 +1,6 @@
 # Components
 
-Library version: 3.8.1
+Library version: 3.10.2
 
 | Tag | Attributes |
 | --- | --- |
@@ -38,7 +38,7 @@ Library version: 3.8.1
 | [`<go-sign-up>`](./go-sign-up.md) | 1 |
 | [`<go-submit>`](./go-submit.md) | 1 |
 | [`<go-success-feedback>`](./go-success-feedback.md) | 0 |
-| [`<go-ticket-segment>`](./go-ticket-segment.md) | 8 |
+| [`<go-ticket-segment>`](./go-ticket-segment.md) | 9 |
 | [`<go-ticket-segment-body>`](./go-ticket-segment-body.md) | 0 |
 | [`<go-ticket-segment-empty>`](./go-ticket-segment-empty.md) | 0 |
 | [`<go-ticket-segment-sum>`](./go-ticket-segment-sum.md) | 0 |
