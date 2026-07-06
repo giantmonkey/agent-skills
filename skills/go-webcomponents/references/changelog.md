@@ -4,6 +4,47 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v3.11.0
+
+_Released 2026-07-06_
+
+A new `go.api` namespace on the `window.go` integrator interface exposes curated gomus
+API endpoints to your own page scripts. The first endpoint, `go.api.getCustomer()`,
+resolves the signed-in customer.
+
+## New
+
+- `window.go.api` — an integrator scripting API for calling curated gomus endpoints from
+  your own JavaScript. All methods return promises. Unlike `go.init` / `go.config`, api
+  calls are **not** queued by the snippet: `go.api` exists only after the library bundle
+  has loaded, so call it from event handlers or guard with `window.go?.api` first.
+
+- `go.api.getCustomer()` — fetches the currently signed-in customer
+  (`/api/v4/auth/validate_token`). It resolves to one of:
+  - `{ success: true, data: <customer> }` when a customer is signed in,
+  - an object carrying an `error` key when nobody is signed in,
+  - `undefined` when the shop could not fetch (not initialized, or the request failed).
+
+  ```javascript
+  const res = await go.api.getCustomer()
+  if (res?.success) {
+    console.log('signed in as', res.data.email)
+  }
+  ```
+
+  Behavior notes:
+  - **Reflects the components' own auth, not the browser session.** When there is no
+    local sign-in token (empty `go-auth` storage), the call resolves the not-signed-in
+    shape **without hitting the backend** — so a same-origin session cookie cannot
+    authenticate the request and make a signed-out visitor look signed in.
+  - A call made while `go.init()` is still in flight waits for it to finish.
+  - A call made without any prior `go.init()` rejects with a clear
+    `[go.api] Shop not initialized` error.
+  - The result is cached for up to 5 seconds — a call made right around signing in (e.g.
+    via `<go-sign-in>`) may return a briefly stale result.
+
+---
+
 # v3.10.1
 
 _Released 2026-07-02_

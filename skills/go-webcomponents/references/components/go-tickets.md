@@ -23,7 +23,7 @@ Each listed ticket renders an accessible `− qty +` quantity stepper
 and a `.go-quantity-stepper-value` editable spinbutton input). Pressing `+` from `0` jumps straight to the ticket's
 minimum party size, and `−` at that minimum returns to `0`. Set
 `go.config({ quantityStepper: false })` to render the legacy
-`.go-tickets-item-select` `<select>` instead. _(Since `UNRELEASED`)_
+`.go-tickets-item-select` `<select>` instead. _(Since `v3.11.0`)_
 
 ## Localization
 
@@ -91,7 +91,7 @@ Loads annual/membership tickets (no date/time requirements).
 
 #### `with-content` (per-ticket info button)
 
-Since `UNRELEASED`
+Since `v3.11.0`
 
 Add `with-content` to a `go-ticket-segment` to fetch each ticket's extra content
 attributes (batched) and merge them onto the tickets. When a ticket carries a

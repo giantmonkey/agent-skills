@@ -13421,6 +13421,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	};
 	//#endregion
 	//#region src/lib/stores/shop.svelte.ts
+	var NOT_SIGNED_IN = { error: {
+		success: false,
+		errors: ["Not signed in"]
+	} };
 	var Shop = class {
 		type;
 		#data = /* @__PURE__ */ state(proxy({
@@ -13519,8 +13523,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		get _data() {
 			return get$2(this.#data);
 		}
-		validateToken() {
-			return this.fetchAndCache(VALIDATE_TOKEN_ENDPOINT, `validateToken`, "", { cache: 5 });
+		getCustomer() {
+			if (!this.auth.data.accessToken) return NOT_SIGNED_IN;
+			return this.fetchAndCache(VALIDATE_TOKEN_ENDPOINT, `getCustomer`, "", { cache: 5 });
 		}
 		ticketsCalendar(params) {
 			return this.fetchAndCache(TICKETS_CALENDAR_ENDPOINT, `ticketsCalendar-${JSON.stringify(params)}`, "data", {
@@ -34052,7 +34057,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			]
 		});
 		let form = /* @__PURE__ */ state(void 0);
-		const user = /* @__PURE__ */ user_derived(() => shop.validateToken());
+		const user = /* @__PURE__ */ user_derived(() => shop.getCustomer());
 		onMount(async () => {
 			await shop.waitForAllFetches();
 			await pollUntilTruthy(() => get$2(form).details);
@@ -34071,7 +34076,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root$4 = /* @__PURE__ */ from_html(`<div class="go-profile-fullname"> </div> <div class="go-profile-email"> </div>`, 1);
 	function Overview($$anchor, $$props) {
 		push($$props, true);
-		const user = /* @__PURE__ */ user_derived(() => shop.validateToken());
+		const user = /* @__PURE__ */ user_derived(() => shop.getCustomer());
 		const data = /* @__PURE__ */ user_derived(() => get$2(user)?.data);
 		var fragment = comment();
 		var node = first_child(fragment);
@@ -37290,14 +37295,22 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	} }, [], []));
 	//#endregion
 	//#region src/go/go.ts
+	var initPromise = null;
+	async function ensureShopReady() {
+		if (initPromise) return initPromise;
+		if (!shop.client) throw new Error("[go.api] Shop not initialized — call go.init({ shop, api, locale }) first.");
+	}
 	async function initGo(window) {
 		const stub = window.go;
 		let q = stub && stub._queue || [];
 		console.log(q);
-		for (const command of q) try {
-			await go[command.method](command.options);
-		} catch (e) {
-			console.error(e);
+		for (const command of q) {
+			if (command.method === "load") continue;
+			try {
+				await go[command.method](command.options);
+			} catch (e) {
+				console.error(e);
+			}
 		}
 		window.go = go;
 		if (stub) stub._queue = null;
@@ -37308,8 +37321,18 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			configStore.define(options);
 		},
 		init: async (options) => {
-			await shop.load("https://" + options.api, options.shop, options.locale);
-		}
+			try {
+				initPromise = shop.load("https://" + options.api, options.shop, options.locale);
+				await initPromise;
+			} catch (e) {
+				initPromise = null;
+				throw e;
+			}
+		},
+		api: { getCustomer: async () => {
+			await ensureShopReady();
+			return shop.asyncFetch(() => shop.getCustomer());
+		} }
 	};
 	(async () => {
 		await initGo(window);
