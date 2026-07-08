@@ -11794,6 +11794,26 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function isUITicket(x) {
 		return x?.type === "Ticket";
 	}
+	/**
+	* Mantle-ness is derived from the raw API fields already spread onto every
+	* UITicket — the base type stays pure (no `subTickets` field on non-mantles).
+	* A ticket is a mantle only when `is_mantle` is set AND it actually carries
+	* sub-tickets (the `sub_tickets` map is feature-flagged and may be empty).
+	*/
+	function isMantleTicket(x) {
+		const t = x;
+		return !!t && t.type === "Ticket" && t.is_mantle === true && !!t.sub_tickets && Object.keys(t.sub_tickets).length > 0;
+	}
+	/** Normalizes a mantle's raw `sub_tickets` map into ordered UI sub-ticket defs. */
+	function subTicketDefs(mantle) {
+		return Object.entries(mantle.sub_tickets ?? {}).map(([id, s]) => ({
+			id: Number(id),
+			title: s?.title ?? "",
+			description: s?.description ?? null,
+			min_persons: s?.min_persons ?? 0,
+			max_persons: s?.max_persons ?? 0
+		}));
+	}
 	function createUITicket(apiTicket, options) {
 		return {
 			...apiTicket,
@@ -11818,17 +11838,46 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	//#endregion
 	//#region src/lib/models/capacity/calculators/quotas.ts
+	/** Σ of a mantle's chosen sub-ticket quantities (the capacity one mantle draws); 0 otherwise. */
+	var compositionSum = (item) => sum(Object.values(item.mantle?.composition ?? {}));
+	/**
+	* Quota capacity one cart item draws — the single source of truth shared by every quota-based
+	* calculator (a verbatim parallel to the Angular shop's `getNeededCapacityForTicket`).
+	*
+	* A mantle draws `qty × Σ(composition)` capacity off its quota; everything else draws `qty`.
+	* Used both to net items out when sizing OTHER tickets on the same quota and as the basis for a
+	* mantle's own count.
+	*/
+	function neededCapacity(item) {
+		const qty = item.quantity ?? 0;
+		return isMantleTicket(item.product) ? qty * compositionSum(item) : qty;
+	}
+	/**
+	* Feed cart + preCart into the quota precart as *needed capacity*, so every item sharing a quota is
+	* netted out before sizing `item`. `addPrecartItemQuantity` SUMS draws per id, so two lines of the
+	* same ticket id (e.g. two mantle lines with different mixes) both count instead of the last
+	* overwriting the rest. Returns the draw of the line being sized — captured by reference — so the
+	* caller credits back only its OWN draw via `ticketCapacity(..., ownDraw)`, never a sibling
+	* same-id line's (which must keep consuming, or the two oversell).
+	*/
+	function feedQuotaPrecart(quotaManager, cart, preCart, item) {
+		quotaManager.clearPrecart();
+		let ownDraw = 0;
+		for (const i of [...preCart.items, ...cart.items]) {
+			if (!isUITicket(i.product)) continue;
+			const draw = neededCapacity(i);
+			if (i === item) ownDraw = draw;
+			quotaManager.addPrecartItemQuantity(i.product.id, draw);
+		}
+		return ownDraw;
+	}
 	var maxQuantity_Quotas = function(manager, cart, item, preCart) {
 		if (manager.capacityPolicy(item) !== "quotas") throw new Error("(getMaxQuantityQuotas) impossible");
 		if (!isUITicket(item.product)) throw new Error("(getMaxQuantityQuotas) impossible");
 		const p = item.product;
 		const quotaManager = manager.quotaManager;
-		quotaManager.clearPrecart();
-		for (const i of [...preCart.items, ...cart.items]) {
-			const product = i.product;
-			if (isUITicket(product)) quotaManager.setPrecartItemQuantity(product.id, i.quantity);
-		}
-		const cap = quotaManager.ticketCapacity(p.id, p.selectedTime);
+		const ownDraw = feedQuotaPrecart(quotaManager, cart, preCart, item);
+		const cap = quotaManager.ticketCapacity(p.id, p.selectedTime, ownDraw);
 		const total = quotaManager.totalCapacity(p.id, p.selectedTime);
 		return {
 			max: Math.min(p.max_persons || 100, cap),
@@ -11837,6 +11886,64 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			unavailable: total === 0
 		};
 	};
+	//#endregion
+	//#region src/lib/models/capacity/calculators/mantle.ts
+	/**
+	* Capacity for a Mantelticket — a verbatim port of the legacy Angular shop
+	* (`gomus-shop` `ticket.service.coffee`: `getNeededCapacityForTicket` +
+	* `getSelectableQuantitiesForTicket`).
+	*
+	* A mantle is gated off its OWN quota, exactly like a normal ticket, except one mantle
+	* draws `Σ(chosen sub-quantities)` capacity instead of one. So:
+	*
+	*   maxMantles = ⌊ mantleHeadroom / Σ(composition) ⌋   (divide only when Σ > 1)
+	*
+	* The sub-tickets' own quotas are never read — the shop API never exposes them, and the
+	* mantle's own quota already reflects the venue/exhibition contingent. The chosen
+	* composition is only the divisor. Best-effort (path a): the backend is the final authority
+	* at checkout for any sub constrained by a separate quota the mantle isn't on.
+	*/
+	var maxQuantity_Mantle = function(manager, cart, item, preCart) {
+		if (manager.capacityPolicy(item) !== "mantle") throw new Error("(maxQuantity_Mantle) impossible");
+		if (!isMantleTicket(item.product)) throw new Error("(maxQuantity_Mantle) impossible");
+		const p = item.product;
+		const quotaManager = manager.quotaManager;
+		const ownDraw = feedQuotaPrecart(quotaManager, cart, preCart, item);
+		const headroom = quotaManager.ticketCapacity(p.id, p.selectedTime, ownDraw);
+		const total = quotaManager.totalCapacity(p.id, p.selectedTime);
+		const perMantle = compositionSum(item);
+		const maxMantles = perMantle > 1 ? Math.floor(headroom / perMantle) : headroom;
+		return {
+			max: Math.min(p.max_persons || 100, maxMantles),
+			min: p.min_persons || 0,
+			bookedOut: maxMantles === 0,
+			unavailable: total === 0
+		};
+	};
+	/** Each sub's TicketCombination max_persons — the ceiling when no quota gates the mantle. */
+	var combinationSubMaxes = (p) => Object.fromEntries(subTicketDefs(p).map((s) => [s.id, s.max_persons]));
+	/**
+	* Capacity-aware ceilings for a mantle line's sub-ticket selectors, keyed by sub id.
+	*
+	* Growing a sub by one adds `quantity` seats to the line's draw (every mantle in the line gains
+	* one sub), so a sub may grow by at most ⌊spare / quantity⌋ above its CURRENT value, still
+	* bounded by its TicketCombination max_persons. `spare` is the quota headroom left after
+	* netting cart + preCart INCLUDING the sized line's own draw — unlike line sizing, nothing is
+	* credited back, because a mix edit spends seats on top of what the line already holds.
+	* Shrinking is never capacity-gated; min_persons stays the selector's floor.
+	*/
+	function maxSubQuantities(manager, cart, item, preCart) {
+		if (manager.capacityPolicy(item) !== "mantle") throw new Error("(maxSubQuantities) impossible");
+		if (!isMantleTicket(item.product)) throw new Error("(maxSubQuantities) impossible");
+		const p = item.product;
+		const quantity = item.quantity ?? 0;
+		let growth = Infinity;
+		if (quantity > 0) {
+			feedQuotaPrecart(manager.quotaManager, cart, preCart, item);
+			growth = Math.floor(manager.quotaManager.ticketCapacity(p.id, p.selectedTime, 0) / quantity);
+		}
+		return Object.fromEntries(subTicketDefs(p).map((s) => [s.id, Math.min(s.max_persons, (item.mantle?.composition?.[s.id] ?? 0) + growth)]));
+	}
 	//#endregion
 	//#region src/lib/models/eventTicket/UIEventTicket.svelte.ts
 	function isEventTicket(x) {
@@ -11954,6 +12061,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				this.precart[ticketId] = quantity;
 				this._timeslots = [];
 			},
+			addPrecartItemQuantity(ticketId, quantity) {
+				this.precart[ticketId] = (this.precart[ticketId] ?? 0) + quantity;
+				this._timeslots = [];
+			},
 			getPrecartItemQuantity(ticketId) {
 				return this.precart[ticketId] ?? 0;
 			},
@@ -11993,11 +12104,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					totalCapacity: x.totalCapacity
 				})));
 			},
-			ticketCapacity(ticketId, timeslot) {
-				return (min$2(this.filterBy({
+			ticketCapacity(ticketId, timeslot, ownQuantity = this.getPrecartItemQuantity(ticketId)) {
+				const minCap = min$2(this.filterBy({
 					timeslot,
 					ticketId
-				}).map((x) => x.capacity)) ?? 0) + this.getPrecartItemQuantity(ticketId);
+				}).map((x) => x.capacity)) ?? 0;
+				return Math.max(0, minCap + ownQuantity);
 			},
 			totalCapacity(ticketId, timeslot) {
 				return min$2(this.filterBy({
@@ -12030,11 +12142,19 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	//#endregion
 	//#region src/lib/models/cart/CartItem.ts
+	var lastMantleKey = 0;
 	function createCartItem(product, options) {
-		return {
+		const finalOptions = {
 			quantity: 0,
 			time: "",
-			...options ?? {},
+			...options ?? {}
+		};
+		if (isMantleTicket(product)) finalOptions.mantle = {
+			composition: finalOptions.mantle?.composition ?? Object.fromEntries(subTicketDefs(product).map((s) => [s.id, s.max_persons])),
+			key: finalOptions.mantle?.key ?? `mantle-${lastMantleKey++}`
+		};
+		return {
+			...finalOptions,
 			type: product.type,
 			product,
 			/**
@@ -12044,13 +12164,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				const base = {
 					shipped_with_merchandise_id: null,
 					shipping_mode: "email",
-					id: this.product.id
+					id: this.product.id,
+					uuid: this.uuid
 				};
 				switch (product.type) {
 					case "Ticket": return {
 						...base,
 						time: this.time,
-						quantity: this.quantity
+						quantity: this.quantity,
+						...isMantleTicket(this.product) && this.mantle ? { sub_ticket_quantities: this.mantle.composition } : {}
 					};
 					case "Event": switch (product.subtype) {
 						case "flat": return {
@@ -12078,6 +12200,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				if (this.time) segments.push(`time: ${this.time}`);
 				if (isScaleEventTicket(this.product)) segments.push(`scale_price: ${this.product.scale_price_id}`);
 				if (this.display?.discounted) segments.push("discounted");
+				if (isMantleTicket(this.product) && this.mantle?.key) segments.push(`mantle_key: ${this.mantle.key}`);
 				return segments.length > 0 ? ` (${segments.join(", ")})` : "";
 			},
 			toString() {
@@ -12167,7 +12290,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				if (!isStillValid(cartItem)) return;
 				return createCartItem(createUITicket(cartItem.product, { selectedTime: cartItem.product.selectedTime }), {
 					time: cartItem.time,
-					quantity: cartItem.quantity
+					quantity: cartItem.quantity,
+					mantle: cartItem.mantle
 				});
 			case "Event":
 				if (!isStillValid(cartItem)) return;
@@ -12419,11 +12543,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				const type = item.product.type;
 				switch (type) {
 					case "Ticket":
-						const subtype1 = item.product.subtype;
+						const product1 = item.product;
+						const subtype1 = product1.subtype;
 						switch (subtype1) {
 							case "timeslot":
 							case "event:ticket":
-							case "day": return "quotas";
+							case "day": return isMantleTicket(product1) ? "mantle" : "quotas";
 							case "annual": return "unlimited";
 							default: throw new Error(`(getMaxAvailability) Unhandled case: ${subtype1}`);
 						}
@@ -12442,11 +12567,18 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				const policy = this.capacityPolicy(item);
 				const calculator = {
 					quotas: maxQuantity_Quotas,
+					mantle: maxQuantity_Mantle,
 					seats: maxQuantity_Seats,
 					unlimited: maxQuantity_Unlimited
 				}[policy];
 				if (!calculator) throw new Error(`(maxQuantity) impossible: ${policy}`);
 				return untrack(() => calculator(this, cart, item, preCart));
+			},
+			subTicketMaxes(cart, item, preCart) {
+				if (!isMantleTicket(item.product)) return {};
+				const policy = this.capacityPolicy(item);
+				if (policy !== "mantle" && policy !== "unlimited") throw new Error(`(subTicketMaxes) impossible: ${policy}`);
+				return untrack(() => policy === "mantle" ? maxSubQuantities(this, cart, item, preCart) : combinationSubMaxes(item.product));
 			}
 		};
 		loadCapacityFromLocalStorage(manager);
@@ -14004,8 +14136,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var getPersonalizationDetails = createGetDetails(KEY$5);
 	//#endregion
 	//#region src/components/annualTicketPersonalization/components/AnnualTicketPersonalization.svelte
-	var root$53 = /* @__PURE__ */ from_html(`<li><a> </a></li>`);
-	var root_1$17 = /* @__PURE__ */ from_html(`<ul class="go-annual-ticket"><li class="go-annual-ticket-title"> </li> <li class="go-annual-ticket-personalization-count"> </li> <!></ul>`);
+	var root$55 = /* @__PURE__ */ from_html(`<li><a> </a></li>`);
+	var root_1$19 = /* @__PURE__ */ from_html(`<ul class="go-annual-ticket"><li class="go-annual-ticket-title"> </li> <li class="go-annual-ticket-personalization-count"> </li> <!></ul>`);
 	function AnnualTicketPersonalization($$anchor, $$props) {
 		push($$props, true);
 		let token = prop($$props, "token", 7);
@@ -14030,7 +14162,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var consequent_1 = ($$anchor) => {
 			var fragment_1 = comment();
 			each(first_child(fragment_1), 17, () => get$2(order).ticket_sales, (ticketSale) => ticketSale.id, ($$anchor, ticketSale) => {
-				var ul = root_1$17();
+				var ul = root_1$19();
 				var li = child(ul);
 				var text = child(li, true);
 				reset(li);
@@ -14039,7 +14171,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				reset(li_1);
 				var node_2 = sibling(li_1, 2);
 				var consequent = ($$anchor) => {
-					var li_2 = root$53();
+					var li_2 = root$55();
 					var a = child(li_2);
 					var text_2 = child(a, true);
 					reset(a);
@@ -14714,7 +14846,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	//#endregion
 	//#region src/components/forms/ui/generic/Form.svelte
-	var root$52 = /* @__PURE__ */ from_html(`<go-all-fields></go-all-fields> <go-form-feedback><go-errors-feedback></go-errors-feedback> <go-success-feedback></go-success-feedback></go-form-feedback> <go-submit> </go-submit>`, 3);
+	var root$54 = /* @__PURE__ */ from_html(`<go-all-fields></go-all-fields> <go-form-feedback><go-errors-feedback></go-errors-feedback> <go-success-feedback></go-success-feedback></go-form-feedback> <go-submit> </go-submit>`, 3);
 	function Form($$anchor, $$props) {
 		push($$props, true);
 		let formId = prop($$props, "formId", 7), custom = prop($$props, "custom", 7);
@@ -14759,7 +14891,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
-			var fragment_1 = root$52();
+			var fragment_1 = root$54();
 			var go_submit = sibling(sibling(first_child(fragment_1), 2), 2);
 			var text = child(go_submit, true);
 			reset(go_submit);
@@ -14786,7 +14918,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}, [], ["details"]));
 	//#endregion
 	//#region src/components/auth/passwordReset/PasswordReset.svelte
-	var root$51 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
+	var root$53 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
 	function PasswordReset($$anchor, $$props) {
 		push($$props, true);
 		let custom = prop($$props, "custom", 7, false);
@@ -14819,7 +14951,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var go_form = root$51();
+		var go_form = root$53();
 		set_custom_element_data(go_form, "formId", "passwordReset");
 		template_effect(() => set_custom_element_data(go_form, "custom", custom()));
 		event("submit", go_form, passwordReset);
@@ -14960,13 +15092,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function resolveApiQuantity(attrs) {
 		return getQuantity(resolveQuantitySource(attrs), 0);
 	}
-	function getScalePriceId(attrs) {
-		const source = resolveQuantitySource(attrs);
-		if (source && typeof source === "object") {
-			const keys = Object.keys(source);
-			if (keys.length > 0) return Number(keys[0]);
-		}
-	}
 	function createDisplayCart(baseCart, apiItems) {
 		const displayCart = createCart();
 		const echoed = new Set(apiItems.map((i) => i.attributes.coupon).filter(Boolean).map((c) => c.toUpperCase()));
@@ -14976,8 +15101,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}));
 		apiItems.forEach((apiItem) => {
 			const attrs = apiItem.attributes;
-			const scalePriceId = getScalePriceId(attrs);
-			const itemInBaseCart = baseCart.items.find((i) => i.type.toLowerCase() === apiItem.type.toLowerCase() && i.product.id === attrs.id && (!attrs.time || i.time === attrs.time) && (scalePriceId === void 0 || isEventTicket(i.product) && i.product.scale_price_id === scalePriceId));
+			const ref = attrs.uuid;
+			const itemInBaseCart = baseCart.items.find((i) => i.uuid === ref);
 			if (!itemInBaseCart) {
 				console.error("(go-cart) Ignoring unmatched cart line", {
 					type: apiItem.type,
@@ -15000,6 +15125,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}, {
 			quantity,
 			time: cartItem.time,
+			mantle: cartItem.mantle,
 			display: {
 				discounted,
 				reference_uuid: cartItem.uuid,
@@ -15062,7 +15188,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var getCartDetails = createGetDetails(KEY$3);
 	//#endregion
 	//#region src/components/cart/components/itemTitles/Coupon.svelte
-	var root$50 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span>`);
+	var root$52 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span>`);
 	function Coupon($$anchor, $$props) {
 		push($$props, true);
 		let cartItem = prop($$props, "cartItem", 7);
@@ -15075,7 +15201,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var span = root$50();
+		var span = root$52();
 		var text = child(span, true);
 		reset(span);
 		template_effect(() => set_text(text, cartItem().product.title));
@@ -15085,8 +15211,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	create_custom_element(Coupon, { cartItem: {} }, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/cart/components/itemTitles/Event.svelte
-	var root$49 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span><span class="go-cart-item-time" data-testid="cart-item-time"> </span>`, 1);
-	var root_1$16 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"><span class="go-cart-item-title-event-title"> </span><span class="go-cart-item-title-ticket-title"> </span></span><!>`, 1);
+	var root$51 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span><span class="go-cart-item-time" data-testid="cart-item-time"> </span>`, 1);
+	var root_1$18 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"><span class="go-cart-item-title-event-title"> </span><span class="go-cart-item-title-ticket-title"> </span></span><!>`, 1);
 	function Event$2($$anchor, $$props) {
 		push($$props, true);
 		let cartItem = prop($$props, "cartItem", 7);
@@ -15101,7 +15227,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var fragment = root_1$16();
+		var fragment = root_1$18();
 		var span = first_child(fragment);
 		var span_1 = child(span);
 		var text = child(span_1, true);
@@ -15112,7 +15238,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reset(span);
 		var node = sibling(span);
 		var consequent = ($$anchor) => {
-			var fragment_1 = root$49();
+			var fragment_1 = root$51();
 			var span_3 = first_child(fragment_1);
 			var text_2 = child(span_3, true);
 			reset(span_3);
@@ -15141,9 +15267,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	create_custom_element(Event$2, { cartItem: {} }, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/cart/components/itemTitles/Ticket.svelte
-	var root$48 = /* @__PURE__ */ from_html(`<span class="go-cart-item-time" data-testid="cart-item-time"> </span>`);
-	var root_1$15 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <!>`, 1);
-	var root_2$11 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span> <!>`, 1);
+	var root$50 = /* @__PURE__ */ from_html(`<span class="go-cart-item-time" data-testid="cart-item-time"> </span>`);
+	var root_1$17 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <!>`, 1);
+	var root_2$12 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span> <!>`, 1);
 	function Ticket($$anchor, $$props) {
 		push($$props, true);
 		let cartItem = prop($$props, "cartItem", 7);
@@ -15156,19 +15282,19 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var fragment = root_2$11();
+		var fragment = root_2$12();
 		var span = first_child(fragment);
 		var text = child(span, true);
 		reset(span);
 		var node = sibling(span, 2);
 		var consequent_1 = ($$anchor) => {
-			var fragment_1 = root_1$15();
+			var fragment_1 = root_1$17();
 			var span_1 = first_child(fragment_1);
 			var text_1 = child(span_1, true);
 			reset(span_1);
 			var node_1 = sibling(span_1, 2);
 			var consequent = ($$anchor) => {
-				var span_2 = root$48();
+				var span_2 = root$50();
 				var text_2 = child(span_2, true);
 				reset(span_2);
 				template_effect(($0) => set_text(text_2, $0), [() => formatTime(cartItem().time)]);
@@ -15193,83 +15319,70 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	create_custom_element(Ticket, { cartItem: {} }, [], [], { mode: "open" });
 	//#endregion
 	//#region src/lib/models/cart/quantityStepper.ts
-	/** `+`: from `0` jump to the order minimum (at least `1`); otherwise step up by one. Capped at `max`. */
+	/** `+`: from below the order minimum jump to it (at least `1`); otherwise step up by one. Capped at `max`. */
 	function increment(value, { min, max }) {
-		const target = value === 0 ? Math.max(min, 1) : value + 1;
+		const target = value < min ? Math.max(min, 1) : value + 1;
 		return target > max ? value : target;
 	}
-	/** `−`: from the order minimum drop straight to `0` (skipping the invalid `1..min-1` band); otherwise step down by one. */
-	function decrement(value, { min }) {
-		return value <= min ? 0 : value - 1;
+	/** `−`: from the order minimum drop straight to `floor` (skipping the invalid band); otherwise step down by one. */
+	function decrement(value, { min, floor = 0 }) {
+		return value <= min ? floor : value - 1;
 	}
-	/** Clamp a typed value into `{0} ∪ [min, max]`: `≤0` → `0`, `0<v<min` rounds up to `min`, `>max` → `max`. */
-	function clampTyped(raw, { min, max }) {
-		if (!Number.isFinite(raw) || raw <= 0) return 0;
+	/** Clamp a typed value into `{floor} ∪ [min, max]`: `≤0` → `floor`, `0<v<min` rounds up to `min`, `>max` → `max`. */
+	function clampTyped(raw, { min, max, floor = 0 }) {
+		if (!Number.isFinite(raw) || raw <= 0) return floor;
 		let v = Math.floor(raw);
 		if (v < min) v = min;
 		if (v > max) v = max;
 		return v;
 	}
 	/** Whether `value` is a committable quantity for these bounds. */
-	function isValid(value, { min, max }) {
+	function isValid(value, { min, max, floor = 0 }) {
 		if (value < 0 || value > max) return false;
-		return value === 0 || value >= min;
+		return value === floor || value >= min;
 	}
 	/** Whether `+` can change the value (false → the button is `aria-disabled`). */
 	function canIncrement(value, bounds) {
 		return increment(value, bounds) > value;
 	}
 	/** Whether `−` can change the value (false → the button is `aria-disabled`). */
-	function canDecrement(value) {
-		return value > 0;
+	function canDecrement(value, { floor = 0 }) {
+		return value > floor;
 	}
 	//#endregion
 	//#region src/components/shared/quantityStepper/QuantityStepper.svelte
-	var root$47 = /* @__PURE__ */ from_html(`<div class="go-quantity-stepper" role="group"><button type="button" class="go-quantity-stepper-button go-quantity-stepper-decrement" tabindex="-1"><span aria-hidden="true">−</span></button> <input class="go-quantity-stepper-value" type="text" role="spinbutton" inputmode="numeric" autocomplete="off"/> <button type="button" class="go-quantity-stepper-button go-quantity-stepper-increment" tabindex="-1"><span aria-hidden="true">+</span></button></div>`);
+	var root$49 = /* @__PURE__ */ from_html(`<div class="go-quantity-stepper" role="group"><button type="button" class="go-quantity-stepper-button go-quantity-stepper-decrement" tabindex="-1"><span aria-hidden="true">−</span></button> <input class="go-quantity-stepper-value" type="text" role="spinbutton" inputmode="numeric" autocomplete="off"/> <button type="button" class="go-quantity-stepper-button go-quantity-stepper-increment" tabindex="-1"><span aria-hidden="true">+</span></button></div>`);
 	function QuantityStepper($$anchor, $$props) {
 		const inputId = props_id();
 		push($$props, true);
-		let value = prop($$props, "value", 7), min = prop($$props, "min", 7), max = prop($$props, "max", 7), label = prop($$props, "label", 7), decreaseLabel = prop($$props, "decreaseLabel", 7), increaseLabel = prop($$props, "increaseLabel", 7), onChange = prop($$props, "onChange", 7);
+		let value = prop($$props, "value", 7), min = prop($$props, "min", 7), max = prop($$props, "max", 7), floor = prop($$props, "floor", 7, 0), label = prop($$props, "label", 7), decreaseLabel = prop($$props, "decreaseLabel", 7), increaseLabel = prop($$props, "increaseLabel", 7), onChange = prop($$props, "onChange", 7);
+		const bounds = /* @__PURE__ */ user_derived(() => ({
+			min: min(),
+			max: max(),
+			floor: floor()
+		}));
 		let inputEl;
 		let invalid = /* @__PURE__ */ state(false);
-		const decDisabled = /* @__PURE__ */ user_derived(() => !canDecrement(value()));
-		const incDisabled = /* @__PURE__ */ user_derived(() => !canIncrement(value(), {
-			min: min(),
-			max: max()
-		}));
+		const decDisabled = /* @__PURE__ */ user_derived(() => !canDecrement(value(), get$2(bounds)));
+		const incDisabled = /* @__PURE__ */ user_derived(() => !canIncrement(value(), get$2(bounds)));
 		function emit(next) {
 			if (next !== value()) onChange()(next);
 		}
 		function stepDown() {
-			if (canDecrement(value())) emit(decrement(value(), {
-				min: min(),
-				max: max()
-			}));
+			if (canDecrement(value(), get$2(bounds))) emit(decrement(value(), get$2(bounds)));
 		}
 		function stepUp() {
-			if (canIncrement(value(), {
-				min: min(),
-				max: max()
-			})) emit(increment(value(), {
-				min: min(),
-				max: max()
-			}));
+			if (canIncrement(value(), get$2(bounds))) emit(increment(value(), get$2(bounds)));
 		}
 		function commitTyped() {
-			const next = clampTyped(parseInt(inputEl.value, 10), {
-				min: min(),
-				max: max()
-			});
+			const next = clampTyped(parseInt(inputEl.value, 10), get$2(bounds));
 			set(invalid, false);
 			inputEl.value = String(next);
 			emit(next);
 		}
 		function onInput() {
 			const raw = inputEl.value.trim();
-			set(invalid, !(/^\d+$/.test(raw) && isValid(parseInt(raw, 10), {
-				min: min(),
-				max: max()
-			})));
+			set(invalid, !(/^\d+$/.test(raw) && isValid(parseInt(raw, 10), get$2(bounds))));
 		}
 		function onKeydown(e) {
 			switch (e.key) {
@@ -15283,7 +15396,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					break;
 				case "Home":
 					e.preventDefault();
-					emit(0);
+					emit(floor());
 					break;
 				case "End":
 					e.preventDefault();
@@ -15317,6 +15430,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				max($$value);
 				flushSync();
 			},
+			get floor() {
+				return floor();
+			},
+			set floor($$value = 0) {
+				floor($$value);
+				flushSync();
+			},
 			get label() {
 				return label();
 			},
@@ -15346,11 +15466,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var div = root$47();
+		var div = root$49();
 		var button = child(div);
 		var input = sibling(button, 2);
 		remove_input_defaults(input);
-		set_attribute(input, "aria-valuemin", 0);
 		bind_this(input, ($$value) => inputEl = $$value, () => inputEl);
 		var button_1 = sibling(input, 2);
 		reset(div);
@@ -15363,6 +15482,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			set_attribute(input, "aria-label", label());
 			set_value(input, value());
 			set_attribute(input, "aria-valuenow", value());
+			set_attribute(input, "aria-valuemin", floor());
 			set_attribute(input, "aria-valuemax", max());
 			set_attribute(input, "aria-invalid", get$2(invalid) ? "true" : void 0);
 			set_attribute(button_1, "title", increaseLabel());
@@ -15388,6 +15508,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		value: {},
 		min: {},
 		max: {},
+		floor: {},
 		label: {},
 		decreaseLabel: {},
 		increaseLabel: {},
@@ -15414,25 +15535,2139 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	}
 	//#endregion
+	//#region src/components/shared/quantityStepper/QuantityControl.svelte
+	var root$48 = /* @__PURE__ */ from_html(`<option> </option>`);
+	var root_1$16 = /* @__PURE__ */ from_html(`<select class="go-quantity-select"></select>`);
+	function QuantityControl($$anchor, $$props) {
+		push($$props, true);
+		/** Current committed quantity. */
+		/** Current committed quantity. */
+		/** Order minimum (min_persons); the stepper skips the `1..min-1` band. */
+		/** Capacity ceiling. */
+		/** Accessible name (product / sub-ticket title) for either control. */
+		/** Lowest option the legacy select offers — see generateQuantityOptions. Ignored when not deselectable. */
+		/**
+		* Whether the visitor can drop the line to the deselect value (`0` on the stepper,
+		* `floor` on the select). `false` — mantle sub-rows — makes `min` (the sub-ticket's
+		* `min_persons`) a hard bottom on both controls: the backend does not enforce it,
+		* so the UI must (Angular-shop parity).
+		*/
+		/** Emits the next committed quantity. The control never mutates anything itself. */
+		let value = prop($$props, "value", 7), min = prop($$props, "min", 7), max = prop($$props, "max", 7), label = prop($$props, "label", 7), floor = prop($$props, "floor", 7, 0), deselectable = prop($$props, "deselectable", 7, true), onChange = prop($$props, "onChange", 7);
+		const useStepper = /* @__PURE__ */ user_derived(() => configStore.config.quantityStepper);
+		var $$exports = {
+			get value() {
+				return value();
+			},
+			set value($$value) {
+				value($$value);
+				flushSync();
+			},
+			get min() {
+				return min();
+			},
+			set min($$value) {
+				min($$value);
+				flushSync();
+			},
+			get max() {
+				return max();
+			},
+			set max($$value) {
+				max($$value);
+				flushSync();
+			},
+			get label() {
+				return label();
+			},
+			set label($$value) {
+				label($$value);
+				flushSync();
+			},
+			get floor() {
+				return floor();
+			},
+			set floor($$value = 0) {
+				floor($$value);
+				flushSync();
+			},
+			get deselectable() {
+				return deselectable();
+			},
+			set deselectable($$value = true) {
+				deselectable($$value);
+				flushSync();
+			},
+			get onChange() {
+				return onChange();
+			},
+			set onChange($$value) {
+				onChange($$value);
+				flushSync();
+			}
+		};
+		var fragment = comment();
+		var node = first_child(fragment);
+		var consequent = ($$anchor) => {
+			{
+				let $0 = /* @__PURE__ */ user_derived(() => deselectable() ? 0 : min());
+				let $1 = /* @__PURE__ */ user_derived(() => shop.t("quantity.decrease"));
+				let $2 = /* @__PURE__ */ user_derived(() => shop.t("quantity.increase"));
+				QuantityStepper($$anchor, {
+					get value() {
+						return value();
+					},
+					get min() {
+						return min();
+					},
+					get max() {
+						return max();
+					},
+					get floor() {
+						return get$2($0);
+					},
+					get label() {
+						return label();
+					},
+					get decreaseLabel() {
+						return get$2($1);
+					},
+					get increaseLabel() {
+						return get$2($2);
+					},
+					get onChange() {
+						return onChange();
+					}
+				});
+			}
+		};
+		var alternate = ($$anchor) => {
+			var select = root_1$16();
+			each(select, 21, () => generateQuantityOptions(min(), max(), { floor: deselectable() ? floor() : min() }), (q) => q.value, ($$anchor, q) => {
+				var option = root$48();
+				var text = child(option, true);
+				reset(option);
+				var option_value = {};
+				template_effect(() => {
+					set_selected(option, value() === get$2(q).value);
+					set_text(text, get$2(q).label);
+					if (option_value !== (option_value = get$2(q).value)) option.value = (option.__value = get$2(q).value) ?? "";
+				});
+				append($$anchor, option);
+			});
+			reset(select);
+			template_effect(() => set_attribute(select, "aria-label", label()));
+			delegated("change", select, (e) => onChange()(parseInt(e.target.value, 10)));
+			append($$anchor, select);
+		};
+		if_block(node, ($$render) => {
+			if (get$2(useStepper)) $$render(consequent);
+			else $$render(alternate, -1);
+		});
+		append($$anchor, fragment);
+		return pop($$exports);
+	}
+	delegate(["change"]);
+	create_custom_element(QuantityControl, {
+		value: {},
+		min: {},
+		max: {},
+		label: {},
+		floor: {},
+		deselectable: {},
+		onChange: {}
+	}, [], [], { mode: "open" });
+	//#endregion
+	//#region ../../node_modules/.pnpm/dompurify@3.4.7/node_modules/dompurify/dist/purify.es.mjs
+	/*! @license DOMPurify 3.4.7 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.4.7/LICENSE */
+	function _arrayLikeToArray(r, a) {
+		(null == a || a > r.length) && (a = r.length);
+		for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
+		return n;
+	}
+	function _arrayWithHoles(r) {
+		if (Array.isArray(r)) return r;
+	}
+	function _iterableToArrayLimit(r, l) {
+		var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
+		if (null != t) {
+			var e, n, i, u, a = [], f = true, o = false;
+			try {
+				if (i = (t = t.call(r)).next, 0 === l);
+				else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
+			} catch (r) {
+				o = true, n = r;
+			} finally {
+				try {
+					if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return;
+				} finally {
+					if (o) throw n;
+				}
+			}
+			return a;
+		}
+	}
+	function _nonIterableRest() {
+		throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+	}
+	function _slicedToArray(r, e) {
+		return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest();
+	}
+	function _unsupportedIterableToArray(r, a) {
+		if (r) {
+			if ("string" == typeof r) return _arrayLikeToArray(r, a);
+			var t = {}.toString.call(r).slice(8, -1);
+			return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0;
+		}
+	}
+	var entries = Object.entries, setPrototypeOf = Object.setPrototypeOf, isFrozen = Object.isFrozen, getPrototypeOf = Object.getPrototypeOf, getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+	var freeze = Object.freeze, seal = Object.seal, create = Object.create;
+	var _ref = typeof Reflect !== "undefined" && Reflect, apply = _ref.apply, construct = _ref.construct;
+	if (!freeze) freeze = function freeze(x) {
+		return x;
+	};
+	if (!seal) seal = function seal(x) {
+		return x;
+	};
+	if (!apply) apply = function apply(func, thisArg) {
+		for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) args[_key - 2] = arguments[_key];
+		return func.apply(thisArg, args);
+	};
+	if (!construct) construct = function construct(Func) {
+		for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) args[_key2 - 1] = arguments[_key2];
+		return new Func(...args);
+	};
+	var arrayForEach = unapply(Array.prototype.forEach);
+	var arrayLastIndexOf = unapply(Array.prototype.lastIndexOf);
+	var arrayPop = unapply(Array.prototype.pop);
+	var arrayPush = unapply(Array.prototype.push);
+	var arraySplice = unapply(Array.prototype.splice);
+	var arrayIsArray = Array.isArray;
+	var stringToLowerCase = unapply(String.prototype.toLowerCase);
+	var stringToString = unapply(String.prototype.toString);
+	var stringMatch = unapply(String.prototype.match);
+	var stringReplace = unapply(String.prototype.replace);
+	var stringIndexOf = unapply(String.prototype.indexOf);
+	var stringTrim = unapply(String.prototype.trim);
+	var numberToString = unapply(Number.prototype.toString);
+	var booleanToString = unapply(Boolean.prototype.toString);
+	var bigintToString = typeof BigInt === "undefined" ? null : unapply(BigInt.prototype.toString);
+	var symbolToString = typeof Symbol === "undefined" ? null : unapply(Symbol.prototype.toString);
+	var objectHasOwnProperty = unapply(Object.prototype.hasOwnProperty);
+	var objectToString = unapply(Object.prototype.toString);
+	var regExpTest = unapply(RegExp.prototype.test);
+	var typeErrorCreate = unconstruct(TypeError);
+	/**
+	* Creates a new function that calls the given function with a specified thisArg and arguments.
+	*
+	* @param func - The function to be wrapped and called.
+	* @returns A new function that calls the given function with a specified thisArg and arguments.
+	*/
+	function unapply(func) {
+		return function(thisArg) {
+			if (thisArg instanceof RegExp) thisArg.lastIndex = 0;
+			for (var _len3 = arguments.length, args = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) args[_key3 - 1] = arguments[_key3];
+			return apply(func, thisArg, args);
+		};
+	}
+	/**
+	* Creates a new function that constructs an instance of the given constructor function with the provided arguments.
+	*
+	* @param func - The constructor function to be wrapped and called.
+	* @returns A new function that constructs an instance of the given constructor function with the provided arguments.
+	*/
+	function unconstruct(Func) {
+		return function() {
+			for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) args[_key4] = arguments[_key4];
+			return construct(Func, args);
+		};
+	}
+	/**
+	* Add properties to a lookup table
+	*
+	* @param set - The set to which elements will be added.
+	* @param array - The array containing elements to be added to the set.
+	* @param transformCaseFunc - An optional function to transform the case of each element before adding to the set.
+	* @returns The modified set with added elements.
+	*/
+	function addToSet(set, array) {
+		let transformCaseFunc = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : stringToLowerCase;
+		if (setPrototypeOf) setPrototypeOf(set, null);
+		if (!arrayIsArray(array)) return set;
+		let l = array.length;
+		while (l--) {
+			let element = array[l];
+			if (typeof element === "string") {
+				const lcElement = transformCaseFunc(element);
+				if (lcElement !== element) {
+					if (!isFrozen(array)) array[l] = lcElement;
+					element = lcElement;
+				}
+			}
+			set[element] = true;
+		}
+		return set;
+	}
+	/**
+	* Clean up an array to harden against CSPP
+	*
+	* @param array - The array to be cleaned.
+	* @returns The cleaned version of the array
+	*/
+	function cleanArray(array) {
+		for (let index = 0; index < array.length; index++) if (!objectHasOwnProperty(array, index)) array[index] = null;
+		return array;
+	}
+	/**
+	* Shallow clone an object
+	*
+	* @param object - The object to be cloned.
+	* @returns A new object that copies the original.
+	*/
+	function clone(object) {
+		const newObject = create(null);
+		for (const _ref2 of entries(object)) {
+			var _ref3 = _slicedToArray(_ref2, 2);
+			const property = _ref3[0];
+			const value = _ref3[1];
+			if (objectHasOwnProperty(object, property)) if (arrayIsArray(value)) newObject[property] = cleanArray(value);
+			else if (value && typeof value === "object" && value.constructor === Object) newObject[property] = clone(value);
+			else newObject[property] = value;
+		}
+		return newObject;
+	}
+	/**
+	* Convert non-node values into strings without depending on direct property access.
+	*
+	* @param value - The value to stringify.
+	* @returns A string representation of the provided value.
+	*/
+	function stringifyValue(value) {
+		switch (typeof value) {
+			case "string": return value;
+			case "number": return numberToString(value);
+			case "boolean": return booleanToString(value);
+			case "bigint": return bigintToString ? bigintToString(value) : "0";
+			case "symbol": return symbolToString ? symbolToString(value) : "Symbol()";
+			case "undefined": return objectToString(value);
+			case "function":
+			case "object": {
+				if (value === null) return objectToString(value);
+				const valueAsRecord = value;
+				const valueToString = lookupGetter(valueAsRecord, "toString");
+				if (typeof valueToString === "function") {
+					const stringified = valueToString(valueAsRecord);
+					return typeof stringified === "string" ? stringified : objectToString(stringified);
+				}
+				return objectToString(value);
+			}
+			default: return objectToString(value);
+		}
+	}
+	/**
+	* This method automatically checks if the prop is function or getter and behaves accordingly.
+	*
+	* @param object - The object to look up the getter function in its prototype chain.
+	* @param prop - The property name for which to find the getter function.
+	* @returns The getter function found in the prototype chain or a fallback function.
+	*/
+	function lookupGetter(object, prop) {
+		while (object !== null) {
+			const desc = getOwnPropertyDescriptor(object, prop);
+			if (desc) {
+				if (desc.get) return unapply(desc.get);
+				if (typeof desc.value === "function") return unapply(desc.value);
+			}
+			object = getPrototypeOf(object);
+		}
+		function fallbackValue() {
+			return null;
+		}
+		return fallbackValue;
+	}
+	function isRegex(value) {
+		try {
+			regExpTest(value, "");
+			return true;
+		} catch (_unused) {
+			return false;
+		}
+	}
+	var html$1 = freeze([
+		"a",
+		"abbr",
+		"acronym",
+		"address",
+		"area",
+		"article",
+		"aside",
+		"audio",
+		"b",
+		"bdi",
+		"bdo",
+		"big",
+		"blink",
+		"blockquote",
+		"body",
+		"br",
+		"button",
+		"canvas",
+		"caption",
+		"center",
+		"cite",
+		"code",
+		"col",
+		"colgroup",
+		"content",
+		"data",
+		"datalist",
+		"dd",
+		"decorator",
+		"del",
+		"details",
+		"dfn",
+		"dialog",
+		"dir",
+		"div",
+		"dl",
+		"dt",
+		"element",
+		"em",
+		"fieldset",
+		"figcaption",
+		"figure",
+		"font",
+		"footer",
+		"form",
+		"h1",
+		"h2",
+		"h3",
+		"h4",
+		"h5",
+		"h6",
+		"head",
+		"header",
+		"hgroup",
+		"hr",
+		"html",
+		"i",
+		"img",
+		"input",
+		"ins",
+		"kbd",
+		"label",
+		"legend",
+		"li",
+		"main",
+		"map",
+		"mark",
+		"marquee",
+		"menu",
+		"menuitem",
+		"meter",
+		"nav",
+		"nobr",
+		"ol",
+		"optgroup",
+		"option",
+		"output",
+		"p",
+		"picture",
+		"pre",
+		"progress",
+		"q",
+		"rp",
+		"rt",
+		"ruby",
+		"s",
+		"samp",
+		"search",
+		"section",
+		"select",
+		"shadow",
+		"slot",
+		"small",
+		"source",
+		"spacer",
+		"span",
+		"strike",
+		"strong",
+		"style",
+		"sub",
+		"summary",
+		"sup",
+		"table",
+		"tbody",
+		"td",
+		"template",
+		"textarea",
+		"tfoot",
+		"th",
+		"thead",
+		"time",
+		"tr",
+		"track",
+		"tt",
+		"u",
+		"ul",
+		"var",
+		"video",
+		"wbr"
+	]);
+	var svg$1 = freeze([
+		"svg",
+		"a",
+		"altglyph",
+		"altglyphdef",
+		"altglyphitem",
+		"animatecolor",
+		"animatemotion",
+		"animatetransform",
+		"circle",
+		"clippath",
+		"defs",
+		"desc",
+		"ellipse",
+		"enterkeyhint",
+		"exportparts",
+		"filter",
+		"font",
+		"g",
+		"glyph",
+		"glyphref",
+		"hkern",
+		"image",
+		"inputmode",
+		"line",
+		"lineargradient",
+		"marker",
+		"mask",
+		"metadata",
+		"mpath",
+		"part",
+		"path",
+		"pattern",
+		"polygon",
+		"polyline",
+		"radialgradient",
+		"rect",
+		"stop",
+		"style",
+		"switch",
+		"symbol",
+		"text",
+		"textpath",
+		"title",
+		"tref",
+		"tspan",
+		"view",
+		"vkern"
+	]);
+	var svgFilters = freeze([
+		"feBlend",
+		"feColorMatrix",
+		"feComponentTransfer",
+		"feComposite",
+		"feConvolveMatrix",
+		"feDiffuseLighting",
+		"feDisplacementMap",
+		"feDistantLight",
+		"feDropShadow",
+		"feFlood",
+		"feFuncA",
+		"feFuncB",
+		"feFuncG",
+		"feFuncR",
+		"feGaussianBlur",
+		"feImage",
+		"feMerge",
+		"feMergeNode",
+		"feMorphology",
+		"feOffset",
+		"fePointLight",
+		"feSpecularLighting",
+		"feSpotLight",
+		"feTile",
+		"feTurbulence"
+	]);
+	var svgDisallowed = freeze([
+		"animate",
+		"color-profile",
+		"cursor",
+		"discard",
+		"font-face",
+		"font-face-format",
+		"font-face-name",
+		"font-face-src",
+		"font-face-uri",
+		"foreignobject",
+		"hatch",
+		"hatchpath",
+		"mesh",
+		"meshgradient",
+		"meshpatch",
+		"meshrow",
+		"missing-glyph",
+		"script",
+		"set",
+		"solidcolor",
+		"unknown",
+		"use"
+	]);
+	var mathMl$1 = freeze([
+		"math",
+		"menclose",
+		"merror",
+		"mfenced",
+		"mfrac",
+		"mglyph",
+		"mi",
+		"mlabeledtr",
+		"mmultiscripts",
+		"mn",
+		"mo",
+		"mover",
+		"mpadded",
+		"mphantom",
+		"mroot",
+		"mrow",
+		"ms",
+		"mspace",
+		"msqrt",
+		"mstyle",
+		"msub",
+		"msup",
+		"msubsup",
+		"mtable",
+		"mtd",
+		"mtext",
+		"mtr",
+		"munder",
+		"munderover",
+		"mprescripts"
+	]);
+	var mathMlDisallowed = freeze([
+		"maction",
+		"maligngroup",
+		"malignmark",
+		"mlongdiv",
+		"mscarries",
+		"mscarry",
+		"msgroup",
+		"mstack",
+		"msline",
+		"msrow",
+		"semantics",
+		"annotation",
+		"annotation-xml",
+		"mprescripts",
+		"none"
+	]);
+	var text = freeze(["#text"]);
+	var html = freeze([
+		"accept",
+		"action",
+		"align",
+		"alt",
+		"autocapitalize",
+		"autocomplete",
+		"autopictureinpicture",
+		"autoplay",
+		"background",
+		"bgcolor",
+		"border",
+		"capture",
+		"cellpadding",
+		"cellspacing",
+		"checked",
+		"cite",
+		"class",
+		"clear",
+		"color",
+		"cols",
+		"colspan",
+		"command",
+		"commandfor",
+		"controls",
+		"controlslist",
+		"coords",
+		"crossorigin",
+		"datetime",
+		"decoding",
+		"default",
+		"dir",
+		"disabled",
+		"disablepictureinpicture",
+		"disableremoteplayback",
+		"download",
+		"draggable",
+		"enctype",
+		"enterkeyhint",
+		"exportparts",
+		"face",
+		"for",
+		"headers",
+		"height",
+		"hidden",
+		"high",
+		"href",
+		"hreflang",
+		"id",
+		"inert",
+		"inputmode",
+		"integrity",
+		"ismap",
+		"kind",
+		"label",
+		"lang",
+		"list",
+		"loading",
+		"loop",
+		"low",
+		"max",
+		"maxlength",
+		"media",
+		"method",
+		"min",
+		"minlength",
+		"multiple",
+		"muted",
+		"name",
+		"nonce",
+		"noshade",
+		"novalidate",
+		"nowrap",
+		"open",
+		"optimum",
+		"part",
+		"pattern",
+		"placeholder",
+		"playsinline",
+		"popover",
+		"popovertarget",
+		"popovertargetaction",
+		"poster",
+		"preload",
+		"pubdate",
+		"radiogroup",
+		"readonly",
+		"rel",
+		"required",
+		"rev",
+		"reversed",
+		"role",
+		"rows",
+		"rowspan",
+		"spellcheck",
+		"scope",
+		"selected",
+		"shape",
+		"size",
+		"sizes",
+		"slot",
+		"span",
+		"srclang",
+		"start",
+		"src",
+		"srcset",
+		"step",
+		"style",
+		"summary",
+		"tabindex",
+		"title",
+		"translate",
+		"type",
+		"usemap",
+		"valign",
+		"value",
+		"width",
+		"wrap",
+		"xmlns"
+	]);
+	var svg = freeze([
+		"accent-height",
+		"accumulate",
+		"additive",
+		"alignment-baseline",
+		"amplitude",
+		"ascent",
+		"attributename",
+		"attributetype",
+		"azimuth",
+		"basefrequency",
+		"baseline-shift",
+		"begin",
+		"bias",
+		"by",
+		"class",
+		"clip",
+		"clippathunits",
+		"clip-path",
+		"clip-rule",
+		"color",
+		"color-interpolation",
+		"color-interpolation-filters",
+		"color-profile",
+		"color-rendering",
+		"cx",
+		"cy",
+		"d",
+		"dx",
+		"dy",
+		"diffuseconstant",
+		"direction",
+		"display",
+		"divisor",
+		"dur",
+		"edgemode",
+		"elevation",
+		"end",
+		"exponent",
+		"fill",
+		"fill-opacity",
+		"fill-rule",
+		"filter",
+		"filterunits",
+		"flood-color",
+		"flood-opacity",
+		"font-family",
+		"font-size",
+		"font-size-adjust",
+		"font-stretch",
+		"font-style",
+		"font-variant",
+		"font-weight",
+		"fx",
+		"fy",
+		"g1",
+		"g2",
+		"glyph-name",
+		"glyphref",
+		"gradientunits",
+		"gradienttransform",
+		"height",
+		"href",
+		"id",
+		"image-rendering",
+		"in",
+		"in2",
+		"intercept",
+		"k",
+		"k1",
+		"k2",
+		"k3",
+		"k4",
+		"kerning",
+		"keypoints",
+		"keysplines",
+		"keytimes",
+		"lang",
+		"lengthadjust",
+		"letter-spacing",
+		"kernelmatrix",
+		"kernelunitlength",
+		"lighting-color",
+		"local",
+		"marker-end",
+		"marker-mid",
+		"marker-start",
+		"markerheight",
+		"markerunits",
+		"markerwidth",
+		"maskcontentunits",
+		"maskunits",
+		"max",
+		"mask",
+		"mask-type",
+		"media",
+		"method",
+		"mode",
+		"min",
+		"name",
+		"numoctaves",
+		"offset",
+		"operator",
+		"opacity",
+		"order",
+		"orient",
+		"orientation",
+		"origin",
+		"overflow",
+		"paint-order",
+		"path",
+		"pathlength",
+		"patterncontentunits",
+		"patterntransform",
+		"patternunits",
+		"points",
+		"preservealpha",
+		"preserveaspectratio",
+		"primitiveunits",
+		"r",
+		"rx",
+		"ry",
+		"radius",
+		"refx",
+		"refy",
+		"repeatcount",
+		"repeatdur",
+		"restart",
+		"result",
+		"rotate",
+		"scale",
+		"seed",
+		"shape-rendering",
+		"slope",
+		"specularconstant",
+		"specularexponent",
+		"spreadmethod",
+		"startoffset",
+		"stddeviation",
+		"stitchtiles",
+		"stop-color",
+		"stop-opacity",
+		"stroke-dasharray",
+		"stroke-dashoffset",
+		"stroke-linecap",
+		"stroke-linejoin",
+		"stroke-miterlimit",
+		"stroke-opacity",
+		"stroke",
+		"stroke-width",
+		"style",
+		"surfacescale",
+		"systemlanguage",
+		"tabindex",
+		"tablevalues",
+		"targetx",
+		"targety",
+		"transform",
+		"transform-origin",
+		"text-anchor",
+		"text-decoration",
+		"text-rendering",
+		"textlength",
+		"type",
+		"u1",
+		"u2",
+		"unicode",
+		"values",
+		"viewbox",
+		"visibility",
+		"version",
+		"vert-adv-y",
+		"vert-origin-x",
+		"vert-origin-y",
+		"width",
+		"word-spacing",
+		"wrap",
+		"writing-mode",
+		"xchannelselector",
+		"ychannelselector",
+		"x",
+		"x1",
+		"x2",
+		"xmlns",
+		"y",
+		"y1",
+		"y2",
+		"z",
+		"zoomandpan"
+	]);
+	var mathMl = freeze([
+		"accent",
+		"accentunder",
+		"align",
+		"bevelled",
+		"close",
+		"columnalign",
+		"columnlines",
+		"columnspacing",
+		"columnspan",
+		"denomalign",
+		"depth",
+		"dir",
+		"display",
+		"displaystyle",
+		"encoding",
+		"fence",
+		"frame",
+		"height",
+		"href",
+		"id",
+		"largeop",
+		"length",
+		"linethickness",
+		"lquote",
+		"lspace",
+		"mathbackground",
+		"mathcolor",
+		"mathsize",
+		"mathvariant",
+		"maxsize",
+		"minsize",
+		"movablelimits",
+		"notation",
+		"numalign",
+		"open",
+		"rowalign",
+		"rowlines",
+		"rowspacing",
+		"rowspan",
+		"rspace",
+		"rquote",
+		"scriptlevel",
+		"scriptminsize",
+		"scriptsizemultiplier",
+		"selection",
+		"separator",
+		"separators",
+		"stretchy",
+		"subscriptshift",
+		"supscriptshift",
+		"symmetric",
+		"voffset",
+		"width",
+		"xmlns"
+	]);
+	var xml = freeze([
+		"xlink:href",
+		"xml:id",
+		"xlink:title",
+		"xml:space",
+		"xmlns:xlink"
+	]);
+	var MUSTACHE_EXPR = seal(/{{[\w\W]*|^[\w\W]*}}/g);
+	var ERB_EXPR = seal(/<%[\w\W]*|^[\w\W]*%>/g);
+	var TMPLIT_EXPR = seal(/\${[\w\W]*/g);
+	var DATA_ATTR = seal(/^data-[\-\w.\u00B7-\uFFFF]+$/);
+	var ARIA_ATTR = seal(/^aria-[\-\w]+$/);
+	var IS_ALLOWED_URI = seal(/^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp|matrix):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i);
+	var IS_SCRIPT_OR_DATA = seal(/^(?:\w+script|data):/i);
+	var ATTR_WHITESPACE = seal(/[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g);
+	var DOCTYPE_NAME = seal(/^html$/i);
+	var CUSTOM_ELEMENT = seal(/^[a-z][.\w]*(-[.\w]+)+$/i);
+	var NODE_TYPE = {
+		element: 1,
+		attribute: 2,
+		text: 3,
+		cdataSection: 4,
+		entityReference: 5,
+		entityNode: 6,
+		progressingInstruction: 7,
+		comment: 8,
+		document: 9,
+		documentType: 10,
+		documentFragment: 11,
+		notation: 12
+	};
+	var getGlobal = function getGlobal() {
+		return typeof window === "undefined" ? null : window;
+	};
+	/**
+	* Creates a no-op policy for internal use only.
+	* Don't export this function outside this module!
+	* @param trustedTypes The policy factory.
+	* @param purifyHostElement The Script element used to load DOMPurify (to determine policy name suffix).
+	* @return The policy created (or null, if Trusted Types
+	* are not supported or creating the policy failed).
+	*/
+	var _createTrustedTypesPolicy = function _createTrustedTypesPolicy(trustedTypes, purifyHostElement) {
+		if (typeof trustedTypes !== "object" || typeof trustedTypes.createPolicy !== "function") return null;
+		let suffix = null;
+		const ATTR_NAME = "data-tt-policy-suffix";
+		if (purifyHostElement && purifyHostElement.hasAttribute(ATTR_NAME)) suffix = purifyHostElement.getAttribute(ATTR_NAME);
+		const policyName = "dompurify" + (suffix ? "#" + suffix : "");
+		try {
+			return trustedTypes.createPolicy(policyName, {
+				createHTML(html) {
+					return html;
+				},
+				createScriptURL(scriptUrl) {
+					return scriptUrl;
+				}
+			});
+		} catch (_) {
+			console.warn("TrustedTypes policy " + policyName + " could not be created.");
+			return null;
+		}
+	};
+	var _createHooksMap = function _createHooksMap() {
+		return {
+			afterSanitizeAttributes: [],
+			afterSanitizeElements: [],
+			afterSanitizeShadowDOM: [],
+			beforeSanitizeAttributes: [],
+			beforeSanitizeElements: [],
+			beforeSanitizeShadowDOM: [],
+			uponSanitizeAttribute: [],
+			uponSanitizeElement: [],
+			uponSanitizeShadowNode: []
+		};
+	};
+	function createDOMPurify() {
+		let window = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : getGlobal();
+		const DOMPurify = (root) => createDOMPurify(root);
+		DOMPurify.version = "3.4.7";
+		DOMPurify.removed = [];
+		if (!window || !window.document || window.document.nodeType !== NODE_TYPE.document || !window.Element) {
+			DOMPurify.isSupported = false;
+			return DOMPurify;
+		}
+		let document = window.document;
+		const originalDocument = document;
+		const currentScript = originalDocument.currentScript;
+		window.DocumentFragment;
+		const HTMLTemplateElement = window.HTMLTemplateElement, Node = window.Node, Element = window.Element, NodeFilter = window.NodeFilter;
+		window.NamedNodeMap === void 0 && (window.NamedNodeMap || window.MozNamedAttrMap);
+		window.HTMLFormElement;
+		const DOMParser = window.DOMParser, trustedTypes = window.trustedTypes;
+		const ElementPrototype = Element.prototype;
+		const cloneNode = lookupGetter(ElementPrototype, "cloneNode");
+		const remove = lookupGetter(ElementPrototype, "remove");
+		const getNextSibling = lookupGetter(ElementPrototype, "nextSibling");
+		const getChildNodes = lookupGetter(ElementPrototype, "childNodes");
+		const getParentNode = lookupGetter(ElementPrototype, "parentNode");
+		const getShadowRoot = lookupGetter(ElementPrototype, "shadowRoot");
+		const getAttributes = lookupGetter(ElementPrototype, "attributes");
+		const getNodeType = Node && Node.prototype ? lookupGetter(Node.prototype, "nodeType") : null;
+		const getNodeName = Node && Node.prototype ? lookupGetter(Node.prototype, "nodeName") : null;
+		if (typeof HTMLTemplateElement === "function") {
+			const template = document.createElement("template");
+			if (template.content && template.content.ownerDocument) document = template.content.ownerDocument;
+		}
+		let trustedTypesPolicy;
+		let emptyHTML = "";
+		const _document = document, implementation = _document.implementation, createNodeIterator = _document.createNodeIterator, createDocumentFragment = _document.createDocumentFragment, getElementsByTagName = _document.getElementsByTagName;
+		const importNode = originalDocument.importNode;
+		let hooks = _createHooksMap();
+		/**
+		* Expose whether this browser supports running the full DOMPurify.
+		*/
+		DOMPurify.isSupported = typeof entries === "function" && typeof getParentNode === "function" && implementation && implementation.createHTMLDocument !== void 0;
+		const MUSTACHE_EXPR$1 = MUSTACHE_EXPR, ERB_EXPR$1 = ERB_EXPR, TMPLIT_EXPR$1 = TMPLIT_EXPR, DATA_ATTR$1 = DATA_ATTR, ARIA_ATTR$1 = ARIA_ATTR, IS_SCRIPT_OR_DATA$1 = IS_SCRIPT_OR_DATA, ATTR_WHITESPACE$1 = ATTR_WHITESPACE, CUSTOM_ELEMENT$1 = CUSTOM_ELEMENT;
+		let IS_ALLOWED_URI$1 = IS_ALLOWED_URI;
+		/**
+		* We consider the elements and attributes below to be safe. Ideally
+		* don't add any new ones but feel free to remove unwanted ones.
+		*/
+		let ALLOWED_TAGS = null;
+		const DEFAULT_ALLOWED_TAGS = addToSet({}, [
+			...html$1,
+			...svg$1,
+			...svgFilters,
+			...mathMl$1,
+			...text
+		]);
+		let ALLOWED_ATTR = null;
+		const DEFAULT_ALLOWED_ATTR = addToSet({}, [
+			...html,
+			...svg,
+			...mathMl,
+			...xml
+		]);
+		let CUSTOM_ELEMENT_HANDLING = Object.seal(create(null, {
+			tagNameCheck: {
+				writable: true,
+				configurable: false,
+				enumerable: true,
+				value: null
+			},
+			attributeNameCheck: {
+				writable: true,
+				configurable: false,
+				enumerable: true,
+				value: null
+			},
+			allowCustomizedBuiltInElements: {
+				writable: true,
+				configurable: false,
+				enumerable: true,
+				value: false
+			}
+		}));
+		let FORBID_TAGS = null;
+		let FORBID_ATTR = null;
+		const EXTRA_ELEMENT_HANDLING = Object.seal(create(null, {
+			tagCheck: {
+				writable: true,
+				configurable: false,
+				enumerable: true,
+				value: null
+			},
+			attributeCheck: {
+				writable: true,
+				configurable: false,
+				enumerable: true,
+				value: null
+			}
+		}));
+		let ALLOW_ARIA_ATTR = true;
+		let ALLOW_DATA_ATTR = true;
+		let ALLOW_UNKNOWN_PROTOCOLS = false;
+		let ALLOW_SELF_CLOSE_IN_ATTR = true;
+		let SAFE_FOR_TEMPLATES = false;
+		let SAFE_FOR_XML = true;
+		let WHOLE_DOCUMENT = false;
+		let SET_CONFIG = false;
+		let FORCE_BODY = false;
+		let RETURN_DOM = false;
+		let RETURN_DOM_FRAGMENT = false;
+		let RETURN_TRUSTED_TYPE = false;
+		let SANITIZE_DOM = true;
+		let SANITIZE_NAMED_PROPS = false;
+		const SANITIZE_NAMED_PROPS_PREFIX = "user-content-";
+		let KEEP_CONTENT = true;
+		let IN_PLACE = false;
+		let USE_PROFILES = {};
+		let FORBID_CONTENTS = null;
+		const DEFAULT_FORBID_CONTENTS = addToSet({}, [
+			"annotation-xml",
+			"audio",
+			"colgroup",
+			"desc",
+			"foreignobject",
+			"head",
+			"iframe",
+			"math",
+			"mi",
+			"mn",
+			"mo",
+			"ms",
+			"mtext",
+			"noembed",
+			"noframes",
+			"noscript",
+			"plaintext",
+			"script",
+			"style",
+			"svg",
+			"template",
+			"thead",
+			"title",
+			"video",
+			"xmp"
+		]);
+		let DATA_URI_TAGS = null;
+		const DEFAULT_DATA_URI_TAGS = addToSet({}, [
+			"audio",
+			"video",
+			"img",
+			"source",
+			"image",
+			"track"
+		]);
+		let URI_SAFE_ATTRIBUTES = null;
+		const DEFAULT_URI_SAFE_ATTRIBUTES = addToSet({}, [
+			"alt",
+			"class",
+			"for",
+			"id",
+			"label",
+			"name",
+			"pattern",
+			"placeholder",
+			"role",
+			"summary",
+			"title",
+			"value",
+			"style",
+			"xmlns"
+		]);
+		const MATHML_NAMESPACE = "http://www.w3.org/1998/Math/MathML";
+		const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
+		const HTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
+		let NAMESPACE = HTML_NAMESPACE;
+		let IS_EMPTY_INPUT = false;
+		let ALLOWED_NAMESPACES = null;
+		const DEFAULT_ALLOWED_NAMESPACES = addToSet({}, [
+			MATHML_NAMESPACE,
+			SVG_NAMESPACE,
+			HTML_NAMESPACE
+		], stringToString);
+		let MATHML_TEXT_INTEGRATION_POINTS = addToSet({}, [
+			"mi",
+			"mo",
+			"mn",
+			"ms",
+			"mtext"
+		]);
+		let HTML_INTEGRATION_POINTS = addToSet({}, ["annotation-xml"]);
+		const COMMON_SVG_AND_HTML_ELEMENTS = addToSet({}, [
+			"title",
+			"style",
+			"font",
+			"a",
+			"script"
+		]);
+		let PARSER_MEDIA_TYPE = null;
+		const SUPPORTED_PARSER_MEDIA_TYPES = ["application/xhtml+xml", "text/html"];
+		const DEFAULT_PARSER_MEDIA_TYPE = "text/html";
+		let transformCaseFunc = null;
+		let CONFIG = null;
+		const formElement = document.createElement("form");
+		const isRegexOrFunction = function isRegexOrFunction(testValue) {
+			return testValue instanceof RegExp || testValue instanceof Function;
+		};
+		/**
+		* _parseConfig
+		*
+		* @param cfg optional config literal
+		*/
+		const _parseConfig = function _parseConfig() {
+			let cfg = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
+			if (CONFIG && CONFIG === cfg) return;
+			if (!cfg || typeof cfg !== "object") cfg = {};
+			cfg = clone(cfg);
+			PARSER_MEDIA_TYPE = SUPPORTED_PARSER_MEDIA_TYPES.indexOf(cfg.PARSER_MEDIA_TYPE) === -1 ? DEFAULT_PARSER_MEDIA_TYPE : cfg.PARSER_MEDIA_TYPE;
+			transformCaseFunc = PARSER_MEDIA_TYPE === "application/xhtml+xml" ? stringToString : stringToLowerCase;
+			ALLOWED_TAGS = objectHasOwnProperty(cfg, "ALLOWED_TAGS") && arrayIsArray(cfg.ALLOWED_TAGS) ? addToSet({}, cfg.ALLOWED_TAGS, transformCaseFunc) : DEFAULT_ALLOWED_TAGS;
+			ALLOWED_ATTR = objectHasOwnProperty(cfg, "ALLOWED_ATTR") && arrayIsArray(cfg.ALLOWED_ATTR) ? addToSet({}, cfg.ALLOWED_ATTR, transformCaseFunc) : DEFAULT_ALLOWED_ATTR;
+			ALLOWED_NAMESPACES = objectHasOwnProperty(cfg, "ALLOWED_NAMESPACES") && arrayIsArray(cfg.ALLOWED_NAMESPACES) ? addToSet({}, cfg.ALLOWED_NAMESPACES, stringToString) : DEFAULT_ALLOWED_NAMESPACES;
+			URI_SAFE_ATTRIBUTES = objectHasOwnProperty(cfg, "ADD_URI_SAFE_ATTR") && arrayIsArray(cfg.ADD_URI_SAFE_ATTR) ? addToSet(clone(DEFAULT_URI_SAFE_ATTRIBUTES), cfg.ADD_URI_SAFE_ATTR, transformCaseFunc) : DEFAULT_URI_SAFE_ATTRIBUTES;
+			DATA_URI_TAGS = objectHasOwnProperty(cfg, "ADD_DATA_URI_TAGS") && arrayIsArray(cfg.ADD_DATA_URI_TAGS) ? addToSet(clone(DEFAULT_DATA_URI_TAGS), cfg.ADD_DATA_URI_TAGS, transformCaseFunc) : DEFAULT_DATA_URI_TAGS;
+			FORBID_CONTENTS = objectHasOwnProperty(cfg, "FORBID_CONTENTS") && arrayIsArray(cfg.FORBID_CONTENTS) ? addToSet({}, cfg.FORBID_CONTENTS, transformCaseFunc) : DEFAULT_FORBID_CONTENTS;
+			FORBID_TAGS = objectHasOwnProperty(cfg, "FORBID_TAGS") && arrayIsArray(cfg.FORBID_TAGS) ? addToSet({}, cfg.FORBID_TAGS, transformCaseFunc) : clone({});
+			FORBID_ATTR = objectHasOwnProperty(cfg, "FORBID_ATTR") && arrayIsArray(cfg.FORBID_ATTR) ? addToSet({}, cfg.FORBID_ATTR, transformCaseFunc) : clone({});
+			USE_PROFILES = objectHasOwnProperty(cfg, "USE_PROFILES") ? cfg.USE_PROFILES && typeof cfg.USE_PROFILES === "object" ? clone(cfg.USE_PROFILES) : cfg.USE_PROFILES : false;
+			ALLOW_ARIA_ATTR = cfg.ALLOW_ARIA_ATTR !== false;
+			ALLOW_DATA_ATTR = cfg.ALLOW_DATA_ATTR !== false;
+			ALLOW_UNKNOWN_PROTOCOLS = cfg.ALLOW_UNKNOWN_PROTOCOLS || false;
+			ALLOW_SELF_CLOSE_IN_ATTR = cfg.ALLOW_SELF_CLOSE_IN_ATTR !== false;
+			SAFE_FOR_TEMPLATES = cfg.SAFE_FOR_TEMPLATES || false;
+			SAFE_FOR_XML = cfg.SAFE_FOR_XML !== false;
+			WHOLE_DOCUMENT = cfg.WHOLE_DOCUMENT || false;
+			RETURN_DOM = cfg.RETURN_DOM || false;
+			RETURN_DOM_FRAGMENT = cfg.RETURN_DOM_FRAGMENT || false;
+			RETURN_TRUSTED_TYPE = cfg.RETURN_TRUSTED_TYPE || false;
+			FORCE_BODY = cfg.FORCE_BODY || false;
+			SANITIZE_DOM = cfg.SANITIZE_DOM !== false;
+			SANITIZE_NAMED_PROPS = cfg.SANITIZE_NAMED_PROPS || false;
+			KEEP_CONTENT = cfg.KEEP_CONTENT !== false;
+			IN_PLACE = cfg.IN_PLACE || false;
+			IS_ALLOWED_URI$1 = isRegex(cfg.ALLOWED_URI_REGEXP) ? cfg.ALLOWED_URI_REGEXP : IS_ALLOWED_URI;
+			NAMESPACE = typeof cfg.NAMESPACE === "string" ? cfg.NAMESPACE : HTML_NAMESPACE;
+			MATHML_TEXT_INTEGRATION_POINTS = objectHasOwnProperty(cfg, "MATHML_TEXT_INTEGRATION_POINTS") && cfg.MATHML_TEXT_INTEGRATION_POINTS && typeof cfg.MATHML_TEXT_INTEGRATION_POINTS === "object" ? clone(cfg.MATHML_TEXT_INTEGRATION_POINTS) : addToSet({}, [
+				"mi",
+				"mo",
+				"mn",
+				"ms",
+				"mtext"
+			]);
+			HTML_INTEGRATION_POINTS = objectHasOwnProperty(cfg, "HTML_INTEGRATION_POINTS") && cfg.HTML_INTEGRATION_POINTS && typeof cfg.HTML_INTEGRATION_POINTS === "object" ? clone(cfg.HTML_INTEGRATION_POINTS) : addToSet({}, ["annotation-xml"]);
+			const customElementHandling = objectHasOwnProperty(cfg, "CUSTOM_ELEMENT_HANDLING") && cfg.CUSTOM_ELEMENT_HANDLING && typeof cfg.CUSTOM_ELEMENT_HANDLING === "object" ? clone(cfg.CUSTOM_ELEMENT_HANDLING) : create(null);
+			CUSTOM_ELEMENT_HANDLING = create(null);
+			if (objectHasOwnProperty(customElementHandling, "tagNameCheck") && isRegexOrFunction(customElementHandling.tagNameCheck)) CUSTOM_ELEMENT_HANDLING.tagNameCheck = customElementHandling.tagNameCheck;
+			if (objectHasOwnProperty(customElementHandling, "attributeNameCheck") && isRegexOrFunction(customElementHandling.attributeNameCheck)) CUSTOM_ELEMENT_HANDLING.attributeNameCheck = customElementHandling.attributeNameCheck;
+			if (objectHasOwnProperty(customElementHandling, "allowCustomizedBuiltInElements") && typeof customElementHandling.allowCustomizedBuiltInElements === "boolean") CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements = customElementHandling.allowCustomizedBuiltInElements;
+			if (SAFE_FOR_TEMPLATES) ALLOW_DATA_ATTR = false;
+			if (RETURN_DOM_FRAGMENT) RETURN_DOM = true;
+			if (USE_PROFILES) {
+				ALLOWED_TAGS = addToSet({}, text);
+				ALLOWED_ATTR = create(null);
+				if (USE_PROFILES.html === true) {
+					addToSet(ALLOWED_TAGS, html$1);
+					addToSet(ALLOWED_ATTR, html);
+				}
+				if (USE_PROFILES.svg === true) {
+					addToSet(ALLOWED_TAGS, svg$1);
+					addToSet(ALLOWED_ATTR, svg);
+					addToSet(ALLOWED_ATTR, xml);
+				}
+				if (USE_PROFILES.svgFilters === true) {
+					addToSet(ALLOWED_TAGS, svgFilters);
+					addToSet(ALLOWED_ATTR, svg);
+					addToSet(ALLOWED_ATTR, xml);
+				}
+				if (USE_PROFILES.mathMl === true) {
+					addToSet(ALLOWED_TAGS, mathMl$1);
+					addToSet(ALLOWED_ATTR, mathMl);
+					addToSet(ALLOWED_ATTR, xml);
+				}
+			}
+			EXTRA_ELEMENT_HANDLING.tagCheck = null;
+			EXTRA_ELEMENT_HANDLING.attributeCheck = null;
+			if (objectHasOwnProperty(cfg, "ADD_TAGS")) {
+				if (typeof cfg.ADD_TAGS === "function") EXTRA_ELEMENT_HANDLING.tagCheck = cfg.ADD_TAGS;
+				else if (arrayIsArray(cfg.ADD_TAGS)) {
+					if (ALLOWED_TAGS === DEFAULT_ALLOWED_TAGS) ALLOWED_TAGS = clone(ALLOWED_TAGS);
+					addToSet(ALLOWED_TAGS, cfg.ADD_TAGS, transformCaseFunc);
+				}
+			}
+			if (objectHasOwnProperty(cfg, "ADD_ATTR")) {
+				if (typeof cfg.ADD_ATTR === "function") EXTRA_ELEMENT_HANDLING.attributeCheck = cfg.ADD_ATTR;
+				else if (arrayIsArray(cfg.ADD_ATTR)) {
+					if (ALLOWED_ATTR === DEFAULT_ALLOWED_ATTR) ALLOWED_ATTR = clone(ALLOWED_ATTR);
+					addToSet(ALLOWED_ATTR, cfg.ADD_ATTR, transformCaseFunc);
+				}
+			}
+			if (objectHasOwnProperty(cfg, "ADD_URI_SAFE_ATTR") && arrayIsArray(cfg.ADD_URI_SAFE_ATTR)) addToSet(URI_SAFE_ATTRIBUTES, cfg.ADD_URI_SAFE_ATTR, transformCaseFunc);
+			if (objectHasOwnProperty(cfg, "FORBID_CONTENTS") && arrayIsArray(cfg.FORBID_CONTENTS)) {
+				if (FORBID_CONTENTS === DEFAULT_FORBID_CONTENTS) FORBID_CONTENTS = clone(FORBID_CONTENTS);
+				addToSet(FORBID_CONTENTS, cfg.FORBID_CONTENTS, transformCaseFunc);
+			}
+			if (objectHasOwnProperty(cfg, "ADD_FORBID_CONTENTS") && arrayIsArray(cfg.ADD_FORBID_CONTENTS)) {
+				if (FORBID_CONTENTS === DEFAULT_FORBID_CONTENTS) FORBID_CONTENTS = clone(FORBID_CONTENTS);
+				addToSet(FORBID_CONTENTS, cfg.ADD_FORBID_CONTENTS, transformCaseFunc);
+			}
+			if (KEEP_CONTENT) ALLOWED_TAGS["#text"] = true;
+			if (WHOLE_DOCUMENT) addToSet(ALLOWED_TAGS, [
+				"html",
+				"head",
+				"body"
+			]);
+			if (ALLOWED_TAGS.table) {
+				addToSet(ALLOWED_TAGS, ["tbody"]);
+				delete FORBID_TAGS.tbody;
+			}
+			if (cfg.TRUSTED_TYPES_POLICY) {
+				if (typeof cfg.TRUSTED_TYPES_POLICY.createHTML !== "function") throw typeErrorCreate("TRUSTED_TYPES_POLICY configuration option must provide a \"createHTML\" hook.");
+				if (typeof cfg.TRUSTED_TYPES_POLICY.createScriptURL !== "function") throw typeErrorCreate("TRUSTED_TYPES_POLICY configuration option must provide a \"createScriptURL\" hook.");
+				trustedTypesPolicy = cfg.TRUSTED_TYPES_POLICY;
+				emptyHTML = trustedTypesPolicy.createHTML("");
+			} else {
+				if (trustedTypesPolicy === void 0) trustedTypesPolicy = _createTrustedTypesPolicy(trustedTypes, currentScript);
+				if (trustedTypesPolicy !== null && typeof emptyHTML === "string") emptyHTML = trustedTypesPolicy.createHTML("");
+			}
+			if ((hooks.uponSanitizeElement.length > 0 || hooks.uponSanitizeAttribute.length > 0) && ALLOWED_TAGS === DEFAULT_ALLOWED_TAGS) ALLOWED_TAGS = clone(ALLOWED_TAGS);
+			if (hooks.uponSanitizeAttribute.length > 0 && ALLOWED_ATTR === DEFAULT_ALLOWED_ATTR) ALLOWED_ATTR = clone(ALLOWED_ATTR);
+			if (freeze) freeze(cfg);
+			CONFIG = cfg;
+		};
+		const ALL_SVG_TAGS = addToSet({}, [
+			...svg$1,
+			...svgFilters,
+			...svgDisallowed
+		]);
+		const ALL_MATHML_TAGS = addToSet({}, [...mathMl$1, ...mathMlDisallowed]);
+		/**
+		* @param element a DOM element whose namespace is being checked
+		* @returns Return false if the element has a
+		*  namespace that a spec-compliant parser would never
+		*  return. Return true otherwise.
+		*/
+		const _checkValidNamespace = function _checkValidNamespace(element) {
+			let parent = getParentNode(element);
+			if (!parent || !parent.tagName) parent = {
+				namespaceURI: NAMESPACE,
+				tagName: "template"
+			};
+			const tagName = stringToLowerCase(element.tagName);
+			const parentTagName = stringToLowerCase(parent.tagName);
+			if (!ALLOWED_NAMESPACES[element.namespaceURI]) return false;
+			if (element.namespaceURI === SVG_NAMESPACE) {
+				if (parent.namespaceURI === HTML_NAMESPACE) return tagName === "svg";
+				if (parent.namespaceURI === MATHML_NAMESPACE) return tagName === "svg" && (parentTagName === "annotation-xml" || MATHML_TEXT_INTEGRATION_POINTS[parentTagName]);
+				return Boolean(ALL_SVG_TAGS[tagName]);
+			}
+			if (element.namespaceURI === MATHML_NAMESPACE) {
+				if (parent.namespaceURI === HTML_NAMESPACE) return tagName === "math";
+				if (parent.namespaceURI === SVG_NAMESPACE) return tagName === "math" && HTML_INTEGRATION_POINTS[parentTagName];
+				return Boolean(ALL_MATHML_TAGS[tagName]);
+			}
+			if (element.namespaceURI === HTML_NAMESPACE) {
+				if (parent.namespaceURI === SVG_NAMESPACE && !HTML_INTEGRATION_POINTS[parentTagName]) return false;
+				if (parent.namespaceURI === MATHML_NAMESPACE && !MATHML_TEXT_INTEGRATION_POINTS[parentTagName]) return false;
+				return !ALL_MATHML_TAGS[tagName] && (COMMON_SVG_AND_HTML_ELEMENTS[tagName] || !ALL_SVG_TAGS[tagName]);
+			}
+			if (PARSER_MEDIA_TYPE === "application/xhtml+xml" && ALLOWED_NAMESPACES[element.namespaceURI]) return true;
+			return false;
+		};
+		/**
+		* _forceRemove
+		*
+		* @param node a DOM node
+		*/
+		const _forceRemove = function _forceRemove(node) {
+			arrayPush(DOMPurify.removed, { element: node });
+			try {
+				getParentNode(node).removeChild(node);
+			} catch (_) {
+				remove(node);
+			}
+		};
+		/**
+		* _removeAttribute
+		*
+		* @param name an Attribute name
+		* @param element a DOM node
+		*/
+		const _removeAttribute = function _removeAttribute(name, element) {
+			try {
+				arrayPush(DOMPurify.removed, {
+					attribute: element.getAttributeNode(name),
+					from: element
+				});
+			} catch (_) {
+				arrayPush(DOMPurify.removed, {
+					attribute: null,
+					from: element
+				});
+			}
+			element.removeAttribute(name);
+			if (name === "is") if (RETURN_DOM || RETURN_DOM_FRAGMENT) try {
+				_forceRemove(element);
+			} catch (_) {}
+			else try {
+				element.setAttribute(name, "");
+			} catch (_) {}
+		};
+		/**
+		* _initDocument
+		*
+		* @param dirty - a string of dirty markup
+		* @return a DOM, filled with the dirty markup
+		*/
+		const _initDocument = function _initDocument(dirty) {
+			let doc = null;
+			let leadingWhitespace = null;
+			if (FORCE_BODY) dirty = "<remove></remove>" + dirty;
+			else {
+				const matches = stringMatch(dirty, /^[\r\n\t ]+/);
+				leadingWhitespace = matches && matches[0];
+			}
+			if (PARSER_MEDIA_TYPE === "application/xhtml+xml" && NAMESPACE === HTML_NAMESPACE) dirty = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body>" + dirty + "</body></html>";
+			const dirtyPayload = trustedTypesPolicy ? trustedTypesPolicy.createHTML(dirty) : dirty;
+			if (NAMESPACE === HTML_NAMESPACE) try {
+				doc = new DOMParser().parseFromString(dirtyPayload, PARSER_MEDIA_TYPE);
+			} catch (_) {}
+			if (!doc || !doc.documentElement) {
+				doc = implementation.createDocument(NAMESPACE, "template", null);
+				try {
+					doc.documentElement.innerHTML = IS_EMPTY_INPUT ? emptyHTML : dirtyPayload;
+				} catch (_) {}
+			}
+			const body = doc.body || doc.documentElement;
+			if (dirty && leadingWhitespace) body.insertBefore(document.createTextNode(leadingWhitespace), body.childNodes[0] || null);
+			if (NAMESPACE === HTML_NAMESPACE) return getElementsByTagName.call(doc, WHOLE_DOCUMENT ? "html" : "body")[0];
+			return WHOLE_DOCUMENT ? doc.documentElement : body;
+		};
+		/**
+		* Creates a NodeIterator object that you can use to traverse filtered lists of nodes or elements in a document.
+		*
+		* @param root The root element or node to start traversing on.
+		* @return The created NodeIterator
+		*/
+		const _createNodeIterator = function _createNodeIterator(root) {
+			return createNodeIterator.call(root.ownerDocument || root, root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT | NodeFilter.SHOW_PROCESSING_INSTRUCTION | NodeFilter.SHOW_CDATA_SECTION, null);
+		};
+		/**
+		* Strip template-engine expressions ({{...}}, ${...}, <%...%>) from the
+		* character data of an element subtree. Used as the final safety net for
+		* SAFE_FOR_TEMPLATES on every DOM-returning code path so that expressions
+		* which only form after text-node normalization (e.g. fragments split across
+		* stripped elements) cannot survive into a template-evaluating framework.
+		*
+		* Walks text/comment/CDATA/processing-instruction nodes and mutates `.data`
+		* in place rather than round-tripping through innerHTML. This preserves
+		* descendant node references (important for IN_PLACE callers), avoids a
+		* serialize/reparse cycle, and reads literal character data — which means
+		* `<%...%>` in text content matches the ERB regex against its real bytes
+		* instead of the HTML-entity-escaped form innerHTML would produce.
+		*
+		* Attribute values are not visited here; SAFE_FOR_TEMPLATES handling for
+		* attributes is performed during the per-node `_sanitizeAttributes` pass.
+		*
+		* @param node The root element whose character data should be scrubbed.
+		*/
+		const _scrubTemplateExpressions = function _scrubTemplateExpressions(node) {
+			node.normalize();
+			const walker = createNodeIterator.call(node.ownerDocument || node, node, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_CDATA_SECTION | NodeFilter.SHOW_PROCESSING_INSTRUCTION, null);
+			let currentNode = walker.nextNode();
+			while (currentNode) {
+				let data = currentNode.data;
+				arrayForEach([
+					MUSTACHE_EXPR$1,
+					ERB_EXPR$1,
+					TMPLIT_EXPR$1
+				], (expr) => {
+					data = stringReplace(data, expr, " ");
+				});
+				currentNode.data = data;
+				currentNode = walker.nextNode();
+			}
+		};
+		/**
+		* _isClobbered
+		*
+		* Detect DOM-clobbering on HTMLFormElement nodes. Form is the only HTML
+		* interface with [LegacyOverrideBuiltIns]; a descendant element with a
+		* `name` attribute matching a prototype property shadows that property
+		* on direct reads. We use this check at the IN_PLACE entry-point and
+		* during attribute sanitization to refuse clobbered forms.
+		*
+		* @param element element to check for clobbering attacks
+		* @return true if clobbered, false if safe
+		*/
+		const _isClobbered = function _isClobbered(element) {
+			const realTagName = getNodeName ? getNodeName(element) : null;
+			if (typeof realTagName !== "string") return false;
+			if (transformCaseFunc(realTagName) !== "form") return false;
+			return typeof element.nodeName !== "string" || typeof element.textContent !== "string" || typeof element.removeChild !== "function" || element.attributes !== getAttributes(element) || typeof element.removeAttribute !== "function" || typeof element.setAttribute !== "function" || typeof element.namespaceURI !== "string" || typeof element.insertBefore !== "function" || typeof element.hasChildNodes !== "function" || element.nodeType !== getNodeType(element) || element.childNodes !== getChildNodes(element);
+		};
+		/**
+		* Checks whether the given value is a DocumentFragment from any realm.
+		*
+		* The realm-independent replacement reads `nodeType` through the cached
+		* Node.prototype getter and compares to the DOCUMENT_FRAGMENT_NODE
+		* constant (11). nodeType is a numeric value resolved from the node's
+		* internal slot, identical across realms for the same kind of node.
+		*
+		* @param value object to check
+		* @return true if value is a DocumentFragment-shaped node from any realm
+		*/
+		const _isDocumentFragment = function _isDocumentFragment(value) {
+			if (!getNodeType || typeof value !== "object" || value === null) return false;
+			try {
+				return getNodeType(value) === NODE_TYPE.documentFragment;
+			} catch (_) {
+				return false;
+			}
+		};
+		/**
+		* Checks whether the given object is a DOM node, including nodes that
+		* originate from a different window/realm (e.g. an iframe's
+		* contentDocument). The previous `value instanceof Node` check was
+		* realm-bound: nodes from a different window failed it, causing
+		* sanitize() to silently stringify them and reset IN_PLACE to false,
+		* returning the original node unsanitized. See GHSA-4w3q-35jp-p934.
+		*
+		* @param value object to check whether it's a DOM node
+		* @return true if value is a DOM node from any realm
+		*/
+		const _isNode = function _isNode(value) {
+			if (!getNodeType || typeof value !== "object" || value === null) return false;
+			try {
+				return typeof getNodeType(value) === "number";
+			} catch (_) {
+				return false;
+			}
+		};
+		function _executeHooks(hooks, currentNode, data) {
+			arrayForEach(hooks, (hook) => {
+				hook.call(DOMPurify, currentNode, data, CONFIG);
+			});
+		}
+		/**
+		* _sanitizeElements
+		*
+		* @protect nodeName
+		* @protect textContent
+		* @protect removeChild
+		* @param currentNode to check for permission to exist
+		* @return true if node was killed, false if left alive
+		*/
+		const _sanitizeElements = function _sanitizeElements(currentNode) {
+			let content = null;
+			_executeHooks(hooks.beforeSanitizeElements, currentNode, null);
+			if (_isClobbered(currentNode)) {
+				_forceRemove(currentNode);
+				return true;
+			}
+			const tagName = transformCaseFunc(currentNode.nodeName);
+			_executeHooks(hooks.uponSanitizeElement, currentNode, {
+				tagName,
+				allowedTags: ALLOWED_TAGS
+			});
+			if (SAFE_FOR_XML && currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && regExpTest(/<[/\w!]/g, currentNode.innerHTML) && regExpTest(/<[/\w!]/g, currentNode.textContent)) {
+				_forceRemove(currentNode);
+				return true;
+			}
+			if (SAFE_FOR_XML && currentNode.namespaceURI === HTML_NAMESPACE && tagName === "style" && _isNode(currentNode.firstElementChild)) {
+				_forceRemove(currentNode);
+				return true;
+			}
+			if (currentNode.nodeType === NODE_TYPE.progressingInstruction) {
+				_forceRemove(currentNode);
+				return true;
+			}
+			if (SAFE_FOR_XML && currentNode.nodeType === NODE_TYPE.comment && regExpTest(/<[/\w]/g, currentNode.data)) {
+				_forceRemove(currentNode);
+				return true;
+			}
+			if (FORBID_TAGS[tagName] || !(EXTRA_ELEMENT_HANDLING.tagCheck instanceof Function && EXTRA_ELEMENT_HANDLING.tagCheck(tagName)) && !ALLOWED_TAGS[tagName]) {
+				if (!FORBID_TAGS[tagName] && _isBasicCustomElement(tagName)) {
+					if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName)) return false;
+					if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(tagName)) return false;
+				}
+				if (KEEP_CONTENT && !FORBID_CONTENTS[tagName]) {
+					const parentNode = getParentNode(currentNode);
+					const childNodes = getChildNodes(currentNode);
+					if (childNodes && parentNode) {
+						const childCount = childNodes.length;
+						for (let i = childCount - 1; i >= 0; --i) {
+							const childClone = cloneNode(childNodes[i], true);
+							parentNode.insertBefore(childClone, getNextSibling(currentNode));
+						}
+					}
+				}
+				_forceRemove(currentNode);
+				return true;
+			}
+			if ((getNodeType ? getNodeType(currentNode) : currentNode.nodeType) === NODE_TYPE.element && !_checkValidNamespace(currentNode)) {
+				_forceRemove(currentNode);
+				return true;
+			}
+			if ((tagName === "noscript" || tagName === "noembed" || tagName === "noframes") && regExpTest(/<\/no(script|embed|frames)/i, currentNode.innerHTML)) {
+				_forceRemove(currentNode);
+				return true;
+			}
+			if (SAFE_FOR_TEMPLATES && currentNode.nodeType === NODE_TYPE.text) {
+				content = currentNode.textContent;
+				arrayForEach([
+					MUSTACHE_EXPR$1,
+					ERB_EXPR$1,
+					TMPLIT_EXPR$1
+				], (expr) => {
+					content = stringReplace(content, expr, " ");
+				});
+				if (currentNode.textContent !== content) {
+					arrayPush(DOMPurify.removed, { element: currentNode.cloneNode() });
+					currentNode.textContent = content;
+				}
+			}
+			_executeHooks(hooks.afterSanitizeElements, currentNode, null);
+			return false;
+		};
+		/**
+		* _isValidAttribute
+		*
+		* @param lcTag Lowercase tag name of containing element.
+		* @param lcName Lowercase attribute name.
+		* @param value Attribute value.
+		* @return Returns true if `value` is valid, otherwise false.
+		*/
+		const _isValidAttribute = function _isValidAttribute(lcTag, lcName, value) {
+			if (FORBID_ATTR[lcName]) return false;
+			if (SANITIZE_DOM && (lcName === "id" || lcName === "name") && (value in document || value in formElement)) return false;
+			const nameIsPermitted = ALLOWED_ATTR[lcName] || EXTRA_ELEMENT_HANDLING.attributeCheck instanceof Function && EXTRA_ELEMENT_HANDLING.attributeCheck(lcName, lcTag);
+			if (ALLOW_DATA_ATTR && !FORBID_ATTR[lcName] && regExpTest(DATA_ATTR$1, lcName));
+			else if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$1, lcName));
+			else if (!nameIsPermitted || FORBID_ATTR[lcName]) if (_isBasicCustomElement(lcTag) && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(lcTag)) && (CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName) || CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.attributeNameCheck(lcName, lcTag)) || lcName === "is" && CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, value) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(value)));
+			else return false;
+			else if (URI_SAFE_ATTRIBUTES[lcName]);
+			else if (regExpTest(IS_ALLOWED_URI$1, stringReplace(value, ATTR_WHITESPACE$1, "")));
+			else if ((lcName === "src" || lcName === "xlink:href" || lcName === "href") && lcTag !== "script" && stringIndexOf(value, "data:") === 0 && DATA_URI_TAGS[lcTag]);
+			else if (ALLOW_UNKNOWN_PROTOCOLS && !regExpTest(IS_SCRIPT_OR_DATA$1, stringReplace(value, ATTR_WHITESPACE$1, "")));
+			else if (value) return false;
+			return true;
+		};
+		const RESERVED_CUSTOM_ELEMENT_NAMES = addToSet({}, [
+			"annotation-xml",
+			"color-profile",
+			"font-face",
+			"font-face-format",
+			"font-face-name",
+			"font-face-src",
+			"font-face-uri",
+			"missing-glyph"
+		]);
+		/**
+		* _isBasicCustomElement
+		* checks if at least one dash is included in tagName, and it's not the first char
+		* for more sophisticated checking see https://github.com/sindresorhus/validate-element-name
+		*
+		* @param tagName name of the tag of the node to sanitize
+		* @returns Returns true if the tag name meets the basic criteria for a custom element, otherwise false.
+		*/
+		const _isBasicCustomElement = function _isBasicCustomElement(tagName) {
+			return !RESERVED_CUSTOM_ELEMENT_NAMES[stringToLowerCase(tagName)] && regExpTest(CUSTOM_ELEMENT$1, tagName);
+		};
+		/**
+		* _sanitizeAttributes
+		*
+		* @protect attributes
+		* @protect nodeName
+		* @protect removeAttribute
+		* @protect setAttribute
+		*
+		* @param currentNode to sanitize
+		*/
+		const _sanitizeAttributes = function _sanitizeAttributes(currentNode) {
+			_executeHooks(hooks.beforeSanitizeAttributes, currentNode, null);
+			const attributes = currentNode.attributes;
+			if (!attributes || _isClobbered(currentNode)) return;
+			const hookEvent = {
+				attrName: "",
+				attrValue: "",
+				keepAttr: true,
+				allowedAttributes: ALLOWED_ATTR,
+				forceKeepAttr: void 0
+			};
+			let l = attributes.length;
+			while (l--) {
+				const attr = attributes[l];
+				const name = attr.name, namespaceURI = attr.namespaceURI, attrValue = attr.value;
+				const lcName = transformCaseFunc(name);
+				const initValue = attrValue;
+				let value = name === "value" ? initValue : stringTrim(initValue);
+				hookEvent.attrName = lcName;
+				hookEvent.attrValue = value;
+				hookEvent.keepAttr = true;
+				hookEvent.forceKeepAttr = void 0;
+				_executeHooks(hooks.uponSanitizeAttribute, currentNode, hookEvent);
+				value = hookEvent.attrValue;
+				if (SANITIZE_NAMED_PROPS && (lcName === "id" || lcName === "name") && stringIndexOf(value, SANITIZE_NAMED_PROPS_PREFIX) !== 0) {
+					_removeAttribute(name, currentNode);
+					value = SANITIZE_NAMED_PROPS_PREFIX + value;
+				}
+				if (SAFE_FOR_XML && regExpTest(/((--!?|])>)|<\/(style|script|title|xmp|textarea|noscript|iframe|noembed|noframes)/i, value)) {
+					_removeAttribute(name, currentNode);
+					continue;
+				}
+				if (lcName === "attributename" && stringMatch(value, "href")) {
+					_removeAttribute(name, currentNode);
+					continue;
+				}
+				if (hookEvent.forceKeepAttr) continue;
+				if (!hookEvent.keepAttr) {
+					_removeAttribute(name, currentNode);
+					continue;
+				}
+				if (!ALLOW_SELF_CLOSE_IN_ATTR && regExpTest(/\/>/i, value)) {
+					_removeAttribute(name, currentNode);
+					continue;
+				}
+				if (SAFE_FOR_TEMPLATES) arrayForEach([
+					MUSTACHE_EXPR$1,
+					ERB_EXPR$1,
+					TMPLIT_EXPR$1
+				], (expr) => {
+					value = stringReplace(value, expr, " ");
+				});
+				const lcTag = transformCaseFunc(currentNode.nodeName);
+				if (!_isValidAttribute(lcTag, lcName, value)) {
+					_removeAttribute(name, currentNode);
+					continue;
+				}
+				if (trustedTypesPolicy && typeof trustedTypes === "object" && typeof trustedTypes.getAttributeType === "function") if (namespaceURI);
+				else switch (trustedTypes.getAttributeType(lcTag, lcName)) {
+					case "TrustedHTML":
+						value = trustedTypesPolicy.createHTML(value);
+						break;
+					case "TrustedScriptURL":
+						value = trustedTypesPolicy.createScriptURL(value);
+						break;
+				}
+				if (value !== initValue) try {
+					if (namespaceURI) currentNode.setAttributeNS(namespaceURI, name, value);
+					else currentNode.setAttribute(name, value);
+					if (_isClobbered(currentNode)) _forceRemove(currentNode);
+					else arrayPop(DOMPurify.removed);
+				} catch (_) {
+					_removeAttribute(name, currentNode);
+				}
+			}
+			_executeHooks(hooks.afterSanitizeAttributes, currentNode, null);
+		};
+		/**
+		* _sanitizeShadowDOM
+		*
+		* @param fragment to iterate over recursively
+		*/
+		const _sanitizeShadowDOM2 = function _sanitizeShadowDOM(fragment) {
+			let shadowNode = null;
+			const shadowIterator = _createNodeIterator(fragment);
+			_executeHooks(hooks.beforeSanitizeShadowDOM, fragment, null);
+			while (shadowNode = shadowIterator.nextNode()) {
+				_executeHooks(hooks.uponSanitizeShadowNode, shadowNode, null);
+				_sanitizeElements(shadowNode);
+				_sanitizeAttributes(shadowNode);
+				if (_isDocumentFragment(shadowNode.content)) _sanitizeShadowDOM2(shadowNode.content);
+				if ((getNodeType ? getNodeType(shadowNode) : shadowNode.nodeType) === NODE_TYPE.element) {
+					const innerSr = getShadowRoot ? getShadowRoot(shadowNode) : shadowNode.shadowRoot;
+					if (_isDocumentFragment(innerSr)) {
+						_sanitizeAttachedShadowRoots2(innerSr);
+						_sanitizeShadowDOM2(innerSr);
+					}
+				}
+			}
+			_executeHooks(hooks.afterSanitizeShadowDOM, fragment, null);
+		};
+		/**
+		* _sanitizeAttachedShadowRoots
+		*
+		* Walks `root` and feeds every attached shadow root we encounter into
+		* the existing _sanitizeShadowDOM pipeline. The default node iterator
+		* does not descend into shadow trees, so nodes inside an attached
+		* shadow root would otherwise be skipped entirely.
+		*
+		* Two real input paths put attached shadow roots in front of us:
+		*   1. IN_PLACE on a DOM node that already has shadow roots attached.
+		*   2. DOM-node input where importNode(dirty, true) deep-clones the
+		*      shadow root because it was created with `clonable: true`.
+		*
+		* This pass runs once, up front, so the main iteration loop (and the
+		* existing _sanitizeShadowDOM template-content recursion) stay
+		* untouched — string-input paths are not affected.
+		*
+		* @param root the subtree root to walk for attached shadow roots
+		*/
+		const _sanitizeAttachedShadowRoots2 = function _sanitizeAttachedShadowRoots(root) {
+			const nodeType = getNodeType ? getNodeType(root) : root.nodeType;
+			if (nodeType === NODE_TYPE.element) {
+				const sr = getShadowRoot ? getShadowRoot(root) : root.shadowRoot;
+				if (_isDocumentFragment(sr)) {
+					_sanitizeAttachedShadowRoots2(sr);
+					_sanitizeShadowDOM2(sr);
+				}
+			}
+			const childNodes = getChildNodes ? getChildNodes(root) : root.childNodes;
+			if (!childNodes) return;
+			const snapshot = [];
+			arrayForEach(childNodes, (child) => {
+				arrayPush(snapshot, child);
+			});
+			for (const child of snapshot) _sanitizeAttachedShadowRoots2(child);
+			if (nodeType === NODE_TYPE.element) {
+				const rootName = getNodeName ? getNodeName(root) : null;
+				if (typeof rootName === "string" && transformCaseFunc(rootName) === "template") {
+					const content = root.content;
+					if (_isDocumentFragment(content)) _sanitizeAttachedShadowRoots2(content);
+				}
+			}
+		};
+		DOMPurify.sanitize = function(dirty) {
+			let cfg = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
+			let body = null;
+			let importedNode = null;
+			let currentNode = null;
+			let returnNode = null;
+			IS_EMPTY_INPUT = !dirty;
+			if (IS_EMPTY_INPUT) dirty = "<!-->";
+			if (typeof dirty !== "string" && !_isNode(dirty)) {
+				dirty = stringifyValue(dirty);
+				if (typeof dirty !== "string") throw typeErrorCreate("dirty is not a string, aborting");
+			}
+			if (!DOMPurify.isSupported) return dirty;
+			if (!SET_CONFIG) _parseConfig(cfg);
+			DOMPurify.removed = [];
+			if (typeof dirty === "string") IN_PLACE = false;
+			if (IN_PLACE) {
+				const nn = getNodeName ? getNodeName(dirty) : dirty.nodeName;
+				if (typeof nn === "string") {
+					const tagName = transformCaseFunc(nn);
+					if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) throw typeErrorCreate("root node is forbidden and cannot be sanitized in-place");
+				}
+				if (_isClobbered(dirty)) throw typeErrorCreate("root node is clobbered and cannot be sanitized in-place");
+				_sanitizeAttachedShadowRoots2(dirty);
+			} else if (_isNode(dirty)) {
+				body = _initDocument("<!---->");
+				importedNode = body.ownerDocument.importNode(dirty, true);
+				if (importedNode.nodeType === NODE_TYPE.element && importedNode.nodeName === "BODY") body = importedNode;
+				else if (importedNode.nodeName === "HTML") body = importedNode;
+				else body.appendChild(importedNode);
+				_sanitizeAttachedShadowRoots2(importedNode);
+			} else {
+				if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT && dirty.indexOf("<") === -1) return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(dirty) : dirty;
+				body = _initDocument(dirty);
+				if (!body) return RETURN_DOM ? null : RETURN_TRUSTED_TYPE ? emptyHTML : "";
+			}
+			if (body && FORCE_BODY) _forceRemove(body.firstChild);
+			const nodeIterator = _createNodeIterator(IN_PLACE ? dirty : body);
+			while (currentNode = nodeIterator.nextNode()) {
+				_sanitizeElements(currentNode);
+				_sanitizeAttributes(currentNode);
+				if (_isDocumentFragment(currentNode.content)) _sanitizeShadowDOM2(currentNode.content);
+			}
+			if (IN_PLACE) {
+				if (SAFE_FOR_TEMPLATES) _scrubTemplateExpressions(dirty);
+				return dirty;
+			}
+			if (RETURN_DOM) {
+				if (SAFE_FOR_TEMPLATES) _scrubTemplateExpressions(body);
+				if (RETURN_DOM_FRAGMENT) {
+					returnNode = createDocumentFragment.call(body.ownerDocument);
+					while (body.firstChild) returnNode.appendChild(body.firstChild);
+				} else returnNode = body;
+				if (ALLOWED_ATTR.shadowroot || ALLOWED_ATTR.shadowrootmode) returnNode = importNode.call(originalDocument, returnNode, true);
+				return returnNode;
+			}
+			let serializedHTML = WHOLE_DOCUMENT ? body.outerHTML : body.innerHTML;
+			if (WHOLE_DOCUMENT && ALLOWED_TAGS["!doctype"] && body.ownerDocument && body.ownerDocument.doctype && body.ownerDocument.doctype.name && regExpTest(DOCTYPE_NAME, body.ownerDocument.doctype.name)) serializedHTML = "<!DOCTYPE " + body.ownerDocument.doctype.name + ">\n" + serializedHTML;
+			if (SAFE_FOR_TEMPLATES) arrayForEach([
+				MUSTACHE_EXPR$1,
+				ERB_EXPR$1,
+				TMPLIT_EXPR$1
+			], (expr) => {
+				serializedHTML = stringReplace(serializedHTML, expr, " ");
+			});
+			return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(serializedHTML) : serializedHTML;
+		};
+		DOMPurify.setConfig = function() {
+			_parseConfig(arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {});
+			SET_CONFIG = true;
+		};
+		DOMPurify.clearConfig = function() {
+			CONFIG = null;
+			SET_CONFIG = false;
+		};
+		DOMPurify.isValidAttribute = function(tag, attr, value) {
+			if (!CONFIG) _parseConfig({});
+			return _isValidAttribute(transformCaseFunc(tag), transformCaseFunc(attr), value);
+		};
+		DOMPurify.addHook = function(entryPoint, hookFunction) {
+			if (typeof hookFunction !== "function") return;
+			arrayPush(hooks[entryPoint], hookFunction);
+		};
+		DOMPurify.removeHook = function(entryPoint, hookFunction) {
+			if (hookFunction !== void 0) {
+				const index = arrayLastIndexOf(hooks[entryPoint], hookFunction);
+				return index === -1 ? void 0 : arraySplice(hooks[entryPoint], index, 1)[0];
+			}
+			return arrayPop(hooks[entryPoint]);
+		};
+		DOMPurify.removeHooks = function(entryPoint) {
+			hooks[entryPoint] = [];
+		};
+		DOMPurify.removeAllHooks = function() {
+			hooks = _createHooksMap();
+		};
+		return DOMPurify;
+	}
+	var purify = createDOMPurify();
+	//#endregion
+	//#region src/components/cart/components/SubRow.svelte
+	var root$47 = /* @__PURE__ */ from_html(`<span class="go-sub-ticket-description"></span>`);
+	var root_1$15 = /* @__PURE__ */ from_html(`<span class="go-sub-ticket-quantity"> </span>`);
+	var root_2$11 = /* @__PURE__ */ from_html(`<li><span class="go-sub-ticket-title"> </span> <!> <!></li>`);
+	function SubRow($$anchor, $$props) {
+		push($$props, true);
+		/** Capacity-aware ceiling from CapacityManager.subTicketMaxes; the combination max when absent. */
+		let sub = prop($$props, "sub", 7), quantity = prop($$props, "quantity", 7), max = prop($$props, "max", 23, () => sub().max_persons), onChange = prop($$props, "onChange", 7), preview = prop($$props, "preview", 7, false);
+		const fixed = /* @__PURE__ */ user_derived(() => sub().min_persons === sub().max_persons);
+		var $$exports = {
+			get sub() {
+				return sub();
+			},
+			set sub($$value) {
+				sub($$value);
+				flushSync();
+			},
+			get quantity() {
+				return quantity();
+			},
+			set quantity($$value) {
+				quantity($$value);
+				flushSync();
+			},
+			get max() {
+				return max();
+			},
+			set max($$value = sub.max_persons) {
+				max($$value);
+				flushSync();
+			},
+			get onChange() {
+				return onChange();
+			},
+			set onChange($$value) {
+				onChange($$value);
+				flushSync();
+			},
+			get preview() {
+				return preview();
+			},
+			set preview($$value = false) {
+				preview($$value);
+				flushSync();
+			}
+		};
+		var li = root_2$11();
+		var span = child(li);
+		var text = child(span, true);
+		reset(span);
+		var node = sibling(span, 2);
+		var consequent = ($$anchor) => {
+			var span_1 = root$47();
+			html$2(span_1, () => purify.sanitize(sub().description), true);
+			reset(span_1);
+			append($$anchor, span_1);
+		};
+		if_block(node, ($$render) => {
+			if (sub().description) $$render(consequent);
+		});
+		var node_1 = sibling(node, 2);
+		var consequent_1 = ($$anchor) => {
+			var span_2 = root_1$15();
+			var text_1 = child(span_2, true);
+			reset(span_2);
+			template_effect(() => {
+				set_attribute(span_2, "data-testid", `sub-ticket-${sub().id ?? ""}-quantity`);
+				set_text(text_1, quantity());
+			});
+			append($$anchor, span_2);
+		};
+		var alternate = ($$anchor) => {
+			{
+				let $0 = /* @__PURE__ */ user_derived(() => sub().title || shop.t("cart.content.table.edit"));
+				QuantityControl($$anchor, {
+					get value() {
+						return quantity();
+					},
+					get min() {
+						return sub().min_persons;
+					},
+					get max() {
+						return max();
+					},
+					get label() {
+						return get$2($0);
+					},
+					deselectable: false,
+					get onChange() {
+						return onChange();
+					}
+				});
+			}
+		};
+		if_block(node_1, ($$render) => {
+			if (preview() || get$2(fixed)) $$render(consequent_1);
+			else $$render(alternate, -1);
+		});
+		reset(li);
+		template_effect(() => {
+			set_class(li, 1, clsx([
+				"go-sub-ticket",
+				get$2(fixed) && "is-fixed",
+				preview() && "is-preview",
+				quantity() === 0 && "is-empty"
+			]));
+			set_attribute(li, "data-testid", `sub-ticket-${sub().id ?? ""}`);
+			set_text(text, sub().title);
+		});
+		append($$anchor, li);
+		return pop($$exports);
+	}
+	create_custom_element(SubRow, {
+		sub: {},
+		quantity: {},
+		max: {},
+		onChange: {},
+		preview: {}
+	}, [], [], { mode: "open" });
+	//#endregion
 	//#region src/components/cart/components/Item.svelte
 	var root$46 = /* @__PURE__ */ from_html(`<s class="go-cart-item-price-original"> </s> <span class="go-cart-item-price-discounted"> </span>`, 1);
 	var root_1$14 = /* @__PURE__ */ from_html(`<span class="go-cart-item-price-discounted"> </span>`);
 	var root_2$10 = /* @__PURE__ */ from_html(`<span> </span>`);
-	var root_3$7 = /* @__PURE__ */ from_html(`<option> </option>`);
-	var root_4$4 = /* @__PURE__ */ from_html(`<select class="go-cart-item-select"></select>`);
-	var root_5$3 = /* @__PURE__ */ from_html(`<li class="go-cart-item-remove"><button class="go-cart-remove">⨉</button></li>`);
-	var root_6$2 = /* @__PURE__ */ from_html(`<article class="go-cart-item-content"><ul><li class="go-cart-item-title-container"><!></li> <li class="go-cart-item-price"><!></li> <li class="go-cart-item-count"><!></li> <!> <li class="go-cart-item-sum"> </li></ul></article>`);
+	var root_3$7 = /* @__PURE__ */ from_html(`<li class="go-cart-item-remove"><button class="go-cart-remove">⨉</button></li>`);
+	var root_4$4 = /* @__PURE__ */ from_html(`<ul class="go-sub-tickets" role="list"></ul>`);
+	var root_5$2 = /* @__PURE__ */ from_html(`<article class="go-cart-item-content"><ul><li class="go-cart-item-title-container"><!></li> <li class="go-cart-item-price"><!></li> <li class="go-cart-item-count"><!></li> <!> <li class="go-cart-item-sum"> </li></ul></article> <!>`, 1);
 	function Item$1($$anchor, $$props) {
 		push($$props, true);
-		const useStepper = /* @__PURE__ */ user_derived(() => configStore.config.quantityStepper);
 		let displayItem = prop($$props, "displayItem", 7), displayCart = prop($$props, "displayCart", 7), preview = prop($$props, "preview", 7);
 		let capacity = /* @__PURE__ */ state(void 0);
+		let subMaxes = /* @__PURE__ */ state(proxy({}));
 		const itemInMaincart = /* @__PURE__ */ user_derived(() => shop.cart?.items.find((item) => item.uuid === (displayItem().display?.reference_uuid ?? displayItem().uuid)));
+		const mantleProduct = /* @__PURE__ */ user_derived(() => isMantleTicket(displayItem().product) ? displayItem().product : null);
 		const emptyCart = createCart();
 		user_effect(() => {
 			shop.cart?.items.map((i) => i.quantity);
+			shop.cart?.items.forEach((i) => i.mantle && Object.values(i.mantle.composition));
 			untrack(() => {
 				set(capacity, shop.capacityManager.capacity(displayCart(), displayItem(), emptyCart), true);
+				set(subMaxes, get$2(itemInMaincart) ? shop.capacityManager.subTicketMaxes(shop.cart, get$2(itemInMaincart), emptyCart) : {}, true);
 			});
 		});
 		function updateQuantity(nextLineQuantity) {
@@ -15442,9 +17677,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 			get$2(itemInMaincart).quantity = Math.max(0, get$2(itemInMaincart).quantity - displayItem().quantity + nextLineQuantity);
 		}
-		function update(target) {
-			updateQuantity(parseInt(target.value, 10));
-		}
 		function del() {
 			if (!get$2(itemInMaincart)) {
 				console.error("(CartItem) Could not find main item for line", displayItem());
@@ -15453,6 +17685,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const newQuantity = Math.max(0, get$2(itemInMaincart).quantity - displayItem().quantity);
 			if (newQuantity === 0) shop.cart?.deleteItem(get$2(itemInMaincart));
 			else get$2(itemInMaincart).quantity = newQuantity;
+		}
+		function updateSub(subId, quantity) {
+			if (!get$2(itemInMaincart)) {
+				console.error("(CartItem) Could not find main item for line", displayItem());
+				return;
+			}
+			if (get$2(itemInMaincart).mantle) get$2(itemInMaincart).mantle.composition[subId] = quantity;
 		}
 		var $$exports = {
 			get displayItem() {
@@ -15480,7 +17719,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent_7 = ($$anchor) => {
-			var article = root_6$2();
+			var fragment_1 = root_5$2();
+			var article = first_child(fragment_1);
 			var ul = child(article);
 			var li = child(ul);
 			var node_1 = child(li);
@@ -15508,8 +17748,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var li_1 = sibling(li, 2);
 			var node_2 = child(li_1);
 			var consequent_3 = ($$anchor) => {
-				var fragment_4 = root$46();
-				var s = first_child(fragment_4);
+				var fragment_5 = root$46();
+				var s = first_child(fragment_5);
 				var text = child(s, true);
 				reset(s);
 				var span = sibling(s, 2);
@@ -15519,7 +17759,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					set_text(text, $0);
 					set_text(text_1, $1);
 				}, [() => formatCurrency(displayItem().display.originalPrice), () => formatCurrency(displayItem().final_price_cents)]);
-				append($$anchor, fragment_4);
+				append($$anchor, fragment_5);
 			};
 			var alternate = ($$anchor) => {
 				var span_1 = root_1$14();
@@ -15542,12 +17782,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				template_effect(() => set_text(text_3, displayItem().quantity));
 				append($$anchor, span_2);
 			};
-			var consequent_5 = ($$anchor) => {
+			var alternate_1 = ($$anchor) => {
 				{
 					let $0 = /* @__PURE__ */ user_derived(() => displayItem().quantity ?? 0);
-					let $1 = /* @__PURE__ */ user_derived(() => shop.t("quantity.decrease"));
-					let $2 = /* @__PURE__ */ user_derived(() => shop.t("quantity.increase"));
-					QuantityStepper($$anchor, {
+					QuantityControl($$anchor, {
 						get value() {
 							return get$2($0);
 						},
@@ -15560,44 +17798,19 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						get label() {
 							return displayItem().product.title;
 						},
-						get decreaseLabel() {
-							return get$2($1);
-						},
-						get increaseLabel() {
-							return get$2($2);
-						},
+						floor: 1,
 						onChange: updateQuantity
 					});
 				}
 			};
-			var alternate_1 = ($$anchor) => {
-				var select = root_4$4();
-				each(select, 21, () => generateQuantityOptions(get$2(capacity).min, get$2(capacity).max, { floor: 1 }), (q) => q.value, ($$anchor, q) => {
-					var option = root_3$7();
-					var text_4 = child(option, true);
-					reset(option);
-					var option_value = {};
-					template_effect(() => {
-						set_selected(option, displayItem().quantity === get$2(q).value);
-						set_text(text_4, get$2(q).label);
-						if (option_value !== (option_value = get$2(q).value)) option.value = (option.__value = get$2(q).value) ?? "";
-					});
-					append($$anchor, option);
-				});
-				reset(select);
-				template_effect(($0) => set_attribute(select, "aria-label", $0), [() => shop.t("cart.content.table.edit")]);
-				delegated("change", select, (e) => update(e.target));
-				append($$anchor, select);
-			};
 			if_block(node_3, ($$render) => {
 				if (preview()) $$render(consequent_4);
-				else if (get$2(useStepper)) $$render(consequent_5, 1);
 				else $$render(alternate_1, -1);
 			});
 			reset(li_2);
 			var node_4 = sibling(li_2, 2);
-			var consequent_6 = ($$anchor) => {
-				var li_3 = root_5$3();
+			var consequent_5 = ($$anchor) => {
+				var li_3 = root_3$7();
 				var button = child(li_3);
 				reset(li_3);
 				template_effect(($0) => set_attribute(button, "aria-label", $0), [() => shop.t("cart.item.remove")]);
@@ -15605,15 +17818,45 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				append($$anchor, li_3);
 			};
 			if_block(node_4, ($$render) => {
-				if (!preview()) $$render(consequent_6);
+				if (!preview()) $$render(consequent_5);
 			});
 			var li_4 = sibling(node_4, 2);
-			var text_5 = child(li_4, true);
+			var text_4 = child(li_4, true);
 			reset(li_4);
 			reset(ul);
 			reset(article);
-			template_effect(($0) => set_text(text_5, $0), [() => formatCurrency(displayItem().total_price_cents)]);
-			append($$anchor, article);
+			var node_5 = sibling(article, 2);
+			var consequent_6 = ($$anchor) => {
+				var ul_1 = root_4$4();
+				each(ul_1, 21, () => subTicketDefs(get$2(mantleProduct)), (sub) => sub.id, ($$anchor, sub) => {
+					{
+						let $0 = /* @__PURE__ */ user_derived(() => displayItem().mantle?.composition?.[get$2(sub).id] ?? 0);
+						SubRow($$anchor, {
+							get sub() {
+								return get$2(sub);
+							},
+							get preview() {
+								return preview();
+							},
+							get quantity() {
+								return get$2($0);
+							},
+							get max() {
+								return get$2(subMaxes)[get$2(sub).id];
+							},
+							onChange: (q) => updateSub(get$2(sub).id, q)
+						});
+					}
+				});
+				reset(ul_1);
+				template_effect(() => set_attribute(ul_1, "aria-label", get$2(mantleProduct).title));
+				append($$anchor, ul_1);
+			};
+			if_block(node_5, ($$render) => {
+				if (get$2(mantleProduct)) $$render(consequent_6);
+			});
+			template_effect(($0) => set_text(text_4, $0), [() => formatCurrency(displayItem().total_price_cents)]);
+			append($$anchor, fragment_1);
 		};
 		if_block(node, ($$render) => {
 			if (get$2(capacity)) $$render(consequent_7);
@@ -15621,7 +17864,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		append($$anchor, fragment);
 		return pop($$exports);
 	}
-	delegate(["change", "click"]);
+	delegate(["click"]);
 	create_custom_element(Item$1, {
 		displayItem: {},
 		displayCart: {},
@@ -15790,6 +18033,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if (!shop.cart) return;
 			shop.cart.items.map((i) => i.uuid + ":" + i.quantity + ":" + i.time);
 			shop.cart.coupons.map((c) => c.code).join("|");
+			shop.cart.items.forEach((i) => i.mantle && Object.values(i.mantle.composition));
 			untrack(() => details.calculateDisplayCart());
 		});
 		async function flushCoupons() {
@@ -30561,13 +32805,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root_2$6 = /* @__PURE__ */ from_html(`<label><!></label> <input/>`, 1);
 	var root_3$6 = /* @__PURE__ */ from_html(`<label><!></label> <textarea></textarea>`, 1);
 	var root_4$3 = /* @__PURE__ */ from_html(`<figure role="status" aria-live="polite"><img class="go-file-preview"/> <figcaption class="go-file-preview-caption"> </figcaption></figure>`);
-	var root_5$2 = /* @__PURE__ */ from_html(`<label><!></label> <input/> <!>`, 1);
+	var root_5$1 = /* @__PURE__ */ from_html(`<label><!></label> <input/> <!>`, 1);
 	var root_6$1 = /* @__PURE__ */ from_html(`<label><input/> <span class="go-checkbox-label"><!></span></label>`);
 	var root_7$1 = /* @__PURE__ */ from_html(`<img src="" alt=""/> <option> </option>`, 1);
 	var root_8$1 = /* @__PURE__ */ from_html(`<option disabled="" hidden="" selected=""> </option> <!>`, 1);
 	var select_content = /* @__PURE__ */ from_html(`<!>`, 1);
 	var root_9$1 = /* @__PURE__ */ from_html(`<label><!></label> <select><!></select>`, 1);
-	var root_10 = /* @__PURE__ */ from_html(`<img style="width: 60px" aria-hidden="true"/>`);
+	var root_10$1 = /* @__PURE__ */ from_html(`<img style="width: 60px" aria-hidden="true"/>`);
 	var root_11 = /* @__PURE__ */ from_html(`<span class="go-payment-mode-icons"></span>`);
 	var root_12 = /* @__PURE__ */ from_html(`<label><input type="radio"/> <!></label>`);
 	var root_13 = /* @__PURE__ */ from_html(`<fieldset role="radiogroup"><legend><!></legend> <!></fieldset>`);
@@ -30632,7 +32876,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_2);
 		};
 		const file = ($$anchor) => {
-			var fragment_3 = root_5$2();
+			var fragment_3 = root_5$1();
 			var label_3 = first_child(fragment_3);
 			labelText(child(label_3));
 			reset(label_3);
@@ -30785,7 +33029,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					var span_2 = root_11();
 					each(span_2, 20, () => get$2(mode).icons, (icon) => icon, ($$anchor, icon) => {
 						const url = /* @__PURE__ */ user_derived(() => CDN_PATH + icon + ".svg");
-						var img_1 = root_10();
+						var img_1 = root_10$1();
 						template_effect(() => {
 							set_class(img_1, 1, clsx(icon));
 							set_attribute(img_1, "src", get$2(url));
@@ -33680,20 +35924,22 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/order/components/subcomponents/breakdown/items/TicketSale.svelte
-	var root$8 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date"> </span> <span class="go-cart-item-time"> </span>`, 1);
-	var root_1$3 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date"> </span>`);
-	var root_2$2 = /* @__PURE__ */ from_html(`<!> <br/> <a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a>`, 1);
-	var root_3$2 = /* @__PURE__ */ from_html(`<br/> <a class="go-ticket-personalization"> </a>`, 1);
-	var root_4$2 = /* @__PURE__ */ from_html(`<a aria-label="passbook link"><img alt="apple wallet icon"/></a>`);
-	var root_5$1 = /* @__PURE__ */ from_html(`<a aria-label="iCal link"> </a>`);
-	var root_6 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count"></li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span> <!></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"><!></li> <li class="go-order-breakdown-ical"><!></li></ul></article></li>`);
-	var root_7 = /* @__PURE__ */ from_html(`<a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a>`);
-	var root_8 = /* @__PURE__ */ from_html(`<a class="go-ticket-personalization"> </a>`);
-	var root_9 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count"> </li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span> <!></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"></li></ul></article></li>`);
+	var root$8 = /* @__PURE__ */ from_html(`<br/> <span class="go-order-item-quantities" data-testid="order-sub-ticket"> </span>`, 1);
+	var root_1$3 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date"> </span> <span class="go-cart-item-time"> </span>`, 1);
+	var root_2$2 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date"> </span>`);
+	var root_3$2 = /* @__PURE__ */ from_html(`<!> <br/> <a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a>`, 1);
+	var root_4$2 = /* @__PURE__ */ from_html(`<br/> <a class="go-ticket-personalization"> </a>`, 1);
+	var root_5 = /* @__PURE__ */ from_html(`<a aria-label="passbook link"><img alt="apple wallet icon"/></a>`);
+	var root_6 = /* @__PURE__ */ from_html(`<a aria-label="iCal link"> </a>`);
+	var root_7 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count"></li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span> <!> <!></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"><!></li> <li class="go-order-breakdown-ical"><!></li></ul></article></li>`);
+	var root_8 = /* @__PURE__ */ from_html(`<a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a>`);
+	var root_9 = /* @__PURE__ */ from_html(`<a class="go-ticket-personalization"> </a>`);
+	var root_10 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count"> </li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span> <!></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"></li></ul></article></li>`);
 	function TicketSale($$anchor, $$props) {
 		push($$props, true);
 		const APPLE_WALLET_CDN_PATH = `https://cdn.shop.platform.gomus.de/apple_wallet_${shop.locale}.svg`;
 		let item = prop($$props, "item", 7), orderDetails = prop($$props, "orderDetails", 7);
+		const subTicketSales = /* @__PURE__ */ user_derived(() => (item().attributes.sub_ticket_sales ?? []).filter((s) => s.quantity > 0));
 		var $$exports = {
 			get item() {
 				return item();
@@ -33715,7 +35961,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var consequent_5 = ($$anchor) => {
 			var fragment_1 = comment();
 			each(first_child(fragment_1), 17, () => ({ length: item().attributes.quantity }), index$1, ($$anchor, $$item, index) => {
-				var li = root_6();
+				var li = root_7();
 				var article = child(li);
 				var ul = child(article);
 				var li_1 = child(ul);
@@ -33725,73 +35971,82 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				var text = child(span, true);
 				reset(span);
 				var node_2 = sibling(span, 2);
+				each(node_2, 17, () => get$2(subTicketSales), (sub) => sub.id, ($$anchor, sub) => {
+					var fragment_2 = root$8();
+					var span_1 = sibling(first_child(fragment_2), 2);
+					var text_1 = child(span_1);
+					reset(span_1);
+					template_effect(() => set_text(text_1, `${get$2(sub).quantity ?? ""} x ${get$2(sub).title ?? ""}`));
+					append($$anchor, fragment_2);
+				});
+				var node_3 = sibling(node_2, 2);
 				var consequent_2 = ($$anchor) => {
 					const barcodeId = /* @__PURE__ */ user_derived(() => item().attributes.barcodes[index]?.id);
-					var fragment_2 = root_2$2();
-					var node_3 = first_child(fragment_2);
+					var fragment_3 = root_3$2();
+					var node_4 = first_child(fragment_3);
 					var consequent = ($$anchor) => {
-						var fragment_3 = root$8();
-						var span_1 = first_child(fragment_3);
-						var text_1 = child(span_1, true);
-						reset(span_1);
-						var span_2 = sibling(span_1, 2);
+						var fragment_4 = root_1$3();
+						var span_2 = first_child(fragment_4);
 						var text_2 = child(span_2, true);
 						reset(span_2);
+						var span_3 = sibling(span_2, 2);
+						var text_3 = child(span_3, true);
+						reset(span_3);
 						template_effect(($0, $1) => {
-							set_text(text_1, $0);
-							set_text(text_2, $1);
+							set_text(text_2, $0);
+							set_text(text_3, $1);
 						}, [() => formatDate(item().attributes.start_time, {
 							month: "numeric",
 							day: "numeric"
 						}, shop.locale), () => formatTime(item().attributes.start_time)]);
-						append($$anchor, fragment_3);
+						append($$anchor, fragment_4);
 					};
 					var consequent_1 = ($$anchor) => {
-						var span_3 = root_1$3();
-						var text_3 = child(span_3, true);
-						reset(span_3);
-						template_effect(($0) => set_text(text_3, $0), [() => formatDate(item().attributes.start_time, {
+						var span_4 = root_2$2();
+						var text_4 = child(span_4, true);
+						reset(span_4);
+						template_effect(($0) => set_text(text_4, $0), [() => formatDate(item().attributes.start_time, {
 							month: "numeric",
 							day: "numeric"
 						}, shop.locale)]);
-						append($$anchor, span_3);
+						append($$anchor, span_4);
 					};
-					if_block(node_3, ($$render) => {
+					if_block(node_4, ($$render) => {
 						if (item().attributes.ticket_type === "time_slot") $$render(consequent);
 						else if (item().attributes.ticket_type === "normal") $$render(consequent_1, 1);
 					});
-					var a = sibling(node_3, 4);
-					var text_4 = child(a, true);
+					var a = sibling(node_4, 4);
+					var text_5 = child(a, true);
 					reset(a);
 					template_effect(($0, $1) => {
 						set_attribute(a, "href", $0);
-						set_text(text_4, $1);
+						set_text(text_5, $1);
 					}, [() => orderDetails().downloadLink(item(), get$2(barcodeId)), () => shop.t("common.download")]);
-					append($$anchor, fragment_2);
+					append($$anchor, fragment_3);
 				};
 				var alternate = ($$anchor) => {
-					var fragment_4 = root_3$2();
-					var a_1 = sibling(first_child(fragment_4), 2);
-					var text_5 = child(a_1, true);
+					var fragment_5 = root_4$2();
+					var a_1 = sibling(first_child(fragment_5), 2);
+					var text_6 = child(a_1, true);
 					reset(a_1);
 					template_effect(($0, $1) => {
 						set_attribute(a_1, "href", $0);
-						set_text(text_5, $1);
+						set_text(text_6, $1);
 					}, [() => orderDetails().downloadLink(item()), () => shop.t("common.personalize")]);
-					append($$anchor, fragment_4);
+					append($$anchor, fragment_5);
 				};
-				if_block(node_2, ($$render) => {
+				if_block(node_3, ($$render) => {
 					if (item().attributes.ticket_type == "time_slot" || item().attributes.ticket_type == "normal") $$render(consequent_2);
 					else $$render(alternate, -1);
 				});
 				reset(li_2);
 				var li_3 = sibling(li_2, 2);
-				var text_6 = child(li_3, true);
+				var text_7 = child(li_3, true);
 				reset(li_3);
 				var li_4 = sibling(li_3, 2);
-				var node_4 = child(li_4);
+				var node_5 = child(li_4);
 				var consequent_3 = ($$anchor) => {
-					var a_2 = root_4$2();
+					var a_2 = root_5();
 					var img = child(a_2);
 					reset(a_2);
 					template_effect(() => {
@@ -33800,23 +36055,23 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					});
 					append($$anchor, a_2);
 				};
-				if_block(node_4, ($$render) => {
+				if_block(node_5, ($$render) => {
 					if (item().attributes.barcodes[index] && item().attributes.barcodes[index]?.passbook_url) $$render(consequent_3);
 				});
 				reset(li_4);
 				var li_5 = sibling(li_4, 2);
-				var node_5 = child(li_5);
+				var node_6 = child(li_5);
 				var consequent_4 = ($$anchor) => {
-					var a_3 = root_5$1();
-					var text_7 = child(a_3, true);
+					var a_3 = root_6();
+					var text_8 = child(a_3, true);
 					reset(a_3);
 					template_effect(($0) => {
 						set_attribute(a_3, "href", shop.apiUrl + item().attributes.ical_url);
-						set_text(text_7, $0);
+						set_text(text_8, $0);
 					}, [() => shop.t("common.calendar")]);
 					append($$anchor, a_3);
 				};
-				if_block(node_5, ($$render) => {
+				if_block(node_6, ($$render) => {
 					if (item().attributes.ical_url) $$render(consequent_4);
 				});
 				reset(li_5);
@@ -33825,60 +36080,60 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				reset(li);
 				template_effect(($0) => {
 					set_text(text, item().attributes.title);
-					set_text(text_6, $0);
+					set_text(text_7, $0);
 				}, [() => formatCurrency$1(item().price_cents)]);
 				append($$anchor, li);
 			});
 			append($$anchor, fragment_1);
 		};
 		var alternate_2 = ($$anchor) => {
-			var li_6 = root_9();
+			var li_6 = root_10();
 			var article_1 = child(li_6);
 			var ul_1 = child(article_1);
 			var li_7 = child(ul_1);
-			var text_8 = child(li_7, true);
+			var text_9 = child(li_7, true);
 			reset(li_7);
 			var li_8 = sibling(li_7, 2);
-			var span_4 = child(li_8);
-			var text_9 = child(span_4, true);
-			reset(span_4);
-			var node_6 = sibling(span_4, 2);
+			var span_5 = child(li_8);
+			var text_10 = child(span_5, true);
+			reset(span_5);
+			var node_7 = sibling(span_5, 2);
 			var consequent_6 = ($$anchor) => {
-				var a_4 = root_7();
-				var text_10 = child(a_4, true);
+				var a_4 = root_8();
+				var text_11 = child(a_4, true);
 				reset(a_4);
 				template_effect(($0, $1) => {
 					set_attribute(a_4, "href", $0);
-					set_text(text_10, $1);
+					set_text(text_11, $1);
 				}, [() => orderDetails().downloadLink(item()), () => shop.t("common.download")]);
 				append($$anchor, a_4);
 			};
 			var alternate_1 = ($$anchor) => {
-				var a_5 = root_8();
-				var text_11 = child(a_5, true);
+				var a_5 = root_9();
+				var text_12 = child(a_5, true);
 				reset(a_5);
 				template_effect(($0, $1) => {
 					set_attribute(a_5, "href", $0);
-					set_text(text_11, $1);
+					set_text(text_12, $1);
 				}, [() => orderDetails().downloadLink(item()), () => shop.t("common.personalize")]);
 				append($$anchor, a_5);
 			};
-			if_block(node_6, ($$render) => {
+			if_block(node_7, ($$render) => {
 				if (item().attributes.is_voucher) $$render(consequent_6);
 				else $$render(alternate_1, -1);
 			});
 			reset(li_8);
 			var li_9 = sibling(li_8, 2);
-			var text_12 = child(li_9, true);
+			var text_13 = child(li_9, true);
 			reset(li_9);
 			next(2);
 			reset(ul_1);
 			reset(article_1);
 			reset(li_6);
 			template_effect(($0) => {
-				set_text(text_8, item().attributes.quantity);
-				set_text(text_9, item().attributes.title);
-				set_text(text_12, $0);
+				set_text(text_9, item().attributes.quantity);
+				set_text(text_10, item().attributes.title);
+				set_text(text_13, $0);
 			}, [() => formatCurrency$1(item().price_cents)]);
 			append($$anchor, li_6);
 		};
@@ -34593,1862 +36848,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	customElements.define("go-ticket-segment-empty", create_custom_element(TicketSegmentEmpty, {}, [], []));
 	//#endregion
-	//#region ../../node_modules/.pnpm/dompurify@3.4.7/node_modules/dompurify/dist/purify.es.mjs
-	/*! @license DOMPurify 3.4.7 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.4.7/LICENSE */
-	function _arrayLikeToArray(r, a) {
-		(null == a || a > r.length) && (a = r.length);
-		for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
-		return n;
-	}
-	function _arrayWithHoles(r) {
-		if (Array.isArray(r)) return r;
-	}
-	function _iterableToArrayLimit(r, l) {
-		var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
-		if (null != t) {
-			var e, n, i, u, a = [], f = true, o = false;
-			try {
-				if (i = (t = t.call(r)).next, 0 === l);
-				else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
-			} catch (r) {
-				o = true, n = r;
-			} finally {
-				try {
-					if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return;
-				} finally {
-					if (o) throw n;
-				}
-			}
-			return a;
-		}
-	}
-	function _nonIterableRest() {
-		throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-	}
-	function _slicedToArray(r, e) {
-		return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest();
-	}
-	function _unsupportedIterableToArray(r, a) {
-		if (r) {
-			if ("string" == typeof r) return _arrayLikeToArray(r, a);
-			var t = {}.toString.call(r).slice(8, -1);
-			return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0;
-		}
-	}
-	var entries = Object.entries, setPrototypeOf = Object.setPrototypeOf, isFrozen = Object.isFrozen, getPrototypeOf = Object.getPrototypeOf, getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-	var freeze = Object.freeze, seal = Object.seal, create = Object.create;
-	var _ref = typeof Reflect !== "undefined" && Reflect, apply = _ref.apply, construct = _ref.construct;
-	if (!freeze) freeze = function freeze(x) {
-		return x;
-	};
-	if (!seal) seal = function seal(x) {
-		return x;
-	};
-	if (!apply) apply = function apply(func, thisArg) {
-		for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) args[_key - 2] = arguments[_key];
-		return func.apply(thisArg, args);
-	};
-	if (!construct) construct = function construct(Func) {
-		for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) args[_key2 - 1] = arguments[_key2];
-		return new Func(...args);
-	};
-	var arrayForEach = unapply(Array.prototype.forEach);
-	var arrayLastIndexOf = unapply(Array.prototype.lastIndexOf);
-	var arrayPop = unapply(Array.prototype.pop);
-	var arrayPush = unapply(Array.prototype.push);
-	var arraySplice = unapply(Array.prototype.splice);
-	var arrayIsArray = Array.isArray;
-	var stringToLowerCase = unapply(String.prototype.toLowerCase);
-	var stringToString = unapply(String.prototype.toString);
-	var stringMatch = unapply(String.prototype.match);
-	var stringReplace = unapply(String.prototype.replace);
-	var stringIndexOf = unapply(String.prototype.indexOf);
-	var stringTrim = unapply(String.prototype.trim);
-	var numberToString = unapply(Number.prototype.toString);
-	var booleanToString = unapply(Boolean.prototype.toString);
-	var bigintToString = typeof BigInt === "undefined" ? null : unapply(BigInt.prototype.toString);
-	var symbolToString = typeof Symbol === "undefined" ? null : unapply(Symbol.prototype.toString);
-	var objectHasOwnProperty = unapply(Object.prototype.hasOwnProperty);
-	var objectToString = unapply(Object.prototype.toString);
-	var regExpTest = unapply(RegExp.prototype.test);
-	var typeErrorCreate = unconstruct(TypeError);
-	/**
-	* Creates a new function that calls the given function with a specified thisArg and arguments.
-	*
-	* @param func - The function to be wrapped and called.
-	* @returns A new function that calls the given function with a specified thisArg and arguments.
-	*/
-	function unapply(func) {
-		return function(thisArg) {
-			if (thisArg instanceof RegExp) thisArg.lastIndex = 0;
-			for (var _len3 = arguments.length, args = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) args[_key3 - 1] = arguments[_key3];
-			return apply(func, thisArg, args);
-		};
-	}
-	/**
-	* Creates a new function that constructs an instance of the given constructor function with the provided arguments.
-	*
-	* @param func - The constructor function to be wrapped and called.
-	* @returns A new function that constructs an instance of the given constructor function with the provided arguments.
-	*/
-	function unconstruct(Func) {
-		return function() {
-			for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) args[_key4] = arguments[_key4];
-			return construct(Func, args);
-		};
-	}
-	/**
-	* Add properties to a lookup table
-	*
-	* @param set - The set to which elements will be added.
-	* @param array - The array containing elements to be added to the set.
-	* @param transformCaseFunc - An optional function to transform the case of each element before adding to the set.
-	* @returns The modified set with added elements.
-	*/
-	function addToSet(set, array) {
-		let transformCaseFunc = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : stringToLowerCase;
-		if (setPrototypeOf) setPrototypeOf(set, null);
-		if (!arrayIsArray(array)) return set;
-		let l = array.length;
-		while (l--) {
-			let element = array[l];
-			if (typeof element === "string") {
-				const lcElement = transformCaseFunc(element);
-				if (lcElement !== element) {
-					if (!isFrozen(array)) array[l] = lcElement;
-					element = lcElement;
-				}
-			}
-			set[element] = true;
-		}
-		return set;
-	}
-	/**
-	* Clean up an array to harden against CSPP
-	*
-	* @param array - The array to be cleaned.
-	* @returns The cleaned version of the array
-	*/
-	function cleanArray(array) {
-		for (let index = 0; index < array.length; index++) if (!objectHasOwnProperty(array, index)) array[index] = null;
-		return array;
-	}
-	/**
-	* Shallow clone an object
-	*
-	* @param object - The object to be cloned.
-	* @returns A new object that copies the original.
-	*/
-	function clone(object) {
-		const newObject = create(null);
-		for (const _ref2 of entries(object)) {
-			var _ref3 = _slicedToArray(_ref2, 2);
-			const property = _ref3[0];
-			const value = _ref3[1];
-			if (objectHasOwnProperty(object, property)) if (arrayIsArray(value)) newObject[property] = cleanArray(value);
-			else if (value && typeof value === "object" && value.constructor === Object) newObject[property] = clone(value);
-			else newObject[property] = value;
-		}
-		return newObject;
-	}
-	/**
-	* Convert non-node values into strings without depending on direct property access.
-	*
-	* @param value - The value to stringify.
-	* @returns A string representation of the provided value.
-	*/
-	function stringifyValue(value) {
-		switch (typeof value) {
-			case "string": return value;
-			case "number": return numberToString(value);
-			case "boolean": return booleanToString(value);
-			case "bigint": return bigintToString ? bigintToString(value) : "0";
-			case "symbol": return symbolToString ? symbolToString(value) : "Symbol()";
-			case "undefined": return objectToString(value);
-			case "function":
-			case "object": {
-				if (value === null) return objectToString(value);
-				const valueAsRecord = value;
-				const valueToString = lookupGetter(valueAsRecord, "toString");
-				if (typeof valueToString === "function") {
-					const stringified = valueToString(valueAsRecord);
-					return typeof stringified === "string" ? stringified : objectToString(stringified);
-				}
-				return objectToString(value);
-			}
-			default: return objectToString(value);
-		}
-	}
-	/**
-	* This method automatically checks if the prop is function or getter and behaves accordingly.
-	*
-	* @param object - The object to look up the getter function in its prototype chain.
-	* @param prop - The property name for which to find the getter function.
-	* @returns The getter function found in the prototype chain or a fallback function.
-	*/
-	function lookupGetter(object, prop) {
-		while (object !== null) {
-			const desc = getOwnPropertyDescriptor(object, prop);
-			if (desc) {
-				if (desc.get) return unapply(desc.get);
-				if (typeof desc.value === "function") return unapply(desc.value);
-			}
-			object = getPrototypeOf(object);
-		}
-		function fallbackValue() {
-			return null;
-		}
-		return fallbackValue;
-	}
-	function isRegex(value) {
-		try {
-			regExpTest(value, "");
-			return true;
-		} catch (_unused) {
-			return false;
-		}
-	}
-	var html$1 = freeze([
-		"a",
-		"abbr",
-		"acronym",
-		"address",
-		"area",
-		"article",
-		"aside",
-		"audio",
-		"b",
-		"bdi",
-		"bdo",
-		"big",
-		"blink",
-		"blockquote",
-		"body",
-		"br",
-		"button",
-		"canvas",
-		"caption",
-		"center",
-		"cite",
-		"code",
-		"col",
-		"colgroup",
-		"content",
-		"data",
-		"datalist",
-		"dd",
-		"decorator",
-		"del",
-		"details",
-		"dfn",
-		"dialog",
-		"dir",
-		"div",
-		"dl",
-		"dt",
-		"element",
-		"em",
-		"fieldset",
-		"figcaption",
-		"figure",
-		"font",
-		"footer",
-		"form",
-		"h1",
-		"h2",
-		"h3",
-		"h4",
-		"h5",
-		"h6",
-		"head",
-		"header",
-		"hgroup",
-		"hr",
-		"html",
-		"i",
-		"img",
-		"input",
-		"ins",
-		"kbd",
-		"label",
-		"legend",
-		"li",
-		"main",
-		"map",
-		"mark",
-		"marquee",
-		"menu",
-		"menuitem",
-		"meter",
-		"nav",
-		"nobr",
-		"ol",
-		"optgroup",
-		"option",
-		"output",
-		"p",
-		"picture",
-		"pre",
-		"progress",
-		"q",
-		"rp",
-		"rt",
-		"ruby",
-		"s",
-		"samp",
-		"search",
-		"section",
-		"select",
-		"shadow",
-		"slot",
-		"small",
-		"source",
-		"spacer",
-		"span",
-		"strike",
-		"strong",
-		"style",
-		"sub",
-		"summary",
-		"sup",
-		"table",
-		"tbody",
-		"td",
-		"template",
-		"textarea",
-		"tfoot",
-		"th",
-		"thead",
-		"time",
-		"tr",
-		"track",
-		"tt",
-		"u",
-		"ul",
-		"var",
-		"video",
-		"wbr"
-	]);
-	var svg$1 = freeze([
-		"svg",
-		"a",
-		"altglyph",
-		"altglyphdef",
-		"altglyphitem",
-		"animatecolor",
-		"animatemotion",
-		"animatetransform",
-		"circle",
-		"clippath",
-		"defs",
-		"desc",
-		"ellipse",
-		"enterkeyhint",
-		"exportparts",
-		"filter",
-		"font",
-		"g",
-		"glyph",
-		"glyphref",
-		"hkern",
-		"image",
-		"inputmode",
-		"line",
-		"lineargradient",
-		"marker",
-		"mask",
-		"metadata",
-		"mpath",
-		"part",
-		"path",
-		"pattern",
-		"polygon",
-		"polyline",
-		"radialgradient",
-		"rect",
-		"stop",
-		"style",
-		"switch",
-		"symbol",
-		"text",
-		"textpath",
-		"title",
-		"tref",
-		"tspan",
-		"view",
-		"vkern"
-	]);
-	var svgFilters = freeze([
-		"feBlend",
-		"feColorMatrix",
-		"feComponentTransfer",
-		"feComposite",
-		"feConvolveMatrix",
-		"feDiffuseLighting",
-		"feDisplacementMap",
-		"feDistantLight",
-		"feDropShadow",
-		"feFlood",
-		"feFuncA",
-		"feFuncB",
-		"feFuncG",
-		"feFuncR",
-		"feGaussianBlur",
-		"feImage",
-		"feMerge",
-		"feMergeNode",
-		"feMorphology",
-		"feOffset",
-		"fePointLight",
-		"feSpecularLighting",
-		"feSpotLight",
-		"feTile",
-		"feTurbulence"
-	]);
-	var svgDisallowed = freeze([
-		"animate",
-		"color-profile",
-		"cursor",
-		"discard",
-		"font-face",
-		"font-face-format",
-		"font-face-name",
-		"font-face-src",
-		"font-face-uri",
-		"foreignobject",
-		"hatch",
-		"hatchpath",
-		"mesh",
-		"meshgradient",
-		"meshpatch",
-		"meshrow",
-		"missing-glyph",
-		"script",
-		"set",
-		"solidcolor",
-		"unknown",
-		"use"
-	]);
-	var mathMl$1 = freeze([
-		"math",
-		"menclose",
-		"merror",
-		"mfenced",
-		"mfrac",
-		"mglyph",
-		"mi",
-		"mlabeledtr",
-		"mmultiscripts",
-		"mn",
-		"mo",
-		"mover",
-		"mpadded",
-		"mphantom",
-		"mroot",
-		"mrow",
-		"ms",
-		"mspace",
-		"msqrt",
-		"mstyle",
-		"msub",
-		"msup",
-		"msubsup",
-		"mtable",
-		"mtd",
-		"mtext",
-		"mtr",
-		"munder",
-		"munderover",
-		"mprescripts"
-	]);
-	var mathMlDisallowed = freeze([
-		"maction",
-		"maligngroup",
-		"malignmark",
-		"mlongdiv",
-		"mscarries",
-		"mscarry",
-		"msgroup",
-		"mstack",
-		"msline",
-		"msrow",
-		"semantics",
-		"annotation",
-		"annotation-xml",
-		"mprescripts",
-		"none"
-	]);
-	var text = freeze(["#text"]);
-	var html = freeze([
-		"accept",
-		"action",
-		"align",
-		"alt",
-		"autocapitalize",
-		"autocomplete",
-		"autopictureinpicture",
-		"autoplay",
-		"background",
-		"bgcolor",
-		"border",
-		"capture",
-		"cellpadding",
-		"cellspacing",
-		"checked",
-		"cite",
-		"class",
-		"clear",
-		"color",
-		"cols",
-		"colspan",
-		"command",
-		"commandfor",
-		"controls",
-		"controlslist",
-		"coords",
-		"crossorigin",
-		"datetime",
-		"decoding",
-		"default",
-		"dir",
-		"disabled",
-		"disablepictureinpicture",
-		"disableremoteplayback",
-		"download",
-		"draggable",
-		"enctype",
-		"enterkeyhint",
-		"exportparts",
-		"face",
-		"for",
-		"headers",
-		"height",
-		"hidden",
-		"high",
-		"href",
-		"hreflang",
-		"id",
-		"inert",
-		"inputmode",
-		"integrity",
-		"ismap",
-		"kind",
-		"label",
-		"lang",
-		"list",
-		"loading",
-		"loop",
-		"low",
-		"max",
-		"maxlength",
-		"media",
-		"method",
-		"min",
-		"minlength",
-		"multiple",
-		"muted",
-		"name",
-		"nonce",
-		"noshade",
-		"novalidate",
-		"nowrap",
-		"open",
-		"optimum",
-		"part",
-		"pattern",
-		"placeholder",
-		"playsinline",
-		"popover",
-		"popovertarget",
-		"popovertargetaction",
-		"poster",
-		"preload",
-		"pubdate",
-		"radiogroup",
-		"readonly",
-		"rel",
-		"required",
-		"rev",
-		"reversed",
-		"role",
-		"rows",
-		"rowspan",
-		"spellcheck",
-		"scope",
-		"selected",
-		"shape",
-		"size",
-		"sizes",
-		"slot",
-		"span",
-		"srclang",
-		"start",
-		"src",
-		"srcset",
-		"step",
-		"style",
-		"summary",
-		"tabindex",
-		"title",
-		"translate",
-		"type",
-		"usemap",
-		"valign",
-		"value",
-		"width",
-		"wrap",
-		"xmlns"
-	]);
-	var svg = freeze([
-		"accent-height",
-		"accumulate",
-		"additive",
-		"alignment-baseline",
-		"amplitude",
-		"ascent",
-		"attributename",
-		"attributetype",
-		"azimuth",
-		"basefrequency",
-		"baseline-shift",
-		"begin",
-		"bias",
-		"by",
-		"class",
-		"clip",
-		"clippathunits",
-		"clip-path",
-		"clip-rule",
-		"color",
-		"color-interpolation",
-		"color-interpolation-filters",
-		"color-profile",
-		"color-rendering",
-		"cx",
-		"cy",
-		"d",
-		"dx",
-		"dy",
-		"diffuseconstant",
-		"direction",
-		"display",
-		"divisor",
-		"dur",
-		"edgemode",
-		"elevation",
-		"end",
-		"exponent",
-		"fill",
-		"fill-opacity",
-		"fill-rule",
-		"filter",
-		"filterunits",
-		"flood-color",
-		"flood-opacity",
-		"font-family",
-		"font-size",
-		"font-size-adjust",
-		"font-stretch",
-		"font-style",
-		"font-variant",
-		"font-weight",
-		"fx",
-		"fy",
-		"g1",
-		"g2",
-		"glyph-name",
-		"glyphref",
-		"gradientunits",
-		"gradienttransform",
-		"height",
-		"href",
-		"id",
-		"image-rendering",
-		"in",
-		"in2",
-		"intercept",
-		"k",
-		"k1",
-		"k2",
-		"k3",
-		"k4",
-		"kerning",
-		"keypoints",
-		"keysplines",
-		"keytimes",
-		"lang",
-		"lengthadjust",
-		"letter-spacing",
-		"kernelmatrix",
-		"kernelunitlength",
-		"lighting-color",
-		"local",
-		"marker-end",
-		"marker-mid",
-		"marker-start",
-		"markerheight",
-		"markerunits",
-		"markerwidth",
-		"maskcontentunits",
-		"maskunits",
-		"max",
-		"mask",
-		"mask-type",
-		"media",
-		"method",
-		"mode",
-		"min",
-		"name",
-		"numoctaves",
-		"offset",
-		"operator",
-		"opacity",
-		"order",
-		"orient",
-		"orientation",
-		"origin",
-		"overflow",
-		"paint-order",
-		"path",
-		"pathlength",
-		"patterncontentunits",
-		"patterntransform",
-		"patternunits",
-		"points",
-		"preservealpha",
-		"preserveaspectratio",
-		"primitiveunits",
-		"r",
-		"rx",
-		"ry",
-		"radius",
-		"refx",
-		"refy",
-		"repeatcount",
-		"repeatdur",
-		"restart",
-		"result",
-		"rotate",
-		"scale",
-		"seed",
-		"shape-rendering",
-		"slope",
-		"specularconstant",
-		"specularexponent",
-		"spreadmethod",
-		"startoffset",
-		"stddeviation",
-		"stitchtiles",
-		"stop-color",
-		"stop-opacity",
-		"stroke-dasharray",
-		"stroke-dashoffset",
-		"stroke-linecap",
-		"stroke-linejoin",
-		"stroke-miterlimit",
-		"stroke-opacity",
-		"stroke",
-		"stroke-width",
-		"style",
-		"surfacescale",
-		"systemlanguage",
-		"tabindex",
-		"tablevalues",
-		"targetx",
-		"targety",
-		"transform",
-		"transform-origin",
-		"text-anchor",
-		"text-decoration",
-		"text-rendering",
-		"textlength",
-		"type",
-		"u1",
-		"u2",
-		"unicode",
-		"values",
-		"viewbox",
-		"visibility",
-		"version",
-		"vert-adv-y",
-		"vert-origin-x",
-		"vert-origin-y",
-		"width",
-		"word-spacing",
-		"wrap",
-		"writing-mode",
-		"xchannelselector",
-		"ychannelselector",
-		"x",
-		"x1",
-		"x2",
-		"xmlns",
-		"y",
-		"y1",
-		"y2",
-		"z",
-		"zoomandpan"
-	]);
-	var mathMl = freeze([
-		"accent",
-		"accentunder",
-		"align",
-		"bevelled",
-		"close",
-		"columnalign",
-		"columnlines",
-		"columnspacing",
-		"columnspan",
-		"denomalign",
-		"depth",
-		"dir",
-		"display",
-		"displaystyle",
-		"encoding",
-		"fence",
-		"frame",
-		"height",
-		"href",
-		"id",
-		"largeop",
-		"length",
-		"linethickness",
-		"lquote",
-		"lspace",
-		"mathbackground",
-		"mathcolor",
-		"mathsize",
-		"mathvariant",
-		"maxsize",
-		"minsize",
-		"movablelimits",
-		"notation",
-		"numalign",
-		"open",
-		"rowalign",
-		"rowlines",
-		"rowspacing",
-		"rowspan",
-		"rspace",
-		"rquote",
-		"scriptlevel",
-		"scriptminsize",
-		"scriptsizemultiplier",
-		"selection",
-		"separator",
-		"separators",
-		"stretchy",
-		"subscriptshift",
-		"supscriptshift",
-		"symmetric",
-		"voffset",
-		"width",
-		"xmlns"
-	]);
-	var xml = freeze([
-		"xlink:href",
-		"xml:id",
-		"xlink:title",
-		"xml:space",
-		"xmlns:xlink"
-	]);
-	var MUSTACHE_EXPR = seal(/{{[\w\W]*|^[\w\W]*}}/g);
-	var ERB_EXPR = seal(/<%[\w\W]*|^[\w\W]*%>/g);
-	var TMPLIT_EXPR = seal(/\${[\w\W]*/g);
-	var DATA_ATTR = seal(/^data-[\-\w.\u00B7-\uFFFF]+$/);
-	var ARIA_ATTR = seal(/^aria-[\-\w]+$/);
-	var IS_ALLOWED_URI = seal(/^(?:(?:(?:f|ht)tps?|mailto|tel|callto|sms|cid|xmpp|matrix):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i);
-	var IS_SCRIPT_OR_DATA = seal(/^(?:\w+script|data):/i);
-	var ATTR_WHITESPACE = seal(/[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g);
-	var DOCTYPE_NAME = seal(/^html$/i);
-	var CUSTOM_ELEMENT = seal(/^[a-z][.\w]*(-[.\w]+)+$/i);
-	var NODE_TYPE = {
-		element: 1,
-		attribute: 2,
-		text: 3,
-		cdataSection: 4,
-		entityReference: 5,
-		entityNode: 6,
-		progressingInstruction: 7,
-		comment: 8,
-		document: 9,
-		documentType: 10,
-		documentFragment: 11,
-		notation: 12
-	};
-	var getGlobal = function getGlobal() {
-		return typeof window === "undefined" ? null : window;
-	};
-	/**
-	* Creates a no-op policy for internal use only.
-	* Don't export this function outside this module!
-	* @param trustedTypes The policy factory.
-	* @param purifyHostElement The Script element used to load DOMPurify (to determine policy name suffix).
-	* @return The policy created (or null, if Trusted Types
-	* are not supported or creating the policy failed).
-	*/
-	var _createTrustedTypesPolicy = function _createTrustedTypesPolicy(trustedTypes, purifyHostElement) {
-		if (typeof trustedTypes !== "object" || typeof trustedTypes.createPolicy !== "function") return null;
-		let suffix = null;
-		const ATTR_NAME = "data-tt-policy-suffix";
-		if (purifyHostElement && purifyHostElement.hasAttribute(ATTR_NAME)) suffix = purifyHostElement.getAttribute(ATTR_NAME);
-		const policyName = "dompurify" + (suffix ? "#" + suffix : "");
-		try {
-			return trustedTypes.createPolicy(policyName, {
-				createHTML(html) {
-					return html;
-				},
-				createScriptURL(scriptUrl) {
-					return scriptUrl;
-				}
-			});
-		} catch (_) {
-			console.warn("TrustedTypes policy " + policyName + " could not be created.");
-			return null;
-		}
-	};
-	var _createHooksMap = function _createHooksMap() {
-		return {
-			afterSanitizeAttributes: [],
-			afterSanitizeElements: [],
-			afterSanitizeShadowDOM: [],
-			beforeSanitizeAttributes: [],
-			beforeSanitizeElements: [],
-			beforeSanitizeShadowDOM: [],
-			uponSanitizeAttribute: [],
-			uponSanitizeElement: [],
-			uponSanitizeShadowNode: []
-		};
-	};
-	function createDOMPurify() {
-		let window = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : getGlobal();
-		const DOMPurify = (root) => createDOMPurify(root);
-		DOMPurify.version = "3.4.7";
-		DOMPurify.removed = [];
-		if (!window || !window.document || window.document.nodeType !== NODE_TYPE.document || !window.Element) {
-			DOMPurify.isSupported = false;
-			return DOMPurify;
-		}
-		let document = window.document;
-		const originalDocument = document;
-		const currentScript = originalDocument.currentScript;
-		window.DocumentFragment;
-		const HTMLTemplateElement = window.HTMLTemplateElement, Node = window.Node, Element = window.Element, NodeFilter = window.NodeFilter;
-		window.NamedNodeMap === void 0 && (window.NamedNodeMap || window.MozNamedAttrMap);
-		window.HTMLFormElement;
-		const DOMParser = window.DOMParser, trustedTypes = window.trustedTypes;
-		const ElementPrototype = Element.prototype;
-		const cloneNode = lookupGetter(ElementPrototype, "cloneNode");
-		const remove = lookupGetter(ElementPrototype, "remove");
-		const getNextSibling = lookupGetter(ElementPrototype, "nextSibling");
-		const getChildNodes = lookupGetter(ElementPrototype, "childNodes");
-		const getParentNode = lookupGetter(ElementPrototype, "parentNode");
-		const getShadowRoot = lookupGetter(ElementPrototype, "shadowRoot");
-		const getAttributes = lookupGetter(ElementPrototype, "attributes");
-		const getNodeType = Node && Node.prototype ? lookupGetter(Node.prototype, "nodeType") : null;
-		const getNodeName = Node && Node.prototype ? lookupGetter(Node.prototype, "nodeName") : null;
-		if (typeof HTMLTemplateElement === "function") {
-			const template = document.createElement("template");
-			if (template.content && template.content.ownerDocument) document = template.content.ownerDocument;
-		}
-		let trustedTypesPolicy;
-		let emptyHTML = "";
-		const _document = document, implementation = _document.implementation, createNodeIterator = _document.createNodeIterator, createDocumentFragment = _document.createDocumentFragment, getElementsByTagName = _document.getElementsByTagName;
-		const importNode = originalDocument.importNode;
-		let hooks = _createHooksMap();
-		/**
-		* Expose whether this browser supports running the full DOMPurify.
-		*/
-		DOMPurify.isSupported = typeof entries === "function" && typeof getParentNode === "function" && implementation && implementation.createHTMLDocument !== void 0;
-		const MUSTACHE_EXPR$1 = MUSTACHE_EXPR, ERB_EXPR$1 = ERB_EXPR, TMPLIT_EXPR$1 = TMPLIT_EXPR, DATA_ATTR$1 = DATA_ATTR, ARIA_ATTR$1 = ARIA_ATTR, IS_SCRIPT_OR_DATA$1 = IS_SCRIPT_OR_DATA, ATTR_WHITESPACE$1 = ATTR_WHITESPACE, CUSTOM_ELEMENT$1 = CUSTOM_ELEMENT;
-		let IS_ALLOWED_URI$1 = IS_ALLOWED_URI;
-		/**
-		* We consider the elements and attributes below to be safe. Ideally
-		* don't add any new ones but feel free to remove unwanted ones.
-		*/
-		let ALLOWED_TAGS = null;
-		const DEFAULT_ALLOWED_TAGS = addToSet({}, [
-			...html$1,
-			...svg$1,
-			...svgFilters,
-			...mathMl$1,
-			...text
-		]);
-		let ALLOWED_ATTR = null;
-		const DEFAULT_ALLOWED_ATTR = addToSet({}, [
-			...html,
-			...svg,
-			...mathMl,
-			...xml
-		]);
-		let CUSTOM_ELEMENT_HANDLING = Object.seal(create(null, {
-			tagNameCheck: {
-				writable: true,
-				configurable: false,
-				enumerable: true,
-				value: null
-			},
-			attributeNameCheck: {
-				writable: true,
-				configurable: false,
-				enumerable: true,
-				value: null
-			},
-			allowCustomizedBuiltInElements: {
-				writable: true,
-				configurable: false,
-				enumerable: true,
-				value: false
-			}
-		}));
-		let FORBID_TAGS = null;
-		let FORBID_ATTR = null;
-		const EXTRA_ELEMENT_HANDLING = Object.seal(create(null, {
-			tagCheck: {
-				writable: true,
-				configurable: false,
-				enumerable: true,
-				value: null
-			},
-			attributeCheck: {
-				writable: true,
-				configurable: false,
-				enumerable: true,
-				value: null
-			}
-		}));
-		let ALLOW_ARIA_ATTR = true;
-		let ALLOW_DATA_ATTR = true;
-		let ALLOW_UNKNOWN_PROTOCOLS = false;
-		let ALLOW_SELF_CLOSE_IN_ATTR = true;
-		let SAFE_FOR_TEMPLATES = false;
-		let SAFE_FOR_XML = true;
-		let WHOLE_DOCUMENT = false;
-		let SET_CONFIG = false;
-		let FORCE_BODY = false;
-		let RETURN_DOM = false;
-		let RETURN_DOM_FRAGMENT = false;
-		let RETURN_TRUSTED_TYPE = false;
-		let SANITIZE_DOM = true;
-		let SANITIZE_NAMED_PROPS = false;
-		const SANITIZE_NAMED_PROPS_PREFIX = "user-content-";
-		let KEEP_CONTENT = true;
-		let IN_PLACE = false;
-		let USE_PROFILES = {};
-		let FORBID_CONTENTS = null;
-		const DEFAULT_FORBID_CONTENTS = addToSet({}, [
-			"annotation-xml",
-			"audio",
-			"colgroup",
-			"desc",
-			"foreignobject",
-			"head",
-			"iframe",
-			"math",
-			"mi",
-			"mn",
-			"mo",
-			"ms",
-			"mtext",
-			"noembed",
-			"noframes",
-			"noscript",
-			"plaintext",
-			"script",
-			"style",
-			"svg",
-			"template",
-			"thead",
-			"title",
-			"video",
-			"xmp"
-		]);
-		let DATA_URI_TAGS = null;
-		const DEFAULT_DATA_URI_TAGS = addToSet({}, [
-			"audio",
-			"video",
-			"img",
-			"source",
-			"image",
-			"track"
-		]);
-		let URI_SAFE_ATTRIBUTES = null;
-		const DEFAULT_URI_SAFE_ATTRIBUTES = addToSet({}, [
-			"alt",
-			"class",
-			"for",
-			"id",
-			"label",
-			"name",
-			"pattern",
-			"placeholder",
-			"role",
-			"summary",
-			"title",
-			"value",
-			"style",
-			"xmlns"
-		]);
-		const MATHML_NAMESPACE = "http://www.w3.org/1998/Math/MathML";
-		const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
-		const HTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
-		let NAMESPACE = HTML_NAMESPACE;
-		let IS_EMPTY_INPUT = false;
-		let ALLOWED_NAMESPACES = null;
-		const DEFAULT_ALLOWED_NAMESPACES = addToSet({}, [
-			MATHML_NAMESPACE,
-			SVG_NAMESPACE,
-			HTML_NAMESPACE
-		], stringToString);
-		let MATHML_TEXT_INTEGRATION_POINTS = addToSet({}, [
-			"mi",
-			"mo",
-			"mn",
-			"ms",
-			"mtext"
-		]);
-		let HTML_INTEGRATION_POINTS = addToSet({}, ["annotation-xml"]);
-		const COMMON_SVG_AND_HTML_ELEMENTS = addToSet({}, [
-			"title",
-			"style",
-			"font",
-			"a",
-			"script"
-		]);
-		let PARSER_MEDIA_TYPE = null;
-		const SUPPORTED_PARSER_MEDIA_TYPES = ["application/xhtml+xml", "text/html"];
-		const DEFAULT_PARSER_MEDIA_TYPE = "text/html";
-		let transformCaseFunc = null;
-		let CONFIG = null;
-		const formElement = document.createElement("form");
-		const isRegexOrFunction = function isRegexOrFunction(testValue) {
-			return testValue instanceof RegExp || testValue instanceof Function;
-		};
-		/**
-		* _parseConfig
-		*
-		* @param cfg optional config literal
-		*/
-		const _parseConfig = function _parseConfig() {
-			let cfg = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
-			if (CONFIG && CONFIG === cfg) return;
-			if (!cfg || typeof cfg !== "object") cfg = {};
-			cfg = clone(cfg);
-			PARSER_MEDIA_TYPE = SUPPORTED_PARSER_MEDIA_TYPES.indexOf(cfg.PARSER_MEDIA_TYPE) === -1 ? DEFAULT_PARSER_MEDIA_TYPE : cfg.PARSER_MEDIA_TYPE;
-			transformCaseFunc = PARSER_MEDIA_TYPE === "application/xhtml+xml" ? stringToString : stringToLowerCase;
-			ALLOWED_TAGS = objectHasOwnProperty(cfg, "ALLOWED_TAGS") && arrayIsArray(cfg.ALLOWED_TAGS) ? addToSet({}, cfg.ALLOWED_TAGS, transformCaseFunc) : DEFAULT_ALLOWED_TAGS;
-			ALLOWED_ATTR = objectHasOwnProperty(cfg, "ALLOWED_ATTR") && arrayIsArray(cfg.ALLOWED_ATTR) ? addToSet({}, cfg.ALLOWED_ATTR, transformCaseFunc) : DEFAULT_ALLOWED_ATTR;
-			ALLOWED_NAMESPACES = objectHasOwnProperty(cfg, "ALLOWED_NAMESPACES") && arrayIsArray(cfg.ALLOWED_NAMESPACES) ? addToSet({}, cfg.ALLOWED_NAMESPACES, stringToString) : DEFAULT_ALLOWED_NAMESPACES;
-			URI_SAFE_ATTRIBUTES = objectHasOwnProperty(cfg, "ADD_URI_SAFE_ATTR") && arrayIsArray(cfg.ADD_URI_SAFE_ATTR) ? addToSet(clone(DEFAULT_URI_SAFE_ATTRIBUTES), cfg.ADD_URI_SAFE_ATTR, transformCaseFunc) : DEFAULT_URI_SAFE_ATTRIBUTES;
-			DATA_URI_TAGS = objectHasOwnProperty(cfg, "ADD_DATA_URI_TAGS") && arrayIsArray(cfg.ADD_DATA_URI_TAGS) ? addToSet(clone(DEFAULT_DATA_URI_TAGS), cfg.ADD_DATA_URI_TAGS, transformCaseFunc) : DEFAULT_DATA_URI_TAGS;
-			FORBID_CONTENTS = objectHasOwnProperty(cfg, "FORBID_CONTENTS") && arrayIsArray(cfg.FORBID_CONTENTS) ? addToSet({}, cfg.FORBID_CONTENTS, transformCaseFunc) : DEFAULT_FORBID_CONTENTS;
-			FORBID_TAGS = objectHasOwnProperty(cfg, "FORBID_TAGS") && arrayIsArray(cfg.FORBID_TAGS) ? addToSet({}, cfg.FORBID_TAGS, transformCaseFunc) : clone({});
-			FORBID_ATTR = objectHasOwnProperty(cfg, "FORBID_ATTR") && arrayIsArray(cfg.FORBID_ATTR) ? addToSet({}, cfg.FORBID_ATTR, transformCaseFunc) : clone({});
-			USE_PROFILES = objectHasOwnProperty(cfg, "USE_PROFILES") ? cfg.USE_PROFILES && typeof cfg.USE_PROFILES === "object" ? clone(cfg.USE_PROFILES) : cfg.USE_PROFILES : false;
-			ALLOW_ARIA_ATTR = cfg.ALLOW_ARIA_ATTR !== false;
-			ALLOW_DATA_ATTR = cfg.ALLOW_DATA_ATTR !== false;
-			ALLOW_UNKNOWN_PROTOCOLS = cfg.ALLOW_UNKNOWN_PROTOCOLS || false;
-			ALLOW_SELF_CLOSE_IN_ATTR = cfg.ALLOW_SELF_CLOSE_IN_ATTR !== false;
-			SAFE_FOR_TEMPLATES = cfg.SAFE_FOR_TEMPLATES || false;
-			SAFE_FOR_XML = cfg.SAFE_FOR_XML !== false;
-			WHOLE_DOCUMENT = cfg.WHOLE_DOCUMENT || false;
-			RETURN_DOM = cfg.RETURN_DOM || false;
-			RETURN_DOM_FRAGMENT = cfg.RETURN_DOM_FRAGMENT || false;
-			RETURN_TRUSTED_TYPE = cfg.RETURN_TRUSTED_TYPE || false;
-			FORCE_BODY = cfg.FORCE_BODY || false;
-			SANITIZE_DOM = cfg.SANITIZE_DOM !== false;
-			SANITIZE_NAMED_PROPS = cfg.SANITIZE_NAMED_PROPS || false;
-			KEEP_CONTENT = cfg.KEEP_CONTENT !== false;
-			IN_PLACE = cfg.IN_PLACE || false;
-			IS_ALLOWED_URI$1 = isRegex(cfg.ALLOWED_URI_REGEXP) ? cfg.ALLOWED_URI_REGEXP : IS_ALLOWED_URI;
-			NAMESPACE = typeof cfg.NAMESPACE === "string" ? cfg.NAMESPACE : HTML_NAMESPACE;
-			MATHML_TEXT_INTEGRATION_POINTS = objectHasOwnProperty(cfg, "MATHML_TEXT_INTEGRATION_POINTS") && cfg.MATHML_TEXT_INTEGRATION_POINTS && typeof cfg.MATHML_TEXT_INTEGRATION_POINTS === "object" ? clone(cfg.MATHML_TEXT_INTEGRATION_POINTS) : addToSet({}, [
-				"mi",
-				"mo",
-				"mn",
-				"ms",
-				"mtext"
-			]);
-			HTML_INTEGRATION_POINTS = objectHasOwnProperty(cfg, "HTML_INTEGRATION_POINTS") && cfg.HTML_INTEGRATION_POINTS && typeof cfg.HTML_INTEGRATION_POINTS === "object" ? clone(cfg.HTML_INTEGRATION_POINTS) : addToSet({}, ["annotation-xml"]);
-			const customElementHandling = objectHasOwnProperty(cfg, "CUSTOM_ELEMENT_HANDLING") && cfg.CUSTOM_ELEMENT_HANDLING && typeof cfg.CUSTOM_ELEMENT_HANDLING === "object" ? clone(cfg.CUSTOM_ELEMENT_HANDLING) : create(null);
-			CUSTOM_ELEMENT_HANDLING = create(null);
-			if (objectHasOwnProperty(customElementHandling, "tagNameCheck") && isRegexOrFunction(customElementHandling.tagNameCheck)) CUSTOM_ELEMENT_HANDLING.tagNameCheck = customElementHandling.tagNameCheck;
-			if (objectHasOwnProperty(customElementHandling, "attributeNameCheck") && isRegexOrFunction(customElementHandling.attributeNameCheck)) CUSTOM_ELEMENT_HANDLING.attributeNameCheck = customElementHandling.attributeNameCheck;
-			if (objectHasOwnProperty(customElementHandling, "allowCustomizedBuiltInElements") && typeof customElementHandling.allowCustomizedBuiltInElements === "boolean") CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements = customElementHandling.allowCustomizedBuiltInElements;
-			if (SAFE_FOR_TEMPLATES) ALLOW_DATA_ATTR = false;
-			if (RETURN_DOM_FRAGMENT) RETURN_DOM = true;
-			if (USE_PROFILES) {
-				ALLOWED_TAGS = addToSet({}, text);
-				ALLOWED_ATTR = create(null);
-				if (USE_PROFILES.html === true) {
-					addToSet(ALLOWED_TAGS, html$1);
-					addToSet(ALLOWED_ATTR, html);
-				}
-				if (USE_PROFILES.svg === true) {
-					addToSet(ALLOWED_TAGS, svg$1);
-					addToSet(ALLOWED_ATTR, svg);
-					addToSet(ALLOWED_ATTR, xml);
-				}
-				if (USE_PROFILES.svgFilters === true) {
-					addToSet(ALLOWED_TAGS, svgFilters);
-					addToSet(ALLOWED_ATTR, svg);
-					addToSet(ALLOWED_ATTR, xml);
-				}
-				if (USE_PROFILES.mathMl === true) {
-					addToSet(ALLOWED_TAGS, mathMl$1);
-					addToSet(ALLOWED_ATTR, mathMl);
-					addToSet(ALLOWED_ATTR, xml);
-				}
-			}
-			EXTRA_ELEMENT_HANDLING.tagCheck = null;
-			EXTRA_ELEMENT_HANDLING.attributeCheck = null;
-			if (objectHasOwnProperty(cfg, "ADD_TAGS")) {
-				if (typeof cfg.ADD_TAGS === "function") EXTRA_ELEMENT_HANDLING.tagCheck = cfg.ADD_TAGS;
-				else if (arrayIsArray(cfg.ADD_TAGS)) {
-					if (ALLOWED_TAGS === DEFAULT_ALLOWED_TAGS) ALLOWED_TAGS = clone(ALLOWED_TAGS);
-					addToSet(ALLOWED_TAGS, cfg.ADD_TAGS, transformCaseFunc);
-				}
-			}
-			if (objectHasOwnProperty(cfg, "ADD_ATTR")) {
-				if (typeof cfg.ADD_ATTR === "function") EXTRA_ELEMENT_HANDLING.attributeCheck = cfg.ADD_ATTR;
-				else if (arrayIsArray(cfg.ADD_ATTR)) {
-					if (ALLOWED_ATTR === DEFAULT_ALLOWED_ATTR) ALLOWED_ATTR = clone(ALLOWED_ATTR);
-					addToSet(ALLOWED_ATTR, cfg.ADD_ATTR, transformCaseFunc);
-				}
-			}
-			if (objectHasOwnProperty(cfg, "ADD_URI_SAFE_ATTR") && arrayIsArray(cfg.ADD_URI_SAFE_ATTR)) addToSet(URI_SAFE_ATTRIBUTES, cfg.ADD_URI_SAFE_ATTR, transformCaseFunc);
-			if (objectHasOwnProperty(cfg, "FORBID_CONTENTS") && arrayIsArray(cfg.FORBID_CONTENTS)) {
-				if (FORBID_CONTENTS === DEFAULT_FORBID_CONTENTS) FORBID_CONTENTS = clone(FORBID_CONTENTS);
-				addToSet(FORBID_CONTENTS, cfg.FORBID_CONTENTS, transformCaseFunc);
-			}
-			if (objectHasOwnProperty(cfg, "ADD_FORBID_CONTENTS") && arrayIsArray(cfg.ADD_FORBID_CONTENTS)) {
-				if (FORBID_CONTENTS === DEFAULT_FORBID_CONTENTS) FORBID_CONTENTS = clone(FORBID_CONTENTS);
-				addToSet(FORBID_CONTENTS, cfg.ADD_FORBID_CONTENTS, transformCaseFunc);
-			}
-			if (KEEP_CONTENT) ALLOWED_TAGS["#text"] = true;
-			if (WHOLE_DOCUMENT) addToSet(ALLOWED_TAGS, [
-				"html",
-				"head",
-				"body"
-			]);
-			if (ALLOWED_TAGS.table) {
-				addToSet(ALLOWED_TAGS, ["tbody"]);
-				delete FORBID_TAGS.tbody;
-			}
-			if (cfg.TRUSTED_TYPES_POLICY) {
-				if (typeof cfg.TRUSTED_TYPES_POLICY.createHTML !== "function") throw typeErrorCreate("TRUSTED_TYPES_POLICY configuration option must provide a \"createHTML\" hook.");
-				if (typeof cfg.TRUSTED_TYPES_POLICY.createScriptURL !== "function") throw typeErrorCreate("TRUSTED_TYPES_POLICY configuration option must provide a \"createScriptURL\" hook.");
-				trustedTypesPolicy = cfg.TRUSTED_TYPES_POLICY;
-				emptyHTML = trustedTypesPolicy.createHTML("");
-			} else {
-				if (trustedTypesPolicy === void 0) trustedTypesPolicy = _createTrustedTypesPolicy(trustedTypes, currentScript);
-				if (trustedTypesPolicy !== null && typeof emptyHTML === "string") emptyHTML = trustedTypesPolicy.createHTML("");
-			}
-			if ((hooks.uponSanitizeElement.length > 0 || hooks.uponSanitizeAttribute.length > 0) && ALLOWED_TAGS === DEFAULT_ALLOWED_TAGS) ALLOWED_TAGS = clone(ALLOWED_TAGS);
-			if (hooks.uponSanitizeAttribute.length > 0 && ALLOWED_ATTR === DEFAULT_ALLOWED_ATTR) ALLOWED_ATTR = clone(ALLOWED_ATTR);
-			if (freeze) freeze(cfg);
-			CONFIG = cfg;
-		};
-		const ALL_SVG_TAGS = addToSet({}, [
-			...svg$1,
-			...svgFilters,
-			...svgDisallowed
-		]);
-		const ALL_MATHML_TAGS = addToSet({}, [...mathMl$1, ...mathMlDisallowed]);
-		/**
-		* @param element a DOM element whose namespace is being checked
-		* @returns Return false if the element has a
-		*  namespace that a spec-compliant parser would never
-		*  return. Return true otherwise.
-		*/
-		const _checkValidNamespace = function _checkValidNamespace(element) {
-			let parent = getParentNode(element);
-			if (!parent || !parent.tagName) parent = {
-				namespaceURI: NAMESPACE,
-				tagName: "template"
-			};
-			const tagName = stringToLowerCase(element.tagName);
-			const parentTagName = stringToLowerCase(parent.tagName);
-			if (!ALLOWED_NAMESPACES[element.namespaceURI]) return false;
-			if (element.namespaceURI === SVG_NAMESPACE) {
-				if (parent.namespaceURI === HTML_NAMESPACE) return tagName === "svg";
-				if (parent.namespaceURI === MATHML_NAMESPACE) return tagName === "svg" && (parentTagName === "annotation-xml" || MATHML_TEXT_INTEGRATION_POINTS[parentTagName]);
-				return Boolean(ALL_SVG_TAGS[tagName]);
-			}
-			if (element.namespaceURI === MATHML_NAMESPACE) {
-				if (parent.namespaceURI === HTML_NAMESPACE) return tagName === "math";
-				if (parent.namespaceURI === SVG_NAMESPACE) return tagName === "math" && HTML_INTEGRATION_POINTS[parentTagName];
-				return Boolean(ALL_MATHML_TAGS[tagName]);
-			}
-			if (element.namespaceURI === HTML_NAMESPACE) {
-				if (parent.namespaceURI === SVG_NAMESPACE && !HTML_INTEGRATION_POINTS[parentTagName]) return false;
-				if (parent.namespaceURI === MATHML_NAMESPACE && !MATHML_TEXT_INTEGRATION_POINTS[parentTagName]) return false;
-				return !ALL_MATHML_TAGS[tagName] && (COMMON_SVG_AND_HTML_ELEMENTS[tagName] || !ALL_SVG_TAGS[tagName]);
-			}
-			if (PARSER_MEDIA_TYPE === "application/xhtml+xml" && ALLOWED_NAMESPACES[element.namespaceURI]) return true;
-			return false;
-		};
-		/**
-		* _forceRemove
-		*
-		* @param node a DOM node
-		*/
-		const _forceRemove = function _forceRemove(node) {
-			arrayPush(DOMPurify.removed, { element: node });
-			try {
-				getParentNode(node).removeChild(node);
-			} catch (_) {
-				remove(node);
-			}
-		};
-		/**
-		* _removeAttribute
-		*
-		* @param name an Attribute name
-		* @param element a DOM node
-		*/
-		const _removeAttribute = function _removeAttribute(name, element) {
-			try {
-				arrayPush(DOMPurify.removed, {
-					attribute: element.getAttributeNode(name),
-					from: element
-				});
-			} catch (_) {
-				arrayPush(DOMPurify.removed, {
-					attribute: null,
-					from: element
-				});
-			}
-			element.removeAttribute(name);
-			if (name === "is") if (RETURN_DOM || RETURN_DOM_FRAGMENT) try {
-				_forceRemove(element);
-			} catch (_) {}
-			else try {
-				element.setAttribute(name, "");
-			} catch (_) {}
-		};
-		/**
-		* _initDocument
-		*
-		* @param dirty - a string of dirty markup
-		* @return a DOM, filled with the dirty markup
-		*/
-		const _initDocument = function _initDocument(dirty) {
-			let doc = null;
-			let leadingWhitespace = null;
-			if (FORCE_BODY) dirty = "<remove></remove>" + dirty;
-			else {
-				const matches = stringMatch(dirty, /^[\r\n\t ]+/);
-				leadingWhitespace = matches && matches[0];
-			}
-			if (PARSER_MEDIA_TYPE === "application/xhtml+xml" && NAMESPACE === HTML_NAMESPACE) dirty = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body>" + dirty + "</body></html>";
-			const dirtyPayload = trustedTypesPolicy ? trustedTypesPolicy.createHTML(dirty) : dirty;
-			if (NAMESPACE === HTML_NAMESPACE) try {
-				doc = new DOMParser().parseFromString(dirtyPayload, PARSER_MEDIA_TYPE);
-			} catch (_) {}
-			if (!doc || !doc.documentElement) {
-				doc = implementation.createDocument(NAMESPACE, "template", null);
-				try {
-					doc.documentElement.innerHTML = IS_EMPTY_INPUT ? emptyHTML : dirtyPayload;
-				} catch (_) {}
-			}
-			const body = doc.body || doc.documentElement;
-			if (dirty && leadingWhitespace) body.insertBefore(document.createTextNode(leadingWhitespace), body.childNodes[0] || null);
-			if (NAMESPACE === HTML_NAMESPACE) return getElementsByTagName.call(doc, WHOLE_DOCUMENT ? "html" : "body")[0];
-			return WHOLE_DOCUMENT ? doc.documentElement : body;
-		};
-		/**
-		* Creates a NodeIterator object that you can use to traverse filtered lists of nodes or elements in a document.
-		*
-		* @param root The root element or node to start traversing on.
-		* @return The created NodeIterator
-		*/
-		const _createNodeIterator = function _createNodeIterator(root) {
-			return createNodeIterator.call(root.ownerDocument || root, root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT | NodeFilter.SHOW_PROCESSING_INSTRUCTION | NodeFilter.SHOW_CDATA_SECTION, null);
-		};
-		/**
-		* Strip template-engine expressions ({{...}}, ${...}, <%...%>) from the
-		* character data of an element subtree. Used as the final safety net for
-		* SAFE_FOR_TEMPLATES on every DOM-returning code path so that expressions
-		* which only form after text-node normalization (e.g. fragments split across
-		* stripped elements) cannot survive into a template-evaluating framework.
-		*
-		* Walks text/comment/CDATA/processing-instruction nodes and mutates `.data`
-		* in place rather than round-tripping through innerHTML. This preserves
-		* descendant node references (important for IN_PLACE callers), avoids a
-		* serialize/reparse cycle, and reads literal character data — which means
-		* `<%...%>` in text content matches the ERB regex against its real bytes
-		* instead of the HTML-entity-escaped form innerHTML would produce.
-		*
-		* Attribute values are not visited here; SAFE_FOR_TEMPLATES handling for
-		* attributes is performed during the per-node `_sanitizeAttributes` pass.
-		*
-		* @param node The root element whose character data should be scrubbed.
-		*/
-		const _scrubTemplateExpressions = function _scrubTemplateExpressions(node) {
-			node.normalize();
-			const walker = createNodeIterator.call(node.ownerDocument || node, node, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_CDATA_SECTION | NodeFilter.SHOW_PROCESSING_INSTRUCTION, null);
-			let currentNode = walker.nextNode();
-			while (currentNode) {
-				let data = currentNode.data;
-				arrayForEach([
-					MUSTACHE_EXPR$1,
-					ERB_EXPR$1,
-					TMPLIT_EXPR$1
-				], (expr) => {
-					data = stringReplace(data, expr, " ");
-				});
-				currentNode.data = data;
-				currentNode = walker.nextNode();
-			}
-		};
-		/**
-		* _isClobbered
-		*
-		* Detect DOM-clobbering on HTMLFormElement nodes. Form is the only HTML
-		* interface with [LegacyOverrideBuiltIns]; a descendant element with a
-		* `name` attribute matching a prototype property shadows that property
-		* on direct reads. We use this check at the IN_PLACE entry-point and
-		* during attribute sanitization to refuse clobbered forms.
-		*
-		* @param element element to check for clobbering attacks
-		* @return true if clobbered, false if safe
-		*/
-		const _isClobbered = function _isClobbered(element) {
-			const realTagName = getNodeName ? getNodeName(element) : null;
-			if (typeof realTagName !== "string") return false;
-			if (transformCaseFunc(realTagName) !== "form") return false;
-			return typeof element.nodeName !== "string" || typeof element.textContent !== "string" || typeof element.removeChild !== "function" || element.attributes !== getAttributes(element) || typeof element.removeAttribute !== "function" || typeof element.setAttribute !== "function" || typeof element.namespaceURI !== "string" || typeof element.insertBefore !== "function" || typeof element.hasChildNodes !== "function" || element.nodeType !== getNodeType(element) || element.childNodes !== getChildNodes(element);
-		};
-		/**
-		* Checks whether the given value is a DocumentFragment from any realm.
-		*
-		* The realm-independent replacement reads `nodeType` through the cached
-		* Node.prototype getter and compares to the DOCUMENT_FRAGMENT_NODE
-		* constant (11). nodeType is a numeric value resolved from the node's
-		* internal slot, identical across realms for the same kind of node.
-		*
-		* @param value object to check
-		* @return true if value is a DocumentFragment-shaped node from any realm
-		*/
-		const _isDocumentFragment = function _isDocumentFragment(value) {
-			if (!getNodeType || typeof value !== "object" || value === null) return false;
-			try {
-				return getNodeType(value) === NODE_TYPE.documentFragment;
-			} catch (_) {
-				return false;
-			}
-		};
-		/**
-		* Checks whether the given object is a DOM node, including nodes that
-		* originate from a different window/realm (e.g. an iframe's
-		* contentDocument). The previous `value instanceof Node` check was
-		* realm-bound: nodes from a different window failed it, causing
-		* sanitize() to silently stringify them and reset IN_PLACE to false,
-		* returning the original node unsanitized. See GHSA-4w3q-35jp-p934.
-		*
-		* @param value object to check whether it's a DOM node
-		* @return true if value is a DOM node from any realm
-		*/
-		const _isNode = function _isNode(value) {
-			if (!getNodeType || typeof value !== "object" || value === null) return false;
-			try {
-				return typeof getNodeType(value) === "number";
-			} catch (_) {
-				return false;
-			}
-		};
-		function _executeHooks(hooks, currentNode, data) {
-			arrayForEach(hooks, (hook) => {
-				hook.call(DOMPurify, currentNode, data, CONFIG);
-			});
-		}
-		/**
-		* _sanitizeElements
-		*
-		* @protect nodeName
-		* @protect textContent
-		* @protect removeChild
-		* @param currentNode to check for permission to exist
-		* @return true if node was killed, false if left alive
-		*/
-		const _sanitizeElements = function _sanitizeElements(currentNode) {
-			let content = null;
-			_executeHooks(hooks.beforeSanitizeElements, currentNode, null);
-			if (_isClobbered(currentNode)) {
-				_forceRemove(currentNode);
-				return true;
-			}
-			const tagName = transformCaseFunc(currentNode.nodeName);
-			_executeHooks(hooks.uponSanitizeElement, currentNode, {
-				tagName,
-				allowedTags: ALLOWED_TAGS
-			});
-			if (SAFE_FOR_XML && currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && regExpTest(/<[/\w!]/g, currentNode.innerHTML) && regExpTest(/<[/\w!]/g, currentNode.textContent)) {
-				_forceRemove(currentNode);
-				return true;
-			}
-			if (SAFE_FOR_XML && currentNode.namespaceURI === HTML_NAMESPACE && tagName === "style" && _isNode(currentNode.firstElementChild)) {
-				_forceRemove(currentNode);
-				return true;
-			}
-			if (currentNode.nodeType === NODE_TYPE.progressingInstruction) {
-				_forceRemove(currentNode);
-				return true;
-			}
-			if (SAFE_FOR_XML && currentNode.nodeType === NODE_TYPE.comment && regExpTest(/<[/\w]/g, currentNode.data)) {
-				_forceRemove(currentNode);
-				return true;
-			}
-			if (FORBID_TAGS[tagName] || !(EXTRA_ELEMENT_HANDLING.tagCheck instanceof Function && EXTRA_ELEMENT_HANDLING.tagCheck(tagName)) && !ALLOWED_TAGS[tagName]) {
-				if (!FORBID_TAGS[tagName] && _isBasicCustomElement(tagName)) {
-					if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName)) return false;
-					if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(tagName)) return false;
-				}
-				if (KEEP_CONTENT && !FORBID_CONTENTS[tagName]) {
-					const parentNode = getParentNode(currentNode);
-					const childNodes = getChildNodes(currentNode);
-					if (childNodes && parentNode) {
-						const childCount = childNodes.length;
-						for (let i = childCount - 1; i >= 0; --i) {
-							const childClone = cloneNode(childNodes[i], true);
-							parentNode.insertBefore(childClone, getNextSibling(currentNode));
-						}
-					}
-				}
-				_forceRemove(currentNode);
-				return true;
-			}
-			if ((getNodeType ? getNodeType(currentNode) : currentNode.nodeType) === NODE_TYPE.element && !_checkValidNamespace(currentNode)) {
-				_forceRemove(currentNode);
-				return true;
-			}
-			if ((tagName === "noscript" || tagName === "noembed" || tagName === "noframes") && regExpTest(/<\/no(script|embed|frames)/i, currentNode.innerHTML)) {
-				_forceRemove(currentNode);
-				return true;
-			}
-			if (SAFE_FOR_TEMPLATES && currentNode.nodeType === NODE_TYPE.text) {
-				content = currentNode.textContent;
-				arrayForEach([
-					MUSTACHE_EXPR$1,
-					ERB_EXPR$1,
-					TMPLIT_EXPR$1
-				], (expr) => {
-					content = stringReplace(content, expr, " ");
-				});
-				if (currentNode.textContent !== content) {
-					arrayPush(DOMPurify.removed, { element: currentNode.cloneNode() });
-					currentNode.textContent = content;
-				}
-			}
-			_executeHooks(hooks.afterSanitizeElements, currentNode, null);
-			return false;
-		};
-		/**
-		* _isValidAttribute
-		*
-		* @param lcTag Lowercase tag name of containing element.
-		* @param lcName Lowercase attribute name.
-		* @param value Attribute value.
-		* @return Returns true if `value` is valid, otherwise false.
-		*/
-		const _isValidAttribute = function _isValidAttribute(lcTag, lcName, value) {
-			if (FORBID_ATTR[lcName]) return false;
-			if (SANITIZE_DOM && (lcName === "id" || lcName === "name") && (value in document || value in formElement)) return false;
-			const nameIsPermitted = ALLOWED_ATTR[lcName] || EXTRA_ELEMENT_HANDLING.attributeCheck instanceof Function && EXTRA_ELEMENT_HANDLING.attributeCheck(lcName, lcTag);
-			if (ALLOW_DATA_ATTR && !FORBID_ATTR[lcName] && regExpTest(DATA_ATTR$1, lcName));
-			else if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$1, lcName));
-			else if (!nameIsPermitted || FORBID_ATTR[lcName]) if (_isBasicCustomElement(lcTag) && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(lcTag)) && (CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName) || CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.attributeNameCheck(lcName, lcTag)) || lcName === "is" && CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, value) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(value)));
-			else return false;
-			else if (URI_SAFE_ATTRIBUTES[lcName]);
-			else if (regExpTest(IS_ALLOWED_URI$1, stringReplace(value, ATTR_WHITESPACE$1, "")));
-			else if ((lcName === "src" || lcName === "xlink:href" || lcName === "href") && lcTag !== "script" && stringIndexOf(value, "data:") === 0 && DATA_URI_TAGS[lcTag]);
-			else if (ALLOW_UNKNOWN_PROTOCOLS && !regExpTest(IS_SCRIPT_OR_DATA$1, stringReplace(value, ATTR_WHITESPACE$1, "")));
-			else if (value) return false;
-			return true;
-		};
-		const RESERVED_CUSTOM_ELEMENT_NAMES = addToSet({}, [
-			"annotation-xml",
-			"color-profile",
-			"font-face",
-			"font-face-format",
-			"font-face-name",
-			"font-face-src",
-			"font-face-uri",
-			"missing-glyph"
-		]);
-		/**
-		* _isBasicCustomElement
-		* checks if at least one dash is included in tagName, and it's not the first char
-		* for more sophisticated checking see https://github.com/sindresorhus/validate-element-name
-		*
-		* @param tagName name of the tag of the node to sanitize
-		* @returns Returns true if the tag name meets the basic criteria for a custom element, otherwise false.
-		*/
-		const _isBasicCustomElement = function _isBasicCustomElement(tagName) {
-			return !RESERVED_CUSTOM_ELEMENT_NAMES[stringToLowerCase(tagName)] && regExpTest(CUSTOM_ELEMENT$1, tagName);
-		};
-		/**
-		* _sanitizeAttributes
-		*
-		* @protect attributes
-		* @protect nodeName
-		* @protect removeAttribute
-		* @protect setAttribute
-		*
-		* @param currentNode to sanitize
-		*/
-		const _sanitizeAttributes = function _sanitizeAttributes(currentNode) {
-			_executeHooks(hooks.beforeSanitizeAttributes, currentNode, null);
-			const attributes = currentNode.attributes;
-			if (!attributes || _isClobbered(currentNode)) return;
-			const hookEvent = {
-				attrName: "",
-				attrValue: "",
-				keepAttr: true,
-				allowedAttributes: ALLOWED_ATTR,
-				forceKeepAttr: void 0
-			};
-			let l = attributes.length;
-			while (l--) {
-				const attr = attributes[l];
-				const name = attr.name, namespaceURI = attr.namespaceURI, attrValue = attr.value;
-				const lcName = transformCaseFunc(name);
-				const initValue = attrValue;
-				let value = name === "value" ? initValue : stringTrim(initValue);
-				hookEvent.attrName = lcName;
-				hookEvent.attrValue = value;
-				hookEvent.keepAttr = true;
-				hookEvent.forceKeepAttr = void 0;
-				_executeHooks(hooks.uponSanitizeAttribute, currentNode, hookEvent);
-				value = hookEvent.attrValue;
-				if (SANITIZE_NAMED_PROPS && (lcName === "id" || lcName === "name") && stringIndexOf(value, SANITIZE_NAMED_PROPS_PREFIX) !== 0) {
-					_removeAttribute(name, currentNode);
-					value = SANITIZE_NAMED_PROPS_PREFIX + value;
-				}
-				if (SAFE_FOR_XML && regExpTest(/((--!?|])>)|<\/(style|script|title|xmp|textarea|noscript|iframe|noembed|noframes)/i, value)) {
-					_removeAttribute(name, currentNode);
-					continue;
-				}
-				if (lcName === "attributename" && stringMatch(value, "href")) {
-					_removeAttribute(name, currentNode);
-					continue;
-				}
-				if (hookEvent.forceKeepAttr) continue;
-				if (!hookEvent.keepAttr) {
-					_removeAttribute(name, currentNode);
-					continue;
-				}
-				if (!ALLOW_SELF_CLOSE_IN_ATTR && regExpTest(/\/>/i, value)) {
-					_removeAttribute(name, currentNode);
-					continue;
-				}
-				if (SAFE_FOR_TEMPLATES) arrayForEach([
-					MUSTACHE_EXPR$1,
-					ERB_EXPR$1,
-					TMPLIT_EXPR$1
-				], (expr) => {
-					value = stringReplace(value, expr, " ");
-				});
-				const lcTag = transformCaseFunc(currentNode.nodeName);
-				if (!_isValidAttribute(lcTag, lcName, value)) {
-					_removeAttribute(name, currentNode);
-					continue;
-				}
-				if (trustedTypesPolicy && typeof trustedTypes === "object" && typeof trustedTypes.getAttributeType === "function") if (namespaceURI);
-				else switch (trustedTypes.getAttributeType(lcTag, lcName)) {
-					case "TrustedHTML":
-						value = trustedTypesPolicy.createHTML(value);
-						break;
-					case "TrustedScriptURL":
-						value = trustedTypesPolicy.createScriptURL(value);
-						break;
-				}
-				if (value !== initValue) try {
-					if (namespaceURI) currentNode.setAttributeNS(namespaceURI, name, value);
-					else currentNode.setAttribute(name, value);
-					if (_isClobbered(currentNode)) _forceRemove(currentNode);
-					else arrayPop(DOMPurify.removed);
-				} catch (_) {
-					_removeAttribute(name, currentNode);
-				}
-			}
-			_executeHooks(hooks.afterSanitizeAttributes, currentNode, null);
-		};
-		/**
-		* _sanitizeShadowDOM
-		*
-		* @param fragment to iterate over recursively
-		*/
-		const _sanitizeShadowDOM2 = function _sanitizeShadowDOM(fragment) {
-			let shadowNode = null;
-			const shadowIterator = _createNodeIterator(fragment);
-			_executeHooks(hooks.beforeSanitizeShadowDOM, fragment, null);
-			while (shadowNode = shadowIterator.nextNode()) {
-				_executeHooks(hooks.uponSanitizeShadowNode, shadowNode, null);
-				_sanitizeElements(shadowNode);
-				_sanitizeAttributes(shadowNode);
-				if (_isDocumentFragment(shadowNode.content)) _sanitizeShadowDOM2(shadowNode.content);
-				if ((getNodeType ? getNodeType(shadowNode) : shadowNode.nodeType) === NODE_TYPE.element) {
-					const innerSr = getShadowRoot ? getShadowRoot(shadowNode) : shadowNode.shadowRoot;
-					if (_isDocumentFragment(innerSr)) {
-						_sanitizeAttachedShadowRoots2(innerSr);
-						_sanitizeShadowDOM2(innerSr);
-					}
-				}
-			}
-			_executeHooks(hooks.afterSanitizeShadowDOM, fragment, null);
-		};
-		/**
-		* _sanitizeAttachedShadowRoots
-		*
-		* Walks `root` and feeds every attached shadow root we encounter into
-		* the existing _sanitizeShadowDOM pipeline. The default node iterator
-		* does not descend into shadow trees, so nodes inside an attached
-		* shadow root would otherwise be skipped entirely.
-		*
-		* Two real input paths put attached shadow roots in front of us:
-		*   1. IN_PLACE on a DOM node that already has shadow roots attached.
-		*   2. DOM-node input where importNode(dirty, true) deep-clones the
-		*      shadow root because it was created with `clonable: true`.
-		*
-		* This pass runs once, up front, so the main iteration loop (and the
-		* existing _sanitizeShadowDOM template-content recursion) stay
-		* untouched — string-input paths are not affected.
-		*
-		* @param root the subtree root to walk for attached shadow roots
-		*/
-		const _sanitizeAttachedShadowRoots2 = function _sanitizeAttachedShadowRoots(root) {
-			const nodeType = getNodeType ? getNodeType(root) : root.nodeType;
-			if (nodeType === NODE_TYPE.element) {
-				const sr = getShadowRoot ? getShadowRoot(root) : root.shadowRoot;
-				if (_isDocumentFragment(sr)) {
-					_sanitizeAttachedShadowRoots2(sr);
-					_sanitizeShadowDOM2(sr);
-				}
-			}
-			const childNodes = getChildNodes ? getChildNodes(root) : root.childNodes;
-			if (!childNodes) return;
-			const snapshot = [];
-			arrayForEach(childNodes, (child) => {
-				arrayPush(snapshot, child);
-			});
-			for (const child of snapshot) _sanitizeAttachedShadowRoots2(child);
-			if (nodeType === NODE_TYPE.element) {
-				const rootName = getNodeName ? getNodeName(root) : null;
-				if (typeof rootName === "string" && transformCaseFunc(rootName) === "template") {
-					const content = root.content;
-					if (_isDocumentFragment(content)) _sanitizeAttachedShadowRoots2(content);
-				}
-			}
-		};
-		DOMPurify.sanitize = function(dirty) {
-			let cfg = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {};
-			let body = null;
-			let importedNode = null;
-			let currentNode = null;
-			let returnNode = null;
-			IS_EMPTY_INPUT = !dirty;
-			if (IS_EMPTY_INPUT) dirty = "<!-->";
-			if (typeof dirty !== "string" && !_isNode(dirty)) {
-				dirty = stringifyValue(dirty);
-				if (typeof dirty !== "string") throw typeErrorCreate("dirty is not a string, aborting");
-			}
-			if (!DOMPurify.isSupported) return dirty;
-			if (!SET_CONFIG) _parseConfig(cfg);
-			DOMPurify.removed = [];
-			if (typeof dirty === "string") IN_PLACE = false;
-			if (IN_PLACE) {
-				const nn = getNodeName ? getNodeName(dirty) : dirty.nodeName;
-				if (typeof nn === "string") {
-					const tagName = transformCaseFunc(nn);
-					if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) throw typeErrorCreate("root node is forbidden and cannot be sanitized in-place");
-				}
-				if (_isClobbered(dirty)) throw typeErrorCreate("root node is clobbered and cannot be sanitized in-place");
-				_sanitizeAttachedShadowRoots2(dirty);
-			} else if (_isNode(dirty)) {
-				body = _initDocument("<!---->");
-				importedNode = body.ownerDocument.importNode(dirty, true);
-				if (importedNode.nodeType === NODE_TYPE.element && importedNode.nodeName === "BODY") body = importedNode;
-				else if (importedNode.nodeName === "HTML") body = importedNode;
-				else body.appendChild(importedNode);
-				_sanitizeAttachedShadowRoots2(importedNode);
-			} else {
-				if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT && dirty.indexOf("<") === -1) return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(dirty) : dirty;
-				body = _initDocument(dirty);
-				if (!body) return RETURN_DOM ? null : RETURN_TRUSTED_TYPE ? emptyHTML : "";
-			}
-			if (body && FORCE_BODY) _forceRemove(body.firstChild);
-			const nodeIterator = _createNodeIterator(IN_PLACE ? dirty : body);
-			while (currentNode = nodeIterator.nextNode()) {
-				_sanitizeElements(currentNode);
-				_sanitizeAttributes(currentNode);
-				if (_isDocumentFragment(currentNode.content)) _sanitizeShadowDOM2(currentNode.content);
-			}
-			if (IN_PLACE) {
-				if (SAFE_FOR_TEMPLATES) _scrubTemplateExpressions(dirty);
-				return dirty;
-			}
-			if (RETURN_DOM) {
-				if (SAFE_FOR_TEMPLATES) _scrubTemplateExpressions(body);
-				if (RETURN_DOM_FRAGMENT) {
-					returnNode = createDocumentFragment.call(body.ownerDocument);
-					while (body.firstChild) returnNode.appendChild(body.firstChild);
-				} else returnNode = body;
-				if (ALLOWED_ATTR.shadowroot || ALLOWED_ATTR.shadowrootmode) returnNode = importNode.call(originalDocument, returnNode, true);
-				return returnNode;
-			}
-			let serializedHTML = WHOLE_DOCUMENT ? body.outerHTML : body.innerHTML;
-			if (WHOLE_DOCUMENT && ALLOWED_TAGS["!doctype"] && body.ownerDocument && body.ownerDocument.doctype && body.ownerDocument.doctype.name && regExpTest(DOCTYPE_NAME, body.ownerDocument.doctype.name)) serializedHTML = "<!DOCTYPE " + body.ownerDocument.doctype.name + ">\n" + serializedHTML;
-			if (SAFE_FOR_TEMPLATES) arrayForEach([
-				MUSTACHE_EXPR$1,
-				ERB_EXPR$1,
-				TMPLIT_EXPR$1
-			], (expr) => {
-				serializedHTML = stringReplace(serializedHTML, expr, " ");
-			});
-			return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(serializedHTML) : serializedHTML;
-		};
-		DOMPurify.setConfig = function() {
-			_parseConfig(arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {});
-			SET_CONFIG = true;
-		};
-		DOMPurify.clearConfig = function() {
-			CONFIG = null;
-			SET_CONFIG = false;
-		};
-		DOMPurify.isValidAttribute = function(tag, attr, value) {
-			if (!CONFIG) _parseConfig({});
-			return _isValidAttribute(transformCaseFunc(tag), transformCaseFunc(attr), value);
-		};
-		DOMPurify.addHook = function(entryPoint, hookFunction) {
-			if (typeof hookFunction !== "function") return;
-			arrayPush(hooks[entryPoint], hookFunction);
-		};
-		DOMPurify.removeHook = function(entryPoint, hookFunction) {
-			if (hookFunction !== void 0) {
-				const index = arrayLastIndexOf(hooks[entryPoint], hookFunction);
-				return index === -1 ? void 0 : arraySplice(hooks[entryPoint], index, 1)[0];
-			}
-			return arrayPop(hooks[entryPoint]);
-		};
-		DOMPurify.removeHooks = function(entryPoint) {
-			hooks[entryPoint] = [];
-		};
-		DOMPurify.removeAllHooks = function() {
-			hooks = _createHooksMap();
-		};
-		return DOMPurify;
-	}
-	var purify = createDOMPurify();
-	//#endregion
 	//#region src/components/ticketSelection/subcomponents/tickets/subcomponents/segment/Item.svelte
 	var root$3 = /* @__PURE__ */ from_html(`<span class="go-tickets-item-title-event-title"> </span> <span class="go-tickets-item-title-product-title"> </span>`, 1);
 	var root_1$2 = /* @__PURE__ */ from_html(`<li class="go-tickets-item-info"><button type="button" data-testid="ticket-info-toggle"></button></li>`);
 	var root_2$1 = /* @__PURE__ */ from_html(`<li class="go-ticket-additional-info" data-testid="ticket-additional-info"> </li>`);
-	var root_3$1 = /* @__PURE__ */ from_html(`<option> </option>`);
-	var root_4$1 = /* @__PURE__ */ from_html(`<select class="go-tickets-item-select"></select>`);
-	var root_5 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-tickets-item-title"><!></li> <!> <li class="go-tickets-item-description" data-go-tickets-description=""></li> <!> <li class="go-tickets-item-price" data-go-tickets-price=""> </li> <li class="go-tickets-item-quality" data-go-tickets-quality=""><!></li></ul></article></li>`);
+	var root_3$1 = /* @__PURE__ */ from_html(`<ul class="go-sub-tickets" role="list"></ul>`);
+	var root_4$1 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-tickets-item-title"><!></li> <!> <li class="go-tickets-item-description" data-go-tickets-description=""></li> <!> <li class="go-tickets-item-price" data-go-tickets-price=""> </li> <li class="go-tickets-item-quality" data-go-tickets-quality=""><!></li></ul></article> <!></li>`);
 	function Item($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -36473,20 +36878,24 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, text_2);
 		};
 		let item = prop($$props, "item", 7), details = prop($$props, "details", 7);
-		const useStepper = /* @__PURE__ */ user_derived(() => configStore.config.quantityStepper);
 		let capacity = /* @__PURE__ */ state(void 0);
+		let subMaxes = /* @__PURE__ */ state(proxy({}));
+		const mantleProduct = /* @__PURE__ */ user_derived(() => isMantleTicket(item().product) ? item().product : null);
 		let infoExpanded = /* @__PURE__ */ state(false);
 		const reductionReason = /* @__PURE__ */ user_derived(() => item().product?.content?.reduction_reason);
 		const infoPanelId = `go-ticket-info-${uid}`;
 		user_effect(() => {
 			details().preCart.items.map((i) => i.quantity);
+			details().preCart.items.forEach((i) => i.mantle && Object.values(i.mantle.composition));
 			shop.cart?.items.map((i) => i.quantity);
+			shop.cart?.items.forEach((i) => i.mantle && Object.values(i.mantle.composition));
 			untrack(() => {
 				set(capacity, shop.capacityManager.capacity(shop.cart, item(), details().preCart), true);
+				set(subMaxes, shop.capacityManager.subTicketMaxes(shop.cart, item(), details().preCart), true);
 			});
 		});
-		function update(ci, target, tsd) {
-			ci.quantity = parseInt(target.value);
+		function updateSub(subId, quantity) {
+			if (item().mantle) item().mantle.composition[subId] = quantity;
 		}
 		let titleSnippet = default_title;
 		if (isEventTicket(item().product)) titleSnippet = scaled_title;
@@ -36509,7 +36918,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment_2 = comment();
 		var node = first_child(fragment_2);
 		var consequent_3 = ($$anchor) => {
-			var li = root_5();
+			var li = root_4$1();
 			var article = child(li);
 			var ul = child(article);
 			var li_1 = child(ul);
@@ -36555,60 +36964,51 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var text_4 = child(li_5, true);
 			reset(li_5);
 			var li_6 = sibling(li_5, 2);
-			var node_4 = child(li_6);
-			var consequent_2 = ($$anchor) => {
-				{
-					let $0 = /* @__PURE__ */ user_derived(() => shop.t("quantity.decrease"));
-					let $1 = /* @__PURE__ */ user_derived(() => shop.t("quantity.increase"));
-					QuantityStepper($$anchor, {
-						get value() {
-							return item().quantity;
-						},
-						get min() {
-							return get$2(capacity).min;
-						},
-						get max() {
-							return get$2(capacity).max;
-						},
-						get label() {
-							return item().product.title;
-						},
-						get decreaseLabel() {
-							return get$2($0);
-						},
-						get increaseLabel() {
-							return get$2($1);
-						},
-						onChange: (q) => item().quantity = q
-					});
-				}
-			};
-			var alternate = ($$anchor) => {
-				var select = root_4$1();
-				each(select, 21, () => generateQuantityOptions(get$2(capacity).min, get$2(capacity).max), (q) => q.value, ($$anchor, q) => {
-					var option = root_3$1();
-					var text_5 = child(option, true);
-					reset(option);
-					var option_value = {};
-					template_effect(() => {
-						set_selected(option, item().quantity === get$2(q).value);
-						set_text(text_5, get$2(q).label);
-						if (option_value !== (option_value = get$2(q).value)) option.value = (option.__value = get$2(q).value) ?? "";
-					});
-					append($$anchor, option);
-				});
-				reset(select);
-				template_effect(($0) => set_attribute(select, "aria-label", $0), [() => shop.t("cart.content.table.edit")]);
-				delegated("change", select, (e) => update(item(), e.target, details()?.ticketSelectionDetails));
-				append($$anchor, select);
-			};
-			if_block(node_4, ($$render) => {
-				if (get$2(useStepper)) $$render(consequent_2);
-				else $$render(alternate, -1);
+			QuantityControl(child(li_6), {
+				get value() {
+					return item().quantity;
+				},
+				get min() {
+					return get$2(capacity).min;
+				},
+				get max() {
+					return get$2(capacity).max;
+				},
+				get label() {
+					return item().product.title;
+				},
+				onChange: (q) => item().quantity = q
 			});
 			reset(li_6);
 			reset(ul);
 			reset(article);
+			var node_5 = sibling(article, 2);
+			var consequent_2 = ($$anchor) => {
+				var ul_1 = root_3$1();
+				each(ul_1, 21, () => subTicketDefs(get$2(mantleProduct)), (sub) => sub.id, ($$anchor, sub) => {
+					{
+						let $0 = /* @__PURE__ */ user_derived(() => item().mantle?.composition?.[get$2(sub).id] ?? 0);
+						SubRow($$anchor, {
+							get sub() {
+								return get$2(sub);
+							},
+							get quantity() {
+								return get$2($0);
+							},
+							get max() {
+								return get$2(subMaxes)[get$2(sub).id];
+							},
+							onChange: (q) => updateSub(get$2(sub).id, q)
+						});
+					}
+				});
+				reset(ul_1);
+				template_effect(() => set_attribute(ul_1, "aria-label", get$2(mantleProduct).title));
+				append($$anchor, ul_1);
+			};
+			if_block(node_5, ($$render) => {
+				if (get$2(mantleProduct) && item().quantity > 0) $$render(consequent_2);
+			});
 			reset(li);
 			template_effect(() => {
 				set_class(article, 1, clsx(["go-tickets-item", get$2(capacity).bookedOut && "is-booked-out"]));
@@ -36623,7 +37023,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		append($$anchor, fragment_2);
 		return pop($$exports);
 	}
-	delegate(["click", "change"]);
+	delegate(["click"]);
 	create_custom_element(Item, {
 		item: {},
 		details: {}
@@ -37203,7 +37603,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					const time = i.product.ticket_type != "annual" ? i.time : void 0;
 					return createCartItem(i.product, {
 						quantity: i.quantity,
-						time
+						time,
+						mantle: i.mantle && { composition: { ...i.mantle.composition } }
 					});
 				});
 			});

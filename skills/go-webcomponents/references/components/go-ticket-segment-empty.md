@@ -23,7 +23,7 @@ Each listed ticket renders an accessible `− qty +` quantity stepper
 and a `.go-quantity-stepper-value` editable spinbutton input). Pressing `+` from `0` jumps straight to the ticket's
 minimum party size, and `−` at that minimum returns to `0`. Set
 `go.config({ quantityStepper: false })` to render the legacy
-`.go-tickets-item-select` `<select>` instead. _(Since `v3.11.0`)_
+`.go-quantity-select` `<select>` instead. _(Since `v4.0.0`)_
 
 ## Localization
 
@@ -174,11 +174,55 @@ Custom filter with no automatic ticket loading.
 
 No attributes required. Requires manual implementation.
 
+#### Bundle tickets (Mantelticket)
+
+Since `v4.0.0`
+
+When a selectable ticket is a bundle ticket (Mantelticket), it carries a fixed set of sub-tickets that the visitor composes before adding the bundle to the cart. This renders automatically — there is no extra attribute to set.
+
+Once the bundle's quantity is set to `1` or more, an indented list of its sub-tickets appears directly beneath the ticket row, one row per sub-ticket. Each row lets the visitor pick that sub-ticket's quantity to compose the bundle, bounded by the sub-ticket's minimum and maximum persons (only a sub with a minimum of `0` can be set to `0`); a sub-ticket whose minimum and maximum are equal is shown as fixed (read-only) instead of a selector. Lowering the bundle quantity back to `0` hides the sub-ticket rows. Adding the bundle to the cart carries the chosen composition, and checkout submits it as a single line.
+
+The selection markup is unchanged — bundles render inside the usual `<go-tickets>` / `<go-ticket-segment>`:
+
+```html
+<go-ticket-selection filters="ticket:timeslot" selected-date="2026-07-01" selected-timeslot="2026-07-01T11:00:00+02:00">
+  <go-tickets>
+    <go-ticket-segment filters="ticket:timeslot">
+      <go-ticket-segment-body></go-ticket-segment-body>
+      <go-ticket-segment-sum></go-ticket-segment-sum>
+    </go-ticket-segment>
+  </go-tickets>
+  <go-add-to-cart-button></go-add-to-cart-button>
+</go-ticket-selection>
+```
+
+Set the bundle's quantity to `1` and its sub-ticket rows appear beneath it (the styling hooks are listed under [Styling](#styling)):
+
 #### Styling
 
 The `go-ticket-segment` component dynamically applies CSS classes based on the number of tickets in the cart:
 
 - `is-empty` - applied when there are no tickets selected (numTickets === 0)
+
+Bundle tickets (Mantelticket) render their sub-ticket rows with these hooks:
+
+- `.go-sub-tickets` — the indented list wrapping a bundle's sub-ticket rows
+- `.go-sub-ticket` — each sub-ticket row
+- `.go-sub-ticket.is-fixed` — a sub-ticket whose quantity is fixed (shown as text, not a selector)
+- `.go-sub-ticket.is-empty` — a sub-ticket whose quantity is currently `0`
+- `.go-sub-ticket-title` — the sub-ticket title
+- `.go-sub-ticket-description` — the sub-ticket description (present only when set)
+- editable sub-tickets render the shared quantity control — the `.go-quantity-stepper` stepper by default, or a `.go-quantity-select` `<select>` with `go.config({ quantityStepper: false })`
+- `.go-sub-ticket-quantity` — the quantity text shown for a fixed sub-ticket
+
+```css
+.go-sub-tickets {
+  margin-left: 1.5rem;
+}
+.go-sub-ticket.is-empty {
+  opacity: 0.6;
+}
+```
 
 ### `go-ticket-segment-sum`:
 

@@ -87,16 +87,32 @@ how many items are in the cart:
 Each subcomponent renders stable class hooks:
 
 - `.go-cart-item` — one per cart line; `.go-cart-item-price-original` (struck-through pre-discount price) and `.go-cart-item-price-discounted` appear when a line is discounted
-- `.go-quantity-stepper` — each item's `− qty +` quantity stepper (the default control): `.go-quantity-stepper-button` (both buttons; `.go-quantity-stepper-decrement` / `.go-quantity-stepper-increment` target each) and `.go-quantity-stepper-value` (the editable spinbutton input). `−` can take a line down to `0` without removing it — only the ✕ removes a line. With `go.config({ quantityStepper: false })` the item renders a `.go-cart-item-select` `<select>` instead (`Since UNRELEASED`)
+- `.go-quantity-stepper` — each item's `− qty +` quantity stepper (the default control): `.go-quantity-stepper-button` (both buttons; `.go-quantity-stepper-decrement` / `.go-quantity-stepper-increment` target each) and `.go-quantity-stepper-value` (the editable spinbutton input). `−` can take a line down to `0` without removing it — only the ✕ removes a line. With `go.config({ quantityStepper: false })` the item renders a `.go-quantity-select` `<select>` instead (`Since UNRELEASED`)
 - `.go-cart-remove` — the ✕ button on items and coupons
 - `.go-cart-coupon` — one per coupon row
 - `.go-cart-coupon.go-cart-coupon-inactive` — a coupon the backend did not apply (`Since v1.53.0`); style it greyed-out / struck-through
 - `.go-cart-subtotal-amount`, `.go-cart-discounted-amount`, `.go-cart-total-amount` — the three amount spans; `.go-cart-discounted-amount-sign` wraps the leading `−`
 
+Bundle-ticket (Mantelticket) lines render an indented list of sub-ticket rows beneath the line (`Since UNRELEASED`):
+
+- `.go-sub-tickets` — the `<ul>` wrapping a bundle line's sub-ticket rows
+- `.go-sub-ticket` — one row per sub-ticket; state classes: `.is-fixed` (quantity is fixed, shown as text), `.is-empty` (quantity is `0`), `.is-preview` (read-only, inside `<go-cart preview>`)
+- `.go-sub-ticket-title` — the sub-ticket's name
+- `.go-sub-ticket-description` — its optional description
+- editable sub-rows render the shared quantity control — the `.go-quantity-stepper` stepper by default, or a `.go-quantity-select` `<select>` with `go.config({ quantityStepper: false })`
+- `.go-sub-ticket-quantity` — the quantity shown as text (fixed or preview rows)
+
 ```css
 .go-cart-coupon.go-cart-coupon-inactive {
   opacity: 0.5;
   text-decoration: line-through;
+}
+
+.go-sub-tickets {
+  margin-left: 1.5rem;
+}
+.go-sub-ticket.is-empty {
+  opacity: 0.5;
 }
 ```
 
@@ -110,18 +126,41 @@ re-priced cart from it and render nothing on their own. `<go-cart-counter>` and
 
 ## Subcomponents
 
-| Tag                           | Renders                                                                   |
-| ----------------------------- | ------------------------------------------------------------------------- |
-| `<go-cart-items>`             | Item table (header + line per item, with quantity stepper + remove)       |
-| `<go-cart-coupons>`           | One row per coupon. Inactive coupons get `go-cart-coupon-inactive`        |
-| `<go-cart-subtotal-amount>`   | Pre-discount total (sum of original line prices)                          |
-| `<go-cart-discounted-amount>` | Saved amount, prefixed with a `−` sign                                    |
-| `<go-cart-total-amount>`      | Final amount to pay after coupon and voucher projection                   |
-| `<go-cart-counter>`           | A live count of the number of items in the cart — text only, no markup    |
-| `<go-cart-empty>`             | Shows its own children only while the cart has no items (`Since v1.11.0`) |
+| Tag                           | Renders                                                                                                                                                    |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `<go-cart-items>`             | Item table (header + line per item, with quantity stepper + remove). Bundle-ticket lines also render editable sub-ticket rows — see _Bundle tickets_ below |
+| `<go-cart-coupons>`           | One row per coupon. Inactive coupons get `go-cart-coupon-inactive`                                                                                         |
+| `<go-cart-subtotal-amount>`   | Pre-discount total (sum of original line prices)                                                                                                           |
+| `<go-cart-discounted-amount>` | Saved amount, prefixed with a `−` sign                                                                                                                     |
+| `<go-cart-total-amount>`      | Final amount to pay after coupon and voucher projection                                                                                                    |
+| `<go-cart-counter>`           | A live count of the number of items in the cart — text only, no markup                                                                                     |
+| `<go-cart-empty>`             | Shows its own children only while the cart has no items (`Since v1.11.0`)                                                                                  |
 
 Each subcomponent is independently mountable and renders nothing when its data is
 absent (e.g. `go-cart-coupons` is empty until a coupon is added).
+
+### Bundle tickets (Mantelticket)
+
+Since `v4.0.0`
+
+When a cart line is a **bundle ticket** (a Mantelticket — a ticket composed of
+several sub-tickets), `<go-cart-items>` renders the normal line and, indented
+beneath it, one editable row per sub-ticket so the visitor can compose the bundle
+(e.g. _2 Adult, 1 Child_). This happens automatically for bundle products — there
+is no attribute to enable it.
+
+Each sub-row carries a quantity selector; changing it re-prices the whole cart and
+updates the line and totals. The selector is bounded by the sub-ticket's minimum
+and maximum persons — only a sub with a minimum of `0` can be set to `0`. A
+sub-ticket whose quantity is fixed (its minimum equals its maximum) shows the
+count as plain text instead of a selector. In a read-only cart
+(`<go-cart preview>`) every sub-row shows its count as text.
+
+The bundle still checks out as a **single** cart item carrying the chosen
+composition — your `go-submit` handler and checkout flow are unchanged.
+
+You author only `<go-cart-items>` — a bundle line renders its editable sub-ticket
+rows automatically (the styling hooks are listed under [Styling](#styling)):
 
 ## Coupons & action token redemption
 

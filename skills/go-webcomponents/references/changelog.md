@@ -4,6 +4,59 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.0.0
+
+_Released 2026-07-08_
+
+Adds **Mantelticket** (bundle-ticket) support — `<go-ticket-selection>` and `<go-cart>` now let a visitor compose a bundle from its sub-tickets — fixes a shared-quota over-add, and unifies the quantity control markup (one hook for the legacy `<select>`, breaking its old per-surface classes).
+
+## New
+
+- **Mantelticket support** — when the backend serves a ticket that wraps sub-tickets, `<go-ticket-selection>` and `<go-cart>` render an editable row per sub-ticket beneath the bundle line, so the visitor picks the mix (e.g. 2 adults + 1 child). Checkout sends **one** order item carrying the chosen composition. No new markup is required — it renders automatically for bundle tickets.
+- Stylable sub-ticket markup: `.go-sub-tickets` (the row container) and `.go-sub-ticket` (each row), with state classes `.is-fixed` (a sub fixed at one quantity), `.is-empty` (a sub set to 0), and `.is-preview` (read-only cart). Inner parts: `.go-sub-ticket-title`, `.go-sub-ticket-description`, `.go-sub-ticket-quantity`.
+
+## Changed (behavior)
+
+- Sub-ticket rows use the same quantity control as ticket rows and cart lines: the accessible `− qty +` stepper by default, or the legacy `<select>` with `go.config({ quantityStepper: false })`. Unlike ticket rows, a sub-ticket row enforces its `min_persons` as a hard bottom on both controls — only a sub with a minimum of `0` can be deselected from the mix.
+
+## Fixed
+
+- Shared-quota **over-add**: a quantity selector now subtracts tickets of the same type already in the cart — and sibling lines sharing the quota — from the amount it offers. Previously the selector re-offered the full quota on top of what the cart already held, so a visitor could select more than a shared contingent allowed and the whole order was rejected at checkout.
+
+## Breaking → migration
+
+### Legacy quantity `<select>` classes unified to `.go-quantity-select`
+
+The quantity control is now one shared component everywhere (ticket rows, cart lines, sub-ticket rows). When the legacy `<select>` is enabled via `go.config({ quantityStepper: false })`, it renders as `.go-quantity-select` on every surface — the old per-surface hooks `.go-tickets-item-select` and `.go-cart-item-select` no longer match. (Scope styles with the surrounding markup if a surface needs its own look.) The select's accessible name is now the product / sub-ticket title instead of the generic edit label.
+
+Before:
+
+```css
+.go-tickets-item-select {
+  /* … */
+}
+.go-cart-item-select {
+  /* … */
+}
+```
+
+After:
+
+```css
+.go-quantity-select {
+  /* … */
+}
+/* per-surface, when needed: */
+.go-tickets-item-quality .go-quantity-select {
+  /* … */
+}
+.go-cart-item-count .go-quantity-select {
+  /* … */
+}
+```
+
+---
+
 # v3.12.0
 
 _Released 2026-07-07_
