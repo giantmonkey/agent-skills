@@ -4,6 +4,19 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.1.1
+
+_Released 2026-07-09_
+
+Checkout now works on shops configured with a single payment mode, and payment modes without an icon show a readable label.
+
+## Fixed
+
+- `<go-checkout-form>` (and any `<go-form>` using the `paymentMode` field) could not be submitted on a shop that offers exactly one payment mode. The single mode is auto-selected and its radio hidden, but its value was never applied to the field, so the required validation always failed and no order was ever sent. The single mode is now selected for real and checkout proceeds without the customer having to interact with the (hidden) payment control.
+- A payment mode that has no icon configured now renders its name as a visible label instead of an empty, unlabelled radio, so it stays selectable when more than one mode is available.
+
+---
+
 # v4.0.0
 
 _Released 2026-07-08_

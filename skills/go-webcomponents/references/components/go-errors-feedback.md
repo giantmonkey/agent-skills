@@ -58,7 +58,7 @@ The keys listed below ship with the default configuration. The `apiKey` column s
 | `country` | `addr_country_id` | `select` | Options come from `/api/v3/countries` defined in gomus backend. |
 | `language` | `language_id` | `select` | Options come from `/api/v4/locales` defined in gomus backend. |
 | `acceptTerms` | `terms` | `checkbox` | Typically required for agreements. |
-| `paymentMode` | `payment_mode_id` | `paymentMode` | Renders a radio group of payment modes from `shop.payment_modes`. Auto-selects and hides the input when only one mode is available. Icons are rendered from the CDN when provided. |
+| `paymentMode` | `payment_mode_id` | `paymentMode` | Renders a radio group of payment modes from `shop.payment_modes`. Auto-selects (and hides the input) when only one mode is available. Icons are rendered from the CDN when provided; modes without an icon show their name as the label. |
 | `startAt` | — | `date` | Client-only field; add an `apiKey` if you need to submit it. |
 
 ## Field definition attributes

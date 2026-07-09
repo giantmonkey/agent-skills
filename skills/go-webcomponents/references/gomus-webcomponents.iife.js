@@ -32813,10 +32813,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root_9$1 = /* @__PURE__ */ from_html(`<label><!></label> <select><!></select>`, 1);
 	var root_10$1 = /* @__PURE__ */ from_html(`<img style="width: 60px" aria-hidden="true"/>`);
 	var root_11 = /* @__PURE__ */ from_html(`<span class="go-payment-mode-icons"></span>`);
-	var root_12 = /* @__PURE__ */ from_html(`<label><input type="radio"/> <!></label>`);
-	var root_13 = /* @__PURE__ */ from_html(`<fieldset role="radiogroup"><legend><!></legend> <!></fieldset>`);
-	var root_14 = /* @__PURE__ */ from_html(`<label> <input/></label>`);
-	var root_15 = /* @__PURE__ */ from_html(`<fieldset><legend><!></legend> <!></fieldset>`);
+	var root_12 = /* @__PURE__ */ from_html(`<span class="go-payment-mode-name"> </span>`);
+	var root_13 = /* @__PURE__ */ from_html(`<label><input type="radio"/> <!></label>`);
+	var root_14 = /* @__PURE__ */ from_html(`<fieldset role="radiogroup"><legend><!></legend> <!></fieldset>`);
+	var root_15 = /* @__PURE__ */ from_html(`<label> <input/></label>`);
+	var root_16 = /* @__PURE__ */ from_html(`<fieldset><legend><!></legend> <!></fieldset>`);
 	function InputAndLabel($$anchor, $$props) {
 		push($$props, true);
 		const labelText = ($$anchor) => {
@@ -33016,12 +33017,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		const paymentMode = ($$anchor) => {
 			const modes = /* @__PURE__ */ user_derived(() => shop.payment_modes ? Object.values(shop.payment_modes) : []);
-			var fieldset = root_13();
+			var fieldset = root_14();
 			var legend = child(fieldset);
 			labelText(child(legend));
 			reset(legend);
 			each(sibling(legend, 2), 17, () => get$2(modes), (mode) => mode.id, ($$anchor, mode) => {
-				var label_6 = root_12();
+				var label_6 = root_13();
 				var input_4 = child(label_6);
 				remove_input_defaults(input_4);
 				var node_11 = sibling(input_4, 2);
@@ -33040,8 +33041,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					reset(span_2);
 					append($$anchor, span_2);
 				};
+				var alternate = ($$anchor) => {
+					var span_3 = root_12();
+					var text_4 = child(span_3, true);
+					reset(span_3);
+					template_effect(() => set_text(text_4, get$2(mode).name));
+					append($$anchor, span_3);
+				};
 				if_block(node_11, ($$render) => {
 					if (get$2(mode).icons.length > 0) $$render(consequent_3);
+					else $$render(alternate, -1);
 				});
 				reset(label_6);
 				template_effect(($0, $1, $2) => {
@@ -33052,7 +33061,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					set_attribute(input_4, "aria-label", $2);
 				}, [
 					() => String(get$2(mode).id),
-					() => get$2(modes).length === 1 || String(get$2(mode).id) === String(field().value),
+					() => field().value === String(get$2(mode).id),
 					() => shop.t(`cart.paymentMode.ariaLabel.${get$2(mode).name.toLowerCase()}`)
 				]);
 				delegated("change", input_4, () => {
@@ -33068,17 +33077,17 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fieldset);
 		};
 		const radio = ($$anchor) => {
-			var fieldset_1 = root_15();
+			var fieldset_1 = root_16();
 			var legend_1 = child(fieldset_1);
 			labelText(child(legend_1));
 			reset(legend_1);
 			var node_13 = sibling(legend_1, 2);
 			var consequent_4 = ($$anchor) => {
 				var fragment_9 = comment();
-				each(first_child(fragment_9), 17, () => field().options, index$1, ($$anchor, option) => {
-					var label_7 = root_14();
-					var text_4 = child(label_7);
-					var input_5 = sibling(text_4);
+				each(first_child(fragment_9), 17, () => field().options(), (option) => option.value, ($$anchor, option) => {
+					var label_7 = root_15();
+					var text_5 = child(label_7);
+					var input_5 = sibling(text_5);
 					attribute_effect(input_5, () => ({
 						...get$2(fieldAttributes),
 						...restProps,
@@ -33088,8 +33097,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					reset(label_7);
 					template_effect(() => {
 						set_class(label_7, 1, clsx(labelClass()));
-						set_attribute(label_7, "for", get$2(inputId) + get$2(option));
-						set_text(text_4, `${get$2(option) ?? ""} `);
+						set_attribute(label_7, "for", get$2(inputId) + get$2(option).value);
+						set_text(text_5, `${get$2(option).label ?? ""} `);
 					});
 					bind_value(input_5, () => field().value, ($$value) => field(field().value = $$value, true));
 					append($$anchor, label_7);
@@ -33139,6 +33148,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}));
 		let label = /* @__PURE__ */ user_derived(() => shop.t(field().label) || field().label);
 		const CDN_PATH = `https://cdn.shop.platform.gomus.de/`;
+		user_effect(() => {
+			if (field().type !== "paymentMode") return;
+			const modes = shop.payment_modes ? Object.values(shop.payment_modes) : [];
+			if (modes.length === 1 && field().value === "") field(field().value = String(modes[0].id), true);
+		});
 		let filePreviewUrl = /* @__PURE__ */ state(null);
 		user_effect(() => {
 			const value = field().value;
