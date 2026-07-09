@@ -7,6 +7,7 @@ Each row lists the child tags directly nested inside the parent, observed across
 | `<go-cart>` | `<go-cart-coupons>`, `<go-cart-discounted-amount>`, `<go-cart-items>`, `<go-cart-subtotal-amount>`, `<go-cart-total-amount>` |
 | `<go-feedback>` | `<go-errors-feedback>`, `<go-success-feedback>` |
 | `<go-form>` | `<go-feedback>`, `<go-field>`, `<go-submit>` |
+| `<go-membership-activation>` | `<go-errors-feedback>`, `<go-field>`, `<go-submit>`, `<go-success-feedback>` |
 | `<go-signup-form>` | `<go-errors-feedback>`, `<go-field>`, `<go-submit>`, `<go-success-feedback>` |
 | `<go-ticket-segment>` | `<go-ticket-segment-body>` |
 | `<go-ticket-selection>` | `<go-calendar>`, `<go-ticket-segment>`, `<go-tickets>` |

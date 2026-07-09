@@ -4,6 +4,26 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.2.0
+
+_Released 2026-07-09_
+
+A new single-field form web component for activating a shop membership by email.
+
+## New
+
+- `<go-membership-activation>` — a headless form that activates a customer's membership
+  for the online shop. The visitor enters the email address used for their membership
+  personalization and submits; on success the component dispatches a bubbling
+  `go-success` event. A non-matching email surfaces a generic error through
+  `<go-errors-feedback>` and does not dispatch `go-success`. Renders a single required
+  `email` field plus submit by default; pass the `custom` attribute to supply your own
+  layout (`<go-field key="email" required>`, `<go-success-feedback>`,
+  `<go-errors-feedback>`, `<go-submit>`) while the component keeps owning submission and
+  validation. Standalone — no required parent.
+
+---
+
 # v4.1.1
 
 _Released 2026-07-09_

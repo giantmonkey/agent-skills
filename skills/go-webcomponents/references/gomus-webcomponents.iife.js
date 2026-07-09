@@ -13545,6 +13545,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var SIGN_IN_ENDPOINT = "/api/v4/auth/sign_in";
 	var SIGN_UP_ENDPOINT = "/api/v4/auth";
 	var WITHDRAWAL_ENDPOINT = "/api/v4/orders/withdrawals";
+	var MEMBERSHIP_ACTIVATION_ENDPOINT = "/api/v4/customer/memberships/activate";
 	var ORDERS_ENDPOINT = "/api/v4/orders";
 	//#endregion
 	//#region ../../packages/gomus-api/lib/customerLevels.ts
@@ -13761,6 +13762,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return this.apiPost("/api/v4/auth/password", {
 				body: params,
 				requiredFields: ["email"]
+			});
+		}
+		activateMembership(params) {
+			return this.apiPost(MEMBERSHIP_ACTIVATION_ENDPOINT, {
+				body: params,
+				requiredFields: ["email"],
+				parseAs: "text"
 			});
 		}
 		checkout(params) {
@@ -35770,6 +35778,47 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		attribute: "to",
 		reflect: true,
 		type: "String"
+	} }, [], []));
+	//#endregion
+	//#region src/components/membershipActivation/MembershipActivation.svelte
+	function MembershipActivation($$anchor, $$props) {
+		push($$props, true);
+		let custom = prop($$props, "custom", 7, false);
+		Forms.defineForm({
+			id: "membershipActivation",
+			submitLabel: "membership.activation.actions.submit",
+			fields: [{
+				key: "email",
+				required: true
+			}]
+		});
+		async function onSubmit(event) {
+			const details = event.target.details;
+			if ((await shop.activateMembership(details.formData)).response?.ok) $$props.$$host.dispatchEvent(new Event("go-success", {
+				bubbles: true,
+				composed: true
+			}));
+			else details.apiErrors = [shop.t("membership.activation.form.errors.requestFailed")];
+		}
+		wrapInElement($$props.$$host, "go-form", {
+			"form-id": "membershipActivation",
+			custom: custom()
+		});
+		$$props.$$host.addEventListener("submit", onSubmit);
+		return pop({
+			get custom() {
+				return custom();
+			},
+			set custom($$value = false) {
+				custom($$value);
+				flushSync();
+			}
+		});
+	}
+	customElements.define("go-membership-activation", create_custom_element(MembershipActivation, { custom: {
+		attribute: "custom",
+		reflect: true,
+		type: "Boolean"
 	} }, [], []));
 	//#endregion
 	//#region src/components/order/lib/OrderDetails.svelte.ts

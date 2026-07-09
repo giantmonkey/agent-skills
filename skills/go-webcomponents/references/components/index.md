@@ -1,6 +1,6 @@
 # Components
 
-Library version: 4.1.1
+Library version: 4.2.0
 
 | Tag | Attributes |
 | --- | --- |
@@ -27,6 +27,7 @@ Library version: 4.1.1
 | [`<go-if>`](./go-if.md) | 2 |
 | [`<go-init>`](./go-init.md) | 3 |
 | [`<go-link>`](./go-link.md) | 1 |
+| [`<go-membership-activation>`](./go-membership-activation.md) | 1 |
 | [`<go-order>`](./go-order.md) | 1 |
 | [`<go-order-breakdown>`](./go-order-breakdown.md) | 0 |
 | [`<go-order-invoice-id>`](./go-order-invoice-id.md) | 0 |
