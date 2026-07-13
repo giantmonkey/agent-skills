@@ -6554,12 +6554,12 @@ createHTML: (html) => {
 	//#endregion
 	//#region src/lib/stores/auth.svelte.ts
 	var Auth = class {
-		#data = {
+		#data = /* @__PURE__ */ state(proxy({
 			uid: "",
 			client: "",
 			accessToken: "",
 			expiry: 0
-		};
+		}));
 		constructor() {
 			this.load();
 			if (typeof window !== "undefined") window.addEventListener("storage", (e) => {
@@ -6571,34 +6571,39 @@ createHTML: (html) => {
 			if (this.isLoggedIn()) return 20;
 		}
 		isAuthenticated() {
-			return this.#data.uid !== "";
+			return this.data.uid !== "";
 		}
 		isLoggedIn() {
-			return Boolean(this.#data.uid && isEmail(this.#data.uid));
+			return Boolean(this.data.uid && isEmail(this.data.uid));
 		}
 		isGuest() {
-			return Boolean(this.#data.uid && !isEmail(this.#data.uid));
+			return Boolean(this.data.uid && !isEmail(this.data.uid));
 		}
 		signOut() {
-			this.#data.uid = "";
-			this.#data.client = "";
-			this.#data.accessToken = "";
-			this.#data.expiry = 0;
+			get$2(this.#data).uid = "";
+			get$2(this.#data).client = "";
+			get$2(this.#data).accessToken = "";
+			get$2(this.#data).expiry = 0;
 			this.save();
 		}
 		signIn(options) {
-			this.#data.uid = options.uid;
-			this.#data.client = options.client;
-			this.#data.accessToken = options.accessToken;
-			this.#data.expiry = options.expiry;
+			get$2(this.#data).uid = options.uid;
+			get$2(this.#data).client = options.client;
+			get$2(this.#data).accessToken = options.accessToken;
+			get$2(this.#data).expiry = options.expiry;
 			this.save();
 		}
 		get data() {
-			if (this.#data.expiry < Math.floor(Date.now() / 1e3)) this.signOut();
-			return this.#data;
+			if (get$2(this.#data).uid !== "" && get$2(this.#data).expiry < Math.floor(Date.now() / 1e3)) return {
+				uid: "",
+				client: "",
+				accessToken: "",
+				expiry: 0
+			};
+			return get$2(this.#data);
 		}
 		toString() {
-			return JSON.stringify(this.#data);
+			return JSON.stringify(get$2(this.#data));
 		}
 		save() {
 			if (typeof localStorage === "undefined") return;
@@ -6613,6 +6618,10 @@ createHTML: (html) => {
 			}
 			const d = JSON.parse(str);
 			if (!(isObject$2(d) && "uid" in d && "client" in d && "accessToken" in d && "expiry" in d)) throw new Error(`(Auth.loadFromString) invalid auth json ${str}`);
+			if (d.uid !== "" && d.expiry < Math.floor(Date.now() / 1e3)) {
+				this.signOut();
+				return;
+			}
 			this.signIn(d);
 		}
 	};
@@ -18331,11 +18340,23 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	customElements.define("go-cart-counter", create_custom_element(CartCounter, {}, [], []));
 	//#endregion
-	//#region src/components/checkoutForm/CheckoutForm.svelte
-	function CheckoutForm($$anchor, $$props) {
-		push($$props, true);
-		let custom = prop($$props, "custom", 7, false);
-		let cart = /* @__PURE__ */ user_derived(() => shop.cart);
+	//#region src/components/checkoutForm/lib.ts
+	async function finalizeCheckout(form, formId) {
+		const cart = shop.cart;
+		if (!cart) return;
+		const paymentMode = form.details.fieldValue("paymentMode");
+		cart.paymentModeId = paymentMode == null ? void 0 : String(paymentMode);
+		const checkout = await shop.checkout(cart.orderData());
+		if (checkout.error) {
+			form.details.apiErrors = checkout.error;
+			return;
+		}
+		const beforeSubmit = configStore.config.forms[formId]?.beforeSubmit;
+		if (beforeSubmit) await beforeSubmit(form.details.formData);
+		const paymentUrl = checkout.data.meta.payment_url;
+		configStore.config.navigateTo?.(paymentUrl);
+	}
+	function setupGuestCheckout(host, custom) {
 		Forms.defineForm({
 			id: "checkoutGuest",
 			submitLabel: "cart.detail.actions.checkout",
@@ -18366,30 +18387,48 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				}
 			]
 		});
-		wrapInElement($$props.$$host, "go-form", {
+		wrapInElement(host, "go-form", {
 			"form-id": "checkoutGuest",
-			custom: custom()
+			custom
 		});
-		$$props.$$host.addEventListener("submit", async (e) => {
+		host.addEventListener("submit", async (e) => {
 			const form = e.target;
-			if (!get$2(cart)) return;
+			if (!shop.cart) return;
 			const auth = await shop.signUp(form.details.formData, true);
 			if (auth.error) {
 				form.details.apiErrors = auth.error.errors;
 				return;
 			}
-			const paymentMode = form.details.fieldValue("paymentMode");
-			get$2(cart).paymentModeId = paymentMode == null ? void 0 : String(paymentMode);
-			const checkout = await shop.checkout(get$2(cart).orderData());
-			if (checkout.error) {
-				form.details.apiErrors = checkout.error;
-				return;
-			}
-			const beforeSubmit = configStore.config.forms.checkoutGuest?.beforeSubmit;
-			if (beforeSubmit) await beforeSubmit(form.details.formData);
-			const paymentUrl = checkout.data.meta.payment_url;
-			configStore.config.navigateTo?.(paymentUrl);
+			await finalizeCheckout(form, "checkoutGuest");
 		});
+	}
+	function setupUserCheckout(host, custom) {
+		Forms.defineForm({
+			id: "checkoutUser",
+			submitLabel: "cart.detail.actions.checkout",
+			fields: [{
+				key: "acceptTerms",
+				required: true
+			}, {
+				key: "paymentMode",
+				required: true
+			}]
+		});
+		wrapInElement(host, "go-form", {
+			"form-id": "checkoutUser",
+			custom
+		});
+		host.addEventListener("submit", async (e) => {
+			const form = e.target;
+			await finalizeCheckout(form, "checkoutUser");
+		});
+	}
+	//#endregion
+	//#region src/components/checkoutForm/CheckoutForm.svelte
+	function CheckoutForm($$anchor, $$props) {
+		push($$props, true);
+		let custom = prop($$props, "custom", 7, false);
+		setupGuestCheckout($$props.$$host, custom());
 		return pop({
 			get custom() {
 				return custom();
@@ -18401,6 +18440,40 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		});
 	}
 	customElements.define("go-checkout-form", create_custom_element(CheckoutForm, { custom: {} }, [], []));
+	//#endregion
+	//#region src/components/checkoutForm/CheckoutGuest.svelte
+	function CheckoutGuest($$anchor, $$props) {
+		push($$props, true);
+		let custom = prop($$props, "custom", 7, false);
+		setupGuestCheckout($$props.$$host, custom());
+		return pop({
+			get custom() {
+				return custom();
+			},
+			set custom($$value = false) {
+				custom($$value);
+				flushSync();
+			}
+		});
+	}
+	customElements.define("go-checkout-guest", create_custom_element(CheckoutGuest, { custom: {} }, [], []));
+	//#endregion
+	//#region src/components/checkoutForm/CheckoutUser.svelte
+	function CheckoutUser($$anchor, $$props) {
+		push($$props, true);
+		let custom = prop($$props, "custom", 7, false);
+		setupUserCheckout($$props.$$host, custom());
+		return pop({
+			get custom() {
+				return custom();
+			},
+			set custom($$value = false) {
+				custom($$value);
+				flushSync();
+			}
+		});
+	}
+	customElements.define("go-checkout-user", create_custom_element(CheckoutUser, { custom: {} }, [], []));
 	//#endregion
 	//#region src/components/couponRedemption/lib.ts
 	var APPLY_ORDER_DISCOUNT = "TokenActions::ApplyOrderDiscount";
@@ -35760,12 +35833,18 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const formDetails = /* @__PURE__ */ user_derived(() => _formDetails.value);
 		const _cartView = getCartDetails($$props.$$host);
 		const cartView = /* @__PURE__ */ user_derived(() => _cartView.value);
+		const auth = shop.auth;
 		let data = /* @__PURE__ */ user_derived(() => ({
 			ticketSelection: get$2(ticketSelectionDetails),
 			personalizationDetails: get$2(personalizationDetails),
 			formData: get$2(formDetails)?.formData,
 			cart: shop.cart,
-			cartView: get$2(cartView)
+			cartView: get$2(cartView),
+			auth: {
+				isAuthenticated: auth.isAuthenticated(),
+				isLoggedIn: auth.isLoggedIn(),
+				isGuest: auth.isGuest()
+			}
 		}));
 		const _setData = (_data) => {
 			set(data, _data);

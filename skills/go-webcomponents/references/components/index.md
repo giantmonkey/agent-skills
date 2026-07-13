@@ -1,6 +1,6 @@
 # Components
 
-Library version: 4.4.0
+Library version: 4.5.0
 
 | Tag | Attributes |
 | --- | --- |
@@ -18,6 +18,8 @@ Library version: 4.4.0
 | [`<go-cart-subtotal-amount>`](./go-cart-subtotal-amount.md) | 0 |
 | [`<go-cart-total-amount>`](./go-cart-total-amount.md) | 0 |
 | [`<go-checkout-form>`](./go-checkout-form.md) | 0 |
+| [`<go-checkout-guest>`](./go-checkout-guest.md) | 0 |
+| [`<go-checkout-user>`](./go-checkout-user.md) | 0 |
 | [`<go-coupon-redemption>`](./go-coupon-redemption.md) | 0 |
 | [`<go-donations>`](./go-donations.md) | 0 |
 | [`<go-errors-feedback>`](./go-errors-feedback.md) | 0 |

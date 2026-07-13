@@ -4,6 +4,51 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.5.0
+
+_Released 2026-07-13_
+
+Checkout is now two auth-specific components you gate yourself with `go-if`: a guest
+flow and a signed-in flow. Sign-in state is reactive and readable from `go-if`.
+
+## New
+
+- `<go-checkout-guest>` — standalone guest checkout: collects the identity fields
+  (`firstName`, `lastName`, `email`, `confirmEmail`, `acceptTerms`, `paymentMode`),
+  creates a guest account on submit, then checks out. Render it for signed-out visitors.
+- `<go-checkout-user>` — standalone signed-in checkout: only `acceptTerms` and
+  `paymentMode`, straight to checkout with no guest signup. Render it for authenticated
+  customers.
+- `<go-if>` exposes the current auth state as `data.auth.isAuthenticated`,
+  `data.auth.isLoggedIn`, and `data.auth.isGuest`, so you pick which checkout to show:
+
+  ```html
+  <go-if when="!data.auth.isLoggedIn">
+    <go-checkout-guest></go-checkout-guest>
+  </go-if>
+
+  <go-if when="data.auth.isLoggedIn">
+    <go-checkout-user></go-checkout-user>
+  </go-if>
+  ```
+
+- `forms.checkoutUser.beforeSubmit` config hook — runs before the payment redirect on
+  the signed-in flow, mirroring the existing `forms.checkoutGuest.beforeSubmit`.
+
+## Changed (behavior)
+
+- Sign-in state is now reactive: content gated on auth (e.g. via `go-if`) updates live
+  on sign-in / sign-out with no page reload. An expired token now reports as signed-out
+  (and is cleared from storage) instead of lingering.
+
+## Deprecated
+
+- `<go-checkout-form>` is kept as a backward-compatible alias of `<go-checkout-guest>`
+  (identical guest flow, `custom` included). Prefer `<go-checkout-guest>` for new
+  integrations and pair it with `<go-checkout-user>` behind `go-if`.
+
+---
+
 # v4.4.0
 
 _Released 2026-07-13_
