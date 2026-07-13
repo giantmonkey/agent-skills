@@ -4,6 +4,33 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.4.0
+
+_Released 2026-07-13_
+
+A third `go.api` endpoint: `go.api.getCustomerAddresses()` lists the signed-in customer's
+saved addresses from your own page scripts.
+
+## New
+
+- `go.api.getCustomerAddresses()` — fetches the signed-in customer's saved addresses
+  (`/api/v4/customer/customer_addresses`, not paginated). Resolves to one of:
+  - `{ customer_addresses: [...] }` when a customer is signed in — each address carries
+    `adressat`, `street`, `zip`, `city`, `country_id`, and institution/invoice fields,
+  - an object carrying an `error` key when nobody is signed in,
+  - `undefined` when the shop could not fetch.
+
+  ```javascript
+  const res = await go.api.getCustomerAddresses()
+  if (res?.customer_addresses) {
+    res.customer_addresses.forEach(a => console.log(a.adressat, a.street, a.zip, a.city))
+  }
+  ```
+
+  Same auth contract and ~5 second result cache as the other `go.api` endpoints.
+
+---
+
 # v4.3.0
 
 _Released 2026-07-13_

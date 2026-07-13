@@ -13623,6 +13623,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var WITHDRAWAL_ENDPOINT = "/api/v4/orders/withdrawals";
 	var MEMBERSHIP_ACTIVATION_ENDPOINT = "/api/v4/customer/memberships/activate";
 	var ORDERS_ENDPOINT = "/api/v4/orders";
+	var CUSTOMER_ADDRESSES_ENDPOINT = "/api/v4/customer/customer_addresses";
 	//#endregion
 	//#region ../../packages/gomus-api/lib/customerLevels.ts
 	var CustomerLevels = {
@@ -13743,6 +13744,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				cache: 5,
 				query: params
 			});
+		}
+		getCustomerAddresses() {
+			if (!this.auth.data.accessToken) return NOT_SIGNED_IN;
+			return this.fetchAndCache(CUSTOMER_ADDRESSES_ENDPOINT, "customerAddresses", "", { cache: 5 });
 		}
 		ticketsCalendar(params) {
 			return this.fetchAndCache(TICKETS_CALENDAR_ENDPOINT, `ticketsCalendar-${JSON.stringify(params)}`, "data", {
@@ -38124,6 +38129,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			getOrders: async (params) => {
 				await ensureShopReady();
 				return shop.asyncFetch(() => shop.getOrders(params));
+			},
+			getCustomerAddresses: async () => {
+				await ensureShopReady();
+				return shop.asyncFetch(() => shop.getCustomerAddresses());
 			}
 		},
 		cart: { addTour: async (options) => {
