@@ -82,11 +82,31 @@ how many items are in the cart:
 | --------- | ------- | ------- | --------------------------------------------------------------------------------------------------------- | -------- |
 | `preview` | boolean | `false` | Read-only cart view — hides each item's quantity control and remove button, and the coupon remove buttons | `v1.3.0` |
 
+## Events
+
+| Event                  | Description                                                                                                                                          | `detail`                    | bubbles                       | Since    |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ----------------------------- | -------- |
+| `go-cart-item-added`   | An item was added to the cart                                                                                                                        | the new item count (number) | fires on `document`           |          |
+| `go-cart-item-removed` | An item was removed from the cart                                                                                                                    | the new item count (number) | fires on `document`           |          |
+| `go-submit`            | The cart is ready to check out — fires after a `<go-submit>` click once any pending coupon applies cleanly; does **not** fire if a coupon is invalid | `{ ok: true }`              | yes (on the `<go-cart>` host) | `v3.0.0` |
+
+The item-count events fire on `document`, so listen there:
+
+```js
+document.addEventListener('go-cart-item-added', event => {
+  // event.detail is the new number of items in the cart
+  console.log(event.detail)
+})
+```
+
+The `go-submit` event is covered in _Submitting the cart_ below.
+
 ## Styling
 
 Each subcomponent renders stable class hooks:
 
 - `.go-cart-item` — one per cart line; `.go-cart-item-price-original` (struck-through pre-discount price) and `.go-cart-item-price-discounted` appear when a line is discounted
+- `.go-cart-item-participants` — the participant-count label on a tour line; `.go-cart-item-custom` — one per `key: value` custom-field line (`Since UNRELEASED`)
 - `.go-quantity-stepper` — each item's `− qty +` quantity stepper (the default control): `.go-quantity-stepper-button` (both buttons; `.go-quantity-stepper-decrement` / `.go-quantity-stepper-increment` target each) and `.go-quantity-stepper-value` (the editable spinbutton input). `−` can take a line down to `0` without removing it — only the ✕ removes a line. With `go.config({ quantityStepper: false })` the item renders a `.go-quantity-select` `<select>` instead (`Since UNRELEASED`)
 - `.go-cart-remove` — the ✕ button on items and coupons
 - `.go-cart-coupon` — one per coupon row
@@ -247,24 +267,26 @@ coupon's own apply button).
 </script>
 ```
 
-## Events
+## Tour lines
 
-| Event                  | Description                                                                                                                                          | `detail`                    | bubbles                       | Since    |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ----------------------------- | -------- |
-| `go-cart-item-added`   | An item was added to the cart                                                                                                                        | the new item count (number) | fires on `document`           |          |
-| `go-cart-item-removed` | An item was removed from the cart                                                                                                                    | the new item count (number) | fires on `document`           |          |
-| `go-submit`            | The cart is ready to check out — fires after a `<go-submit>` click once any pending coupon applies cleanly; does **not** fire if a coupon is invalid | `{ ok: true }`              | yes (on the `<go-cart>` host) | `v3.0.0` |
+Since `v4.3.0`
 
-The item-count events fire on `document`, so listen there:
+Guided-group-tour bookings added programmatically via `go.cart.addTour()`
+(documented under _The Go Interface_) render as regular lines in
+`<go-cart-items>`. The title cell shows the tour title, the participant count,
+the start date and time, and one `key: value` line per custom field passed to
+`addTour()`. Three things differ from ticket lines:
 
-```js
-document.addEventListener('go-cart-item-added', event => {
-  // event.detail is the new number of items in the cart
-  console.log(event.detail)
-})
-```
-
-The `go-submit` event is covered in _Submitting the cart_ above.
+- **Fixed participant count.** The quantity cell shows the booking's participant
+  count as plain text — no stepper or select, even with
+  `go.config({ quantityStepper: false })`. Participants are fixed when the booking
+  is added; to change them, remove the line and add a new booking.
+- **Your total, unmultiplied.** The line's price and sum are the `totalPriceCents`
+  passed to `addTour()` — the participant count does not multiply them.
+- **One line per booking.** Every `addTour()` call adds its own line; two identical
+  bookings render as two separately removable lines (the ✕ removes the whole
+  booking). A booking counts as one item in `<go-cart-counter>`, regardless of
+  participants.
 
 ## Localization
 
@@ -272,12 +294,13 @@ The `go-cart` component uses the following translation keys for its interface an
 
 ### Cart Table
 
-| Key                           | Default Description             |
-| ----------------------------- | ------------------------------- |
-| `cart.content.table.desc`     | Description/Title column header |
-| `cart.content.table.price`    | Price column header             |
-| `cart.content.table.quantity` | Quantity column header          |
-| `cart.content.table.total`    | Total column header             |
-| `cart.content.table.edit`     | Quantity-selector aria-label    |
-| `cart.item.remove`            | Item remove-button aria-label   |
-| `cart.coupons.remove`         | Coupon remove-button aria-label |
+| Key                           | Default Description              |
+| ----------------------------- | -------------------------------- |
+| `cart.content.table.desc`     | Description/Title column header  |
+| `cart.content.table.price`    | Price column header              |
+| `cart.content.table.quantity` | Quantity column header           |
+| `cart.content.table.total`    | Total column header              |
+| `cart.content.table.edit`     | Quantity-selector aria-label     |
+| `cart.item.participants`      | Participant count on a tour line |
+| `cart.item.remove`            | Item remove-button aria-label    |
+| `cart.coupons.remove`         | Coupon remove-button aria-label  |

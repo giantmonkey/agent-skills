@@ -4,6 +4,51 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.3.0
+
+_Released 2026-07-13_
+
+Programmatic guided-group-tour booking: `go.cart.addTour()` books a tour into the
+cart from your own page scripts, and the booking flows through `<go-cart>`, checkout and
+the `<go-order>` breakdown like any other product.
+
+## New
+
+- `go.cart.addTour(options)` — adds a guided-group-tour booking to the cart from your
+  own scripts, for shops that book tours outside `<go-ticket-selection>`. Returns a
+  `Promise<string>` (the new cart line's `uuid`). **Every call adds a new line** — identical
+  options create two bookings; keep the `uuid` to deduplicate or remove a line yourself.
+
+  ```javascript
+  const uuid = await go.cart.addTour({
+    id: 42,
+    time: '2026-07-22T13:00:00+02:00',
+    participants: 12,
+    languageId: 1,
+    totalPriceCents: 18000,
+    title: 'Highlights Tour',
+  })
+  ```
+
+  - **You supply the price.** The cart endpoint does not price tours — `totalPriceCents`
+    (base + all mandatory surcharges, from `GET /api/v4/tours/:id/prices`) is what the cart
+    shows, and a wrong total is rejected at checkout, not silently accepted.
+  - `languageId` is required; scale-priced tours also require `quantities` (which must sum
+    to `participants`), and mandatory `surcharges` must be included.
+  - Unlike other `go.api` methods, `go.cart.*` is stubbed by the snippet, so bookings
+    can be **queued before the bundle loads**. A queued call is fire-and-forget (no returned
+    `uuid`, errors go to the console); call `addTour` after load when you need either. Update
+    your pasted snippet to pick up `go.cart`.
+
+  The booking renders as a cart line (participant count, date/time, custom fields) and in the
+  post-checkout order breakdown, with an iCal link.
+
+- Live integrator demos are published with the documentation site at
+  [`/demos`](https://webcomponents.platform.gomus.de/demos/) — including an `addTour`
+  walkthrough (real tours, server-computed prices, real checkout against the edge sandbox).
+
+---
+
 # v4.2.0
 
 _Released 2026-07-09_
