@@ -12279,6 +12279,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				if (isUITour(this.product)) segments.push(`tour: ${this.product.instanceKey}`);
 				if (this.display?.discounted) segments.push("discounted");
 				if (isMantleTicket(this.product) && this.mantle?.key) segments.push(`mantle_key: ${this.mantle.key}`);
+				if (this.voucher?.code) segments.push(`voucher_code: ${this.voucher.code}`);
 				return segments.length > 0 ? ` (${segments.join(", ")})` : "";
 			},
 			toString() {
@@ -12369,7 +12370,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				return createCartItem(createUITicket(cartItem.product, { selectedTime: cartItem.product.selectedTime }), {
 					time: cartItem.time,
 					quantity: cartItem.quantity,
-					mantle: cartItem.mantle
+					mantle: cartItem.mantle,
+					voucher: cartItem.voucher
 				});
 			case "Event":
 				if (!isStillValid(cartItem)) return;
@@ -12517,6 +12519,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			},
 			deleteItem(item) {
 				for (let i = this.items.length - 1; i >= 0; i--) if (this.items[i].uuid === item.uuid) this.items.splice(i, 1);
+				if (item?.voucher?.code && !this.items.some((i) => i.voucher?.code === item.voucher.code)) this.removeCoupon(item.voucher.code);
 			},
 			addItem(item) {
 				const existingItem = this.items.find((i) => i.uuid === item.uuid);
@@ -12535,7 +12538,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			removeCoupon(code) {
 				const upper = code.toUpperCase();
 				const index = this.coupons.findIndex((c) => c.code === upper);
-				if (index > -1) this.coupons.splice(index, 1);
+				if (index > -1) {
+					const [removed] = this.coupons.splice(index, 1);
+					if (removed.kind === "serviceVoucher") {
+						for (let i = this.items.length - 1; i >= 0; i--) if (this.items[i].voucher?.code === upper) this.items.splice(i, 1);
+					}
+				}
 			},
 			clearCoupons() {
 				while (this.coupons.length > 0) this.coupons.pop();
@@ -13633,6 +13641,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var MEMBERSHIP_ACTIVATION_ENDPOINT = "/api/v4/customer/memberships/activate";
 	var ORDERS_ENDPOINT = "/api/v4/orders";
 	var CUSTOMER_ADDRESSES_ENDPOINT = "/api/v4/customer/customer_addresses";
+	var CUSTOMER_MEMBERSHIPS_ENDPOINT = "/api/v4/customer/memberships";
 	//#endregion
 	//#region ../../packages/gomus-api/lib/customerLevels.ts
 	var CustomerLevels = {
@@ -13757,6 +13766,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		getCustomerAddresses() {
 			if (!this.auth.data.accessToken) return NOT_SIGNED_IN;
 			return this.fetchAndCache(CUSTOMER_ADDRESSES_ENDPOINT, "customerAddresses", "", { cache: 5 });
+		}
+		getCustomerMemberships() {
+			if (!this.auth.data.accessToken) return NOT_SIGNED_IN;
+			return this.fetchAndCache(CUSTOMER_MEMBERSHIPS_ENDPOINT, "customerMemberships", "", { cache: 5 });
 		}
 		ticketsCalendar(params) {
 			return this.fetchAndCache(TICKETS_CALENDAR_ENDPOINT, `ticketsCalendar-${JSON.stringify(params)}`, "data", {
@@ -13955,7 +13968,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			});
 		}
 		getCouponSaleByBarcode(token) {
-			return this.fetchAndCache(`/api/v4/coupon_sales/barcode/${token}`, `coupon_sale_barcode_${token}`, "coupon_sale");
+			return this.fetchAndCache(`/api/v4/coupon_sales/barcode/${token}`, `coupon_sale_barcode_${token}`, "coupon_sale", { cache: 0 });
 		}
 		getCoupons() {
 			return this.fetchAndCache("/api/v4/coupons", "coupons", "coupons", { query: {
@@ -15214,8 +15227,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	function createDisplayCartItem(cartItem, attrs) {
 		const quantity = isUITour(cartItem.product) ? 1 : resolveApiQuantity(attrs);
-		const displayPrice = attrs.price_cents ?? cartItem.product.price_cents;
 		const originalPrice = cartItem.product.price_cents;
+		const displayPrice = originalPrice === 0 ? 0 : attrs.price_cents ?? originalPrice;
 		const discounted = displayPrice < originalPrice;
 		return createCartItem({
 			...cartItem.product,
@@ -15223,6 +15236,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}, {
 			quantity,
 			time: cartItem.time,
+			voucher: cartItem.voucher,
 			mantle: cartItem.mantle,
 			display: {
 				discounted,
@@ -17836,10 +17850,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root$47 = /* @__PURE__ */ from_html(`<s class="go-cart-item-price-original"> </s> <span class="go-cart-item-price-discounted"> </span>`, 1);
 	var root_1$15 = /* @__PURE__ */ from_html(`<span class="go-cart-item-price-discounted"> </span>`);
 	var root_2$11 = /* @__PURE__ */ from_html(`<span data-testid="cart-item-participant-count"> </span>`);
-	var root_3$8 = /* @__PURE__ */ from_html(`<span> </span>`);
-	var root_4$4 = /* @__PURE__ */ from_html(`<li class="go-cart-item-remove"><button class="go-cart-remove">⨉</button></li>`);
-	var root_5$2 = /* @__PURE__ */ from_html(`<ul class="go-sub-tickets" role="list"></ul>`);
-	var root_6$2 = /* @__PURE__ */ from_html(`<article class="go-cart-item-content"><ul><li class="go-cart-item-title-container"><!></li> <li class="go-cart-item-price"><!></li> <li class="go-cart-item-count"><!></li> <!> <li class="go-cart-item-sum"> </li></ul></article> <!>`, 1);
+	var root_3$8 = /* @__PURE__ */ from_html(`<span data-testid="cart-item-voucher-quantity"> </span>`);
+	var root_4$4 = /* @__PURE__ */ from_html(`<span> </span>`);
+	var root_5$2 = /* @__PURE__ */ from_html(`<li class="go-cart-item-remove"><button class="go-cart-remove">⨉</button></li>`);
+	var root_6$2 = /* @__PURE__ */ from_html(`<ul class="go-sub-tickets" role="list"></ul>`);
+	var root_7$2 = /* @__PURE__ */ from_html(`<article class="go-cart-item-content"><ul><li class="go-cart-item-title-container"><!></li> <li class="go-cart-item-price"><!></li> <li class="go-cart-item-count"><!></li> <!> <li class="go-cart-item-sum"> </li></ul></article> <!>`, 1);
 	function Item$1($$anchor, $$props) {
 		push($$props, true);
 		let displayItem = prop($$props, "displayItem", 7), displayCart = prop($$props, "displayCart", 7), preview = prop($$props, "preview", 7);
@@ -17904,8 +17919,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		var fragment = comment();
 		var node = first_child(fragment);
-		var consequent_9 = ($$anchor) => {
-			var fragment_1 = root_6$2();
+		var consequent_10 = ($$anchor) => {
+			var fragment_1 = root_7$2();
 			var article = first_child(fragment_1);
 			var ul = child(article);
 			var li = child(ul);
@@ -17981,6 +17996,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				template_effect(() => set_text(text_4, displayItem().quantity));
 				append($$anchor, span_3);
 			};
+			var consequent_7 = ($$anchor) => {
+				var span_4 = root_4$4();
+				var text_5 = child(span_4, true);
+				reset(span_4);
+				template_effect(() => set_text(text_5, displayItem().quantity));
+				append($$anchor, span_4);
+			};
 			var alternate_1 = ($$anchor) => {
 				{
 					let $0 = /* @__PURE__ */ user_derived(() => displayItem().quantity ?? 0);
@@ -18004,13 +18026,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			};
 			if_block(node_3, ($$render) => {
 				if (displayItem().product.type === "Tour") $$render(consequent_5);
-				else if (preview()) $$render(consequent_6, 1);
+				else if (displayItem().voucher?.code) $$render(consequent_6, 1);
+				else if (preview()) $$render(consequent_7, 2);
 				else $$render(alternate_1, -1);
 			});
 			reset(li_2);
 			var node_4 = sibling(li_2, 2);
-			var consequent_7 = ($$anchor) => {
-				var li_3 = root_4$4();
+			var consequent_8 = ($$anchor) => {
+				var li_3 = root_5$2();
 				var button = child(li_3);
 				reset(li_3);
 				template_effect(($0) => set_attribute(button, "aria-label", $0), [() => shop.t("cart.item.remove")]);
@@ -18018,16 +18041,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				append($$anchor, li_3);
 			};
 			if_block(node_4, ($$render) => {
-				if (!preview()) $$render(consequent_7);
+				if (!preview()) $$render(consequent_8);
 			});
 			var li_4 = sibling(node_4, 2);
-			var text_5 = child(li_4, true);
+			var text_6 = child(li_4, true);
 			reset(li_4);
 			reset(ul);
 			reset(article);
 			var node_5 = sibling(article, 2);
-			var consequent_8 = ($$anchor) => {
-				var ul_1 = root_5$2();
+			var consequent_9 = ($$anchor) => {
+				var ul_1 = root_6$2();
 				each(ul_1, 21, () => subTicketDefs(get$2(mantleProduct)), (sub) => sub.id, ($$anchor, sub) => {
 					{
 						let $0 = /* @__PURE__ */ user_derived(() => displayItem().mantle?.composition?.[get$2(sub).id] ?? 0);
@@ -18053,13 +18076,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				append($$anchor, ul_1);
 			};
 			if_block(node_5, ($$render) => {
-				if (get$2(mantleProduct)) $$render(consequent_8);
+				if (get$2(mantleProduct)) $$render(consequent_9);
 			});
-			template_effect(($0) => set_text(text_5, $0), [() => formatCurrency(displayItem().total_price_cents)]);
+			template_effect(($0) => set_text(text_6, $0), [() => formatCurrency(displayItem().total_price_cents)]);
 			append($$anchor, fragment_1);
 		};
 		if_block(node, ($$render) => {
-			if (get$2(capacity)) $$render(consequent_9);
+			if (get$2(capacity)) $$render(consequent_10);
 		});
 		append($$anchor, fragment);
 		return pop($$exports);
@@ -18502,15 +18525,21 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return { success: true };
 	}
 	async function applyVoucher(token, couponSale) {
-		const ticket = (await shop.asyncFetch(() => shop.tickets({ "by_ticket_ids[]": [couponSale.is_voucher_for] }))).find((t) => t.id === couponSale.is_voucher_for);
+		const code = token.toUpperCase();
+		if (shop.cart.coupons.some((c) => c.code === code)) return { success: true };
+		const tickets = await shop.asyncFetch(() => shop.tickets({ "by_ticket_ids[]": [couponSale.is_voucher_for] }));
+		const ticket = Array.isArray(tickets) ? tickets.find((t) => t.id === couponSale.is_voucher_for) : void 0;
 		if (!ticket) return fail([shop.t("cart.coupon.form.errors.error")]);
 		const voucherTicket = {
 			...ticket,
 			price_cents: 0
 		};
-		shop.cart.addItem(createCartItem(createUITicket(voucherTicket), { quantity: 1 }));
+		shop.cart.addItem(createCartItem(createUITicket(voucherTicket), {
+			quantity: 1,
+			voucher: { code }
+		}));
 		shop.cart.addCoupon({
-			code: token,
+			code,
 			kind: "serviceVoucher"
 		});
 		return { success: true };
@@ -38212,6 +38241,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			getCustomerAddresses: async () => {
 				await ensureShopReady();
 				return shop.asyncFetch(() => shop.getCustomerAddresses());
+			},
+			getCustomerMemberships: async () => {
+				await ensureShopReady();
+				return shop.asyncFetch(() => shop.getCustomerMemberships());
 			}
 		},
 		cart: { addTour: async (options) => {

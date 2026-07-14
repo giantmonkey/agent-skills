@@ -4,6 +4,34 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.6.0
+
+_Released 2026-07-14_
+
+A fourth `go.api` endpoint: `go.api.getCustomerMemberships()` lists the signed-in
+customer's memberships from your own page scripts.
+
+## New
+
+- `go.api.getCustomerMemberships()` — fetches the signed-in customer's memberships
+  (`/api/v4/customer/memberships`, not paginated). Resolves to one of:
+  - `{ memberships: [...] }` when a customer is signed in — each membership carries
+    `title`, `membership_type_id`, `membership_type_name`, `ticket_name`, `valid_from`,
+    and `valid_until`,
+  - an object carrying an `error` key when nobody is signed in,
+  - `undefined` when the shop could not fetch.
+
+  ```javascript
+  const res = await go.api.getCustomerMemberships()
+  if (res?.memberships) {
+    res.memberships.forEach(m => console.log(m.membership_type_name, m.valid_from, m.valid_until))
+  }
+  ```
+
+  Same auth contract and ~5 second result cache as the other `go.api` endpoints.
+
+---
+
 # v4.5.0
 
 _Released 2026-07-13_
