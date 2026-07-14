@@ -17846,6 +17846,22 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		preview: {}
 	}, [], [], { mode: "open" });
 	//#endregion
+	//#region src/components/shared/quantityStepper/quantityLabel.ts
+	/**
+	* Accessible name for a line's QuantityControl, derived from the same source as
+	* the visible row title: event rows compose it from event_title + time because a
+	* flat-price event's price row carries no title (the row IS the event) — naming
+	* the control from product.title alone left it unnamed (WI #141).
+	*/
+	function quantityLabel(item) {
+		const { product } = item;
+		return isEventTicket(product) ? [
+			product.event_title,
+			item.time && formatTime(item.time),
+			product.title
+		].filter(Boolean).join(" - ") : product.title;
+	}
+	//#endregion
 	//#region src/components/cart/components/Item.svelte
 	var root$47 = /* @__PURE__ */ from_html(`<s class="go-cart-item-price-original"> </s> <span class="go-cart-item-price-discounted"> </span>`, 1);
 	var root_1$15 = /* @__PURE__ */ from_html(`<span class="go-cart-item-price-discounted"> </span>`);
@@ -18006,6 +18022,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var alternate_1 = ($$anchor) => {
 				{
 					let $0 = /* @__PURE__ */ user_derived(() => displayItem().quantity ?? 0);
+					let $1 = /* @__PURE__ */ user_derived(() => quantityLabel(displayItem()));
 					QuantityControl($$anchor, {
 						get value() {
 							return get$2($0);
@@ -18017,7 +18034,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 							return get$2(capacity).max;
 						},
 						get label() {
-							return displayItem().product.title;
+							return get$2($1);
 						},
 						floor: 1,
 						onChange: updateQuantity
@@ -37417,21 +37434,25 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var text_4 = child(li_5, true);
 			reset(li_5);
 			var li_6 = sibling(li_5, 2);
-			QuantityControl(child(li_6), {
-				get value() {
-					return item().quantity;
-				},
-				get min() {
-					return get$2(capacity).min;
-				},
-				get max() {
-					return get$2(capacity).max;
-				},
-				get label() {
-					return item().product.title;
-				},
-				onChange: (q) => item().quantity = q
-			});
+			var node_4 = child(li_6);
+			{
+				let $0 = /* @__PURE__ */ user_derived(() => quantityLabel(item()));
+				QuantityControl(node_4, {
+					get value() {
+						return item().quantity;
+					},
+					get min() {
+						return get$2(capacity).min;
+					},
+					get max() {
+						return get$2(capacity).max;
+					},
+					get label() {
+						return get$2($0);
+					},
+					onChange: (q) => item().quantity = q
+				});
+			}
 			reset(li_6);
 			reset(ul);
 			reset(article);

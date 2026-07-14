@@ -4,6 +4,23 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.6.2
+
+_Released 2026-07-14_
+
+Accessibility fix: the quantity control on flat-price event lines now carries a proper accessible name.
+
+## Fixed
+
+- The quantity control on flat-price event lines in `<go-cart>` and `<go-tickets>` now
+  has an accessible name derived from the event title — plus the time, and the audience
+  for scaled-price rows (e.g. `Öffentliche Führung - 12:00`). Previously these lines
+  carried an empty title, so the stepper (and the legacy `<select>` when `quantityStepper`
+  is `false`) rendered with no accessible name, which screen readers and accessibility
+  audits flagged as an unlabeled control.
+
+---
+
 # v4.6.1
 
 _Released 2026-07-14_
