@@ -4,12 +4,30 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.6.1
+
+_Released 2026-07-14_
+
+`<go-order>` now resets the shopping session whenever it switches to a new order, not
+only when the page first loads.
+
+## Fixed
+
+- `<go-order>` empties the cart and ends a guest session again whenever its `token`
+  attribute changes to a new order. Previously this only happened on the initial mount,
+  so in single-page shops that keep `<go-order>` mounted, a follow-up purchase could
+  land on the confirmation view with the previous cart items still present.
+
+---
+
 # v4.6.0
 
 _Released 2026-07-14_
 
-A fourth `go.api` endpoint: `go.api.getCustomerMemberships()` lists the signed-in
-customer's memberships from your own page scripts.
+A fourth `go.api` endpoint — `go.api.getCustomerMemberships()` — lists the signed-in
+customer's memberships from your own page scripts. Service-voucher redemption (a
+barcode that grants a specific free ticket, such as an annual pass) now stays
+consistent through cart edits, reloads, and checkout.
 
 ## New
 
@@ -29,6 +47,23 @@ customer's memberships from your own page scripts.
   ```
 
   Same auth contract and ~5 second result cache as the other `go.api` endpoints.
+
+## Fixed
+
+- Redeeming a service-voucher barcode now creates a fixed quantity-1 grant line that
+  never merges with a paid ticket for the same product or with a second voucher;
+  re-entering the same code is a no-op instead of stacking a second free ticket the
+  voucher cannot cover.
+- Removing a redeemed voucher — via its coupon or by removing the granted line —
+  clears both together, so a free ticket is no longer left orphaned in checkout with
+  a dangling coupon.
+- A voucher-granted line shows a fixed count; its quantity can no longer be edited
+  (the voucher binds to exactly one ticket).
+- A €0 voucher grant stays free — a cart discount can no longer re-price it above zero.
+- An unrecognized, voided, or already-redeemed voucher barcode now surfaces the coupon
+  error instead of breaking the cart or being accepted from a stale lookup.
+- A redeemed voucher survives a page reload — the restored cart keeps the grant linked
+  to its coupon, so it can still be removed cleanly.
 
 ---
 

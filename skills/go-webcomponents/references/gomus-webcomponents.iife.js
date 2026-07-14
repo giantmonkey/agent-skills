@@ -36151,9 +36151,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		let token = prop($$props, "token", 7);
 		const orderDetails = new OrderDetails(token());
 		setDetails($$props.$$host, orderDetails);
-		onMount(() => {
-			shop.cart.clearItems();
-			if (shop.auth.isGuest()) shop.auth.signOut();
+		user_effect(() => {
+			orderDetails.token = token();
+			untrack(() => {
+				shop.cart.clearItems();
+				if (shop.auth.isGuest()) shop.auth.signOut();
+			});
 		});
 		return pop({
 			orderDetails,

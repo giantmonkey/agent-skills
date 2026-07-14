@@ -2,7 +2,7 @@
 
 Since `v1.20.0`
 
-The order components display purchase confirmation details after a successful checkout. When `<go-order>` loads, it empties the shopping cart — the purchase is complete — and ends a guest session.
+The order components display purchase confirmation details after a successful checkout. When `<go-order>` loads, and again whenever its `token` changes to a new order, it empties the shopping cart — the purchase is complete — and ends a guest session.
 
 ## Examples
 
