@@ -4,6 +4,27 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.8.0
+
+_Released 2026-07-15_
+
+Annual-ticket personalization forms can now collect a date of birth.
+
+## New
+
+- `dateOfBirth` field key for `<go-field>` — a birth-date input for annual-ticket
+  personalization, submitted as the customer `date_of_birth` param. Renders the same
+  datepicker as `startAt`, uses `autocomplete="bday"`, and validates an ISO date
+  (`YYYY-MM-DD`). Use it inside `<go-personalization-form>`:
+  `<go-field key="dateOfBirth" required></go-field>`.
+
+## Fixed
+
+- The `language` field no longer errors when it renders before the shop's locales have
+  loaded — it shows an empty option list until they arrive.
+
+---
+
 # v4.6.2
 
 _Released 2026-07-14_

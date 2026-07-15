@@ -14465,7 +14465,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			placeholder: "",
 			description: "",
 			autocomplete: "language",
-			options: () => shop.locales.map((c) => ({
+			options: () => (shop.locales ?? []).map((c) => ({
 				label: shop.t(`languages.${c.locale}`),
 				value: c.id
 			}))
@@ -14487,6 +14487,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			placeholder: "",
 			description: "",
 			autocomplete: "off",
+			validator: string().date()
+		},
+		dateOfBirth: {
+			key: "dateOfBirth",
+			apiKey: "date_of_birth",
+			type: "date",
+			label: "user.registration.form.dateOfBirth",
+			placeholder: "",
+			description: "",
+			autocomplete: "bday",
 			validator: string().date()
 		},
 		token: {

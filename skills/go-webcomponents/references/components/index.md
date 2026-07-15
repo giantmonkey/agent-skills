@@ -1,6 +1,6 @@
 # Components
 
-Library version: 4.7.0
+Library version: 4.8.0
 
 | Tag | Attributes |
 | --- | --- |

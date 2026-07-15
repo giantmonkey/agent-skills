@@ -34,6 +34,7 @@ copies of your block). The outer `startAt` field is the ticket’s valid-from da
           <h3>Personal Information</h3>
           <go-field key="firstName" required></go-field>
           <go-field key="lastName" required></go-field>
+          <go-field key="dateOfBirth" required></go-field>
           <go-field key="email" required></go-field>
           <go-field key="confirmEmail" required></go-field>
         </section>
