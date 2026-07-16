@@ -19,17 +19,17 @@ The `go-donations` component allows customers to add optional donations to their
 
 **Global translation keys (from shop translations):**
 
-| Key                                              | Description                    |
-|--------------------------------------------------|--------------------------------|
-| `donations.actions.continueWithoutDonation`      | Skip donation button text      |
-| `donations.actions.addToCart`                     | Add to cart button text        |
-| `donations.selection.title`                      | Amount selection heading       |
-| `donations.selection.custom.label`               | Custom amount label            |
-| `donations.selection.custom.input.placeholder`   | Custom amount input placeholder|
+| Key                                            | Description                     |
+| ---------------------------------------------- | ------------------------------- |
+| `donations.actions.continueWithoutDonation`    | Skip donation button text       |
+| `donations.actions.addToCart`                  | Add to cart button text         |
+| `donations.selection.title`                    | Amount selection heading        |
+| `donations.selection.custom.label`             | Custom amount label             |
+| `donations.selection.custom.input.placeholder` | Custom amount input placeholder |
 
 **Per-campaign translation keys (from `campaign.translations`):**
 
-| Key                      | Description              |
-|--------------------------|--------------------------|
-| `donations.headline`     | Campaign title           |
-| `donations.shop.info`    | Campaign description     |
+| Key                   | Description          |
+| --------------------- | -------------------- |
+| `donations.headline`  | Campaign title       |
+| `donations.shop.info` | Campaign description |

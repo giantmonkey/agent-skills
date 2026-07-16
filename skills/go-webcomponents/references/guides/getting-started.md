@@ -1,7 +1,9 @@
 # Installation
 
 ## Load the script
+
 in `<Head>`
+
 ```html
 <script type="module" src="url_to_js_file"></script>
 ```
@@ -19,11 +21,13 @@ Alternatively you can import the code via `npm`
 ## Initialize
 
 Initialize the component echo system
+
 ```html
 <go-init shop-domain="..." api-domain="..." locale="de-DE" />
 ```
 
 ## Usage
+
 Now you can start using the components, for example a Ticket Selection:
 
 ```html

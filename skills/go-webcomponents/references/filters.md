@@ -144,6 +144,7 @@ Admission tickets attached to a single event, restricted to **day tickets** (`ti
 **Use when:** the event sells admission tickets that are valid for the whole day. Pair with `event:admission:timeslot` in two segments when an event sells both kinds.
 
 **Required attributes:**
+
 - `event-ids` on `<go-ticket-selection>` — ID of the event.
 - A picked date is required (driven by `<go-calendar>`); no timeslot is needed.
 
@@ -178,6 +179,7 @@ Admission tickets attached to a single event, restricted to **timed-entry ticket
 **Use when:** the event sells timed-admission tickets where the visitor picks a specific entry time. Pair with `event:admission:day` in two segments when the event sells both kinds.
 
 **Required attributes:**
+
 - `event-ids` on `<go-ticket-selection>` — ID of the event.
 - A picked date and timeslot are required (driven by `<go-calendar>` then `<go-timeslots>`).
 
@@ -211,10 +213,7 @@ Admission tickets attached to a single event, restricted to **timed-entry ticket
 ## Combined with day tickets
 
 ```html
-<go-ticket-selection
-  filters="event:admission:day, event:admission:timeslot"
-  event-ids="263"
->
+<go-ticket-selection filters="event:admission:day, event:admission:timeslot" event-ids="263">
   <go-if when="data.ticketSelection.isCalendarVisible" then="show">
     <go-calendar></go-calendar>
   </go-if>
@@ -248,6 +247,7 @@ Sell tickets for one specific event-date when the date is already known (e.g. vi
 **Use when:** you already have an event ID and a date ID and want to render the ticket picker directly. Renders whatever the backend returns for that date — flat or scaled.
 
 **Required attributes:**
+
 - `event-ids` on `<go-ticket-selection>` — ID of the event.
 - `date-id` on `<go-ticket-segment>` — ID of the chosen event-date.
 
@@ -275,6 +275,7 @@ Multi-event listing showing each event's admission tickets (`event.tickets[]`) f
 **Use when:** the shop offers a "What's on today" listing where the events sell admission tickets (Adult, Reduced, …) rather than date-level scaled prices. For scaled / flat date-prices, use `events:price` instead. To split day vs timed admission tickets across two segments, use `events:admission:day` and `events:admission:timeslot`.
 
 **Required attributes:**
+
 - `selected-date` is required (driven by `<go-calendar>`).
 - `selected-timeslot` is required (driven by `<go-timeslots>`); the loader picks all event-dates whose `start_time` falls within a 2-hour window from the selected time.
 
@@ -310,6 +311,7 @@ Multi-event listing showing each event's **day admission tickets** (`ticket_type
 **Use when:** "What's on today" listing where events sell day tickets only. For mixed flows, pair with `events:admission:timeslot`.
 
 **Required attributes:**
+
 - `selected-date` and `selected-timeslot` are required (the timeslot narrows the listing to event-dates whose `start_time` falls within a 2h window from the selected time).
 
 **Backend filter applied per event-date in window:** `by_ticket_ids[]=event.tickets&by_ticket_types[]=normal&valid_at=YYYY-MM-DD&by_bookable=true`.
@@ -325,6 +327,7 @@ Multi-event listing showing each event's **timed admission tickets** (`ticket_ty
 **Use when:** "What's on today" listing where events sell timed entry tickets only. For mixed flows, pair with `events:admission:day`.
 
 **Required attributes:**
+
 - `selected-date` and `selected-timeslot` (the timeslot is also used to narrow the listing to event-dates whose `start_time` falls within a 2h window from the selected time).
 
 **Backend filter applied per event-date in window:** `by_ticket_ids[]=event.tickets&by_ticket_type=time_slot&valid_at=YYYY-MM-DD&by_bookable=true`.
@@ -340,6 +343,7 @@ Browse many events on a chosen day and time, then book any of them. Mixes flat a
 **Use when:** you want a "what's on today" view — visitor picks a day and time, sees a list of bookable events starting in that window.
 
 **Optional attributes:**
+
 - `museum-ids` on `<go-ticket-selection>` — limit listing to specific museums.
 - `query` on `<go-ticket-segment>` — free-text filter on price title.
 - `language-ids`, `catch-word-ids`, `limit` on `<go-ticket-segment>` — further narrow the listing.

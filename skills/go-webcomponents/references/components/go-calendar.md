@@ -14,15 +14,15 @@ The `go-calendar` component provides multiple data attributes for styling and cu
 
 ### CSS Selectors
 
-* `[data-calendar-root]`: Root container.
-* `[data-calendar-header]`: Calendar header area.
-* `[data-calendar-grid]`: Grid layout for dates.
-* `[data-calendar-cell]`: Each date cell.
-* `[data-calendar-cell][data-unavailable]`: Marks unavailable dates.
-* `[data-calendar-cell][data-disabled]`: Marks disabled dates.
-* `[data-calendar-cell][data-selected]`: Styles for the selected date.
-* `[data-calendar-cell][data-today]`: Highlights the current day.
-* `[data-calendar-cell][data-outside-month]`: Hidden days outside the current month.
+- `[data-calendar-root]`: Root container.
+- `[data-calendar-header]`: Calendar header area.
+- `[data-calendar-grid]`: Grid layout for dates.
+- `[data-calendar-cell]`: Each date cell.
+- `[data-calendar-cell][data-unavailable]`: Marks unavailable dates.
+- `[data-calendar-cell][data-disabled]`: Marks disabled dates.
+- `[data-calendar-cell][data-selected]`: Styles for the selected date.
+- `[data-calendar-cell][data-today]`: Highlights the current day.
+- `[data-calendar-cell][data-outside-month]`: Hidden days outside the current month.
 
 ### CSS Example
 
@@ -41,9 +41,9 @@ The `go-calendar` component provides multiple data attributes for styling and cu
 
 The `CalendarUI` component emits the following events for interaction handling:
 
-| Event Name | Description                                        | Payload                           |
-| ---------- | -------------------------------------------------- | --------------------------------- |
-| `select`   | Triggered when a date is selected.                 | `{ value: CalendarDate }`         |
+| Event Name | Description                        | Payload                   |
+| ---------- | ---------------------------------- | ------------------------- |
+| `select`   | Triggered when a date is selected. | `{ value: CalendarDate }` |
 
 ## Sub component
 

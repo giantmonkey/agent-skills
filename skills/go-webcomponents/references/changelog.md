@@ -4,6 +4,27 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.8.1
+
+_Released 2026-07-16_
+
+Form-feedback fixes: stale error and success messages in `<go-form>`-based forms no longer linger across submits or coupon redemptions.
+
+## Fixed
+
+- Form-level API error messages (the `.go-error-feedback-api-errors` list) from a
+  previous failed submit are now cleared when the form is submitted again with valid
+  input. Previously only per-field errors were reset, so a stale form-level error could
+  stay visible next to a fresh success message.
+- A success message from a previous submit (`.go-success-feedback`) is now cleared when
+  the form is re-submitted, instead of remaining visible while the new submission is
+  still in flight or has failed.
+- `<go-coupon-redemption>`: when a coupon token that was typed but not submitted is
+  applied automatically at checkout and succeeds, an error message left over from an
+  earlier failed attempt is now cleared instead of lingering next to the emptied field.
+
+---
+
 # v4.8.0
 
 _Released 2026-07-15_

@@ -11,5 +11,5 @@ The `go-password-reset` form to send password reset email.
 ## Localization
 
 | Key                                               | Description             |
-|---------------------------------------------------|-------------------------|
+| ------------------------------------------------- | ----------------------- |
 | `user.passwordReset.actions.requestPasswordReset` | Label for submit button |

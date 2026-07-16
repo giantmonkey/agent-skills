@@ -1,6 +1,7 @@
 # Naming Guidelines
 
 ## Conventions
+
 - **Prefix**
   - All names are prefixed with `go`, shorthanding `gomus`
 - **Meaningful Names**
@@ -23,6 +24,7 @@
 - Examples: `go-card`, `go-museum-selection`
 
 ## Component Props
+
 We use standard HTML kebab-case prop names
 
 ```html

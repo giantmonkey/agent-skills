@@ -14872,6 +14872,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		* @param {string[] | Record<string, string[]>} errors - Errors passed as an array or an object where keys are API field keys and values are arrays of error messages. If an array is provided, it assigns the errors directly. If an object is provided, it maps the errors to the respective fields based on their API keys.
 		*/
 		set apiErrors(errors) {
+			set(this.#apiErrors, [], true);
 			this.fields.forEach((f) => f.apiErrors = []);
 			if (isArray(errors)) {
 				set(this.#apiErrors, errors, true);
@@ -14912,7 +14913,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		*/
 		get fields() {
 			const parent = this.form.closest("go-form");
-			return Array.from(this.form.querySelectorAll("go-field")).filter((fe) => fe.closest("go-form") === parent).map((fe) => fe.getField?.()).filter((f) => f);
+			return Array.from(this.form.querySelectorAll("go-field")).filter((fe) => fe.closest("go-form") === parent).map((fe) => fe.getField?.()).filter((f) => !!f);
 		}
 		toString() {
 			return `Form: ${this.formId}, Fields: [${this.fields.map((f) => f.key).join(", ")}], Data: ${JSON.stringify(this.formData)}`;
@@ -14980,6 +14981,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			details?.form?.dispatchEvent(new Event("go-after-validation", event));
 			if (details.isValid) {
 				details.apiErrors = {};
+				details.successMessage = void 0;
 				details?.form?.dispatchEvent(new Event("go-submit", event));
 				$$props.$$host.dispatchEvent(new Event("submit", {
 					bubbles: true,
@@ -18599,6 +18601,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				form.details.apiErrors = result.errors;
 				return result;
 			}
+			form.details.apiErrors = [];
 			if (field) field.value = "";
 			form.dispatchEvent(new Event("go-success", {
 				bubbles: true,

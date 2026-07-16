@@ -19,6 +19,6 @@ The component uses the following CSS classes for styling:
 
 The component uses the following translation key:
 
-| Key                      | Description                                      |
-|--------------------------|--------------------------------------------------|
-| `user.login.desc.text`   | Message displayed when user is not authenticated |
+| Key                    | Description                                      |
+| ---------------------- | ------------------------------------------------ |
+| `user.login.desc.text` | Message displayed when user is not authenticated |
