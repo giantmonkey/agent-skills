@@ -4,6 +4,42 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.9.0
+
+_Released 2026-07-16_
+
+The password-reset flow is now complete: a new `<go-set-password>` element handles the
+reset-mail landing step, and `<go-password-reset>` can point the mail link back to your
+own page.
+
+## New
+
+- `<go-set-password>` — the set-new-password form for the reset-mail landing page. Pass
+  the `access-token`, `client`, and `uid` query parameters from the reset link as
+  attributes; the visitor picks a new password (no current password needed) and is
+  signed in automatically on success. Fires `go-success`.
+
+  ```html
+  <go-set-password id="set-password"></go-set-password>
+
+  <script>
+    var params = new URLSearchParams(location.search)
+    if (params.get('reset_password') === 'true') {
+      var el = document.getElementById('set-password')
+      el.setAttribute('access-token', params.get('access-token'))
+      el.setAttribute('client', params.get('client'))
+      el.setAttribute('uid', params.get('uid'))
+    }
+  </script>
+  ```
+
+- `redirect-url` attribute on `<go-password-reset>` — where the reset-mail link sends
+  the visitor back to (the page hosting `<go-set-password>`). Must be on your shop's
+  domain. Without it the shop's configured password-reset page is used, falling back to
+  the shop root.
+
+---
+
 # v4.8.2
 
 _Released 2026-07-16_

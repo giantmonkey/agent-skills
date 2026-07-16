@@ -1,6 +1,6 @@
 # Gomus web components — AI integration reference
 
-These are tool-agnostic Markdown docs for integrating the gomus museum-ticketing web components (`<go-*>` custom elements) into any HTML page. Library version 4.8.2 (npm: `@gomusdev/web-components`).
+These are tool-agnostic Markdown docs for integrating the gomus museum-ticketing web components (`<go-*>` custom elements) into any HTML page. Library version 4.9.0 (npm: `@gomusdev/web-components`).
 
 Point your AI assistant at this folder, or paste these files into a chat. (Claude users: the sibling `SKILL.md` exposes the same content as a Claude skill.)
 
@@ -21,7 +21,7 @@ The compiled library ships alongside these docs at `./references/gomus-webcompon
 
 ## Public tags
 
-`<go-add-to-cart-button>`, `<go-all-fields>`, `<go-annual-ticket-personalization>`, `<go-annual-ticket-personalization-form>`, `<go-calendar>`, `<go-cart>`, `<go-cart-counter>`, `<go-cart-coupons>`, `<go-cart-discounted-amount>`, `<go-cart-empty>`, `<go-cart-items>`, `<go-cart-subtotal-amount>`, `<go-cart-total-amount>`, `<go-checkout-form>`, `<go-checkout-guest>`, `<go-checkout-user>`, `<go-coupon-redemption>`, `<go-donations>`, `<go-errors-feedback>`, `<go-field>`, `<go-form>`, `<go-form-feedback>`, `<go-if>`, `<go-init>`, `<go-link>`, `<go-membership-activation>`, `<go-order>`, `<go-order-breakdown>`, `<go-order-invoice-id>`, `<go-password-reset>`, `<go-profile-details>`, `<go-profile-overview>`, `<go-profile-password>`, `<go-sign-in>`, `<go-sign-up>`, `<go-submit>`, `<go-success-feedback>`, `<go-ticket-segment>`, `<go-ticket-segment-body>`, `<go-ticket-segment-empty>`, `<go-ticket-segment-sum>`, `<go-ticket-selection>`, `<go-tickets>`, `<go-tickets-empty>`, `<go-tickets-sum>`, `<go-timeslots>`, `<go-withdrawal-form>`, `<gomus-init>`
+`<go-add-to-cart-button>`, `<go-all-fields>`, `<go-annual-ticket-personalization>`, `<go-annual-ticket-personalization-form>`, `<go-calendar>`, `<go-cart>`, `<go-cart-counter>`, `<go-cart-coupons>`, `<go-cart-discounted-amount>`, `<go-cart-empty>`, `<go-cart-items>`, `<go-cart-subtotal-amount>`, `<go-cart-total-amount>`, `<go-checkout-form>`, `<go-checkout-guest>`, `<go-checkout-user>`, `<go-coupon-redemption>`, `<go-donations>`, `<go-errors-feedback>`, `<go-field>`, `<go-form>`, `<go-form-feedback>`, `<go-if>`, `<go-init>`, `<go-link>`, `<go-membership-activation>`, `<go-order>`, `<go-order-breakdown>`, `<go-order-invoice-id>`, `<go-password-reset>`, `<go-profile-details>`, `<go-profile-overview>`, `<go-profile-password>`, `<go-set-password>`, `<go-sign-in>`, `<go-sign-up>`, `<go-submit>`, `<go-success-feedback>`, `<go-ticket-segment>`, `<go-ticket-segment-body>`, `<go-ticket-segment-empty>`, `<go-ticket-segment-sum>`, `<go-ticket-selection>`, `<go-tickets>`, `<go-tickets-empty>`, `<go-tickets-sum>`, `<go-timeslots>`, `<go-withdrawal-form>`, `<gomus-init>`
 
 ## Styling
 

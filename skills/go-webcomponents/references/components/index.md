@@ -1,6 +1,6 @@
 # Components
 
-Library version: 4.8.2
+Library version: 4.9.0
 
 | Tag | Attributes |
 | --- | --- |
@@ -33,10 +33,11 @@ Library version: 4.8.2
 | [`<go-order>`](./go-order.md) | 1 |
 | [`<go-order-breakdown>`](./go-order-breakdown.md) | 0 |
 | [`<go-order-invoice-id>`](./go-order-invoice-id.md) | 0 |
-| [`<go-password-reset>`](./go-password-reset.md) | 0 |
+| [`<go-password-reset>`](./go-password-reset.md) | 1 |
 | [`<go-profile-details>`](./go-profile-details.md) | 0 |
 | [`<go-profile-overview>`](./go-profile-overview.md) | 0 |
 | [`<go-profile-password>`](./go-profile-password.md) | 0 |
+| [`<go-set-password>`](./go-set-password.md) | 3 |
 | [`<go-sign-in>`](./go-sign-in.md) | 1 |
 | [`<go-sign-up>`](./go-sign-up.md) | 1 |
 | [`<go-submit>`](./go-submit.md) | 1 |

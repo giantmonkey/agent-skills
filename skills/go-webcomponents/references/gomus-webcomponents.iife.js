@@ -13878,6 +13878,20 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				requiredFields: ["email"]
 			});
 		}
+		/**
+		* Sets a new password using the one-time credentials the backend appends to
+		* the reset-mail redirect (`access-token`, `client`, `uid` query params).
+		* Unlike `updatePassword` no `current_password` is needed — the reset link
+		* flags the session with `allow_password_change`. The 200 response carries
+		* fresh auth headers which AuthMiddleware ingests, signing the customer in.
+		*/
+		setNewPassword(params, headers) {
+			return this.apiPut("/api/v4/auth/password", {
+				body: params,
+				requiredFields: ["password", "password_confirmation"],
+				params: { header: headers }
+			});
+		}
 		activateMembership(params) {
 			return this.apiPost(MEMBERSHIP_ACTIVATION_ENDPOINT, {
 				body: params,
@@ -14258,7 +14272,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var getPersonalizationDetails = createGetDetails(KEY$5);
 	//#endregion
 	//#region src/components/annualTicketPersonalization/components/AnnualTicketPersonalization.svelte
-	var root$57 = /* @__PURE__ */ from_html(`<li><a> </a></li>`);
+	var root$58 = /* @__PURE__ */ from_html(`<li><a> </a></li>`);
 	var root_1$21 = /* @__PURE__ */ from_html(`<ul class="go-annual-ticket"><li class="go-annual-ticket-title"> </li> <li class="go-annual-ticket-personalization-count"> </li> <!></ul>`);
 	function AnnualTicketPersonalization($$anchor, $$props) {
 		push($$props, true);
@@ -14293,7 +14307,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				reset(li_1);
 				var node_2 = sibling(li_1, 2);
 				var consequent = ($$anchor) => {
-					var li_2 = root$57();
+					var li_2 = root$58();
 					var a = child(li_2);
 					var text_2 = child(a, true);
 					reset(a);
@@ -14979,7 +14993,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	//#endregion
 	//#region src/components/forms/ui/generic/Form.svelte
-	var root$56 = /* @__PURE__ */ from_html(`<go-all-fields></go-all-fields> <go-form-feedback><go-errors-feedback></go-errors-feedback> <go-success-feedback></go-success-feedback></go-form-feedback> <go-submit> </go-submit>`, 3);
+	var root$57 = /* @__PURE__ */ from_html(`<go-all-fields></go-all-fields> <go-form-feedback><go-errors-feedback></go-errors-feedback> <go-success-feedback></go-success-feedback></go-form-feedback> <go-submit> </go-submit>`, 3);
 	function Form($$anchor, $$props) {
 		push($$props, true);
 		let formId = prop($$props, "formId", 7), custom = prop($$props, "custom", 7);
@@ -15025,7 +15039,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
-			var fragment_1 = root$56();
+			var fragment_1 = root$57();
 			var go_submit = sibling(sibling(first_child(fragment_1), 2), 2);
 			var text = child(go_submit, true);
 			reset(go_submit);
@@ -15052,10 +15066,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}, [], ["details"]));
 	//#endregion
 	//#region src/components/auth/passwordReset/PasswordReset.svelte
-	var root$55 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
+	var root$56 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
 	function PasswordReset($$anchor, $$props) {
 		push($$props, true);
-		let custom = prop($$props, "custom", 7, false);
+		let custom = prop($$props, "custom", 7, false), redirectUrl = prop($$props, "redirectUrl", 7, "");
 		Forms.defineForm({
 			id: "passwordReset",
 			submitLabel: "user.passwordReset.actions.requestPasswordReset",
@@ -15066,7 +15080,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		});
 		async function passwordReset(event) {
 			const details = event.target.details;
-			const result = await shop.passwordReset(details.formData);
+			const params = details.formData;
+			const result = await shop.passwordReset(redirectUrl() ? {
+				...params,
+				redirect_url: redirectUrl()
+			} : params);
 			if (result.data) {
 				$$props.$$host.dispatchEvent(new Event("go-success", {
 					bubbles: true,
@@ -15083,16 +15101,105 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			set custom($$value = false) {
 				custom($$value);
 				flushSync();
+			},
+			get redirectUrl() {
+				return redirectUrl();
+			},
+			set redirectUrl($$value = "") {
+				redirectUrl($$value);
+				flushSync();
 			}
 		};
-		var go_form = root$55();
+		var go_form = root$56();
 		set_custom_element_data(go_form, "formId", "passwordReset");
 		template_effect(() => set_custom_element_data(go_form, "custom", custom()));
 		event("submit", go_form, passwordReset);
 		append($$anchor, go_form);
 		return pop($$exports);
 	}
-	customElements.define("go-password-reset", create_custom_element(PasswordReset, { custom: {} }, [], []));
+	customElements.define("go-password-reset", create_custom_element(PasswordReset, {
+		redirectUrl: {
+			attribute: "redirect-url",
+			type: "String"
+		},
+		custom: {}
+	}, [], []));
+	//#endregion
+	//#region src/components/auth/setPassword/SetPassword.svelte
+	var root$55 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
+	function SetPassword($$anchor, $$props) {
+		push($$props, true);
+		let accessToken = prop($$props, "accessToken", 7, ""), client = prop($$props, "client", 7, ""), uid = prop($$props, "uid", 7, "");
+		Forms.defineForm({
+			id: "setPassword",
+			submitLabel: "user.passwordReset.actions.resetPassword",
+			fields: [{
+				key: "newPassword",
+				required: true
+			}, {
+				key: "confirmPassword",
+				required: true
+			}]
+		});
+		async function setNewPassword(event) {
+			const details = event.target.details;
+			const result = await shop.setNewPassword(details.formData, {
+				"access-token": accessToken(),
+				client: client(),
+				uid: uid()
+			});
+			if (result.data) {
+				$$props.$$host.dispatchEvent(new Event("go-success", {
+					bubbles: true,
+					composed: true
+				}));
+				details.successMessage = result.data.message;
+				details.apiErrors = [];
+			} else details.apiErrors = result.error.errors;
+		}
+		var $$exports = {
+			get accessToken() {
+				return accessToken();
+			},
+			set accessToken($$value = "") {
+				accessToken($$value);
+				flushSync();
+			},
+			get client() {
+				return client();
+			},
+			set client($$value = "") {
+				client($$value);
+				flushSync();
+			},
+			get uid() {
+				return uid();
+			},
+			set uid($$value = "") {
+				uid($$value);
+				flushSync();
+			}
+		};
+		var go_form = root$55();
+		set_custom_element_data(go_form, "formId", "setPassword");
+		event("submit", go_form, setNewPassword);
+		append($$anchor, go_form);
+		return pop($$exports);
+	}
+	customElements.define("go-set-password", create_custom_element(SetPassword, {
+		accessToken: {
+			attribute: "access-token",
+			type: "String"
+		},
+		client: {
+			attribute: "client",
+			type: "String"
+		},
+		uid: {
+			attribute: "uid",
+			type: "String"
+		}
+	}, [], []));
 	//#endregion
 	//#region src/components/auth/signIn/SignIn.svelte
 	function SignIn($$anchor, $$props) {
