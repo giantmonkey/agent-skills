@@ -4,23 +4,23 @@
 
 ## Form Submission
 
-You can handle form submissions by passing an `onsubmit` callback function to the `<go-form>` component. This callback will be invoked when the form is submitted and all validations pass.
+The `<go-form>` element exposes an `onsubmit` property — assign a callback to it and it runs when the form is submitted and all validations pass.
 
 ```html
-<go-form form-id="myForm" onsubmit="{handleSubmit}">
+<go-form form-id="myForm">
   <go-field key="firstName" required></go-field>
   <go-submit>Submit</go-submit>
 </go-form>
+
+<script>
+  document.querySelector('go-form').onsubmit = event => {
+    console.log('Form submitted successfully!', event)
+    // Handle your form submission logic here
+  }
+</script>
 ```
 
-The `onsubmit` callback receives the form submission event as a parameter:
-
-```javascript
-function handleSubmit(event) {
-  console.log('Form submitted successfully!', event)
-  // Handle your form submission logic here
-}
-```
+The `onsubmit` callback receives the form submission event as a parameter.
 
 **Note:** The `onsubmit` callback is only called when the form is valid. If validation fails, the callback will not be invoked.
 

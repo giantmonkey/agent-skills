@@ -4,6 +4,18 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.8.2
+
+_Released 2026-07-16_
+
+Day-ticket fix: day tickets in `<go-ticket-selection>` now resolve their entry time individually, so every bookable day ticket is shown and reserved at its own time.
+
+## Fixed
+
+- Day tickets rendered by the `ticket:day`, `event:admission:day`, and `events:admission:day` filters now derive their entry time from their own capacity instead of a single time taken from the first quota. Previously, when day quotas keyed capacity at different times, some bookable day tickets were wrongly hidden and others were added to the cart with the wrong entry time. Sold-out day tickets (no remaining capacity) are still hidden.
+
+---
+
 # v4.8.1
 
 _Released 2026-07-16_

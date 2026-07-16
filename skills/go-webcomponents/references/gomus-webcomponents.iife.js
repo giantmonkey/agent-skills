@@ -11860,6 +11860,17 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function initUITimeslotTickets(tickets, selectedTime = "") {
 		return sort(Object.values(tickets).map((ticket) => createUITicket(ticket, { selectedTime })), (f) => f.shop_order);
 	}
+	/**
+	* Day tickets (TC-04): each day quota keys its capacity at its OWN first-entry time, so
+	* capacity keys differ across quotas. The day 'time' must be derived per ticket — the
+	* first positive key of the ticket's own total_capacities — never from one global quota
+	* key. A ticket with capacity keys that are all zero is sold out and dropped; a ticket
+	* with no keys at all (no quota) is kept and gets `fallbackTime`.
+	*/
+	function initUIDayTickets(tickets, fallbackTime) {
+		const ownDayTime = (t) => Object.keys(t.total_capacities ?? {}).find((key) => (t.total_capacities?.[key] ?? 0) > 0);
+		return sort(Object.values(tickets).filter((t) => ownDayTime(t) || Object.keys(t.total_capacities ?? {}).length === 0).map((t) => createUITicket(t, { selectedTime: ownDayTime(t) ?? fallbackTime })), (f) => f.shop_order);
+	}
 	function filterAvailabletickets(tickets, selectedTime = "") {
 		let available = Object.entries(tickets);
 		if (selectedTime !== "") available = available.filter(([, t]) => t.total_capacities?.[selectedTime] && t.total_capacities[selectedTime] > 0);
@@ -35403,11 +35414,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					"by_ticket_group_ids[]": segment.ticketGroupIds ?? tsd.ticketGroupIds
 				}));
 				shop.capacityManager.addQuotas(quotas);
-				const firstQuota = Object.values(quotas)[0];
-				const timeslot = firstQuota ? Object.keys(firstQuota.capacities)[0] : void 0;
-				const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, timeslot), timeslot);
+				const uiTickets = initUIDayTickets(tickets);
 				await enrichTicketsWithContent(segment, uiTickets);
-				for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: timeslot }));
+				for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: ticket.selectedTime }));
 			}
 		},
 		"ticket:annual": {
@@ -35499,11 +35508,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					valid_at: tsd.selectedDate.toString()
 				}));
 				shop.capacityManager.addQuotas(quotas);
-				const firstQuota = Object.values(quotas)[0];
-				const time = firstQuota ? Object.keys(firstQuota.capacities)[0] : void 0;
-				const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, time), time);
+				const uiTickets = initUIDayTickets(tickets);
 				await enrichTicketsWithContent(segment, uiTickets);
-				for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time }));
+				for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time: t.selectedTime }));
 			}
 		},
 		"event:admission:timeslot": {
@@ -35662,11 +35669,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						valid_at: date.start_time.slice(0, 10)
 					}));
 					shop.capacityManager.addQuotas(quotas);
-					const firstQuota = Object.values(quotas)[0];
-					const time = firstQuota ? Object.keys(firstQuota.capacities)[0] : date.start_time;
-					const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, time), time);
+					const uiTickets = initUIDayTickets(tickets, date.start_time);
 					await enrichTicketsWithContent(segment, uiTickets);
-					for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time }));
+					for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time: t.selectedTime }));
 				}
 			}
 		},
