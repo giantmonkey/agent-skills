@@ -84,8 +84,20 @@ The built-in (non-`custom`) fields are:
 
 ## Events
 
-This component emits no custom events. On success it redirects the browser to the
-payment provider using the `navigateTo` you configure via `go.init(...)`.
+This component emits no custom events. Once the order is created, it routes the
+customer by the checkout outcome, using the `navigateTo` handler you configure via
+`go.defineConfig(...)`:
+
+- **Payment via redirect** — `navigateTo` receives the payment provider's URL.
+- **Payment via POST** (some embedded providers) — the component submits a hidden
+  POST form to the provider directly; `navigateTo` is not called.
+- **Completed without payment** (e.g. a zero-total order) — `navigateTo` receives
+  the shop's checkout-success page URL.
+- **Failed, or no payment target returned** — `navigateTo` receives the shop's
+  checkout-failure page URL.
+
+If the checkout request itself is rejected, no redirect happens — the errors render
+on the form.
 
 ## Styling
 

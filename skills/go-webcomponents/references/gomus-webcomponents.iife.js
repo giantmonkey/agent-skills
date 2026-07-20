@@ -12238,6 +12238,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		return {
 			...finalOptions,
+			quantity: finalOptions.quantity ?? 0,
+			time: finalOptions.time ?? "",
 			type: product.type,
 			product,
 			/**
@@ -12297,7 +12299,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				return this.uuid + ":" + this.quantity;
 			},
 			get price_cents() {
-				if (this.time && this.product.dynamic_prices?.[this.time] != null) return this.product.dynamic_prices[this.time];
+				const dynamicPrices = "dynamic_prices" in this.product ? this.product.dynamic_prices : null;
+				if (this.time && dynamicPrices?.[this.time] != null) return dynamicPrices[this.time];
 				return this.product.price_cents;
 			},
 			get price_formatted() {
@@ -12480,10 +12483,18 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#region src/lib/models/cart/cart.svelte.ts
 	var lastUuid = 0;
 	function createCart(products, contingent = 20) {
+		const items = proxy([]);
+		const coupons = proxy([]);
+		let paymentModeId = /* @__PURE__ */ state(void 0);
 		const cart = {
-			items: proxy([]),
-			coupons: proxy([]),
-			paymentModeId: void 0,
+			items,
+			coupons,
+			get paymentModeId() {
+				return get$2(paymentModeId);
+			},
+			set paymentModeId(value) {
+				set(paymentModeId, value, true);
+			},
 			uid: `cart-${lastUuid++}`,
 			get nonEmptyItems() {
 				return this.items.filter((i) => i.quantity > 0);
@@ -14695,7 +14706,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function AnnualTicketPersonalizationForm($$anchor, $$props) {
 		push($$props, true);
 		let token = prop($$props, "token", 7), ticketSaleId = prop($$props, "ticketSaleId", 7);
-		let form;
+		let form = null;
 		const details = new PersonalizationDetails();
 		setPersonalizationDetails($$props.$$host, details);
 		user_effect(() => {
@@ -14763,12 +14774,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			} };
 			const result = await shop.finalizePersonalizations(token(), body);
 			if (result.error) {
-				form.details.apiErrors = [result.error.error];
+				form.details.apiErrors = result.error.error ? [result.error.error] : [];
 				return;
 			}
 			const beforeSubmit = configStore.config.forms.personalization?.beforeSubmit;
 			if (beforeSubmit) beforeSubmit(body);
-			if (configStore.config.urls.annualTicketPersonalizationFormSubmit?.()) configStore.config.navigateTo(configStore.config.urls.annualTicketPersonalizationFormSubmit());
+			const submitUrl = configStore.config.urls.annualTicketPersonalizationFormSubmit?.(token());
+			if (submitUrl) configStore.config.navigateTo(submitUrl);
 		}
 		let templateForm = null;
 		let templateBlueprint = null;
@@ -18511,6 +18523,20 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	customElements.define("go-cart-counter", create_custom_element(CartCounter, {}, [], []));
 	//#endregion
 	//#region src/components/checkoutForm/lib.ts
+	function postToPaymentProvider(paymentData) {
+		const form = document.createElement("form");
+		form.method = "post";
+		form.action = paymentData.url;
+		for (const [key, value] of Object.entries(paymentData.params)) {
+			const input = document.createElement("input");
+			input.type = "hidden";
+			input.name = key;
+			input.value = String(value);
+			form.appendChild(input);
+		}
+		document.body.appendChild(form);
+		form.submit();
+	}
 	async function finalizeCheckout(form, formId) {
 		const cart = shop.cart;
 		if (!cart) return;
@@ -18523,8 +18549,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		const beforeSubmit = configStore.config.forms[formId]?.beforeSubmit;
 		if (beforeSubmit) await beforeSubmit(form.details.formData);
-		const paymentUrl = checkout.data.meta.payment_url;
-		configStore.config.navigateTo?.(paymentUrl);
+		const meta = checkout.data.meta;
+		const navigateTo = configStore.config.navigateTo;
+		if (meta.status === "success") navigateTo?.(shop.urls.checkoutSuccess(checkout.data.order.token));
+		else if (meta.status === "fail") navigateTo?.(shop.urls.checkoutFailure(""));
+		else if (meta.payment_url) navigateTo?.(meta.payment_url);
+		else if (meta.payment_data) postToPaymentProvider(meta.payment_data);
+		else navigateTo?.(shop.urls.checkoutFailure(""));
 	}
 	function setupGuestCheckout(host, custom) {
 		Forms.defineForm({

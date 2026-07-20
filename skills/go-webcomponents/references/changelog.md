@@ -4,6 +4,29 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.9.1
+
+_Released 2026-07-20_
+
+Checkout fixes: after submitting `<go-checkout-form>`, `<go-checkout-guest>`, or
+`<go-checkout-user>`, the customer is now routed correctly for every payment outcome,
+not only the plain redirect-URL case.
+
+## Fixed
+
+- Orders that need no payment step (e.g. zero-total orders) now send the customer
+  straight to the shop's checkout success page. Previously the checkout dead-ended
+  because no payment redirect URL was returned.
+- Orders the backend reports as failed now send the customer to the checkout failure
+  page instead of leaving the form stuck after submit.
+- Payment providers that return a POST form descriptor instead of a redirect URL
+  (e.g. Computop Paygate) are now supported: the customer is forwarded to the provider
+  via an automatically submitted hidden form.
+- A checkout response with no payment target at all now lands the customer on the
+  checkout failure page instead of nothing happening.
+
+---
+
 # v4.9.0
 
 _Released 2026-07-16_
