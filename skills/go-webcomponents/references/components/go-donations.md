@@ -12,7 +12,7 @@ The `go-donations` component allows customers to add optional donations to their
 
 1. **View campaigns** -- All available campaigns are displayed as clickable cards with an image and description.
 2. **Select a campaign** -- Clicking a card highlights it and reveals the amount selector. If only one campaign exists, it is auto-selected on mount.
-3. **Choose an amount** -- The user picks a preset amount button or enters a custom value (if `free_donations` is enabled).
+3. **Choose an amount** -- The user picks a preset amount button or enters a custom value (if `free_donations` is enabled). Amounts are shown in the shop's currency, formatted according to the `locale` you set on `<go-init>` — e.g. a Swiss shop needs `locale="de-CH"` to get `CHF 10.00`-style formatting instead of `10,00 CHF`.
 4. **Add to cart or skip** -- The "Add to Cart" button is disabled until an amount is selected. The user can also continue without donating.
 
 ## Localization

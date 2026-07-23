@@ -6370,6 +6370,15 @@ createHTML: (html) => {
 		return Class;
 	}
 	//#endregion
+	//#region src/lib/helpers/locale.ts
+	function warnOnInvalidLocale(locale) {
+		try {
+			if (Intl.NumberFormat.supportedLocalesOf(locale).length === 0) console.warn(`[go] Unknown locale "${locale}" — the browser has no locale data for it; price and date formatting will fall back to the browser default.`);
+		} catch {
+			console.warn(`[go] Invalid locale "${locale}" — not a valid BCP 47 language tag (use "de", "de-CH", "en", …). Price and date formatting will throw.`);
+		}
+	}
+	//#endregion
 	//#region src/lib/helpers/urls.ts
 	var ANGULAR_URLS = {
 		account: () => "/#/user/account",
@@ -11811,13 +11820,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			...options
 		}).format(zoned.toDate());
 	}
-	function formatCurrency$1(priceCents) {
-		if (priceCents === void 0) throw Error("priceCents is required");
-		return new Intl.NumberFormat("de-DE", {
-			style: "currency",
-			currency: "EUR"
-		}).format(priceCents / 100);
-	}
 	//#endregion
 	//#region src/lib/models/ticket/UITicket.svelte.ts
 	function isUITicket(x) {
@@ -12179,6 +12181,49 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				document.dispatchEvent(new CustomEvent(event, { detail: cart.items.length }));
 			});
 		});
+	}
+	//#endregion
+	//#region src/lib/helpers/utils.ts
+	function formatCurrency(priceCents) {
+		let format;
+		try {
+			format = new Intl.NumberFormat(shop.locale ?? "de", {
+				style: "currency",
+				currency: shop.currency ?? "EUR"
+			});
+		} catch {
+			format = new Intl.NumberFormat("de", {
+				style: "currency",
+				currency: "EUR"
+			});
+		}
+		return format.format((priceCents ?? 0) / 100);
+	}
+	/**
+	* Parses a comma-separated string of IDs into an array of positive numbers.
+	*
+	* This function takes a string containing comma-separated values and converts
+	* them into an array of positive integers. Invalid values (non-numeric, zero,
+	* or negative numbers) are filtered out.
+	*
+	* @param ids - A comma-separated string of IDs (e.g., "1,2,3" or "10, 20, 30")
+	* @returns An array of positive numbers if valid IDs are found, undefined otherwise
+	*
+	* @example
+	* ```ts
+	* parseIds("1,2,3") // Returns [1, 2, 3]
+	* parseIds("10, 20, 30") // Returns [10, 20, 30] (handles whitespace)
+	* parseIds("1,abc,3") // Returns [1, 3] (filters out invalid values)
+	* parseIds("0,-1,2") // Returns [2] (filters out zero and negative numbers)
+	* parseIds("") // Returns undefined
+	* parseIds(undefined) // Returns undefined
+	* parseIds("abc,def") // Returns undefined (no valid IDs)
+	* ```
+	*/
+	function parseIds(ids) {
+		if (!ids) return;
+		const parsed = ids.split(",").map((id) => id.trim()).map(Number).filter((num) => !isNaN(num) && num > 0);
+		return parsed.length > 0 ? parsed : void 0;
 	}
 	//#endregion
 	//#region src/lib/models/tour/UITour.svelte.ts
@@ -12573,13 +12618,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		if (products) products.forEach((p) => cart.addItem(createCartItem(p)));
 		return cart;
-	}
-	function formatCurrency(priceCents) {
-		priceCents = priceCents ?? 0;
-		return new Intl.NumberFormat("de-DE", {
-			style: "currency",
-			currency: "EUR"
-		}).format(priceCents / 100);
 	}
 	function createMainCart() {
 		const cart = proxy(createCart());
@@ -13695,6 +13733,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			get$2(this.#data).apiUrl = apiUrl;
 			get$2(this.#data).shopDomain = shopDomain;
 			get$2(this.#data).locale = locale || "de";
+			warnOnInvalidLocale(get$2(this.#data).locale);
 			this.#fetchStatus = {};
 			get$2(this.#data).client = client(apiUrl, shopDomain);
 			get$2(this.#data).capacityManager = createCapacityManager();
@@ -18875,51 +18914,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	delegate(["click", "keydown"]);
 	create_custom_element(DonationCampaign, { campaign: {} }, [], [], { mode: "open" });
 	//#endregion
-	//#region src/lib/helpers/utils.ts
-	function currency(value, currency) {
-		if (currency == "CHF") return new Intl.NumberFormat("de-CH", {
-			style: "currency",
-			currency
-		}).format(value);
-		else return new Intl.NumberFormat("de-DE", {
-			style: "currency",
-			currency
-		}).format(value);
-	}
-	/**
-	* Parses a comma-separated string of IDs into an array of positive numbers.
-	*
-	* This function takes a string containing comma-separated values and converts
-	* them into an array of positive integers. Invalid values (non-numeric, zero,
-	* or negative numbers) are filtered out.
-	*
-	* @param ids - A comma-separated string of IDs (e.g., "1,2,3" or "10, 20, 30")
-	* @returns An array of positive numbers if valid IDs are found, undefined otherwise
-	*
-	* @example
-	* ```ts
-	* parseIds("1,2,3") // Returns [1, 2, 3]
-	* parseIds("10, 20, 30") // Returns [10, 20, 30] (handles whitespace)
-	* parseIds("1,abc,3") // Returns [1, 3] (filters out invalid values)
-	* parseIds("0,-1,2") // Returns [2] (filters out zero and negative numbers)
-	* parseIds("") // Returns undefined
-	* parseIds(undefined) // Returns undefined
-	* parseIds("abc,def") // Returns undefined (no valid IDs)
-	* ```
-	*/
-	function parseIds(ids) {
-		if (!ids) return;
-		const parsed = ids.split(",").map((id) => id.trim()).map(Number).filter((num) => !isNaN(num) && num > 0);
-		return parsed.length > 0 ? parsed : void 0;
-	}
-	//#endregion
 	//#region src/components/donations/components/DonationSelector.svelte
 	var root$39 = /* @__PURE__ */ from_html(`<button> </button>`);
 	var root_1$11 = /* @__PURE__ */ from_html(`<form id="donationForm" action="" novalidate=""><div class="donation-custom form-group"><label for="donation-custom-amount"> </label> <input class="form-control" id="donation-custom-amount" type="number" min="1"/></div></form>`);
 	var root_2$8 = /* @__PURE__ */ from_html(`<div class="donation-selection"><h3> </h3> <div class="donation-options"></div> <!></div>`);
 	function DonationSelector($$anchor, $$props) {
 		push($$props, true);
-		const guestMaxLimit = goDonation.campaign?.guest_limit / 100;
+		const guestMaxLimit = goDonation.campaign?.guest_limit ? goDonation.campaign.guest_limit / 100 : void 0;
 		let customAmount = /* @__PURE__ */ state(void 0);
 		function selectAmount(amount) {
 			goDonation.amount = amount;
@@ -18946,7 +18947,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			template_effect(($0) => {
 				classes = set_class(button, 1, "btn btn-default", null, classes, { selected: goDonation.amount === option });
 				set_text(text_1, $0);
-			}, [() => currency(option / 100, shop.currency)]);
+			}, [() => formatCurrency(option)]);
 			delegated("click", button, () => selectAmount(option));
 			append($$anchor, button);
 		});
@@ -36443,7 +36444,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}, [
 			() => orderDetails().downloadLink(item()),
 			() => shop.t("common.download"),
-			() => formatCurrency$1(item().price_cents)
+			() => formatCurrency(item().price_cents)
 		]);
 		append($$anchor, li);
 		return pop($$exports);
@@ -36611,7 +36612,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				template_effect(($0) => {
 					set_text(text, item().attributes.title);
 					set_text(text_7, $0);
-				}, [() => formatCurrency$1(item().price_cents)]);
+				}, [() => formatCurrency(item().price_cents)]);
 				append($$anchor, li);
 			});
 			append($$anchor, fragment_1);
@@ -36664,7 +36665,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				set_text(text_9, item().attributes.quantity);
 				set_text(text_10, item().attributes.title);
 				set_text(text_13, $0);
-			}, [() => formatCurrency$1(item().price_cents)]);
+			}, [() => formatCurrency(item().price_cents)]);
 			append($$anchor, li_6);
 		};
 		if_block(node, ($$render) => {
@@ -36763,7 +36764,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			set_text(text, item().attributes.title);
 			set_text(text_1, $0);
 			set_text(text_5, $1);
-		}, [() => shop.t("cart.item.participants", { count: item().attributes.participants }), () => formatCurrency$1(item().price_cents)]);
+		}, [() => shop.t("cart.item.participants", { count: item().attributes.participants }), () => formatCurrency(item().price_cents)]);
 		append($$anchor, li);
 		return pop($$exports);
 	}
@@ -36848,7 +36849,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				() => shop.t("common.table.count"),
 				() => shop.t("common.table.product"),
 				() => shop.t("common.table.price"),
-				() => shop.t("common.table.total", { value: formatCurrency$1(get$2(order).total_price_cents) })
+				() => shop.t("common.table.total", { value: formatCurrency(get$2(order).total_price_cents) })
 			]);
 			append($$anchor, ol);
 		};
@@ -36947,11 +36948,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		});
 		let form = /* @__PURE__ */ state(void 0);
 		const user = /* @__PURE__ */ user_derived(() => shop.getCustomer());
+		const userData = /* @__PURE__ */ user_derived(() => get$2(user) && "data" in get$2(user) ? get$2(user).data : void 0);
 		onMount(async () => {
 			await shop.waitForAllFetches();
 			await pollUntilTruthy(() => get$2(form).details);
-			await pollUntilTruthy(() => get$2(user).data);
-			get$2(form).details.fill(get$2(user).data);
+			await pollUntilTruthy(() => get$2(userData));
+			get$2(form).details.fill(get$2(userData));
 		});
 		var go_form = root$5();
 		set_custom_element_data(go_form, "formId", "accountDetailsForm");
@@ -36966,7 +36968,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function Overview($$anchor, $$props) {
 		push($$props, true);
 		const user = /* @__PURE__ */ user_derived(() => shop.getCustomer());
-		const data = /* @__PURE__ */ user_derived(() => get$2(user)?.data);
+		const data = /* @__PURE__ */ user_derived(() => get$2(user) && "data" in get$2(user) ? get$2(user).data : void 0);
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {

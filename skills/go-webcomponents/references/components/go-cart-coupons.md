@@ -159,6 +159,12 @@ re-priced cart from it and render nothing on their own. `<go-cart-counter>` and
 Each subcomponent is independently mountable and renders nothing when its data is
 absent (e.g. `go-cart-coupons` is empty until a coupon is added).
 
+All prices in the cart — line prices, sums, and the amount subcomponents — are
+formatted in your shop's configured currency, using the `locale` you pass to
+`go.init({ locale })` for the number format (e.g. a Swiss shop with
+`locale: 'de-CH'` renders `CHF 12.34`). Without a configured currency or locale,
+formatting falls back to EUR in German conventions (`12,34 €`) (`Since UNRELEASED`).
+
 ### Bundle tickets (Mantelticket)
 
 Since `v4.0.0`
@@ -198,7 +204,7 @@ figures.
 The `<go-cart-subtotal-amount>`, `<go-cart-discounted-amount>`, and
 `<go-cart-total-amount>` reflect the projected pricing. They render nothing when
 their respective amount is zero, so an empty discount row stays empty rather than
-showing `0,00 €`.
+showing a formatted zero (e.g. `0,00 €`).
 
 ### Value vouchers (Wertgutschein)
 

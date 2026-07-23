@@ -4,6 +4,24 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.10.0
+
+_Released 2026-07-23_
+
+Prices everywhere now render in the shop's configured currency and follow the `locale` you set on `<go-init>`, instead of being hardcoded to EUR with German number formatting.
+
+## Changed (behavior)
+
+- Price formatting follows the `locale` attribute of `<go-init>`: with `locale="en"` an amount renders as `€12.50` instead of the previously hardcoded German `12,50 €`.
+- The `<go-donations>` amount buttons no longer special-case CHF with automatic Swiss formatting (`CHF 12.50`); like every other price they follow the shop locale. Set `locale="de-CH"` (or another regional tag) to keep Swiss conventions.
+- An invalid or unknown `locale` on `<go-init>` now logs a console warning at startup, instead of surfacing only later as broken or fallen-back price and date formatting.
+
+## Fixed
+
+- Cart prices (`<go-cart>` item rows, `<go-cart-subtotal-amount>`, `<go-cart-discounted-amount>`, `<go-cart-total-amount>`), the `<go-tickets-sum>` running total, and the `<go-order-breakdown>` order prices were always formatted as EUR — they now render the shop's configured currency (e.g. CHF for Swiss shops).
+
+---
+
 # v4.9.1
 
 _Released 2026-07-20_
