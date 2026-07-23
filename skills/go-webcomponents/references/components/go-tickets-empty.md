@@ -15,6 +15,20 @@ The component dynamically applies CSS classes based on its visibility state:
 
 The component's `display` style property is automatically set to `block` when visible and `none` when hidden.
 
+### Ticket subtitle
+
+Since `v4.11.0`
+
+When a ticket carries a subtitle, it renders inside the row's title cell as its own
+`span.go-tickets-item-subtitle`, so you can style it independently of the title:
+
+```css
+.go-tickets-item-subtitle {
+  display: block;
+  font-size: 0.85em;
+}
+```
+
 ### Quantity control
 
 Each listed ticket renders an accessible `− qty +` quantity stepper

@@ -106,14 +106,15 @@ The `go-submit` event is covered in _Submitting the cart_ below.
 Each subcomponent renders stable class hooks:
 
 - `.go-cart-item` — one per cart line; `.go-cart-item-price-original` (struck-through pre-discount price) and `.go-cart-item-price-discounted` appear when a line is discounted
-- `.go-cart-item-participants` — the participant-count label on a tour line; `.go-cart-item-custom` — one per `key: value` custom-field line (`Since UNRELEASED`)
-- `.go-quantity-stepper` — each item's `− qty +` quantity stepper (the default control): `.go-quantity-stepper-button` (both buttons; `.go-quantity-stepper-decrement` / `.go-quantity-stepper-increment` target each) and `.go-quantity-stepper-value` (the editable spinbutton input). `−` can take a line down to `0` without removing it — only the ✕ removes a line. With `go.config({ quantityStepper: false })` the item renders a `.go-quantity-select` `<select>` instead (`Since UNRELEASED`)
+- `.go-cart-item-subtitle` — a ticket's subtitle, rendered beneath the title when the ticket has one (`Since UNRELEASED`)
+- `.go-cart-item-participants` — the participant-count label on a tour line; `.go-cart-item-custom` — one per `key: value` custom-field line (`Since v4.3.0`)
+- `.go-quantity-stepper` — each item's `− qty +` quantity stepper (the default control): `.go-quantity-stepper-button` (both buttons; `.go-quantity-stepper-decrement` / `.go-quantity-stepper-increment` target each) and `.go-quantity-stepper-value` (the editable spinbutton input). `−` can take a line down to `0` without removing it — only the ✕ removes a line. With `go.config({ quantityStepper: false })` the item renders a `.go-quantity-select` `<select>` instead (`Since v4.0.0`)
 - `.go-cart-remove` — the ✕ button on items and coupons
 - `.go-cart-coupon` — one per coupon row
 - `.go-cart-coupon.go-cart-coupon-inactive` — a coupon the backend did not apply (`Since v1.53.0`); style it greyed-out / struck-through
 - `.go-cart-subtotal-amount`, `.go-cart-discounted-amount`, `.go-cart-total-amount` — the three amount spans; `.go-cart-discounted-amount-sign` wraps the leading `−`
 
-Bundle-ticket (Mantelticket) lines render an indented list of sub-ticket rows beneath the line (`Since UNRELEASED`):
+Bundle-ticket (Mantelticket) lines render an indented list of sub-ticket rows beneath the line (`Since v4.0.0`):
 
 - `.go-sub-tickets` — the `<ul>` wrapping a bundle line's sub-ticket rows
 - `.go-sub-ticket` — one row per sub-ticket; state classes: `.is-fixed` (quantity is fixed, shown as text), `.is-empty` (quantity is `0`), `.is-preview` (read-only, inside `<go-cart preview>`)
@@ -163,7 +164,7 @@ All prices in the cart — line prices, sums, and the amount subcomponents — a
 formatted in your shop's configured currency, using the `locale` you pass to
 `go.init({ locale })` for the number format (e.g. a Swiss shop with
 `locale: 'de-CH'` renders `CHF 12.34`). Without a configured currency or locale,
-formatting falls back to EUR in German conventions (`12,34 €`) (`Since UNRELEASED`).
+formatting falls back to EUR in German conventions (`12,34 €`) (`Since v4.10.0`).
 
 ### Bundle tickets (Mantelticket)
 

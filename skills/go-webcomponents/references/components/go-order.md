@@ -35,6 +35,7 @@ Everything renders in light DOM — target the tags and these classes:
 
 - `.go-order-breakdown-count`, `.go-order-breakdown-product`, `.go-order-breakdown-item-price` — cells of each line item
 - `.go-order-item-title` — product title
+- `.go-order-item-subtitle` — ticket subtitle, shown under the title when the ticket has one _(Since `v4.11.0`)_
 - `.go-order-item-quantities` — the `quantity x label` price rows
 - `.go-order-item-participants` — participants line of a tour booking _(Since `v4.3.0`)_
 - `.go-cart-item-date`, `.go-cart-item-time` — date and time of dated items
@@ -57,7 +58,7 @@ go-order-breakdown .go-order-item-title {
 
 ### `<go-order-breakdown>`
 
-Renders the order's line items followed by the order total. Timeslot and day tickets render one row per ticket, each with its own PDF download link and, when available, an Apple Wallet pass. Annual tickets render one row linking to personalization (vouchers link to a PDF download instead). Events render one row per booking with a `quantity x label` line per price and a PDF download link. Rows with a date also offer an iCal link when the order provides one.
+Renders the order's line items followed by the order total. Timeslot and day tickets render one row per ticket, each with its own PDF download link and, when available, an Apple Wallet pass. Annual tickets render one row linking to personalization (vouchers link to a PDF download instead). Tickets configured with a subtitle show it beneath the title on every row _(Since `v4.11.0`)_. Events render one row per booking with a `quantity x label` line per price and a PDF download link. Rows with a date also offer an iCal link when the order provides one.
 
 Tour bookings added via `go.cart.addTour()` render one row per booking _(Since `v4.3.0`)_: count `1`, the tour title, a participants line, the booking's date and time, and a `quantity x label` line per price. Tours have no PDF download — the iCal link is the only attachment.
 

@@ -15560,9 +15560,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	create_custom_element(Event$2, { cartItem: {} }, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/cart/components/itemTitles/Ticket.svelte
-	var root$52 = /* @__PURE__ */ from_html(`<span class="go-cart-item-time" data-testid="cart-item-time"> </span>`);
-	var root_1$19 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <!>`, 1);
-	var root_2$14 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span> <!>`, 1);
+	var root$52 = /* @__PURE__ */ from_html(`<span class="go-cart-item-subtitle" data-testid="cart-item-subtitle"> </span>`);
+	var root_1$19 = /* @__PURE__ */ from_html(`<span class="go-cart-item-time" data-testid="cart-item-time"> </span>`);
+	var root_2$14 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <!>`, 1);
+	var root_3$10 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span> <!> <!>`, 1);
 	function Ticket($$anchor, $$props) {
 		push($$props, true);
 		let cartItem = prop($$props, "cartItem", 7);
@@ -15575,35 +15576,47 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var fragment = root_2$14();
+		var fragment = root_3$10();
 		var span = first_child(fragment);
 		var text = child(span, true);
 		reset(span);
 		var node = sibling(span, 2);
-		var consequent_1 = ($$anchor) => {
-			var fragment_1 = root_1$19();
-			var span_1 = first_child(fragment_1);
+		var consequent = ($$anchor) => {
+			var span_1 = root$52();
 			var text_1 = child(span_1, true);
 			reset(span_1);
-			var node_1 = sibling(span_1, 2);
-			var consequent = ($$anchor) => {
-				var span_2 = root$52();
-				var text_2 = child(span_2, true);
-				reset(span_2);
-				template_effect(($0) => set_text(text_2, $0), [() => formatTime(cartItem().time)]);
-				append($$anchor, span_2);
+			template_effect(() => set_text(text_1, cartItem().product.sub_title));
+			append($$anchor, span_1);
+		};
+		var d = /* @__PURE__ */ user_derived(() => isUITicket(cartItem().product) && cartItem().product.sub_title);
+		if_block(node, ($$render) => {
+			if (get$2(d)) $$render(consequent);
+		});
+		var node_1 = sibling(node, 2);
+		var consequent_2 = ($$anchor) => {
+			var fragment_1 = root_2$14();
+			var span_2 = first_child(fragment_1);
+			var text_2 = child(span_2, true);
+			reset(span_2);
+			var node_2 = sibling(span_2, 2);
+			var consequent_1 = ($$anchor) => {
+				var span_3 = root_1$19();
+				var text_3 = child(span_3, true);
+				reset(span_3);
+				template_effect(($0) => set_text(text_3, $0), [() => formatTime(cartItem().time)]);
+				append($$anchor, span_3);
 			};
-			if_block(node_1, ($$render) => {
-				if (cartItem().product.type === "Ticket" && cartItem().product.subtype === "timeslot") $$render(consequent);
+			if_block(node_2, ($$render) => {
+				if (cartItem().product.type === "Ticket" && cartItem().product.subtype === "timeslot") $$render(consequent_1);
 			});
-			template_effect(($0) => set_text(text_1, $0), [() => formatDate(cartItem().time, {
+			template_effect(($0) => set_text(text_2, $0), [() => formatDate(cartItem().time, {
 				month: "numeric",
 				day: "numeric"
 			}, shop.locale)]);
 			append($$anchor, fragment_1);
 		};
-		if_block(node, ($$render) => {
-			if (cartItem().time) $$render(consequent_1);
+		if_block(node_1, ($$render) => {
+			if (cartItem().time) $$render(consequent_2);
 		});
 		template_effect(() => set_text(text, cartItem().product.title));
 		append($$anchor, fragment);
@@ -18049,7 +18062,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root_2$11 = /* @__PURE__ */ from_html(`<span data-testid="cart-item-participant-count"> </span>`);
 	var root_3$8 = /* @__PURE__ */ from_html(`<span data-testid="cart-item-voucher-quantity"> </span>`);
 	var root_4$4 = /* @__PURE__ */ from_html(`<span> </span>`);
-	var root_5$2 = /* @__PURE__ */ from_html(`<li class="go-cart-item-remove"><button class="go-cart-remove">⨉</button></li>`);
+	var root_5$3 = /* @__PURE__ */ from_html(`<li class="go-cart-item-remove"><button class="go-cart-remove">⨉</button></li>`);
 	var root_6$2 = /* @__PURE__ */ from_html(`<ul class="go-sub-tickets" role="list"></ul>`);
 	var root_7$2 = /* @__PURE__ */ from_html(`<article class="go-cart-item-content"><ul><li class="go-cart-item-title-container"><!></li> <li class="go-cart-item-price"><!></li> <li class="go-cart-item-count"><!></li> <!> <li class="go-cart-item-sum"> </li></ul></article> <!>`, 1);
 	function Item$1($$anchor, $$props) {
@@ -18231,7 +18244,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			reset(li_2);
 			var node_4 = sibling(li_2, 2);
 			var consequent_8 = ($$anchor) => {
-				var li_3 = root_5$2();
+				var li_3 = root_5$3();
 				var button = child(li_3);
 				reset(li_3);
 				template_effect(($0) => set_attribute(button, "aria-label", $0), [() => shop.t("cart.item.remove")]);
@@ -33278,14 +33291,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root_2$7 = /* @__PURE__ */ from_html(`<label><!></label> <input/>`, 1);
 	var root_3$7 = /* @__PURE__ */ from_html(`<label><!></label> <textarea></textarea>`, 1);
 	var root_4$3 = /* @__PURE__ */ from_html(`<figure role="status" aria-live="polite"><img class="go-file-preview"/> <figcaption class="go-file-preview-caption"> </figcaption></figure>`);
-	var root_5$1 = /* @__PURE__ */ from_html(`<label><!></label> <input/> <!>`, 1);
+	var root_5$2 = /* @__PURE__ */ from_html(`<label><!></label> <input/> <!>`, 1);
 	var root_6$1 = /* @__PURE__ */ from_html(`<label><input/> <span class="go-checkbox-label"><!></span></label>`);
 	var root_7$1 = /* @__PURE__ */ from_html(`<img src="" alt=""/> <option> </option>`, 1);
 	var root_8$1 = /* @__PURE__ */ from_html(`<option disabled="" hidden="" selected=""> </option> <!>`, 1);
 	var select_content = /* @__PURE__ */ from_html(`<!>`, 1);
 	var root_9$1 = /* @__PURE__ */ from_html(`<label><!></label> <select><!></select>`, 1);
 	var root_10$1 = /* @__PURE__ */ from_html(`<img style="width: 60px" aria-hidden="true"/>`);
-	var root_11 = /* @__PURE__ */ from_html(`<span class="go-payment-mode-icons"></span>`);
+	var root_11$1 = /* @__PURE__ */ from_html(`<span class="go-payment-mode-icons"></span>`);
 	var root_12 = /* @__PURE__ */ from_html(`<span class="go-payment-mode-name"> </span>`);
 	var root_13 = /* @__PURE__ */ from_html(`<label><input type="radio"/> <!></label>`);
 	var root_14 = /* @__PURE__ */ from_html(`<fieldset role="radiogroup"><legend><!></legend> <!></fieldset>`);
@@ -33350,7 +33363,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_2);
 		};
 		const file = ($$anchor) => {
-			var fragment_3 = root_5$1();
+			var fragment_3 = root_5$2();
 			var label_3 = first_child(fragment_3);
 			labelText(child(label_3));
 			reset(label_3);
@@ -33500,7 +33513,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				remove_input_defaults(input_4);
 				var node_11 = sibling(input_4, 2);
 				var consequent_3 = ($$anchor) => {
-					var span_2 = root_11();
+					var span_2 = root_11$1();
 					each(span_2, 20, () => get$2(mode).icons, (icon) => icon, ($$anchor, icon) => {
 						const url = /* @__PURE__ */ user_derived(() => CDN_PATH + icon + ".svg");
 						var img_1 = root_10$1();
@@ -36455,17 +36468,18 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/order/components/subcomponents/breakdown/items/TicketSale.svelte
-	var root$9 = /* @__PURE__ */ from_html(`<br/> <span class="go-order-item-quantities" data-testid="order-sub-ticket"> </span>`, 1);
-	var root_1$4 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date"> </span> <span class="go-cart-item-time"> </span>`, 1);
-	var root_2$3 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date"> </span>`);
-	var root_3$3 = /* @__PURE__ */ from_html(`<!> <br/> <a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a>`, 1);
-	var root_4$2 = /* @__PURE__ */ from_html(`<br/> <a class="go-ticket-personalization"> </a>`, 1);
-	var root_5 = /* @__PURE__ */ from_html(`<a aria-label="passbook link"><img alt="apple wallet icon"/></a>`);
-	var root_6 = /* @__PURE__ */ from_html(`<a aria-label="iCal link"> </a>`);
-	var root_7 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count"></li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span> <!> <!></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"><!></li> <li class="go-order-breakdown-ical"><!></li></ul></article></li>`);
-	var root_8 = /* @__PURE__ */ from_html(`<a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a>`);
-	var root_9 = /* @__PURE__ */ from_html(`<a class="go-ticket-personalization"> </a>`);
-	var root_10 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count"> </li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span> <!></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"></li></ul></article></li>`);
+	var root$9 = /* @__PURE__ */ from_html(`<span class="go-order-item-subtitle" data-testid="order-item-subtitle"> </span>`);
+	var root_1$4 = /* @__PURE__ */ from_html(`<br/> <span class="go-order-item-quantities" data-testid="order-sub-ticket"> </span>`, 1);
+	var root_2$3 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date"> </span> <span class="go-cart-item-time"> </span>`, 1);
+	var root_3$3 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date"> </span>`);
+	var root_4$2 = /* @__PURE__ */ from_html(`<!> <br/> <a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a>`, 1);
+	var root_5$1 = /* @__PURE__ */ from_html(`<br/> <a class="go-ticket-personalization"> </a>`, 1);
+	var root_6 = /* @__PURE__ */ from_html(`<a aria-label="passbook link"><img alt="apple wallet icon"/></a>`);
+	var root_7 = /* @__PURE__ */ from_html(`<a aria-label="iCal link"> </a>`);
+	var root_8 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count"></li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span> <!> <!> <!></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"><!></li> <li class="go-order-breakdown-ical"><!></li></ul></article></li>`);
+	var root_9 = /* @__PURE__ */ from_html(`<a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a>`);
+	var root_10 = /* @__PURE__ */ from_html(`<a class="go-ticket-personalization"> </a>`);
+	var root_11 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count"> </li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span> <!> <!></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"></li></ul></article></li>`);
 	function TicketSale($$anchor, $$props) {
 		push($$props, true);
 		const APPLE_WALLET_CDN_PATH = `https://cdn.shop.platform.gomus.de/apple_wallet_${shop.locale}.svg`;
@@ -36489,10 +36503,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		var fragment = comment();
 		var node = first_child(fragment);
-		var consequent_5 = ($$anchor) => {
+		var consequent_6 = ($$anchor) => {
 			var fragment_1 = comment();
 			each(first_child(fragment_1), 17, () => ({ length: item().attributes.quantity }), index$1, ($$anchor, $$item, index) => {
-				var li = root_7();
+				var li = root_8();
 				var article = child(li);
 				var ul = child(article);
 				var li_1 = child(ul);
@@ -36502,82 +36516,93 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				var text = child(span, true);
 				reset(span);
 				var node_2 = sibling(span, 2);
-				each(node_2, 17, () => get$2(subTicketSales), (sub) => sub.id, ($$anchor, sub) => {
-					var fragment_2 = root$9();
-					var span_1 = sibling(first_child(fragment_2), 2);
-					var text_1 = child(span_1);
+				var consequent = ($$anchor) => {
+					var span_1 = root$9();
+					var text_1 = child(span_1, true);
 					reset(span_1);
-					template_effect(() => set_text(text_1, `${get$2(sub).quantity ?? ""} x ${get$2(sub).title ?? ""}`));
-					append($$anchor, fragment_2);
+					template_effect(() => set_text(text_1, item().attributes.sub_title));
+					append($$anchor, span_1);
+				};
+				if_block(node_2, ($$render) => {
+					if (item().attributes.sub_title) $$render(consequent);
 				});
 				var node_3 = sibling(node_2, 2);
-				var consequent_2 = ($$anchor) => {
+				each(node_3, 17, () => get$2(subTicketSales), (sub) => sub.id, ($$anchor, sub) => {
+					var fragment_2 = root_1$4();
+					var span_2 = sibling(first_child(fragment_2), 2);
+					var text_2 = child(span_2);
+					reset(span_2);
+					template_effect(() => set_text(text_2, `${get$2(sub).quantity ?? ""} x ${get$2(sub).title ?? ""}`));
+					append($$anchor, fragment_2);
+				});
+				var node_4 = sibling(node_3, 2);
+				var consequent_3 = ($$anchor) => {
 					const barcodeId = /* @__PURE__ */ user_derived(() => item().attributes.barcodes[index]?.id);
-					var fragment_3 = root_3$3();
-					var node_4 = first_child(fragment_3);
-					var consequent = ($$anchor) => {
-						var fragment_4 = root_1$4();
-						var span_2 = first_child(fragment_4);
-						var text_2 = child(span_2, true);
-						reset(span_2);
-						var span_3 = sibling(span_2, 2);
+					var fragment_3 = root_4$2();
+					var node_5 = first_child(fragment_3);
+					var consequent_1 = ($$anchor) => {
+						var fragment_4 = root_2$3();
+						var span_3 = first_child(fragment_4);
 						var text_3 = child(span_3, true);
 						reset(span_3);
+						var span_4 = sibling(span_3, 2);
+						var text_4 = child(span_4, true);
+						reset(span_4);
 						template_effect(($0, $1) => {
-							set_text(text_2, $0);
-							set_text(text_3, $1);
+							set_text(text_3, $0);
+							set_text(text_4, $1);
 						}, [() => formatDate(item().attributes.start_time, {
 							month: "numeric",
 							day: "numeric"
 						}, shop.locale), () => formatTime(item().attributes.start_time)]);
 						append($$anchor, fragment_4);
 					};
-					var consequent_1 = ($$anchor) => {
-						var span_4 = root_2$3();
-						var text_4 = child(span_4, true);
-						reset(span_4);
-						template_effect(($0) => set_text(text_4, $0), [() => formatDate(item().attributes.start_time, {
+					var consequent_2 = ($$anchor) => {
+						var span_5 = root_3$3();
+						var text_5 = child(span_5, true);
+						reset(span_5);
+						template_effect(($0) => set_text(text_5, $0), [() => formatDate(item().attributes.start_time, {
 							month: "numeric",
 							day: "numeric"
 						}, shop.locale)]);
-						append($$anchor, span_4);
+						append($$anchor, span_5);
 					};
-					if_block(node_4, ($$render) => {
-						if (item().attributes.ticket_type === "time_slot") $$render(consequent);
-						else if (item().attributes.ticket_type === "normal") $$render(consequent_1, 1);
+					if_block(node_5, ($$render) => {
+						if (item().attributes.ticket_type === "time_slot") $$render(consequent_1);
+						else if (item().attributes.ticket_type === "normal") $$render(consequent_2, 1);
 					});
-					var a = sibling(node_4, 4);
-					var text_5 = child(a, true);
+					var a = sibling(node_5, 4);
+					var text_6 = child(a, true);
 					reset(a);
 					template_effect(($0, $1) => {
 						set_attribute(a, "href", $0);
-						set_text(text_5, $1);
+						set_text(text_6, $1);
 					}, [() => orderDetails().downloadLink(item(), get$2(barcodeId)), () => shop.t("common.download")]);
 					append($$anchor, fragment_3);
 				};
 				var alternate = ($$anchor) => {
-					var fragment_5 = root_4$2();
+					var fragment_5 = root_5$1();
 					var a_1 = sibling(first_child(fragment_5), 2);
-					var text_6 = child(a_1, true);
+					var text_7 = child(a_1, true);
 					reset(a_1);
 					template_effect(($0, $1) => {
 						set_attribute(a_1, "href", $0);
-						set_text(text_6, $1);
+						set_text(text_7, $1);
 					}, [() => orderDetails().downloadLink(item()), () => shop.t("common.personalize")]);
 					append($$anchor, fragment_5);
 				};
-				if_block(node_3, ($$render) => {
-					if (item().attributes.ticket_type == "time_slot" || item().attributes.ticket_type == "normal") $$render(consequent_2);
+				if_block(node_4, ($$render) => {
+					if (item().attributes.ticket_type == "time_slot" || item().attributes.ticket_type == "normal") $$render(consequent_3);
 					else $$render(alternate, -1);
 				});
 				reset(li_2);
 				var li_3 = sibling(li_2, 2);
-				var text_7 = child(li_3, true);
+				var text_8 = child(li_3, true);
 				reset(li_3);
 				var li_4 = sibling(li_3, 2);
-				var node_5 = child(li_4);
-				var consequent_3 = ($$anchor) => {
-					var a_2 = root_5();
+				var node_6 = child(li_4);
+				var consequent_4 = ($$anchor) => {
+					var a_2 = root_6();
 					var img = child(a_2);
 					reset(a_2);
 					template_effect(() => {
@@ -36586,24 +36611,24 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					});
 					append($$anchor, a_2);
 				};
-				if_block(node_5, ($$render) => {
-					if (item().attributes.barcodes[index] && item().attributes.barcodes[index]?.passbook_url) $$render(consequent_3);
+				if_block(node_6, ($$render) => {
+					if (item().attributes.barcodes[index] && item().attributes.barcodes[index]?.passbook_url) $$render(consequent_4);
 				});
 				reset(li_4);
 				var li_5 = sibling(li_4, 2);
-				var node_6 = child(li_5);
-				var consequent_4 = ($$anchor) => {
-					var a_3 = root_6();
-					var text_8 = child(a_3, true);
+				var node_7 = child(li_5);
+				var consequent_5 = ($$anchor) => {
+					var a_3 = root_7();
+					var text_9 = child(a_3, true);
 					reset(a_3);
 					template_effect(($0) => {
 						set_attribute(a_3, "href", shop.apiUrl + item().attributes.ical_url);
-						set_text(text_8, $0);
+						set_text(text_9, $0);
 					}, [() => shop.t("common.calendar")]);
 					append($$anchor, a_3);
 				};
-				if_block(node_6, ($$render) => {
-					if (item().attributes.ical_url) $$render(consequent_4);
+				if_block(node_7, ($$render) => {
+					if (item().attributes.ical_url) $$render(consequent_5);
 				});
 				reset(li_5);
 				reset(ul);
@@ -36611,65 +36636,76 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				reset(li);
 				template_effect(($0) => {
 					set_text(text, item().attributes.title);
-					set_text(text_7, $0);
+					set_text(text_8, $0);
 				}, [() => formatCurrency(item().price_cents)]);
 				append($$anchor, li);
 			});
 			append($$anchor, fragment_1);
 		};
 		var alternate_2 = ($$anchor) => {
-			var li_6 = root_10();
+			var li_6 = root_11();
 			var article_1 = child(li_6);
 			var ul_1 = child(article_1);
 			var li_7 = child(ul_1);
-			var text_9 = child(li_7, true);
+			var text_10 = child(li_7, true);
 			reset(li_7);
 			var li_8 = sibling(li_7, 2);
-			var span_5 = child(li_8);
-			var text_10 = child(span_5, true);
-			reset(span_5);
-			var node_7 = sibling(span_5, 2);
-			var consequent_6 = ($$anchor) => {
-				var a_4 = root_8();
-				var text_11 = child(a_4, true);
+			var span_6 = child(li_8);
+			var text_11 = child(span_6, true);
+			reset(span_6);
+			var node_8 = sibling(span_6, 2);
+			var consequent_7 = ($$anchor) => {
+				var span_7 = root$9();
+				var text_12 = child(span_7, true);
+				reset(span_7);
+				template_effect(() => set_text(text_12, item().attributes.sub_title));
+				append($$anchor, span_7);
+			};
+			if_block(node_8, ($$render) => {
+				if (item().attributes.sub_title) $$render(consequent_7);
+			});
+			var node_9 = sibling(node_8, 2);
+			var consequent_8 = ($$anchor) => {
+				var a_4 = root_9();
+				var text_13 = child(a_4, true);
 				reset(a_4);
 				template_effect(($0, $1) => {
 					set_attribute(a_4, "href", $0);
-					set_text(text_11, $1);
+					set_text(text_13, $1);
 				}, [() => orderDetails().downloadLink(item()), () => shop.t("common.download")]);
 				append($$anchor, a_4);
 			};
 			var alternate_1 = ($$anchor) => {
-				var a_5 = root_9();
-				var text_12 = child(a_5, true);
+				var a_5 = root_10();
+				var text_14 = child(a_5, true);
 				reset(a_5);
 				template_effect(($0, $1) => {
 					set_attribute(a_5, "href", $0);
-					set_text(text_12, $1);
+					set_text(text_14, $1);
 				}, [() => orderDetails().downloadLink(item()), () => shop.t("common.personalize")]);
 				append($$anchor, a_5);
 			};
-			if_block(node_7, ($$render) => {
-				if (item().attributes.is_voucher) $$render(consequent_6);
+			if_block(node_9, ($$render) => {
+				if (item().attributes.is_voucher) $$render(consequent_8);
 				else $$render(alternate_1, -1);
 			});
 			reset(li_8);
 			var li_9 = sibling(li_8, 2);
-			var text_13 = child(li_9, true);
+			var text_15 = child(li_9, true);
 			reset(li_9);
 			next(2);
 			reset(ul_1);
 			reset(article_1);
 			reset(li_6);
 			template_effect(($0) => {
-				set_text(text_9, item().attributes.quantity);
-				set_text(text_10, item().attributes.title);
-				set_text(text_13, $0);
+				set_text(text_10, item().attributes.quantity);
+				set_text(text_11, item().attributes.title);
+				set_text(text_15, $0);
 			}, [() => formatCurrency(item().price_cents)]);
 			append($$anchor, li_6);
 		};
 		if_block(node, ($$render) => {
-			if (item().attributes.ticket_type == "time_slot" || item().attributes.ticket_type == "normal") $$render(consequent_5);
+			if (item().attributes.ticket_type == "time_slot" || item().attributes.ticket_type == "normal") $$render(consequent_6);
 			else $$render(alternate_2, -1);
 		});
 		append($$anchor, fragment);
@@ -37478,10 +37514,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#endregion
 	//#region src/components/ticketSelection/subcomponents/tickets/subcomponents/segment/Item.svelte
 	var root$3 = /* @__PURE__ */ from_html(`<span class="go-tickets-item-title-event-title"> </span> <span class="go-tickets-item-title-product-title"> </span>`, 1);
-	var root_1$2 = /* @__PURE__ */ from_html(`<li class="go-tickets-item-info"><button type="button" data-testid="ticket-info-toggle"></button></li>`);
-	var root_2$1 = /* @__PURE__ */ from_html(`<li class="go-ticket-additional-info" data-testid="ticket-additional-info"> </li>`);
-	var root_3$1 = /* @__PURE__ */ from_html(`<ul class="go-sub-tickets" role="list"></ul>`);
-	var root_4$1 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-tickets-item-title"><!></li> <!> <li class="go-tickets-item-description" data-go-tickets-description=""></li> <!> <li class="go-tickets-item-price" data-go-tickets-price=""> </li> <li class="go-tickets-item-quality" data-go-tickets-quality=""><!></li></ul></article> <!></li>`);
+	var root_1$2 = /* @__PURE__ */ from_html(`<span class="go-tickets-item-subtitle" data-testid="ticket-subtitle"> </span>`);
+	var root_2$1 = /* @__PURE__ */ from_html(`<li class="go-tickets-item-info"><button type="button" data-testid="ticket-info-toggle"></button></li>`);
+	var root_3$1 = /* @__PURE__ */ from_html(`<li class="go-ticket-additional-info" data-testid="ticket-additional-info"> </li>`);
+	var root_4$1 = /* @__PURE__ */ from_html(`<ul class="go-sub-tickets" role="list"></ul>`);
+	var root_5 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-tickets-item-title"><!> <!></li> <!> <li class="go-tickets-item-description" data-go-tickets-description=""></li> <!> <li class="go-tickets-item-price" data-go-tickets-price=""> </li> <li class="go-tickets-item-quality" data-go-tickets-quality=""><!></li></ul></article> <!></li>`);
 	function Item($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -37545,17 +37582,28 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		var fragment_2 = comment();
 		var node = first_child(fragment_2);
-		var consequent_3 = ($$anchor) => {
-			var li = root_4$1();
+		var consequent_4 = ($$anchor) => {
+			var li = root_5();
 			var article = child(li);
 			var ul = child(article);
 			var li_1 = child(ul);
 			var node_1 = child(li_1);
 			titleSnippet(node_1);
-			reset(li_1);
-			var node_2 = sibling(li_1, 2);
+			var node_2 = sibling(node_1, 2);
 			var consequent = ($$anchor) => {
-				var li_2 = root_1$2();
+				var span_2 = root_1$2();
+				var text_3 = child(span_2, true);
+				reset(span_2);
+				template_effect(() => set_text(text_3, item().product.sub_title));
+				append($$anchor, span_2);
+			};
+			if_block(node_2, ($$render) => {
+				if (item().product.sub_title) $$render(consequent);
+			});
+			reset(li_1);
+			var node_3 = sibling(li_1, 2);
+			var consequent_1 = ($$anchor) => {
+				var li_2 = root_2$1();
 				var button = child(li_2);
 				reset(li_2);
 				template_effect(($0) => {
@@ -37567,35 +37615,35 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				delegated("click", button, () => set(infoExpanded, !get$2(infoExpanded)));
 				append($$anchor, li_2);
 			};
-			if_block(node_2, ($$render) => {
-				if (get$2(reductionReason)) $$render(consequent);
+			if_block(node_3, ($$render) => {
+				if (get$2(reductionReason)) $$render(consequent_1);
 			});
-			var li_3 = sibling(node_2, 2);
+			var li_3 = sibling(node_3, 2);
 			html$2(li_3, () => purify.sanitize(item().product.description), true);
 			reset(li_3);
-			var node_3 = sibling(li_3, 2);
-			var consequent_1 = ($$anchor) => {
-				var li_4 = root_2$1();
-				var text_3 = child(li_4, true);
+			var node_4 = sibling(li_3, 2);
+			var consequent_2 = ($$anchor) => {
+				var li_4 = root_3$1();
+				var text_4 = child(li_4, true);
 				reset(li_4);
 				template_effect(($0) => {
 					set_attribute(li_4, "id", infoPanelId);
 					set_attribute(li_4, "hidden", !get$2(infoExpanded));
-					set_text(text_3, $0);
+					set_text(text_4, $0);
 				}, [() => shop.t(get$2(reductionReason))]);
 				append($$anchor, li_4);
 			};
-			if_block(node_3, ($$render) => {
-				if (get$2(reductionReason)) $$render(consequent_1);
+			if_block(node_4, ($$render) => {
+				if (get$2(reductionReason)) $$render(consequent_2);
 			});
-			var li_5 = sibling(node_3, 2);
-			var text_4 = child(li_5, true);
+			var li_5 = sibling(node_4, 2);
+			var text_5 = child(li_5, true);
 			reset(li_5);
 			var li_6 = sibling(li_5, 2);
-			var node_4 = child(li_6);
+			var node_5 = child(li_6);
 			{
 				let $0 = /* @__PURE__ */ user_derived(() => quantityLabel(item()));
-				QuantityControl(node_4, {
+				QuantityControl(node_5, {
 					get value() {
 						return item().quantity;
 					},
@@ -37614,9 +37662,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			reset(li_6);
 			reset(ul);
 			reset(article);
-			var node_5 = sibling(article, 2);
-			var consequent_2 = ($$anchor) => {
-				var ul_1 = root_3$1();
+			var node_6 = sibling(article, 2);
+			var consequent_3 = ($$anchor) => {
+				var ul_1 = root_4$1();
 				each(ul_1, 21, () => subTicketDefs(get$2(mantleProduct)), (sub) => sub.id, ($$anchor, sub) => {
 					{
 						let $0 = /* @__PURE__ */ user_derived(() => item().mantle?.composition?.[get$2(sub).id] ?? 0);
@@ -37638,19 +37686,19 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				template_effect(() => set_attribute(ul_1, "aria-label", get$2(mantleProduct).title));
 				append($$anchor, ul_1);
 			};
-			if_block(node_5, ($$render) => {
-				if (get$2(mantleProduct) && item().quantity > 0) $$render(consequent_2);
+			if_block(node_6, ($$render) => {
+				if (get$2(mantleProduct) && item().quantity > 0) $$render(consequent_3);
 			});
 			reset(li);
 			template_effect(() => {
 				set_class(article, 1, clsx(["go-tickets-item", get$2(capacity).bookedOut && "is-booked-out"]));
 				set_attribute(article, "data-testid", item().uuid);
-				set_text(text_4, item().price_formatted);
+				set_text(text_5, item().price_formatted);
 			});
 			append($$anchor, li);
 		};
 		if_block(node, ($$render) => {
-			if (get$2(capacity) && !get$2(capacity).unavailable) $$render(consequent_3);
+			if (get$2(capacity) && !get$2(capacity).unavailable) $$render(consequent_4);
 		});
 		append($$anchor, fragment_2);
 		return pop($$exports);
