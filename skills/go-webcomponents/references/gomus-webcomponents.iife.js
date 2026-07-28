@@ -6480,6 +6480,9 @@ createHTML: (html) => {
 	var isObject$2 = (value) => {
 		return !!value && value.constructor === Object;
 	};
+	var isFunction$2 = (value) => {
+		return !!(value && value.constructor && value.call && value.apply);
+	};
 	var isString = (value) => {
 		return typeof value === "string" || value instanceof String;
 	};
@@ -6489,6 +6492,12 @@ createHTML: (html) => {
 		} catch {
 			return false;
 		}
+	};
+	var isPromise = (value) => {
+		if (!value) return false;
+		if (!value.then) return false;
+		if (!isFunction$2(value.then)) return false;
+		return true;
 	};
 	//#endregion
 	//#region ../../node_modules/.pnpm/radash@12.1.1/node_modules/radash/dist/esm/array.mjs
@@ -37921,6 +37930,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	customElements.define("go-timeslots", create_custom_element(Timeslots, {}, [], ["details"]));
 	//#endregion
 	//#region src/components/ticketSelection/subcomponents/calendar/lib/calendar.svelte.ts
+	function describeAvailability(value) {
+		if (typeof value === "string") return `'${value}'`;
+		if (value === null || value === void 0) return String(value);
+		if (isPromise(value)) return "a Promise — the callback must be synchronous";
+		return `a ${typeof value}`;
+	}
 	var Calendar = class {
 		#details = /* @__PURE__ */ state();
 		get details() {
@@ -37943,6 +37958,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		set selected(value) {
 			set(this.#selected, value, true);
 		}
+		#availabilityOverride = /* @__PURE__ */ state();
+		get availabilityOverride() {
+			return get$2(this.#availabilityOverride);
+		}
+		set availabilityOverride(value) {
+			set(this.#availabilityOverride, value, true);
+		}
+		#logged = [];
 		get endpoint() {
 			return (this.details?.filters?.map((f) => getFilter(f).calendarEndpoint).filter(Boolean) ?? [])[0] ?? null;
 		}
@@ -37954,12 +37977,49 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				default: return;
 			}
 		}
+		/** What gomus makes of a date on its own, ignoring any integrator override. */
+		defaultAvailability(date) {
+			switch (this.dates?.[date.toString()]) {
+				case "unavailable": return "unavailable";
+				case "fully_booked": return "sold_out";
+				default: return "available";
+			}
+		}
+		/** The gomus default, with the integrator's override given the last word. */
+		availability(date) {
+			const defaultAvailability = this.defaultAvailability(date);
+			const override = this.#overrideCallback();
+			if (!override) return defaultAvailability;
+			let returned;
+			try {
+				returned = override(date.toString(), defaultAvailability);
+			} catch (error) {
+				this.#reportOnce("threw", `[go-calendar] the availability-override callback threw (${String(error)}) — using the gomus default instead.`);
+				return defaultAvailability;
+			}
+			if (returned === "pass_through") return defaultAvailability;
+			if (returned === "available" || returned === "sold_out" || returned === "unavailable") return returned;
+			this.#reportOnce("returned", `[go-calendar] the availability-override callback must return 'available', 'sold_out', 'unavailable' or 'pass_through', got ${describeAvailability(returned)} — using the gomus default instead.`);
+			return defaultAvailability;
+		}
+		#overrideCallback() {
+			const source = this.availabilityOverride;
+			if (typeof source === "function") return source;
+			if (!source) return void 0;
+			const candidate = globalThis[source];
+			if (typeof candidate === "function") return candidate;
+			this.#reportOnce(`unresolved:${source}`, `[go-calendar] availability-override="${source}" does not resolve to a function on window — using the gomus defaults.`, console.warn);
+		}
+		#reportOnce(key, message, log = console.error) {
+			if (this.#logged.includes(key)) return;
+			this.#logged.push(key);
+			log(message);
+		}
 		isDateDisabled(date) {
-			if (this.dates) return date.compare($ad063034c8620db8$export$d0bdf45af03a6ea3($ad063034c8620db8$export$aa8b41735afcabd2())) < 0 || this.dates[date.toString()] == "unavailable";
-			return date.compare($ad063034c8620db8$export$d0bdf45af03a6ea3($ad063034c8620db8$export$aa8b41735afcabd2())) < 0;
+			return date.compare($ad063034c8620db8$export$d0bdf45af03a6ea3($ad063034c8620db8$export$aa8b41735afcabd2())) < 0 || this.availability(date) === "unavailable";
 		}
 		isDateUnavailable(date) {
-			return this.dates?.[date.toString()] == "fully_booked";
+			return this.availability(date) === "sold_out";
 		}
 		get apiFilters() {
 			return this.details?.filters?.map((f) => getFilter(f).apiToken).filter(Boolean);
@@ -37988,13 +38048,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				thisMonth.add({ months: 2 })
 			];
 		}
+		#mergedDates(fetchMonth) {
+			return this.fetchPeriod().reduce((all, startAt) => Object.assign(all, fetchMonth(this.params(startAt))), {});
+		}
 		eventsDates() {
-			const method = shop.calendar.bind(shop);
-			return this.fetchPeriod().reduce((prev, startAt) => assign(prev, method(this.params(startAt))), {});
+			return this.#mergedDates((params) => shop.calendar(params));
 		}
 		ticketsDates() {
-			const method = shop.ticketsCalendar.bind(shop);
-			return this.fetchPeriod().reduce((prev, startAt) => assign(prev, method(this.params(startAt))), {});
+			return this.#mergedDates((params) => shop.ticketsCalendar(params));
 		}
 	};
 	//#endregion
@@ -38226,12 +38287,19 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#region src/components/ticketSelection/subcomponents/calendar/components/Calendar.svelte
 	function Calendar_1($$anchor, $$props) {
 		push($$props, true);
+		/**
+		* Per-date availability override. As an attribute it names a global function
+		* (`<go-calendar availability-override="shopRule">`); as a property it is the function
+		* itself (`element.availabilityOverride = fn`).
+		*/
+		let availabilityOverride = prop($$props, "availabilityOverride", 7);
 		const ticketsCalendar = new Calendar();
 		const details = ticketsCalendar;
 		const _ticketSelectionDetails = getTicketSelectionDetails($$props.$$host);
 		const ticketSelectionDetails = /* @__PURE__ */ user_derived(() => _ticketSelectionDetails.value);
 		user_effect(() => {
 			ticketsCalendar.details = get$2(ticketSelectionDetails);
+			ticketsCalendar.availabilityOverride = availabilityOverride();
 		});
 		$$props.$$host.addEventListener("go-date-select", (e) => {
 			if (get$2(ticketSelectionDetails)) {
@@ -38239,7 +38307,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				get$2(ticketSelectionDetails).selectedTimeslot = void 0;
 			}
 		});
-		var $$exports = { details };
+		var $$exports = {
+			details,
+			get availabilityOverride() {
+				return availabilityOverride();
+			},
+			set availabilityOverride($$value) {
+				availabilityOverride($$value);
+				flushSync();
+			}
+		};
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
@@ -38253,7 +38330,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		append($$anchor, fragment);
 		return pop($$exports);
 	}
-	customElements.define("go-calendar", create_custom_element(Calendar_1, {}, [], ["details"]));
+	customElements.define("go-calendar", create_custom_element(Calendar_1, { availabilityOverride: {
+		attribute: "availability-override",
+		type: "String"
+	} }, [], ["details"]));
 	//#endregion
 	//#region src/components/ticketSelection/subcomponents/addToCartButton/AddToCartButton.svelte.ts
 	var Details = class {

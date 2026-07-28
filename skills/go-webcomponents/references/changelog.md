@@ -4,6 +4,58 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.12.0
+
+_Released 2026-07-28_
+
+You can now overrule `<go-calendar>` per date, instead of taking the gomus availability as final.
+
+## New
+
+- `availability-override` attribute on `<go-calendar>` — names a global function that is asked about
+  every rendered date and can overrule gomus. It receives the date as `YYYY-MM-DD` plus the
+  availability gomus arrived at, and returns `'available'`, `'sold_out'`, `'unavailable'` or
+  `'pass_through'` (keep what gomus decided). Use it to open a date gomus sells nothing for — e.g. a
+  box-office-only date you want to annotate with your own note — or to block a date gomus considers
+  bookable.
+
+  ```html
+  <script>
+    window.shopAvailability = function (date, defaultAvailability) {
+      if (date.endsWith('-12-24')) return 'unavailable'
+      return 'pass_through'
+    }
+  </script>
+
+  <go-ticket-selection filters="ticket:timeslot">
+    <go-calendar availability-override="shopAvailability"></go-calendar>
+  </go-ticket-selection>
+  ```
+
+  The same function can be set as a property instead, which keeps it out of the global scope. Use
+  one or the other on a given calendar, not both:
+
+  ```html
+  <script>
+    customElements.whenDefined('go-calendar').then(function () {
+      document.getElementById('calendar').availabilityOverride = function (date, defaultAvailability) {
+        return boxOfficeOnly.indexOf(date) !== -1 ? 'available' : 'pass_through'
+      }
+    })
+  </script>
+  ```
+
+  The function must be synchronous — it runs a few times per visible date on every render, and the
+  calendar only repaints when the function itself is reassigned. Dates before today stay blocked
+  either way. An override that throws or returns something else logs to the console and the gomus
+  default is used, so the calendar never breaks.
+
+- `.go-calendar-day.is-disabled`, `.go-calendar-day.is-unavailable` and
+  `[data-calendar-cell][data-value]` are now documented — they already shipped, but
+  `availability-override` is what makes them worth styling.
+
+---
+
 # v4.10.0
 
 _Released 2026-07-23_
