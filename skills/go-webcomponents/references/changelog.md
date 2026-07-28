@@ -4,6 +4,23 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.13.1
+
+_Released 2026-07-28_
+
+Rendered times now follow the shop locale instead of a hardcoded 24-hour format.
+
+## Changed (behavior)
+
+- All rendered times — cart item titles, order breakdown lines, ticket rows, quantity-stepper labels and the `<go-timeslots>` picker — now follow `shop.locale` conventions: `en` shops render `2:30 PM` where they previously always showed `14:30`; `de` and `fr` shops keep the 24-hour clock. Date renderings are unchanged.
+- `<go-timeslots>` labels are now formatted through the shared time formatter instead of being sliced out of the raw ISO string, so they respond to the shop locale like every other time.
+
+## Fixed
+
+- A missing shop locale no longer falls back to the visitor's system locale for dates and times; the shop default (`de`) applies until the shop config is loaded.
+
+---
+
 # v4.13.0
 
 _Released 2026-07-28_

@@ -11113,9 +11113,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (time) ({hour: hour, minute: minute, second: second, millisecond: millisecond} = time);
 		return new $2aaf608024c21ca1$export$ca871e8dbb80966f(date.calendar, date.era, date.year, date.month, date.day, hour, minute, second, millisecond);
 	}
-	function $d07e34cce18680fd$export$d33f79e3ffc3dc83(dateTime) {
-		return new $2aaf608024c21ca1$export$680ea196effce5f(dateTime.hour, dateTime.minute, dateTime.second, dateTime.millisecond);
-	}
 	function $d07e34cce18680fd$export$b4a036af3fc0b032(date, calendar) {
 		if ($ad063034c8620db8$export$dbc69fd56b53d5e(date.calendar, calendar)) return date;
 		let calendarDate = calendar.fromJulianDay(date.calendar.toJulianDay(date));
@@ -11272,14 +11269,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		time.second += duration.seconds || 0;
 		time.millisecond += duration.milliseconds || 0;
 		return $435a2ceaa8778ed8$var$balanceTime(time);
-	}
-	function $435a2ceaa8778ed8$export$7ed87b6bc2506470(time, duration) {
-		let res = time.copy();
-		$435a2ceaa8778ed8$var$addTimeFields(res, duration);
-		return res;
-	}
-	function $435a2ceaa8778ed8$export$fe34d3a381cd7501(time, duration) {
-		return $435a2ceaa8778ed8$export$7ed87b6bc2506470(time, $435a2ceaa8778ed8$export$3e2544e88a25bff8(duration));
 	}
 	function $435a2ceaa8778ed8$export$d52ced6badfb9a4c(value, field, amount, options) {
 		let mutable = value.copy();
@@ -11562,46 +11551,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return $ad063034c8620db8$export$68781ddf31c0090f(this, b);
 		}
 	};
-	var $2aaf608024c21ca1$export$680ea196effce5f = class $2aaf608024c21ca1$export$680ea196effce5f {
-		#type;
-		constructor(hour = 0, minute = 0, second = 0, millisecond = 0) {
-			this.hour = hour;
-			this.minute = minute;
-			this.second = second;
-			this.millisecond = millisecond;
-			$435a2ceaa8778ed8$export$7555de1e070510cb(this);
-		}
-		/** Returns a copy of this time. */ copy() {
-			return new $2aaf608024c21ca1$export$680ea196effce5f(this.hour, this.minute, this.second, this.millisecond);
-		}
-		/** Returns a new `Time` with the given duration added to it. */ add(duration) {
-			return $435a2ceaa8778ed8$export$7ed87b6bc2506470(this, duration);
-		}
-		/** Returns a new `Time` with the given duration subtracted from it. */ subtract(duration) {
-			return $435a2ceaa8778ed8$export$fe34d3a381cd7501(this, duration);
-		}
-		/**
-		* Returns a new `Time` with the given fields set to the provided values. Other fields will be
-		* constrained accordingly.
-		*/ set(fields) {
-			return $435a2ceaa8778ed8$export$e5d5e1c1822b6e56(this, fields);
-		}
-		/**
-		* Returns a new `Time` with the given field adjusted by a specified amount.
-		* When the resulting value reaches the limits of the field, it wraps around.
-		*/ cycle(field, amount, options) {
-			return $435a2ceaa8778ed8$export$dd02b3e0007dfe28(this, field, amount, options);
-		}
-		/** Converts the time to an ISO 8601 formatted string. */ toString() {
-			return $58246871e4652552$export$f59dee82248f5ad4(this);
-		}
-		/**
-		* Compares this time with another. A negative result indicates that this time is before the given
-		* one, and a positive time indicates that it is after.
-		*/ compare(b) {
-			return $ad063034c8620db8$export$c19a80a9721b80f6(this, b);
-		}
-	};
 	var $2aaf608024c21ca1$export$ca871e8dbb80966f = class $2aaf608024c21ca1$export$ca871e8dbb80966f {
 		#type;
 		constructor(...args) {
@@ -11826,19 +11775,31 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	//#endregion
 	//#region ../../packages/gomus-types/lib/helpers/utils.ts
-	function formatTime(value) {
-		return $d07e34cce18680fd$export$d33f79e3ffc3dc83($58246871e4652552$export$5adfdab05168c219(value, "Europe/Berlin")).toString().slice(0, -3);
+	/** Named date presets — the single place defining what each rendering means (WI 151). */
+	var DATE_FORMAT_PRESETS = {
+		dayMonth: {
+			month: "numeric",
+			day: "numeric"
+		},
+		short: {
+			year: "numeric",
+			month: "numeric",
+			day: "numeric"
+		}
+	};
+	function formatTime(value, locale) {
+		const zoned = $58246871e4652552$export$5adfdab05168c219(value, "Europe/Berlin");
+		return new $12a3c853105e5a70$export$ad991b66133851cf(locale, {
+			timeZone: zoned.timeZone,
+			hour: "numeric",
+			minute: "numeric"
+		}).format(zoned.toDate());
 	}
-	function formatDate(isoDateString, options = {
-		weekday: "long",
-		year: "numeric",
-		month: "long",
-		day: "numeric"
-	}, locale = "de") {
+	function formatDate(isoDateString, preset, locale) {
 		const zoned = $58246871e4652552$export$5adfdab05168c219(isoDateString instanceof Date ? isoDateString.toISOString() : isoDateString, "Europe/Berlin");
 		return new $12a3c853105e5a70$export$ad991b66133851cf(locale, {
 			timeZone: zoned.timeZone,
-			...options
+			...DATE_FORMAT_PRESETS[preset]
 		}).format(zoned.toDate());
 	}
 	//#endregion
@@ -13830,7 +13791,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return "https://" + this.shopDomain;
 		}
 		get locale() {
-			return get$2(this.#data).locale;
+			return get$2(this.#data).locale ?? "de";
+		}
+		formatTime(value) {
+			return formatTime(value, this.locale);
+		}
+		formatDate(value, preset) {
+			return formatDate(value, preset, this.locale);
 		}
 		get shop() {
 			return this.fetchAndCache("/api/v4/shop", "shop", "shop");
@@ -15566,10 +15533,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			template_effect(($0, $1) => {
 				set_text(text_2, $0);
 				set_text(text_3, $1);
-			}, [() => formatDate(cartItem().time, {
-				month: "numeric",
-				day: "numeric"
-			}, shop.locale), () => formatTime(cartItem().time)]);
+			}, [() => shop.formatDate(cartItem().time, "dayMonth"), () => shop.formatTime(cartItem().time)]);
 			append($$anchor, fragment_1);
 		};
 		if_block(node, ($$render) => {
@@ -15628,16 +15592,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				var span_3 = root_1$19();
 				var text_3 = child(span_3, true);
 				reset(span_3);
-				template_effect(($0) => set_text(text_3, $0), [() => formatTime(cartItem().time)]);
+				template_effect(($0) => set_text(text_3, $0), [() => shop.formatTime(cartItem().time)]);
 				append($$anchor, span_3);
 			};
 			if_block(node_2, ($$render) => {
 				if (cartItem().product.type === "Ticket" && cartItem().product.subtype === "timeslot") $$render(consequent_1);
 			});
-			template_effect(($0) => set_text(text_2, $0), [() => formatDate(cartItem().time, {
-				month: "numeric",
-				day: "numeric"
-			}, shop.locale)]);
+			template_effect(($0) => set_text(text_2, $0), [() => shop.formatDate(cartItem().time, "dayMonth")]);
 			append($$anchor, fragment_1);
 		};
 		if_block(node_1, ($$render) => {
@@ -15662,12 +15623,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if (!cartItem().time) return null;
 			try {
 				return {
-					date: formatDate(cartItem().time, {
-						year: "numeric",
-						month: "numeric",
-						day: "numeric"
-					}, shop.locale),
-					time: formatTime(cartItem().time)
+					date: shop.formatDate(cartItem().time, "short"),
+					time: shop.formatTime(cartItem().time)
 				};
 			} catch {
 				return {
@@ -18143,12 +18100,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	* the visible row title: event rows compose it from event_title + time because a
 	* flat-price event's price row carries no title (the row IS the event) — naming
 	* the control from product.title alone left it unnamed (WI #141).
+	*
+	* Locale comes in as a parameter — shared/ components stay store-agnostic (WI #151).
 	*/
-	function quantityLabel(item) {
+	function quantityLabel(item, locale) {
 		const { product } = item;
 		return isEventTicket(product) ? [
 			product.event_title,
-			item.time && formatTime(item.time),
+			item.time && formatTime(item.time, locale),
 			product.title
 		].filter(Boolean).join(" - ") : product.title;
 	}
@@ -18313,7 +18272,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var alternate_1 = ($$anchor) => {
 				{
 					let $0 = /* @__PURE__ */ user_derived(() => displayItem().quantity ?? 0);
-					let $1 = /* @__PURE__ */ user_derived(() => quantityLabel(displayItem()));
+					let $1 = /* @__PURE__ */ user_derived(() => quantityLabel(displayItem(), shop.locale));
 					QuantityControl($$anchor, {
 						get value() {
 							return get$2($0);
@@ -36508,10 +36467,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			template_effect(($0, $1) => {
 				set_text(text_1, $0);
 				set_text(text_2, $1);
-			}, [() => formatDate(item().attributes.start_time, {
-				month: "numeric",
-				day: "numeric"
-			}, shop.locale), () => formatTime(item().attributes.start_time)]);
+			}, [() => shop.formatDate(item().attributes.start_time, "dayMonth"), () => shop.formatTime(item().attributes.start_time)]);
 			append($$anchor, fragment);
 		};
 		if_block(node, ($$render) => {
@@ -36654,20 +36610,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						template_effect(($0, $1) => {
 							set_text(text_3, $0);
 							set_text(text_4, $1);
-						}, [() => formatDate(item().attributes.start_time, {
-							month: "numeric",
-							day: "numeric"
-						}, shop.locale), () => formatTime(item().attributes.start_time)]);
+						}, [() => shop.formatDate(item().attributes.start_time, "dayMonth"), () => shop.formatTime(item().attributes.start_time)]);
 						append($$anchor, fragment_4);
 					};
 					var consequent_2 = ($$anchor) => {
 						var span_5 = root_3$3();
 						var text_5 = child(span_5, true);
 						reset(span_5);
-						template_effect(($0) => set_text(text_5, $0), [() => formatDate(item().attributes.start_time, {
-							month: "numeric",
-							day: "numeric"
-						}, shop.locale)]);
+						template_effect(($0) => set_text(text_5, $0), [() => shop.formatDate(item().attributes.start_time, "dayMonth")]);
 						append($$anchor, span_5);
 					};
 					if_block(node_5, ($$render) => {
@@ -36859,10 +36809,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			template_effect(($0, $1) => {
 				set_text(text_2, $0);
 				set_text(text_3, $1);
-			}, [() => formatDate(item().attributes.start_time, {
-				month: "numeric",
-				day: "numeric"
-			}, shop.locale), () => formatTime(item().attributes.start_time)]);
+			}, [() => shop.formatDate(item().attributes.start_time, "dayMonth"), () => shop.formatTime(item().attributes.start_time)]);
 			append($$anchor, fragment);
 		};
 		if_block(node, ($$render) => {
@@ -37636,7 +37583,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			template_effect(($0) => {
 				set_text(text, `${item().product.event_title ?? ""} - ${$0 ?? ""}`);
 				set_text(text_1, item().product.title);
-			}, [() => formatTime(item().time)]);
+			}, [() => shop.formatTime(item().time)]);
 			append($$anchor, fragment);
 		};
 		const default_title = ($$anchor) => {
@@ -37745,7 +37692,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var li_6 = sibling(li_5, 2);
 			var node_5 = child(li_6);
 			{
-				let $0 = /* @__PURE__ */ user_derived(() => quantityLabel(item()));
+				let $0 = /* @__PURE__ */ user_derived(() => quantityLabel(item(), shop.locale));
 				QuantityControl(node_5, {
 					get value() {
 						return item().quantity;
@@ -37923,7 +37870,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			this.timeslots = quotaManager.timeslotsOn(date, this.tsd?.timeslotTicketIds).map((x) => ({
 				...x,
 				startAt: x.timeSlot,
-				timeFormatted: x.timeSlot.substring(11, 16),
+				timeFormatted: shop.formatTime(x.timeSlot),
 				available: x.capacity > 0
 			}));
 		}
