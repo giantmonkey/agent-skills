@@ -4,6 +4,44 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.13.0
+
+_Released 2026-07-28_
+
+In the cart, the quantity stepper's `−` button now removes a line once it is at its lowest
+quantity, so a visitor can drop a line with the same control instead of hunting for the
+separate remove button. Ticket selection is unchanged.
+
+## New
+
+- `.go-quantity-stepper-remove` — a styling hook added to the cart stepper's `−` button while
+  it is acting as a remove control (a line at its lowest quantity). Target it alongside the
+  existing `.go-cart-remove` to style the remove affordance; the library ships no styles for it.
+- Three translation keys let you relabel the remove controls (a word like `Remove`, or a custom
+  glyph). Each ships a built-in English and German default, so the button never renders a raw
+  key; your backend translations override them as usual.
+  - `quantity.remove` — accessible name for the stepper's `−`-as-remove button (default `Remove item` / `Artikel entfernen`).
+  - `quantity.remove.label` — visible text of that button (default `✕`).
+  - `cart.item.remove` — visible text of the cart's `✕` remove button (default `✕`).
+
+## Changed (behavior)
+
+- **Cart stepper `−` at the minimum now removes the line.** Previously the cart stepper's `−`
+  stepped a line down to an empty `0` and left it in the cart; only the `✕` button removed it.
+  Now, once a line is at its lowest quantity (`1`, or the ticket's group minimum), the `−`
+  button turns into a remove control (`✕`) and pressing it removes the line — a cart line never
+  sits at quantity `0`. Existing markup is unchanged. The ticket-selection stepper is
+  unaffected (it still steps down to "none selected"), and the keyboard (`↓` / `Home`) never
+  removes a line — only clicking the button does.
+- **Cart `✕` remove button is now translation-driven.** Its visible glyph changed from `⨉` to
+  `✕` and now comes from the new `cart.item.remove` key; its accessible name now comes from the
+  existing `cart.item.aria.removeItem` key (previously the button's accessible name was drawn
+  from `cart.item.remove`). The `.go-cart-remove` styling hook is unchanged. If your backend
+  overrides `cart.item.remove`, review it — that text is now the button's visible label rather
+  than its accessible name.
+
+---
+
 # v4.12.0
 
 _Released 2026-07-28_

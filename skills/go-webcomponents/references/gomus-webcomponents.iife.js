@@ -6378,6 +6378,18 @@ createHTML: (html) => {
 			console.warn(`[go] Invalid locale "${locale}" — not a valid BCP 47 language tag (use "de", "de-CH", "en", …). Price and date formatting will throw.`);
 		}
 	}
+	var defaultTranslations_default = {
+		en: {
+			"quantity.remove": "Remove item",
+			"quantity.remove.label": "✕",
+			"cart.item.remove": "✕"
+		},
+		de: {
+			"quantity.remove": "Artikel entfernen",
+			"quantity.remove.label": "✕",
+			"cart.item.remove": "✕"
+		}
+	};
 	//#endregion
 	//#region src/lib/helpers/urls.ts
 	var ANGULAR_URLS = {
@@ -13723,6 +13735,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		success: false,
 		errors: ["Not signed in"]
 	} };
+	var defaultTranslations = defaultTranslations_default;
 	var Shop = class {
 		type;
 		#data = /* @__PURE__ */ state(proxy({
@@ -13790,7 +13803,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return this.shop?.config.donations;
 		}
 		get translations() {
-			return this.shop?.translations;
+			return {
+				...defaultTranslations[(this.locale ?? "en").toLowerCase().split(/[-_]/)[0]] ?? defaultTranslations.en,
+				...this.shop?.translations
+			};
 		}
 		get currency() {
 			return this.shop?.config.currency;
@@ -15753,22 +15769,33 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	//#endregion
 	//#region src/components/shared/quantityStepper/QuantityStepper.svelte
-	var root$50 = /* @__PURE__ */ from_html(`<div class="go-quantity-stepper" role="group"><button type="button" class="go-quantity-stepper-button go-quantity-stepper-decrement" tabindex="-1"><span aria-hidden="true">−</span></button> <input class="go-quantity-stepper-value" type="text" role="spinbutton" inputmode="numeric" autocomplete="off"/> <button type="button" class="go-quantity-stepper-button go-quantity-stepper-increment" tabindex="-1"><span aria-hidden="true">+</span></button></div>`);
+	var root$50 = /* @__PURE__ */ from_html(`<div class="go-quantity-stepper" role="group"><button type="button" tabindex="-1"><span aria-hidden="true"> </span></button> <input class="go-quantity-stepper-value" type="text" role="spinbutton" inputmode="numeric" autocomplete="off"/> <button type="button" class="go-quantity-stepper-button go-quantity-stepper-increment" tabindex="-1"><span aria-hidden="true">+</span></button></div>`);
 	function QuantityStepper($$anchor, $$props) {
 		const inputId = props_id();
 		push($$props, true);
-		let value = prop($$props, "value", 7), min = prop($$props, "min", 7), max = prop($$props, "max", 7), floor = prop($$props, "floor", 7, 0), label = prop($$props, "label", 7), decreaseLabel = prop($$props, "decreaseLabel", 7), increaseLabel = prop($$props, "increaseLabel", 7), onChange = prop($$props, "onChange", 7);
-		const bounds = /* @__PURE__ */ user_derived(() => ({
+		let value = prop($$props, "value", 7), min = prop($$props, "min", 7), max = prop($$props, "max", 7), floor = prop($$props, "floor", 7, 0), label = prop($$props, "label", 7), decreaseLabel = prop($$props, "decreaseLabel", 7), increaseLabel = prop($$props, "increaseLabel", 7), onDecrementBelowMin = prop($$props, "onDecrementBelowMin", 7), removeAriaLabel = prop($$props, "removeAriaLabel", 7), removeLabel = prop($$props, "removeLabel", 7, "✕"), onChange = prop($$props, "onChange", 7);
+		const removeMode = /* @__PURE__ */ user_derived(() => onDecrementBelowMin() != null);
+		const removeBottom = /* @__PURE__ */ user_derived(() => Math.max(min(), 1));
+		const bounds = /* @__PURE__ */ user_derived(() => get$2(removeMode) ? {
+			min: get$2(removeBottom),
+			max: max(),
+			floor: get$2(removeBottom)
+		} : {
 			min: min(),
 			max: max(),
 			floor: floor()
-		}));
+		});
+		const atRemove = /* @__PURE__ */ user_derived(() => get$2(removeMode) && value() <= get$2(removeBottom));
 		let inputEl;
 		let invalid = /* @__PURE__ */ state(false);
-		const decDisabled = /* @__PURE__ */ user_derived(() => !canDecrement(value(), get$2(bounds)));
+		const decDisabled = /* @__PURE__ */ user_derived(() => !get$2(atRemove) && !canDecrement(value(), get$2(bounds)));
 		const incDisabled = /* @__PURE__ */ user_derived(() => !canIncrement(value(), get$2(bounds)));
 		function emit(next) {
 			if (next !== value()) onChange()(next);
+		}
+		function pressDecrement() {
+			if (get$2(atRemove)) onDecrementBelowMin()();
+			else stepDown();
 		}
 		function stepDown() {
 			if (canDecrement(value(), get$2(bounds))) emit(decrement(value(), get$2(bounds)));
@@ -15777,7 +15804,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if (canIncrement(value(), get$2(bounds))) emit(increment(value(), get$2(bounds)));
 		}
 		function commitTyped() {
-			const next = clampTyped(parseInt(inputEl.value, 10), get$2(bounds));
+			const raw = parseInt(inputEl.value, 10);
+			if (get$2(removeMode) && (!Number.isFinite(raw) || raw <= 0)) {
+				set(invalid, false);
+				inputEl.value = String(value());
+				onDecrementBelowMin()();
+				return;
+			}
+			const next = clampTyped(raw, get$2(bounds));
 			set(invalid, false);
 			inputEl.value = String(next);
 			emit(next);
@@ -15798,7 +15832,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					break;
 				case "Home":
 					e.preventDefault();
-					emit(floor());
+					emit(get$2(bounds).floor);
 					break;
 				case "End":
 					e.preventDefault();
@@ -15860,6 +15894,27 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				increaseLabel($$value);
 				flushSync();
 			},
+			get onDecrementBelowMin() {
+				return onDecrementBelowMin();
+			},
+			set onDecrementBelowMin($$value) {
+				onDecrementBelowMin($$value);
+				flushSync();
+			},
+			get removeAriaLabel() {
+				return removeAriaLabel();
+			},
+			set removeAriaLabel($$value) {
+				removeAriaLabel($$value);
+				flushSync();
+			},
+			get removeLabel() {
+				return removeLabel();
+			},
+			set removeLabel($$value = "✕") {
+				removeLabel($$value);
+				flushSync();
+			},
 			get onChange() {
 				return onChange();
 			},
@@ -15870,6 +15925,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		var div = root$50();
 		var button = child(div);
+		let classes;
+		var span = child(button);
+		var text = child(span, true);
+		reset(span);
+		reset(button);
 		var input = sibling(button, 2);
 		remove_input_defaults(input);
 		bind_this(input, ($$value) => inputEl = $$value, () => inputEl);
@@ -15877,21 +15937,23 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reset(div);
 		template_effect(() => {
 			set_attribute(div, "aria-label", label());
-			set_attribute(button, "title", decreaseLabel());
+			classes = set_class(button, 1, "go-quantity-stepper-button go-quantity-stepper-decrement", null, classes, { "go-quantity-stepper-remove": get$2(atRemove) });
+			set_attribute(button, "title", get$2(atRemove) ? removeAriaLabel() : decreaseLabel());
 			set_attribute(button, "aria-controls", inputId);
 			set_attribute(button, "aria-disabled", get$2(decDisabled));
+			set_text(text, get$2(atRemove) ? removeLabel() : "−");
 			set_attribute(input, "id", inputId);
 			set_attribute(input, "aria-label", label());
 			set_value(input, value());
 			set_attribute(input, "aria-valuenow", value());
-			set_attribute(input, "aria-valuemin", floor());
+			set_attribute(input, "aria-valuemin", get$2(bounds).floor);
 			set_attribute(input, "aria-valuemax", max());
 			set_attribute(input, "aria-invalid", get$2(invalid) ? "true" : void 0);
 			set_attribute(button_1, "title", increaseLabel());
 			set_attribute(button_1, "aria-controls", inputId);
 			set_attribute(button_1, "aria-disabled", get$2(incDisabled));
 		});
-		delegated("click", button, stepDown);
+		delegated("click", button, pressDecrement);
 		delegated("input", input, onInput);
 		delegated("change", input, commitTyped);
 		event("blur", input, commitTyped);
@@ -15914,6 +15976,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		label: {},
 		decreaseLabel: {},
 		increaseLabel: {},
+		onDecrementBelowMin: {},
+		removeAriaLabel: {},
+		removeLabel: {},
 		onChange: {}
 	}, [], [], { mode: "open" });
 	//#endregion
@@ -15954,8 +16019,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		* `min_persons`) a hard bottom on both controls: the backend does not enforce it,
 		* so the UI must (Angular-shop parity).
 		*/
+		/**
+		* Cart-only: when set, the stepper's `−` at the order minimum removes the line instead of
+		* stepping (fires this). Presence turns the behaviour on; the legacy `<select>` ignores it.
+		*/
 		/** Emits the next committed quantity. The control never mutates anything itself. */
-		let value = prop($$props, "value", 7), min = prop($$props, "min", 7), max = prop($$props, "max", 7), label = prop($$props, "label", 7), floor = prop($$props, "floor", 7, 0), deselectable = prop($$props, "deselectable", 7, true), onChange = prop($$props, "onChange", 7);
+		let value = prop($$props, "value", 7), min = prop($$props, "min", 7), max = prop($$props, "max", 7), label = prop($$props, "label", 7), floor = prop($$props, "floor", 7, 0), deselectable = prop($$props, "deselectable", 7, true), onDecrementBelowMin = prop($$props, "onDecrementBelowMin", 7), onChange = prop($$props, "onChange", 7);
 		const useStepper = /* @__PURE__ */ user_derived(() => configStore.config.quantityStepper);
 		var $$exports = {
 			get value() {
@@ -16000,6 +16069,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				deselectable($$value);
 				flushSync();
 			},
+			get onDecrementBelowMin() {
+				return onDecrementBelowMin();
+			},
+			set onDecrementBelowMin($$value) {
+				onDecrementBelowMin($$value);
+				flushSync();
+			},
 			get onChange() {
 				return onChange();
 			},
@@ -16015,6 +16091,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				let $0 = /* @__PURE__ */ user_derived(() => deselectable() ? 0 : min());
 				let $1 = /* @__PURE__ */ user_derived(() => shop.t("quantity.decrease"));
 				let $2 = /* @__PURE__ */ user_derived(() => shop.t("quantity.increase"));
+				let $3 = /* @__PURE__ */ user_derived(() => shop.t("quantity.remove"));
+				let $4 = /* @__PURE__ */ user_derived(() => shop.t("quantity.remove.label"));
 				QuantityStepper($$anchor, {
 					get value() {
 						return value();
@@ -16036,6 +16114,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					get increaseLabel() {
 						return get$2($2);
+					},
+					get onDecrementBelowMin() {
+						return onDecrementBelowMin();
+					},
+					get removeAriaLabel() {
+						return get$2($3);
+					},
+					get removeLabel() {
+						return get$2($4);
 					},
 					get onChange() {
 						return onChange();
@@ -16077,6 +16164,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		label: {},
 		floor: {},
 		deselectable: {},
+		onDecrementBelowMin: {},
 		onChange: {}
 	}, [], [], { mode: "open" });
 	//#endregion
@@ -18071,7 +18159,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root_2$11 = /* @__PURE__ */ from_html(`<span data-testid="cart-item-participant-count"> </span>`);
 	var root_3$8 = /* @__PURE__ */ from_html(`<span data-testid="cart-item-voucher-quantity"> </span>`);
 	var root_4$4 = /* @__PURE__ */ from_html(`<span> </span>`);
-	var root_5$3 = /* @__PURE__ */ from_html(`<li class="go-cart-item-remove"><button class="go-cart-remove">⨉</button></li>`);
+	var root_5$3 = /* @__PURE__ */ from_html(`<li class="go-cart-item-remove"><button class="go-cart-remove"> </button></li>`);
 	var root_6$2 = /* @__PURE__ */ from_html(`<ul class="go-sub-tickets" role="list"></ul>`);
 	var root_7$2 = /* @__PURE__ */ from_html(`<article class="go-cart-item-content"><ul><li class="go-cart-item-title-container"><!></li> <li class="go-cart-item-price"><!></li> <li class="go-cart-item-count"><!></li> <!> <li class="go-cart-item-sum"> </li></ul></article> <!>`, 1);
 	function Item$1($$anchor, $$props) {
@@ -18240,7 +18328,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 							return get$2($1);
 						},
 						floor: 1,
-						onChange: updateQuantity
+						onChange: updateQuantity,
+						onDecrementBelowMin: del
 					});
 				}
 			};
@@ -18255,8 +18344,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var consequent_8 = ($$anchor) => {
 				var li_3 = root_5$3();
 				var button = child(li_3);
+				var text_6 = child(button, true);
+				reset(button);
 				reset(li_3);
-				template_effect(($0) => set_attribute(button, "aria-label", $0), [() => shop.t("cart.item.remove")]);
+				template_effect(($0, $1) => {
+					set_attribute(button, "aria-label", $0);
+					set_text(text_6, $1);
+				}, [() => shop.t("cart.item.aria.removeItem"), () => shop.t("cart.item.remove")]);
 				delegated("click", button, del);
 				append($$anchor, li_3);
 			};
@@ -18264,7 +18358,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				if (!preview()) $$render(consequent_8);
 			});
 			var li_4 = sibling(node_4, 2);
-			var text_6 = child(li_4, true);
+			var text_7 = child(li_4, true);
 			reset(li_4);
 			reset(ul);
 			reset(article);
@@ -18298,7 +18392,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if_block(node_5, ($$render) => {
 				if (get$2(mantleProduct)) $$render(consequent_9);
 			});
-			template_effect(($0) => set_text(text_6, $0), [() => formatCurrency(displayItem().total_price_cents)]);
+			template_effect(($0) => set_text(text_7, $0), [() => formatCurrency(displayItem().total_price_cents)]);
 			append($$anchor, fragment_1);
 		};
 		if_block(node, ($$render) => {
