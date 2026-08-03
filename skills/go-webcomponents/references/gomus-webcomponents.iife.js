@@ -15400,13 +15400,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	function createDisplayCartItem(cartItem, attrs) {
 		const quantity = isUITour(cartItem.product) ? 1 : resolveApiQuantity(attrs);
-		const originalPrice = cartItem.product.price_cents;
-		const displayPrice = originalPrice === 0 ? 0 : attrs.price_cents ?? originalPrice;
+		const originalPrice = cartItem.price_cents;
+		const displayPrice = cartItem.product.price_cents === 0 ? 0 : attrs.price_cents ?? originalPrice;
 		const discounted = displayPrice < originalPrice;
-		return createCartItem({
+		const product = {
 			...cartItem.product,
 			price_cents: displayPrice
-		}, {
+		};
+		if ("dynamic_prices" in product) product.dynamic_prices = null;
+		return createCartItem(product, {
 			quantity,
 			time: cartItem.time,
 			voucher: cartItem.voucher,

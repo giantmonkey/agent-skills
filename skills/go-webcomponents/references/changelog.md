@@ -4,6 +4,19 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.14.1
+
+_Released 2026-08-03_
+
+Coupon discounts now show up correctly in the cart for tickets with per-timeslot pricing.
+
+## Fixed
+
+- `<go-cart>` now renders coupon discounts for timeslot tickets whose slots carry their own prices: the discounted unit price, the `<go-cart-discounted-amount>` row, and `<go-cart-total-amount>` previously kept showing the un-discounted figures for such tickets (checkout already charged the correct amount).
+- The struck-through original price on a discounted cart line now shows what the selected timeslot actually cost, not the ticket's base price, when the two differ.
+
+---
+
 # v4.14.0
 
 _Released 2026-08-03_
