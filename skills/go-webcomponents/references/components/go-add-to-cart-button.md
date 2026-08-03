@@ -75,6 +75,11 @@ Available filter names:
 | `events:admission:timeslot` | events          | Multiple events, timed admission tickets only (`ticket_type=time_slot`).                    |
 | `events:price`              | events          | Multiple events, any price type. Calendar + timeslot + tickets all visible.                 |
 
+The `ticket:*` filters can also add a ticket to the cart programmatically via
+`go.cart.addItem({ filter, … })` — see **The Go Interface** doc. One extra filter name, `tour`,
+exists solely for that programmatic path (group-tour bookings): it lists nothing inside a ticket
+selection, so don't use it in the `filters` attribute. _(Since `v4.14.0`)_
+
 ### Segment filters and inheritance
 
 The `filters` attribute on `<go-ticket-segment>` is **optional**. When omitted (or empty), the segment

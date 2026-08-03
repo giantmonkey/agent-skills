@@ -4,6 +4,100 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.14.0
+
+_Released 2026-08-03_
+
+Programmatic cart adds are now one generic call: `go.cart.addItem({ filter, … })` adds
+admission tickets and guided-group-tour bookings from your own page scripts, replacing
+`go.cart.addTour`.
+
+## New
+
+- `go.cart.addItem(options)` — one method for every product kind. `options.filter` names
+  the kind; the remaining fields are that kind's own arguments. Resolves with the new
+  cart line's `uuid`.
+
+  | `filter`            | Adds                       | Fields besides `filter`                                     |
+  | ------------------- | -------------------------- | ----------------------------------------------------------- |
+  | `'ticket:annual'`   | Annual admission ticket    | `id`, `quantity`                                            |
+  | `'ticket:day'`      | Day admission ticket       | `id`, `quantity`, `date` (`YYYY-MM-DD`)                     |
+  | `'ticket:timeslot'` | Time-slot admission ticket | `id`, `quantity`, `time` (ISO date-time of the chosen slot) |
+  | `'tour'`            | Guided-group-tour booking  | same options as the former `go.cart.addTour`                |
+
+- Programmatic **ticket** adds (the three `ticket:*` filters above) are new. Tickets are
+  resolved live against the shop API — price and availability come from the backend,
+  never your page. The call rejects when the ticket is unknown or sold out
+  (`not available`) and when `quantity` exceeds the remaining capacity (`only N left`).
+  Identical ticket lines merge by id + time, exactly as if added through
+  `<go-ticket-selection>`.
+
+  ```javascript
+  const uuid = await go.cart.addItem({
+    filter: 'ticket:timeslot',
+    id: 13,
+    quantity: 2,
+    time: '2026-08-01T10:00:00+02:00',
+  })
+  ```
+
+## Breaking → migration
+
+### `go.cart.addTour` is replaced by `go.cart.addItem`
+
+`go.cart.addTour(options)` (since `v4.3.0`) no longer exists. Call
+`go.cart.addItem` with `filter: 'tour'` — the remaining options, validation,
+return value (`Promise<string>` uuid), and one-line-per-call semantics are
+unchanged.
+
+Before:
+
+```js
+const uuid = await go.cart.addTour({
+  id: 42,
+  time: '2026-07-22T13:00:00+02:00',
+  participants: 12,
+  languageId: 1,
+  totalPriceCents: 18000,
+  title: 'Highlights Tour',
+})
+```
+
+After:
+
+```js
+const uuid = await go.cart.addItem({
+  filter: 'tour',
+  id: 42,
+  time: '2026-07-22T13:00:00+02:00',
+  participants: 12,
+  languageId: 1,
+  totalPriceCents: 18000,
+  title: 'Highlights Tour',
+})
+```
+
+### Loader snippet: the `cart.addTour` stub is now `cart.addItem`
+
+If your page embeds the inline loader snippet, update its `cart` stub — a snippet
+still stubbing `cart.addTour` cannot queue `go.cart.addItem` calls made before the
+bundle loads (`go.cart.addItem` is undefined pre-load, so calling it throws), and any
+`cart.addTour` calls it queues are reported on load as unknown commands.
+
+Before:
+
+```js
+cart: { addTour: stub('cart.addTour') },
+```
+
+After:
+
+```js
+cart: { addItem: stub('cart.addItem') },
+```
+
+---
+
 # v4.13.1
 
 _Released 2026-07-28_

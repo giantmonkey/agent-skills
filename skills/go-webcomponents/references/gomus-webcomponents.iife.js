@@ -35491,11 +35491,31 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"events:admission:day",
 		"events:admission:timeslot",
 		"events:price",
-		"coupon"
+		"coupon",
+		"tour"
 	];
 	//#endregion
 	//#region src/components/ticketSelection/filters/_helpers.ts
 	var TWO_HOURS_MS = 7200 * 1e3;
+	/**
+	* The common tail of every ticket filter's `addToCart`: given the ticket
+	* its loader resolved, build the cart line, reject if the ticket is unavailable
+	* (sold out / unknown → the loader yielded nothing) or the quantity exceeds the
+	* remaining capacity, add the line, and return its uuid. Subtype-agnostic — the
+	* per-filter loader is the only thing that differs.
+	*/
+	function addResolvedTicketToCart(ticket, { id, quantity, time }) {
+		if (!(quantity > 0)) throw new Error(`(go.cart.addItem) 'quantity' must be a positive number`);
+		if (!ticket) throw new Error(`(go.cart.addItem) ticket ${id} not available (sold out or unknown)`);
+		const item = createCartItem(ticket, {
+			quantity,
+			time: time ?? ticket.selectedTime
+		});
+		const { max } = shop.capacityManager.capacity(shop.cart, item, createCart());
+		if (quantity > max) throw new Error(`(go.cart.addItem) only ${max} left for ticket ${id}`);
+		shop.cart.addItem(item);
+		return item.uuid;
+	}
 	/**
 	* When a segment opts into content attributes (with-content), batch-fetch
 	* tickets/content for the given tickets and merge each entry's `content` onto
@@ -35556,433 +35576,566 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		loadPickerQuotas(tsd, quotas);
 	}
 	//#endregion
-	//#region src/components/ticketSelection/filters/registry.ts
-	var REGISTRY = {
-		"ticket:timeslot": {
-			name: "ticket:timeslot",
-			calendarEndpoint: "tickets",
-			apiToken: "time_slot",
-			requires: [{
+	//#region src/components/ticketSelection/filters/ticket/timeslot.ts
+	async function loadTimeslotTickets(filters, selectedTime) {
+		const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
+			by_bookable: true,
+			by_ticket_type: "time_slot",
+			...filters
+		}));
+		shop.capacityManager.addQuotas(quotas);
+		return initUITimeslotTickets(filterAvailabletickets(tickets, selectedTime), selectedTime);
+	}
+	var filter$12 = {
+		name: "ticket:timeslot",
+		calendarEndpoint: "tickets",
+		apiToken: "time_slot",
+		requires: [{
+			kind: "tsd",
+			field: "selectedDate"
+		}, {
+			kind: "tsd",
+			field: "selectedTimeslot"
+		}],
+		isCalendarVisible: () => true,
+		isTimeslotsVisible: (tsd) => Boolean(tsd.selectedDate),
+		isTicketsVisible: (tsd) => Boolean(tsd.selectedDate && tsd.selectedTimeslot),
+		async addToCart(options) {
+			const { id, quantity, time } = options;
+			if (!time) throw new Error(`(go.cart.addItem) ticket:timeslot requires a 'time'`);
+			const ticket = (await loadTimeslotTickets({
+				valid_at: time.slice(0, 10),
+				"by_ticket_ids[]": [id]
+			}, time))[0];
+			return addResolvedTicketToCart(ticket, {
+				id,
+				quantity,
+				time
+			});
+		},
+		async loadTimeslots(tsd) {
+			if (!tsd?.selectedDate) return;
+			const { quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
+				by_bookable: true,
+				valid_at: tsd.selectedDate.toString(),
+				by_ticket_type: "time_slot",
+				"by_museum_ids[]": tsd.museumIds,
+				"by_exhibition_ids[]": tsd.exhibitionIds,
+				"by_ticket_ids[]": tsd.ticketIds,
+				"by_ticket_group_ids[]": tsd.ticketGroupIds
+			}));
+			loadPickerQuotas(tsd, quotas);
+		},
+		async loadProducts(segment) {
+			const tsd = segment.ticketSelectionDetails;
+			if (!tsd?.selectedDate || !tsd.selectedTimeslot) return;
+			const uiTickets = await loadTimeslotTickets({
+				valid_at: tsd.selectedDate.toString(),
+				"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
+				"by_exhibition_ids[]": tsd.exhibitionIds,
+				"by_ticket_ids[]": tsd.ticketIds,
+				"by_ticket_group_ids[]": segment.ticketGroupIds ?? tsd.ticketGroupIds
+			}, tsd.selectedTimeslot);
+			await enrichTicketsWithContent(segment, uiTickets);
+			for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: tsd.selectedTime }));
+		}
+	};
+	//#endregion
+	//#region src/components/ticketSelection/filters/ticket/day.ts
+	async function loadDayTickets(filters) {
+		const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
+			by_bookable: true,
+			"by_ticket_types[]": ["normal"],
+			...filters
+		}));
+		shop.capacityManager.addQuotas(quotas);
+		return initUIDayTickets(tickets);
+	}
+	var filter$11 = {
+		name: "ticket:day",
+		calendarEndpoint: "tickets",
+		apiToken: "normal",
+		requires: [{
+			kind: "tsd",
+			field: "selectedDate"
+		}],
+		isCalendarVisible: () => true,
+		isTimeslotsVisible: () => false,
+		isTicketsVisible: (tsd) => Boolean(tsd.selectedDate),
+		async loadTimeslots() {},
+		async addToCart(options) {
+			const { id, quantity, date } = options;
+			if (!date) throw new Error(`(go.cart.addItem) ticket:day requires a 'date'`);
+			const ticket = (await loadDayTickets({
+				valid_at: date,
+				"by_ticket_ids[]": [id]
+			}))[0];
+			return addResolvedTicketToCart(ticket, {
+				id,
+				quantity
+			});
+		},
+		async loadProducts(segment) {
+			const tsd = segment.ticketSelectionDetails;
+			if (!tsd?.selectedDate) return;
+			const uiTickets = await loadDayTickets({
+				valid_at: tsd.selectedDate.toString(),
+				"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
+				"by_exhibition_ids[]": tsd.exhibitionIds,
+				"by_ticket_ids[]": tsd.ticketIds,
+				"by_ticket_group_ids[]": segment.ticketGroupIds ?? tsd.ticketGroupIds
+			});
+			await enrichTicketsWithContent(segment, uiTickets);
+			for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: ticket.selectedTime }));
+		}
+	};
+	//#endregion
+	//#region src/components/ticketSelection/filters/ticket/annual.ts
+	async function loadAnnualTickets(filters) {
+		const tickets = await shop.asyncFetch(() => shop.tickets({
+			by_bookable: true,
+			"by_ticket_types[]": ["annual"],
+			...filters
+		}));
+		return Object.values(tickets).map((t) => createUITicket(t));
+	}
+	var filter$10 = {
+		name: "ticket:annual",
+		calendarEndpoint: null,
+		apiToken: "annual",
+		requires: [],
+		isCalendarVisible: () => false,
+		isTimeslotsVisible: () => false,
+		isTicketsVisible: () => true,
+		async loadTimeslots() {},
+		async addToCart(options) {
+			const { id, quantity } = options;
+			const ticket = (await loadAnnualTickets({ "by_ticket_ids[]": [id] }))[0];
+			return addResolvedTicketToCart(ticket, {
+				id,
+				quantity
+			});
+		},
+		async loadProducts(segment) {
+			const tsd = segment.ticketSelectionDetails;
+			if (!tsd) return;
+			const uiTickets = await loadAnnualTickets({
+				"by_ticket_ids[]": tsd.ticketIds,
+				"by_ticket_group_ids[]": segment.ticketGroupIds ?? tsd.ticketGroupIds
+			});
+			await enrichTicketsWithContent(segment, uiTickets);
+			for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket));
+		}
+	};
+	//#endregion
+	//#region src/components/ticketSelection/filters/event/admission.ts
+	var filter$9 = {
+		name: "event:admission",
+		calendarEndpoint: "events",
+		requires: [{
+			kind: "tsd",
+			field: "eventIds"
+		}, {
+			kind: "tsd",
+			field: "selectedDate"
+		}],
+		isCalendarVisible: () => true,
+		isTimeslotsVisible: (tsd) => Boolean(tsd.selectedDate),
+		isTicketsVisible: (tsd) => Boolean(tsd.selectedDate && tsd.selectedTimeslot),
+		async loadTimeslots(tsd) {
+			if (!tsd?.eventIds?.length || !tsd.selectedDate) return;
+			const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
+			if (!event.tickets?.length) return;
+			const { quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
+				"by_ticket_ids[]": event.tickets,
+				by_bookable: true,
+				valid_at: tsd.selectedDate.toString()
+			}));
+			loadPickerQuotas(tsd, quotas);
+		},
+		async loadProducts(segment) {
+			const tsd = segment.ticketSelectionDetails;
+			if (!tsd?.eventIds?.length || !tsd.selectedDate) return;
+			const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
+			if (!event.tickets?.length) return;
+			const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
+				"by_ticket_ids[]": event.tickets,
+				by_bookable: true,
+				valid_at: tsd.selectedDate.toString()
+			}));
+			shop.capacityManager.addQuotas(quotas);
+			const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, tsd.selectedTime), tsd.selectedTime);
+			await enrichTicketsWithContent(segment, uiTickets);
+			for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: tsd.selectedTime }));
+		}
+	};
+	//#endregion
+	//#region src/components/ticketSelection/filters/event/admission-day.ts
+	var filter$8 = {
+		name: "event:admission:day",
+		calendarEndpoint: "events",
+		requires: [{
+			kind: "tsd",
+			field: "eventIds"
+		}, {
+			kind: "tsd",
+			field: "selectedDate"
+		}],
+		isCalendarVisible: () => true,
+		isTimeslotsVisible: () => false,
+		isTicketsVisible: (tsd) => Boolean(tsd.selectedDate),
+		async loadTimeslots() {},
+		async loadProducts(segment) {
+			const tsd = segment.ticketSelectionDetails;
+			if (!tsd?.eventIds?.length || !tsd.selectedDate) return;
+			const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
+			if (!event.tickets?.length) return;
+			const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
+				"by_ticket_ids[]": event.tickets,
+				"by_ticket_types[]": ["normal"],
+				by_bookable: true,
+				valid_at: tsd.selectedDate.toString()
+			}));
+			shop.capacityManager.addQuotas(quotas);
+			const uiTickets = initUIDayTickets(tickets);
+			await enrichTicketsWithContent(segment, uiTickets);
+			for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time: t.selectedTime }));
+		}
+	};
+	//#endregion
+	//#region src/components/ticketSelection/filters/event/admission-timeslot.ts
+	var filter$7 = {
+		name: "event:admission:timeslot",
+		calendarEndpoint: "events",
+		requires: [
+			{
+				kind: "tsd",
+				field: "eventIds"
+			},
+			{
 				kind: "tsd",
 				field: "selectedDate"
-			}, {
+			},
+			{
 				kind: "tsd",
 				field: "selectedTimeslot"
-			}],
-			isCalendarVisible: () => true,
-			isTimeslotsVisible: (tsd) => Boolean(tsd.selectedDate),
-			isTicketsVisible: (tsd) => Boolean(tsd.selectedDate && tsd.selectedTimeslot),
-			async loadTimeslots(tsd) {
-				if (!tsd?.selectedDate) return;
-				const { quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
-					by_bookable: true,
-					valid_at: tsd.selectedDate.toString(),
-					by_ticket_type: "time_slot",
-					"by_museum_ids[]": tsd.museumIds,
-					"by_exhibition_ids[]": tsd.exhibitionIds,
-					"by_ticket_ids[]": tsd.ticketIds,
-					"by_ticket_group_ids[]": tsd.ticketGroupIds
-				}));
-				loadPickerQuotas(tsd, quotas);
-			},
-			async loadProducts(segment) {
-				const tsd = segment.ticketSelectionDetails;
-				if (!tsd?.selectedDate || !tsd.selectedTimeslot) return;
-				const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
-					by_bookable: true,
-					valid_at: tsd.selectedDate.toString(),
-					by_ticket_type: "time_slot",
-					"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
-					"by_exhibition_ids[]": tsd.exhibitionIds,
-					"by_ticket_ids[]": tsd.ticketIds,
-					"by_ticket_group_ids[]": segment.ticketGroupIds ?? tsd.ticketGroupIds
-				}));
-				shop.capacityManager.addQuotas(quotas);
-				const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, tsd.selectedTime), tsd.selectedTime);
-				await enrichTicketsWithContent(segment, uiTickets);
-				for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: tsd.selectedTime }));
 			}
+		],
+		isCalendarVisible: () => true,
+		isTimeslotsVisible: (tsd) => Boolean(tsd.selectedDate),
+		isTicketsVisible: (tsd) => Boolean(tsd.selectedDate && tsd.selectedTimeslot),
+		async loadTimeslots(tsd) {
+			if (!tsd?.eventIds?.length || !tsd.selectedDate) return;
+			const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
+			if (!event.tickets?.length) return;
+			const { quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
+				"by_ticket_ids[]": event.tickets,
+				by_ticket_type: "time_slot",
+				by_bookable: true,
+				valid_at: tsd.selectedDate.toString()
+			}));
+			loadPickerQuotas(tsd, quotas);
 		},
-		"ticket:day": {
-			name: "ticket:day",
-			calendarEndpoint: "tickets",
-			apiToken: "normal",
-			requires: [{
-				kind: "tsd",
-				field: "selectedDate"
-			}],
-			isCalendarVisible: () => true,
-			isTimeslotsVisible: () => false,
-			isTicketsVisible: (tsd) => Boolean(tsd.selectedDate),
-			async loadTimeslots() {},
-			async loadProducts(segment) {
-				const tsd = segment.ticketSelectionDetails;
-				if (!tsd?.selectedDate) return;
-				const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
-					by_bookable: true,
-					valid_at: tsd.selectedDate.toString(),
-					"by_ticket_types[]": ["normal"],
-					"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
-					"by_exhibition_ids[]": tsd.exhibitionIds,
-					"by_ticket_ids[]": tsd.ticketIds,
-					"by_ticket_group_ids[]": segment.ticketGroupIds ?? tsd.ticketGroupIds
-				}));
-				shop.capacityManager.addQuotas(quotas);
-				const uiTickets = initUIDayTickets(tickets);
-				await enrichTicketsWithContent(segment, uiTickets);
-				for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: ticket.selectedTime }));
+		async loadProducts(segment) {
+			const tsd = segment.ticketSelectionDetails;
+			if (!tsd?.eventIds?.length || !tsd.selectedDate || !tsd.selectedTimeslot) return;
+			const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
+			if (!event.tickets?.length) return;
+			const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
+				"by_ticket_ids[]": event.tickets,
+				by_ticket_type: "time_slot",
+				by_bookable: true,
+				valid_at: tsd.selectedDate.toString()
+			}));
+			shop.capacityManager.addQuotas(quotas);
+			const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, tsd.selectedTime), tsd.selectedTime);
+			await enrichTicketsWithContent(segment, uiTickets);
+			for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time: tsd.selectedTime }));
+		}
+	};
+	//#endregion
+	//#region src/components/ticketSelection/filters/event/price.ts
+	var filter$6 = {
+		name: "event:price",
+		calendarEndpoint: "events",
+		requires: [{
+			kind: "tsd",
+			field: "eventIds"
+		}, {
+			kind: "segment",
+			field: "dateId"
+		}],
+		isCalendarVisible: () => false,
+		isTimeslotsVisible: () => false,
+		isTicketsVisible: (tsd) => Boolean(tsd.eventIds?.length),
+		loadTimeslots: async () => {},
+		async loadProducts(segment) {
+			const tsd = segment.ticketSelectionDetails;
+			if (!tsd?.eventIds?.length || segment.dateId === void 0) return;
+			const date = await shop.asyncFetch(() => shop.getEventDetailsOnDate(tsd.eventIds[0], segment.dateId));
+			if (!date.prices?.length) return;
+			for (const price of date.prices) {
+				const ticket = createUIEventTicket(price, date.id, { event_title: date.event_title });
+				segment.preCart.addItem(createCartItem(ticket, { time: date.start_time }));
 			}
-		},
-		"ticket:annual": {
-			name: "ticket:annual",
-			calendarEndpoint: null,
-			apiToken: "annual",
-			requires: [],
-			isCalendarVisible: () => false,
-			isTimeslotsVisible: () => false,
-			isTicketsVisible: () => true,
-			async loadTimeslots() {},
-			async loadProducts(segment) {
-				const tsd = segment.ticketSelectionDetails;
-				if (!tsd) return;
-				const tickets = await shop.asyncFetch(() => shop.tickets({
-					by_bookable: true,
-					"by_ticket_types[]": ["annual"],
-					"by_ticket_ids[]": tsd.ticketIds,
-					"by_ticket_group_ids[]": segment.ticketGroupIds ?? tsd.ticketGroupIds
-				}));
-				const uiTickets = Object.values(tickets).map((t) => createUITicket(t));
-				await enrichTicketsWithContent(segment, uiTickets);
-				for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket));
-			}
-		},
-		"event:admission": {
-			name: "event:admission",
-			calendarEndpoint: "events",
-			requires: [{
-				kind: "tsd",
-				field: "eventIds"
-			}, {
-				kind: "tsd",
-				field: "selectedDate"
-			}],
-			isCalendarVisible: () => true,
-			isTimeslotsVisible: (tsd) => Boolean(tsd.selectedDate),
-			isTicketsVisible: (tsd) => Boolean(tsd.selectedDate && tsd.selectedTimeslot),
-			async loadTimeslots(tsd) {
-				if (!tsd?.eventIds?.length || !tsd.selectedDate) return;
-				const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
-				if (!event.tickets?.length) return;
-				const { quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
-					"by_ticket_ids[]": event.tickets,
-					by_bookable: true,
-					valid_at: tsd.selectedDate.toString()
-				}));
-				loadPickerQuotas(tsd, quotas);
-			},
-			async loadProducts(segment) {
-				const tsd = segment.ticketSelectionDetails;
-				if (!tsd?.eventIds?.length || !tsd.selectedDate) return;
-				const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
-				if (!event.tickets?.length) return;
+			if (date.seats) shop.capacityManager.addSeats(date.id, date.seats);
+		}
+	};
+	//#endregion
+	//#region src/components/ticketSelection/filters/events/admission.ts
+	var filter$5 = {
+		name: "events:admission",
+		calendarEndpoint: "events",
+		requires: [{
+			kind: "tsd",
+			field: "selectedDate"
+		}, {
+			kind: "tsd",
+			field: "selectedTimeslot"
+		}],
+		isCalendarVisible: () => true,
+		isTimeslotsVisible: () => true,
+		isTicketsVisible: () => true,
+		loadTimeslots: (tsd) => loadEventsTimeslots(tsd),
+		async loadProducts(segment) {
+			const tsd = segment.ticketSelectionDetails;
+			if (!tsd?.selectedDate || !tsd.selectedTime) return;
+			const dates = filterDatesInWindow(await shop.asyncFetch(() => shop.getDates({
+				by_bookable: true,
+				"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
+				"by_exhibition_ids[]": tsd.exhibitionIds,
+				"by_event_ids[]": tsd.eventIds,
+				"by_language_ids[]": segment.languageIds,
+				"by_catch_word_ids[]": segment.catchWordIds,
+				start_at: tsd.selectedDate.toString(),
+				per_page: segment.limit || 30
+			})), tsd.selectedDate.toString(), tsd.selectedTime);
+			for (const date of dates) {
+				if (!date.event_id || !date.start_time) continue;
+				const event = await shop.asyncFetch(() => shop.getEvent(date.event_id));
+				if (!event?.tickets?.length) continue;
 				const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
 					"by_ticket_ids[]": event.tickets,
 					by_bookable: true,
-					valid_at: tsd.selectedDate.toString()
+					valid_at: date.start_time.slice(0, 10)
 				}));
 				shop.capacityManager.addQuotas(quotas);
-				const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, tsd.selectedTime), tsd.selectedTime);
+				const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, date.start_time), date.start_time);
 				await enrichTicketsWithContent(segment, uiTickets);
-				for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: tsd.selectedTime }));
+				for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: date.start_time }));
 			}
-		},
-		"event:admission:day": {
-			name: "event:admission:day",
-			calendarEndpoint: "events",
-			requires: [{
-				kind: "tsd",
-				field: "eventIds"
-			}, {
-				kind: "tsd",
-				field: "selectedDate"
-			}],
-			isCalendarVisible: () => true,
-			isTimeslotsVisible: () => false,
-			isTicketsVisible: (tsd) => Boolean(tsd.selectedDate),
-			async loadTimeslots() {},
-			async loadProducts(segment) {
-				const tsd = segment.ticketSelectionDetails;
-				if (!tsd?.eventIds?.length || !tsd.selectedDate) return;
-				const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
-				if (!event.tickets?.length) return;
+		}
+	};
+	//#endregion
+	//#region src/components/ticketSelection/filters/events/admission-day.ts
+	var filter$4 = {
+		name: "events:admission:day",
+		calendarEndpoint: "events",
+		requires: [{
+			kind: "tsd",
+			field: "selectedDate"
+		}, {
+			kind: "tsd",
+			field: "selectedTimeslot"
+		}],
+		isCalendarVisible: () => true,
+		isTimeslotsVisible: () => true,
+		isTicketsVisible: () => true,
+		loadTimeslots: (tsd) => loadEventsTimeslots(tsd),
+		async loadProducts(segment) {
+			const tsd = segment.ticketSelectionDetails;
+			if (!tsd?.selectedDate || !tsd.selectedTime) return;
+			const dates = filterDatesInWindow(await shop.asyncFetch(() => shop.getDates({
+				by_bookable: true,
+				"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
+				"by_exhibition_ids[]": tsd.exhibitionIds,
+				"by_event_ids[]": tsd.eventIds,
+				"by_language_ids[]": segment.languageIds,
+				"by_catch_word_ids[]": segment.catchWordIds,
+				start_at: tsd.selectedDate.toString(),
+				per_page: segment.limit || 30
+			})), tsd.selectedDate.toString(), tsd.selectedTime);
+			for (const date of dates) {
+				if (!date.event_id || !date.start_time) continue;
+				const event = await shop.asyncFetch(() => shop.getEvent(date.event_id));
+				if (!event?.tickets?.length) continue;
 				const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
 					"by_ticket_ids[]": event.tickets,
 					"by_ticket_types[]": ["normal"],
 					by_bookable: true,
-					valid_at: tsd.selectedDate.toString()
+					valid_at: date.start_time.slice(0, 10)
 				}));
 				shop.capacityManager.addQuotas(quotas);
-				const uiTickets = initUIDayTickets(tickets);
+				const uiTickets = initUIDayTickets(tickets, date.start_time);
 				await enrichTicketsWithContent(segment, uiTickets);
 				for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time: t.selectedTime }));
 			}
-		},
-		"event:admission:timeslot": {
-			name: "event:admission:timeslot",
-			calendarEndpoint: "events",
-			requires: [
-				{
-					kind: "tsd",
-					field: "eventIds"
-				},
-				{
-					kind: "tsd",
-					field: "selectedDate"
-				},
-				{
-					kind: "tsd",
-					field: "selectedTimeslot"
-				}
-			],
-			isCalendarVisible: () => true,
-			isTimeslotsVisible: (tsd) => Boolean(tsd.selectedDate),
-			isTicketsVisible: (tsd) => Boolean(tsd.selectedDate && tsd.selectedTimeslot),
-			async loadTimeslots(tsd) {
-				if (!tsd?.eventIds?.length || !tsd.selectedDate) return;
-				const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
-				if (!event.tickets?.length) return;
-				const { quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
-					"by_ticket_ids[]": event.tickets,
-					by_ticket_type: "time_slot",
-					by_bookable: true,
-					valid_at: tsd.selectedDate.toString()
-				}));
-				loadPickerQuotas(tsd, quotas);
-			},
-			async loadProducts(segment) {
-				const tsd = segment.ticketSelectionDetails;
-				if (!tsd?.eventIds?.length || !tsd.selectedDate || !tsd.selectedTimeslot) return;
-				const event = await shop.asyncFetch(() => shop.getEvent(tsd.eventIds[0]));
-				if (!event.tickets?.length) return;
+		}
+	};
+	//#endregion
+	//#region src/components/ticketSelection/filters/events/admission-timeslot.ts
+	var filter$3 = {
+		name: "events:admission:timeslot",
+		calendarEndpoint: "events",
+		requires: [{
+			kind: "tsd",
+			field: "selectedDate"
+		}, {
+			kind: "tsd",
+			field: "selectedTimeslot"
+		}],
+		isCalendarVisible: () => true,
+		isTimeslotsVisible: () => true,
+		isTicketsVisible: () => true,
+		loadTimeslots: (tsd) => loadEventsTimeslots(tsd),
+		async loadProducts(segment) {
+			const tsd = segment.ticketSelectionDetails;
+			if (!tsd?.selectedDate || !tsd.selectedTime) return;
+			const dates = filterDatesInWindow(await shop.asyncFetch(() => shop.getDates({
+				by_bookable: true,
+				"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
+				"by_exhibition_ids[]": tsd.exhibitionIds,
+				"by_event_ids[]": tsd.eventIds,
+				"by_language_ids[]": segment.languageIds,
+				"by_catch_word_ids[]": segment.catchWordIds,
+				start_at: tsd.selectedDate.toString(),
+				per_page: segment.limit || 30
+			})), tsd.selectedDate.toString(), tsd.selectedTime);
+			for (const date of dates) {
+				if (!date.event_id || !date.start_time) continue;
+				const event = await shop.asyncFetch(() => shop.getEvent(date.event_id));
+				if (!event?.tickets?.length) continue;
 				const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
 					"by_ticket_ids[]": event.tickets,
 					by_ticket_type: "time_slot",
 					by_bookable: true,
-					valid_at: tsd.selectedDate.toString()
+					valid_at: date.start_time.slice(0, 10)
 				}));
 				shop.capacityManager.addQuotas(quotas);
-				const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, tsd.selectedTime), tsd.selectedTime);
+				const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, date.start_time), date.start_time);
 				await enrichTicketsWithContent(segment, uiTickets);
-				for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time: tsd.selectedTime }));
+				for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time: date.start_time }));
 			}
-		},
-		"event:price": {
-			name: "event:price",
-			calendarEndpoint: "events",
-			requires: [{
-				kind: "tsd",
-				field: "eventIds"
-			}, {
-				kind: "segment",
-				field: "dateId"
-			}],
-			isCalendarVisible: () => false,
-			isTimeslotsVisible: () => false,
-			isTicketsVisible: (tsd) => Boolean(tsd.eventIds?.length),
-			loadTimeslots: async () => {},
-			async loadProducts(segment) {
-				const tsd = segment.ticketSelectionDetails;
-				if (!tsd?.eventIds?.length || segment.dateId === void 0) return;
-				const date = await shop.asyncFetch(() => shop.getEventDetailsOnDate(tsd.eventIds[0], segment.dateId));
-				if (!date.prices?.length) return;
-				for (const price of date.prices) {
+		}
+	};
+	//#endregion
+	//#region src/components/ticketSelection/filters/events/price.ts
+	var filter$2 = {
+		name: "events:price",
+		calendarEndpoint: "events",
+		requires: [{
+			kind: "tsd",
+			field: "selectedDate"
+		}, {
+			kind: "tsd",
+			field: "selectedTimeslot"
+		}],
+		isCalendarVisible: () => true,
+		isTimeslotsVisible: () => true,
+		isTicketsVisible: () => true,
+		loadTimeslots: (tsd) => loadEventsTimeslots(tsd),
+		async loadProducts(segment) {
+			const tsd = segment.ticketSelectionDetails;
+			if (!tsd?.selectedDate || !tsd.selectedTime) return;
+			const dates = filterDatesInWindow(await shop.asyncFetch(() => shop.getDates({
+				by_bookable: true,
+				"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
+				"by_exhibition_ids[]": tsd.exhibitionIds,
+				"by_event_ids[]": tsd.eventIds,
+				"by_language_ids[]": segment.languageIds,
+				"by_catch_word_ids[]": segment.catchWordIds,
+				start_at: tsd.selectedDate.toString(),
+				per_page: segment.limit || 30
+			})), tsd.selectedDate.toString(), tsd.selectedTime);
+			const query = segment.query;
+			for (const date of dates) {
+				if (!date.prices?.length) continue;
+				const prices = query ? date.prices.filter((p) => p.title?.includes(query)) : date.prices;
+				for (const price of prices) {
 					const ticket = createUIEventTicket(price, date.id, { event_title: date.event_title });
 					segment.preCart.addItem(createCartItem(ticket, { time: date.start_time }));
 				}
 				if (date.seats) shop.capacityManager.addSeats(date.id, date.seats);
 			}
-		},
-		"events:admission": {
-			name: "events:admission",
-			calendarEndpoint: "events",
-			requires: [{
-				kind: "tsd",
-				field: "selectedDate"
-			}, {
-				kind: "tsd",
-				field: "selectedTimeslot"
-			}],
-			isCalendarVisible: () => true,
-			isTimeslotsVisible: () => true,
-			isTicketsVisible: () => true,
-			loadTimeslots: (tsd) => loadEventsTimeslots(tsd),
-			async loadProducts(segment) {
-				const tsd = segment.ticketSelectionDetails;
-				if (!tsd?.selectedDate || !tsd.selectedTime) return;
-				const dates = filterDatesInWindow(await shop.asyncFetch(() => shop.getDates({
-					by_bookable: true,
-					"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
-					"by_exhibition_ids[]": tsd.exhibitionIds,
-					"by_event_ids[]": tsd.eventIds,
-					"by_language_ids[]": segment.languageIds,
-					"by_catch_word_ids[]": segment.catchWordIds,
-					start_at: tsd.selectedDate.toString(),
-					per_page: segment.limit || 30
-				})), tsd.selectedDate.toString(), tsd.selectedTime);
-				for (const date of dates) {
-					if (!date.event_id || !date.start_time) continue;
-					const event = await shop.asyncFetch(() => shop.getEvent(date.event_id));
-					if (!event?.tickets?.length) continue;
-					const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
-						"by_ticket_ids[]": event.tickets,
-						by_bookable: true,
-						valid_at: date.start_time.slice(0, 10)
-					}));
-					shop.capacityManager.addQuotas(quotas);
-					const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, date.start_time), date.start_time);
-					await enrichTicketsWithContent(segment, uiTickets);
-					for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: date.start_time }));
-				}
-			}
-		},
-		"events:admission:day": {
-			name: "events:admission:day",
-			calendarEndpoint: "events",
-			requires: [{
-				kind: "tsd",
-				field: "selectedDate"
-			}, {
-				kind: "tsd",
-				field: "selectedTimeslot"
-			}],
-			isCalendarVisible: () => true,
-			isTimeslotsVisible: () => true,
-			isTicketsVisible: () => true,
-			loadTimeslots: (tsd) => loadEventsTimeslots(tsd),
-			async loadProducts(segment) {
-				const tsd = segment.ticketSelectionDetails;
-				if (!tsd?.selectedDate || !tsd.selectedTime) return;
-				const dates = filterDatesInWindow(await shop.asyncFetch(() => shop.getDates({
-					by_bookable: true,
-					"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
-					"by_exhibition_ids[]": tsd.exhibitionIds,
-					"by_event_ids[]": tsd.eventIds,
-					"by_language_ids[]": segment.languageIds,
-					"by_catch_word_ids[]": segment.catchWordIds,
-					start_at: tsd.selectedDate.toString(),
-					per_page: segment.limit || 30
-				})), tsd.selectedDate.toString(), tsd.selectedTime);
-				for (const date of dates) {
-					if (!date.event_id || !date.start_time) continue;
-					const event = await shop.asyncFetch(() => shop.getEvent(date.event_id));
-					if (!event?.tickets?.length) continue;
-					const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
-						"by_ticket_ids[]": event.tickets,
-						"by_ticket_types[]": ["normal"],
-						by_bookable: true,
-						valid_at: date.start_time.slice(0, 10)
-					}));
-					shop.capacityManager.addQuotas(quotas);
-					const uiTickets = initUIDayTickets(tickets, date.start_time);
-					await enrichTicketsWithContent(segment, uiTickets);
-					for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time: t.selectedTime }));
-				}
-			}
-		},
-		"events:admission:timeslot": {
-			name: "events:admission:timeslot",
-			calendarEndpoint: "events",
-			requires: [{
-				kind: "tsd",
-				field: "selectedDate"
-			}, {
-				kind: "tsd",
-				field: "selectedTimeslot"
-			}],
-			isCalendarVisible: () => true,
-			isTimeslotsVisible: () => true,
-			isTicketsVisible: () => true,
-			loadTimeslots: (tsd) => loadEventsTimeslots(tsd),
-			async loadProducts(segment) {
-				const tsd = segment.ticketSelectionDetails;
-				if (!tsd?.selectedDate || !tsd.selectedTime) return;
-				const dates = filterDatesInWindow(await shop.asyncFetch(() => shop.getDates({
-					by_bookable: true,
-					"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
-					"by_exhibition_ids[]": tsd.exhibitionIds,
-					"by_event_ids[]": tsd.eventIds,
-					"by_language_ids[]": segment.languageIds,
-					"by_catch_word_ids[]": segment.catchWordIds,
-					start_at: tsd.selectedDate.toString(),
-					per_page: segment.limit || 30
-				})), tsd.selectedDate.toString(), tsd.selectedTime);
-				for (const date of dates) {
-					if (!date.event_id || !date.start_time) continue;
-					const event = await shop.asyncFetch(() => shop.getEvent(date.event_id));
-					if (!event?.tickets?.length) continue;
-					const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
-						"by_ticket_ids[]": event.tickets,
-						by_ticket_type: "time_slot",
-						by_bookable: true,
-						valid_at: date.start_time.slice(0, 10)
-					}));
-					shop.capacityManager.addQuotas(quotas);
-					const uiTickets = initUITimeslotTickets(filterAvailabletickets(tickets, date.start_time), date.start_time);
-					await enrichTicketsWithContent(segment, uiTickets);
-					for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time: date.start_time }));
-				}
-			}
-		},
-		"events:price": {
-			name: "events:price",
-			calendarEndpoint: "events",
-			requires: [{
-				kind: "tsd",
-				field: "selectedDate"
-			}, {
-				kind: "tsd",
-				field: "selectedTimeslot"
-			}],
-			isCalendarVisible: () => true,
-			isTimeslotsVisible: () => true,
-			isTicketsVisible: () => true,
-			loadTimeslots: (tsd) => loadEventsTimeslots(tsd),
-			async loadProducts(segment) {
-				const tsd = segment.ticketSelectionDetails;
-				if (!tsd?.selectedDate || !tsd.selectedTime) return;
-				const dates = filterDatesInWindow(await shop.asyncFetch(() => shop.getDates({
-					by_bookable: true,
-					"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
-					"by_exhibition_ids[]": tsd.exhibitionIds,
-					"by_event_ids[]": tsd.eventIds,
-					"by_language_ids[]": segment.languageIds,
-					"by_catch_word_ids[]": segment.catchWordIds,
-					start_at: tsd.selectedDate.toString(),
-					per_page: segment.limit || 30
-				})), tsd.selectedDate.toString(), tsd.selectedTime);
-				const query = segment.query;
-				for (const date of dates) {
-					if (!date.prices?.length) continue;
-					const prices = query ? date.prices.filter((p) => p.title?.includes(query)) : date.prices;
-					for (const price of prices) {
-						const ticket = createUIEventTicket(price, date.id, { event_title: date.event_title });
-						segment.preCart.addItem(createCartItem(ticket, { time: date.start_time }));
-					}
-					if (date.seats) shop.capacityManager.addSeats(date.id, date.seats);
-				}
-			}
-		},
-		coupon: {
-			name: "coupon",
+		}
+	};
+	//#endregion
+	//#region src/components/ticketSelection/filters/coupon.ts
+	/**
+	* `coupon` — sells the shop's purchasable coupons (German "Wertgutschein" /
+	* gift card). Coupons are fixed-value, standalone products:
+	* no calendar, no timeslots, no capacity. They are always listed, like a
+	* shelf of products.
+	*/
+	var filter$1 = {
+		name: "coupon",
+		calendarEndpoint: null,
+		requires: [],
+		isCalendarVisible: () => false,
+		isTimeslotsVisible: () => false,
+		isTicketsVisible: () => true,
+		loadTimeslots: async () => {},
+		async loadProducts(segment) {
+			const coupons = await shop.asyncFetch(() => shop.getCoupons());
+			for (const coupon of coupons ?? []) segment.preCart.addItem(createCartItem(createUICoupon(coupon)));
+		}
+	};
+	//#endregion
+	//#region src/components/ticketSelection/filters/tour.ts
+	var REQUIRED = [
+		"id",
+		"time",
+		"participants",
+		"languageId",
+		"totalPriceCents",
+		"title"
+	];
+	//#endregion
+	//#region src/components/ticketSelection/filters/registry.ts
+	var REGISTRY = {
+		"ticket:timeslot": filter$12,
+		"ticket:day": filter$11,
+		"ticket:annual": filter$10,
+		"event:admission": filter$9,
+		"event:admission:day": filter$8,
+		"event:admission:timeslot": filter$7,
+		"event:price": filter$6,
+		"events:admission": filter$5,
+		"events:admission:day": filter$4,
+		"events:admission:timeslot": filter$3,
+		"events:price": filter$2,
+		coupon: filter$1,
+		tour: {
+			name: "tour",
 			calendarEndpoint: null,
 			requires: [],
 			isCalendarVisible: () => false,
 			isTimeslotsVisible: () => false,
 			isTicketsVisible: () => true,
-			loadTimeslots: async () => {},
-			async loadProducts(segment) {
-				const coupons = await shop.asyncFetch(() => shop.getCoupons());
-				for (const coupon of coupons ?? []) segment.preCart.addItem(createCartItem(createUICoupon(coupon)));
+			async loadTimeslots() {},
+			async loadProducts() {},
+			/**
+			* Adds a group-tour booking and returns the cart line's uuid. Every call
+			* appends a NEW line — identical bookings coexist; use the uuid to dedupe or
+			* remove. Tours are not priced by the shop API: `totalPriceCents` is the
+			* integrator-supplied total (incl. mandatory surcharges), verified by the
+			* backend only at checkout.
+			*/
+			async addToCart(options) {
+				const o = options;
+				for (const key of REQUIRED) if (o[key] == null || o[key] === "") throw new Error(`(go.cart.addItem) tour '${key}' is required`);
+				if (!(o.participants > 0)) throw new Error(`(go.cart.addItem) tour 'participants' must be a positive number`);
+				if (o.quantities) {
+					const quantitiesSum = sum(Object.values(o.quantities));
+					if (quantitiesSum !== o.participants) throw new Error(`(go.cart.addItem) tour 'quantities' must sum to 'participants' (${quantitiesSum} !== ${o.participants})`);
+				}
+				const { time, ...attributes } = o;
+				const item = createCartItem(createUITour(attributes), {
+					quantity: 1,
+					time
+				});
+				shop.cart.addItem(item);
+				return item.uuid;
 			}
 		}
 	};
@@ -38505,41 +38658,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	} }, [], []));
 	//#endregion
 	//#region src/go/cart.ts
-	var REQUIRED = [
-		"id",
-		"time",
-		"participants",
-		"languageId",
-		"totalPriceCents",
-		"title"
-	];
-	function validate(options) {
-		for (const key of REQUIRED) if (options[key] == null || options[key] === "") throw new Error(`(go.cart.addTour) '${key}' is required`);
-		if (!(options.participants > 0)) throw new Error(`(go.cart.addTour) 'participants' must be a positive number`);
-		if (options.quantities) {
-			const quantitiesSum = sum(Object.values(options.quantities));
-			if (quantitiesSum !== options.participants) throw new Error(`(go.cart.addTour) 'quantities' must sum to 'participants' (${quantitiesSum} !== ${options.participants})`);
-		}
-	}
-	/**
-	* Adds a group-tour booking to the cart and resolves with the cart line's
-	* uuid. Every call appends a NEW line — identical bookings coexist; use the
-	* returned uuid to deduplicate or remove.
-	*
-	* Tours are not priced by the shop API: `totalPriceCents` is the
-	* integrator-supplied booking total (incl. mandatory surcharges) and is
-	* verified by the backend only at checkout.
-	*/
-	async function addTour(options) {
-		validate(options);
-		if (!shop.cart) throw new Error("(go.cart.addTour) shop not initialized — call go.init first");
-		const { time, ...attributes } = options;
-		const item = createCartItem(createUITour(attributes), {
-			quantity: 1,
-			time
-		});
-		shop.cart.addItem(item);
-		return item.uuid;
+	/** Resolves with the new cart line's uuid. Throws if the filter can't add to
+	* the cart, or on the filter's own validation / availability errors. */
+	async function addItem({ filter, ...options }) {
+		if (!shop.cart) throw new Error("(go.cart.addItem) shop not initialized — call go.init first");
+		const module = getFilter(filter);
+		if (!module?.addToCart) throw new Error(`(go.cart.addItem) filter '${filter}' cannot add to the cart`);
+		return module.addToCart(options);
 	}
 	//#endregion
 	//#region src/go/go.ts
@@ -38598,9 +38723,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				return shop.asyncFetch(() => shop.getCustomerMemberships());
 			}
 		},
-		cart: { addTour: async (options) => {
+		cart: { addItem: async (options) => {
 			await ensureShopReady();
-			return addTour(options);
+			return addItem(options);
 		} }
 	};
 	(async () => {

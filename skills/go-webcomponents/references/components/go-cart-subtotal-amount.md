@@ -278,19 +278,20 @@ coupon's own apply button).
 
 Since `v4.3.0`
 
-Guided-group-tour bookings added programmatically via `go.cart.addTour()`
-(documented under _The Go Interface_) render as regular lines in
-`<go-cart-items>`. The title cell shows the tour title, the participant count,
-the start date and time, and one `key: value` line per custom field passed to
-`addTour()`. Three things differ from ticket lines:
+Guided-group-tour bookings added programmatically via
+`go.cart.addItem({ filter: 'tour', … })` (documented under _The Go Interface_)
+render as regular lines in `<go-cart-items>`. The title cell shows the tour
+title, the participant count, the start date and time, and one `key: value`
+line per custom field passed to the booking. Three things differ from ticket
+lines:
 
 - **Fixed participant count.** The quantity cell shows the booking's participant
   count as plain text — no stepper or select, even with
   `go.config({ quantityStepper: false })`. Participants are fixed when the booking
   is added; to change them, remove the line and add a new booking.
 - **Your total, unmultiplied.** The line's price and sum are the `totalPriceCents`
-  passed to `addTour()` — the participant count does not multiply them.
-- **One line per booking.** Every `addTour()` call adds its own line; two identical
+  passed with the booking — the participant count does not multiply them.
+- **One line per booking.** Every tour add creates its own line; two identical
   bookings render as two separately removable lines (the ✕ removes the whole
   booking). A booking counts as one item in `<go-cart-counter>`, regardless of
   participants.

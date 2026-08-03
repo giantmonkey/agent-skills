@@ -60,7 +60,7 @@ go-order-breakdown .go-order-item-title {
 
 Renders the order's line items followed by the order total. Timeslot and day tickets render one row per ticket, each with its own PDF download link and, when available, an Apple Wallet pass. Annual tickets render one row linking to personalization (vouchers link to a PDF download instead). Tickets configured with a subtitle show it beneath the title on every row _(Since `v4.11.0`)_. Events render one row per booking with a `quantity x label` line per price and a PDF download link. Rows with a date also offer an iCal link when the order provides one.
 
-Tour bookings added via `go.cart.addTour()` render one row per booking _(Since `v4.3.0`)_: count `1`, the tour title, a participants line, the booking's date and time, and a `quantity x label` line per price. Tours have no PDF download — the iCal link is the only attachment.
+Tour bookings added via `go.cart.addItem({ filter: 'tour', … })` render one row per booking _(Since `v4.3.0`)_: count `1`, the tour title, a participants line, the booking's date and time, and a `quantity x label` line per price. Tours have no PDF download — the iCal link is the only attachment.
 
 ### `<go-order-invoice-id>`
 
