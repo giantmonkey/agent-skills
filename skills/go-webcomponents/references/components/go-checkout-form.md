@@ -92,9 +92,21 @@ customer by the checkout outcome, using the `navigateTo` handler you configure v
 - **Payment via POST** (some embedded providers) — the component submits a hidden
   POST form to the provider directly; `navigateTo` is not called.
 - **Completed without payment** (e.g. a zero-total order) — `navigateTo` receives
-  the shop's checkout-success page URL.
+  the checkout-success page URL.
 - **Failed, or no payment target returned** — `navigateTo` receives the shop's
   checkout-failure page URL.
+
+The checkout-success URL defaults to the shop's built-in success page. Override it
+with `go.config({ urls: { checkoutSuccess } })` — the function receives the order
+token and returns the target URL _(Since `v4.14.2`)_:
+
+```js
+go.config({
+  urls: {
+    checkoutSuccess: token => `/order-complete?token=${token}`,
+  },
+})
+```
 
 If the checkout request itself is rejected, no redirect happens — the errors render
 on the form.

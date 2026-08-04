@@ -4,6 +4,18 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.14.2
+
+_Released 2026-08-04_
+
+You can now point the post-checkout success redirect at your own page via `go.config`.
+
+## New
+
+- `go.config({ urls: { checkoutSuccess: token => '/order-complete?token=' + token } })` — overrides the URL the checkout forms (`<go-checkout-form>`, `<go-checkout-guest>`, `<go-checkout-user>`) redirect to when an order completes directly on submit, without an external payment step (e.g. a zero-total order). The order token is passed to your function. Without the override, the shop's built-in success URL is used, as before.
+
+---
+
 # v4.14.1
 
 _Released 2026-08-03_
