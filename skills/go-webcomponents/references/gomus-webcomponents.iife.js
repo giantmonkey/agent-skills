@@ -36565,6 +36565,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			cleanedUpToken = token();
 			untrack(() => {
 				cart.clearItems();
+				cart.clearCoupons();
 				if (shop.auth.isGuest()) shop.auth.signOut();
 			});
 		});
