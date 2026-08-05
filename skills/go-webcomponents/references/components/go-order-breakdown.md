@@ -42,6 +42,7 @@ Everything renders in light DOM — target the tags and these classes:
 - `.go-ticket-download`, `.go-ticket-personalization` — PDF download and personalization links
 - `.go-order-breakdown-passbook` — Apple Wallet cell
 - `.go-order-breakdown-ical` — iCal link cell
+- `.go-order-breakdown-donation` — a donation row _(Since `v4.15.0`)_
 - `.go-order-breakdown-footer` — total row
 
 ```css
@@ -62,21 +63,26 @@ Renders the order's line items followed by the order total. Timeslot and day tic
 
 Tour bookings added via `go.cart.addItem({ filter: 'tour', … })` render one row per booking _(Since `v4.3.0`)_: count `1`, the tour title, a participants line, the booking's date and time, and a `quantity x label` line per price. Tours have no PDF download — the iCal link is the only attachment.
 
+Coupon and merchandise items render a plain row with quantity, title, and price _(Since `v4.15.0`)_. A coupon's price cell shows `attributes.value_cents` when it's a positive number (value vouchers carry their amount there and have `price_cents` of `0`), otherwise the order item's `price_cents` (fixed-price coupons carry it there instead). Each coupon row also links to the coupon's PDF document — the voucher the customer bought — via the same `.go-ticket-download` link tickets use _(Since `v4.15.0`)_.
+
+Donations aren't order items — they come from `order.donations` and render one row per entry after the item rows, with `donation_cents` as the price _(Since `v4.15.0`)_. The row is labelled with the donation campaign's name from the shop configuration; when the donation has no campaign (or the campaign is no longer configured), the generic `common.table.donation` label is used instead. These rows carry an extra `.go-order-breakdown-donation` class so they can be styled or queried independently of the item rows above them.
+
 ### `<go-order-invoice-id>`
 
 Displays the order's invoice ID.
 
 ## Localization
 
-| Key                      | Description                                     | Dynamic Values\*                           |
-| ------------------------ | ----------------------------------------------- | ------------------------------------------ |
-| `common.table.count`     | Count column header                             | -                                          |
-| `common.table.product`   | Product column header                           | -                                          |
-| `common.table.price`     | Price column header                             | -                                          |
-| `common.table.total`     | Total row label                                 | {"{{value}}"} - the calculated order total |
-| `common.download`        | Text for download button                        | -                                          |
-| `common.calendar`        | Text for calendar link                          | -                                          |
-| `common.personalize`     | Text for the annual-ticket personalization link | -                                          |
-| `cart.item.participants` | Participants line of a tour booking             | {"{{count}}"} - the number of participants |
+| Key                      | Description                                             | Dynamic Values\*                           |
+| ------------------------ | ------------------------------------------------------- | ------------------------------------------ |
+| `common.table.count`     | Count column header                                     | -                                          |
+| `common.table.product`   | Product column header                                   | -                                          |
+| `common.table.price`     | Price column header                                     | -                                          |
+| `common.table.total`     | Total row label                                         | {"{{value}}"} - the calculated order total |
+| `common.download`        | Text for download button                                | -                                          |
+| `common.calendar`        | Text for calendar link                                  | -                                          |
+| `common.personalize`     | Text for the annual-ticket personalization link         | -                                          |
+| `common.table.donation`  | Fallback label for a donation row without a configured campaign _(Since `v4.15.0`)_ | -                                          |
+| `cart.item.participants` | Participants line of a tour booking                     | {"{{count}}"} - the number of participants |
 
 - {"{{value}}"} — words in double brackets are automatically replaced with real values when the text is displayed, as long as the translation supports it.

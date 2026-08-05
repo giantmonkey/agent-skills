@@ -4,6 +4,18 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.15.0
+
+_Released 2026-08-05_
+
+The order confirmation now lists every paid position: donations, coupon and merchandise items render as breakdown rows.
+
+## Fixed
+
+- Coupon and merchandise order items now render in `<go-order-breakdown>` instead of being silently dropped.
+
+---
+
 # v4.14.2
 
 _Released 2026-08-04_

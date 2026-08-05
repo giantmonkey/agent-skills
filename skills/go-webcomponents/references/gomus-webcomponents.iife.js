@@ -6382,12 +6382,14 @@ createHTML: (html) => {
 		en: {
 			"quantity.remove": "Remove item",
 			"quantity.remove.label": "✕",
-			"cart.item.remove": "✕"
+			"cart.item.remove": "✕",
+			"common.table.donation": "Donation"
 		},
 		de: {
 			"quantity.remove": "Artikel entfernen",
 			"quantity.remove.label": "✕",
-			"cart.item.remove": "✕"
+			"cart.item.remove": "✕",
+			"common.table.donation": "Spende"
 		}
 	};
 	//#endregion
@@ -14317,7 +14319,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var getPersonalizationDetails = createGetDetails(KEY$5);
 	//#endregion
 	//#region src/components/annualTicketPersonalization/components/AnnualTicketPersonalization.svelte
-	var root$58 = /* @__PURE__ */ from_html(`<li><a> </a></li>`);
+	var root$61 = /* @__PURE__ */ from_html(`<li><a> </a></li>`);
 	var root_1$21 = /* @__PURE__ */ from_html(`<ul class="go-annual-ticket"><li class="go-annual-ticket-title"> </li> <li class="go-annual-ticket-personalization-count"> </li> <!></ul>`);
 	function AnnualTicketPersonalization($$anchor, $$props) {
 		push($$props, true);
@@ -14352,7 +14354,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				reset(li_1);
 				var node_2 = sibling(li_1, 2);
 				var consequent = ($$anchor) => {
-					var li_2 = root$58();
+					var li_2 = root$61();
 					var a = child(li_2);
 					var text_2 = child(a, true);
 					reset(a);
@@ -15039,7 +15041,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	//#endregion
 	//#region src/components/forms/ui/generic/Form.svelte
-	var root$57 = /* @__PURE__ */ from_html(`<go-all-fields></go-all-fields> <go-form-feedback><go-errors-feedback></go-errors-feedback> <go-success-feedback></go-success-feedback></go-form-feedback> <go-submit> </go-submit>`, 3);
+	var root$60 = /* @__PURE__ */ from_html(`<go-all-fields></go-all-fields> <go-form-feedback><go-errors-feedback></go-errors-feedback> <go-success-feedback></go-success-feedback></go-form-feedback> <go-submit> </go-submit>`, 3);
 	function Form($$anchor, $$props) {
 		push($$props, true);
 		let formId = prop($$props, "formId", 7), custom = prop($$props, "custom", 7);
@@ -15085,7 +15087,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
-			var fragment_1 = root$57();
+			var fragment_1 = root$60();
 			var go_submit = sibling(sibling(first_child(fragment_1), 2), 2);
 			var text = child(go_submit, true);
 			reset(go_submit);
@@ -15112,7 +15114,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}, [], ["details"]));
 	//#endregion
 	//#region src/components/auth/passwordReset/PasswordReset.svelte
-	var root$56 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
+	var root$59 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
 	function PasswordReset($$anchor, $$props) {
 		push($$props, true);
 		let custom = prop($$props, "custom", 7, false), redirectUrl = prop($$props, "redirectUrl", 7, "");
@@ -15156,7 +15158,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var go_form = root$56();
+		var go_form = root$59();
 		set_custom_element_data(go_form, "formId", "passwordReset");
 		template_effect(() => set_custom_element_data(go_form, "custom", custom()));
 		event("submit", go_form, passwordReset);
@@ -15172,7 +15174,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}, [], []));
 	//#endregion
 	//#region src/components/auth/setPassword/SetPassword.svelte
-	var root$55 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
+	var root$58 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
 	function SetPassword($$anchor, $$props) {
 		push($$props, true);
 		let accessToken = prop($$props, "accessToken", 7, ""), client = prop($$props, "client", 7, ""), uid = prop($$props, "uid", 7, "");
@@ -15226,7 +15228,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var go_form = root$55();
+		var go_form = root$58();
 		set_custom_element_data(go_form, "formId", "setPassword");
 		event("submit", go_form, setNewPassword);
 		append($$anchor, go_form);
@@ -15478,8 +15480,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var getCartDetails = createGetDetails(KEY$3);
 	//#endregion
 	//#region src/components/cart/components/itemTitles/Coupon.svelte
-	var root$54 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span>`);
-	function Coupon($$anchor, $$props) {
+	var root$57 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span>`);
+	function Coupon$1($$anchor, $$props) {
 		push($$props, true);
 		let cartItem = prop($$props, "cartItem", 7);
 		var $$exports = {
@@ -15491,17 +15493,17 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var span = root$54();
+		var span = root$57();
 		var text = child(span, true);
 		reset(span);
 		template_effect(() => set_text(text, cartItem().product.title));
 		append($$anchor, span);
 		return pop($$exports);
 	}
-	create_custom_element(Coupon, { cartItem: {} }, [], [], { mode: "open" });
+	create_custom_element(Coupon$1, { cartItem: {} }, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/cart/components/itemTitles/Event.svelte
-	var root$53 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span><span class="go-cart-item-time" data-testid="cart-item-time"> </span>`, 1);
+	var root$56 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span><span class="go-cart-item-time" data-testid="cart-item-time"> </span>`, 1);
 	var root_1$20 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"><span class="go-cart-item-title-event-title"> </span><span class="go-cart-item-title-ticket-title"> </span></span><!>`, 1);
 	function Event$2($$anchor, $$props) {
 		push($$props, true);
@@ -15528,7 +15530,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reset(span);
 		var node = sibling(span);
 		var consequent = ($$anchor) => {
-			var fragment_1 = root$53();
+			var fragment_1 = root$56();
 			var span_3 = first_child(fragment_1);
 			var text_2 = child(span_3, true);
 			reset(span_3);
@@ -15554,7 +15556,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	create_custom_element(Event$2, { cartItem: {} }, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/cart/components/itemTitles/Ticket.svelte
-	var root$52 = /* @__PURE__ */ from_html(`<span class="go-cart-item-subtitle" data-testid="cart-item-subtitle"> </span>`);
+	var root$55 = /* @__PURE__ */ from_html(`<span class="go-cart-item-subtitle" data-testid="cart-item-subtitle"> </span>`);
 	var root_1$19 = /* @__PURE__ */ from_html(`<span class="go-cart-item-time" data-testid="cart-item-time"> </span>`);
 	var root_2$14 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <!>`, 1);
 	var root_3$10 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span> <!> <!>`, 1);
@@ -15576,7 +15578,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reset(span);
 		var node = sibling(span, 2);
 		var consequent = ($$anchor) => {
-			var span_1 = root$52();
+			var span_1 = root$55();
 			var text_1 = child(span_1, true);
 			reset(span_1);
 			template_effect(() => set_text(text_1, cartItem().product.sub_title));
@@ -15616,7 +15618,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	create_custom_element(Ticket, { cartItem: {} }, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/cart/components/itemTitles/Tour.svelte
-	var root$51 = /* @__PURE__ */ from_html(`<span class="go-cart-item-time" data-testid="cart-item-time"> </span>`);
+	var root$54 = /* @__PURE__ */ from_html(`<span class="go-cart-item-time" data-testid="cart-item-time"> </span>`);
 	var root_1$18 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <!>`, 1);
 	var root_2$13 = /* @__PURE__ */ from_html(`<span class="go-cart-item-custom" data-testid="cart-item-custom"> </span>`);
 	var root_3$9 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span> <span class="go-cart-item-participants" data-testid="cart-item-participants"> </span> <!> <!>`, 1);
@@ -15664,7 +15666,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			reset(span_2);
 			var node_1 = sibling(span_2, 2);
 			var consequent = ($$anchor) => {
-				var span_3 = root$51();
+				var span_3 = root$54();
 				var text_3 = child(span_3, true);
 				reset(span_3);
 				template_effect(() => set_text(text_3, get$2(slot).time));
@@ -15731,7 +15733,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	//#endregion
 	//#region src/components/shared/quantityStepper/QuantityStepper.svelte
-	var root$50 = /* @__PURE__ */ from_html(`<div class="go-quantity-stepper" role="group"><button type="button" tabindex="-1"><span aria-hidden="true"> </span></button> <input class="go-quantity-stepper-value" type="text" role="spinbutton" inputmode="numeric" autocomplete="off"/> <button type="button" class="go-quantity-stepper-button go-quantity-stepper-increment" tabindex="-1"><span aria-hidden="true">+</span></button></div>`);
+	var root$53 = /* @__PURE__ */ from_html(`<div class="go-quantity-stepper" role="group"><button type="button" tabindex="-1"><span aria-hidden="true"> </span></button> <input class="go-quantity-stepper-value" type="text" role="spinbutton" inputmode="numeric" autocomplete="off"/> <button type="button" class="go-quantity-stepper-button go-quantity-stepper-increment" tabindex="-1"><span aria-hidden="true">+</span></button></div>`);
 	function QuantityStepper($$anchor, $$props) {
 		const inputId = props_id();
 		push($$props, true);
@@ -15885,7 +15887,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var div = root$50();
+		var div = root$53();
 		var button = child(div);
 		let classes;
 		var span = child(button);
@@ -15965,7 +15967,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	//#endregion
 	//#region src/components/shared/quantityStepper/QuantityControl.svelte
-	var root$49 = /* @__PURE__ */ from_html(`<option> </option>`);
+	var root$52 = /* @__PURE__ */ from_html(`<option> </option>`);
 	var root_1$17 = /* @__PURE__ */ from_html(`<select class="go-quantity-select"></select>`);
 	function QuantityControl($$anchor, $$props) {
 		push($$props, true);
@@ -16095,7 +16097,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var alternate = ($$anchor) => {
 			var select = root_1$17();
 			each(select, 21, () => generateQuantityOptions(min(), max(), { floor: deselectable() ? floor() : min() }), (q) => q.value, ($$anchor, q) => {
-				var option = root$49();
+				var option = root$52();
 				var text = child(option, true);
 				reset(option);
 				var option_value = {};
@@ -17980,7 +17982,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var purify = createDOMPurify();
 	//#endregion
 	//#region src/components/cart/components/SubRow.svelte
-	var root$48 = /* @__PURE__ */ from_html(`<span class="go-sub-ticket-description"></span>`);
+	var root$51 = /* @__PURE__ */ from_html(`<span class="go-sub-ticket-description"></span>`);
 	var root_1$16 = /* @__PURE__ */ from_html(`<span class="go-sub-ticket-quantity"> </span>`);
 	var root_2$12 = /* @__PURE__ */ from_html(`<li><span class="go-sub-ticket-title"> </span> <!> <!></li>`);
 	function SubRow($$anchor, $$props) {
@@ -18031,7 +18033,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reset(span);
 		var node = sibling(span, 2);
 		var consequent = ($$anchor) => {
-			var span_1 = root$48();
+			var span_1 = root$51();
 			html$2(span_1, () => purify.sanitize(sub().description), true);
 			reset(span_1);
 			append($$anchor, span_1);
@@ -18118,7 +18120,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	//#endregion
 	//#region src/components/cart/components/Item.svelte
-	var root$47 = /* @__PURE__ */ from_html(`<s class="go-cart-item-price-original"> </s> <span class="go-cart-item-price-discounted"> </span>`, 1);
+	var root$50 = /* @__PURE__ */ from_html(`<s class="go-cart-item-price-original"> </s> <span class="go-cart-item-price-discounted"> </span>`, 1);
 	var root_1$15 = /* @__PURE__ */ from_html(`<span class="go-cart-item-price-discounted"> </span>`);
 	var root_2$11 = /* @__PURE__ */ from_html(`<span data-testid="cart-item-participant-count"> </span>`);
 	var root_3$8 = /* @__PURE__ */ from_html(`<span data-testid="cart-item-voucher-quantity"> </span>`);
@@ -18207,7 +18209,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				} });
 			};
 			var consequent_2 = ($$anchor) => {
-				Coupon($$anchor, { get cartItem() {
+				Coupon$1($$anchor, { get cartItem() {
 					return displayItem();
 				} });
 			};
@@ -18226,7 +18228,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var li_1 = sibling(li, 2);
 			var node_2 = child(li_1);
 			var consequent_4 = ($$anchor) => {
-				var fragment_6 = root$47();
+				var fragment_6 = root$50();
 				var s = first_child(fragment_6);
 				var text = child(s, true);
 				reset(s);
@@ -18373,7 +18375,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/cart/components/CartItems.svelte
-	var root$46 = /* @__PURE__ */ from_html(`<li class="go-cart-header-remove"></li>`);
+	var root$49 = /* @__PURE__ */ from_html(`<li class="go-cart-header-remove"></li>`);
 	var root_1$14 = /* @__PURE__ */ from_html(`<li class="go-cart-item"><!></li>`);
 	var root_2$10 = /* @__PURE__ */ from_html(`<ol data-testid="cart-items"><li class="go-cart-header"><ul><li class="go-cart-header-title"> </li> <li class="go-cart-header-price"> </li> <li class="go-cart-header-count"> </li> <!> <li class="go-cart-header-sum"> </li></ul></li> <!></ol>`);
 	function CartItems($$anchor, $$props) {
@@ -18397,7 +18399,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			reset(li_3);
 			var node_1 = sibling(li_3, 2);
 			var consequent = ($$anchor) => {
-				append($$anchor, root$46());
+				append($$anchor, root$49());
 			};
 			if_block(node_1, ($$render) => {
 				if (!get$2(details).preview) $$render(consequent);
@@ -18446,7 +18448,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	customElements.define("go-cart-items", create_custom_element(CartItems, {}, [], []));
 	//#endregion
 	//#region src/components/cart/components/CartCoupons.svelte
-	var root$45 = /* @__PURE__ */ from_html(`<li class="go-cart-coupon-remove-cell"><button class="go-cart-remove go-cart-coupon-remove">⨉</button></li>`);
+	var root$48 = /* @__PURE__ */ from_html(`<li class="go-cart-coupon-remove-cell"><button class="go-cart-remove go-cart-coupon-remove">⨉</button></li>`);
 	var root_1$13 = /* @__PURE__ */ from_html(`<li><article class="go-cart-coupon-content"><ul><li class="go-cart-coupon-code"> </li> <!></ul></article></li>`);
 	var root_2$9 = /* @__PURE__ */ from_html(`<ol data-testid="cart-coupons"></ol>`);
 	function CartCoupons($$anchor, $$props) {
@@ -18467,7 +18469,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				reset(li_1);
 				var node_1 = sibling(li_1, 2);
 				var consequent = ($$anchor) => {
-					var li_2 = root$45();
+					var li_2 = root$48();
 					var button = child(li_2);
 					reset(li_2);
 					template_effect(($0) => set_attribute(button, "aria-label", $0), [() => shop.t("cart.coupons.remove")]);
@@ -18499,7 +18501,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	customElements.define("go-cart-coupons", create_custom_element(CartCoupons, {}, [], []));
 	//#endregion
 	//#region src/components/cart/components/CartTotalAmount.svelte
-	var root$44 = /* @__PURE__ */ from_html(`<span class="go-cart-total-amount" data-testid="cart-total-amount"> </span>`);
+	var root$47 = /* @__PURE__ */ from_html(`<span class="go-cart-total-amount" data-testid="cart-total-amount"> </span>`);
 	function CartTotalAmount($$anchor, $$props) {
 		push($$props, true);
 		const _details = getCartDetails($$props.$$host);
@@ -18507,7 +18509,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
-			var span = root$44();
+			var span = root$47();
 			var text = child(span, true);
 			reset(span);
 			template_effect(($0) => set_text(text, $0), [() => formatCurrency(get$2(details).totalPriceCents)]);
@@ -18576,7 +18578,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	} }, [], []));
 	//#endregion
 	//#region src/components/cart/components/CartSubtotalAmount.svelte
-	var root$43 = /* @__PURE__ */ from_html(`<span class="go-cart-subtotal-amount" data-testid="cart-subtotal-amount"> </span>`);
+	var root$46 = /* @__PURE__ */ from_html(`<span class="go-cart-subtotal-amount" data-testid="cart-subtotal-amount"> </span>`);
 	function CartSubtotalAmount($$anchor, $$props) {
 		push($$props, true);
 		const _details = getCartDetails($$props.$$host);
@@ -18584,7 +18586,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
-			var span = root$43();
+			var span = root$46();
 			var text = child(span, true);
 			reset(span);
 			template_effect(($0) => set_text(text, $0), [() => formatCurrency(get$2(details).subtotalPriceCents)]);
@@ -18599,7 +18601,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	customElements.define("go-cart-subtotal-amount", create_custom_element(CartSubtotalAmount, {}, [], []));
 	//#endregion
 	//#region src/components/cart/components/CartDiscountedAmount.svelte
-	var root$42 = /* @__PURE__ */ from_html(`<span class="go-cart-discounted-amount" data-testid="cart-discounted-amount"><span class="go-cart-discounted-amount-sign">−</span> </span>`);
+	var root$45 = /* @__PURE__ */ from_html(`<span class="go-cart-discounted-amount" data-testid="cart-discounted-amount"><span class="go-cart-discounted-amount-sign">−</span> </span>`);
 	function CartDiscountedAmount($$anchor, $$props) {
 		push($$props, true);
 		const _details = getCartDetails($$props.$$host);
@@ -18607,7 +18609,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
-			var span = root$42();
+			var span = root$45();
 			var text = sibling(child(span), 1, true);
 			reset(span);
 			template_effect(($0) => set_text(text, $0), [() => formatCurrency(get$2(details).discountedAmountCents)]);
@@ -18851,7 +18853,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	//#endregion
 	//#region src/components/couponRedemption/CouponRedemption.svelte
-	var root$41 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
+	var root$44 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
 	function CouponRedemption($$anchor, $$props) {
 		push($$props, true);
 		Forms.defineForm({
@@ -18888,7 +18890,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return runRedeem(form);
 		}
 		var $$exports = { flush };
-		var go_form = root$41();
+		var go_form = root$44();
 		set_custom_element_data(go_form, "formId", "couponRedemption");
 		event("submit", go_form, redeem$1);
 		append($$anchor, go_form);
@@ -18944,7 +18946,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var goDonation = new GoDonation();
 	//#endregion
 	//#region src/components/donations/components/DonationCampaign.svelte
-	var root$40 = /* @__PURE__ */ from_html(`<img alt="logo"/>`);
+	var root$43 = /* @__PURE__ */ from_html(`<img alt="logo"/>`);
 	var root_1$12 = /* @__PURE__ */ from_html(`<div role="button" tabindex="0"><div class="donation-image"><!></div> <div class="donation-info"><p class="donation-info-title"> </p> <p class="donation-info-description"> </p></div></div>`);
 	function DonationCampaign($$anchor, $$props) {
 		push($$props, true);
@@ -18964,7 +18966,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var div_1 = child(div);
 		var node = child(div_1);
 		var consequent = ($$anchor) => {
-			var img = root$40();
+			var img = root$43();
 			template_effect(($0) => set_attribute(img, "src", $0), [() => campaign().picture.thumbnail.replace("thumbnail", "article_3x2")]);
 			append($$anchor, img);
 		};
@@ -18997,7 +18999,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	create_custom_element(DonationCampaign, { campaign: {} }, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/donations/components/DonationSelector.svelte
-	var root$39 = /* @__PURE__ */ from_html(`<button> </button>`);
+	var root$42 = /* @__PURE__ */ from_html(`<button> </button>`);
 	var root_1$11 = /* @__PURE__ */ from_html(`<form id="donationForm" action="" novalidate=""><div class="donation-custom form-group"><label for="donation-custom-amount"> </label> <input class="form-control" id="donation-custom-amount" type="number" min="1"/></div></form>`);
 	var root_2$8 = /* @__PURE__ */ from_html(`<div class="donation-selection"><h3> </h3> <div class="donation-options"></div> <!></div>`);
 	function DonationSelector($$anchor, $$props) {
@@ -19022,7 +19024,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reset(h3);
 		var div_1 = sibling(h3, 2);
 		each(div_1, 20, () => goDonation.campaign?.options, (option) => option, ($$anchor, option) => {
-			var button = root$39();
+			var button = root$42();
 			let classes;
 			var text_1 = child(button, true);
 			reset(button);
@@ -19066,7 +19068,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	create_custom_element(DonationSelector, {}, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/donations/components/Donations.svelte
-	var root$38 = /* @__PURE__ */ from_html(`<div class="go-donations-list"><!> <!> <div class="donation-actions"><button class="btn btn-default"> </button> <button class="btn btn-primary"> </button></div></div>`);
+	var root$41 = /* @__PURE__ */ from_html(`<div class="go-donations-list"><!> <!> <div class="donation-actions"><button class="btn btn-default"> </button> <button class="btn btn-primary"> </button></div></div>`);
 	function Donations($$anchor, $$props) {
 		push($$props, false);
 		onMount(() => {
@@ -19076,7 +19078,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent_1 = ($$anchor) => {
-			var div = root$38();
+			var div = root$41();
 			var node_1 = child(div);
 			each(node_1, 1, () => shop?.donations?.campaigns, (campaign) => campaign.id, ($$anchor, campaign) => {
 				DonationCampaign($$anchor, { get campaign() {
@@ -24915,7 +24917,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"monthFormat",
 		"yearFormat"
 	]);
-	var root$37 = /* @__PURE__ */ from_html(`<div><!></div>`);
+	var root$40 = /* @__PURE__ */ from_html(`<div><!></div>`);
 	function Calendar$1($$anchor, $$props) {
 		push($$props, true);
 		let child$18 = prop($$props, "child", 7), children = prop($$props, "children", 7), id = prop($$props, "id", 23, useId), ref = prop($$props, "ref", 15, null), value = prop($$props, "value", 15), onValueChange = prop($$props, "onValueChange", 7, noop), placeholder = prop($$props, "placeholder", 15), onPlaceholderChange = prop($$props, "onPlaceholderChange", 7, noop), weekdayFormat = prop($$props, "weekdayFormat", 7, "narrow"), weekStartsOn = prop($$props, "weekStartsOn", 7), pagedNavigation = prop($$props, "pagedNavigation", 7, false), isDateDisabled = prop($$props, "isDateDisabled", 7, () => false), isDateUnavailable = prop($$props, "isDateUnavailable", 7, () => false), fixedWeeks = prop($$props, "fixedWeeks", 7, false), numberOfMonths = prop($$props, "numberOfMonths", 7, 1), locale = prop($$props, "locale", 7), calendarLabel = prop($$props, "calendarLabel", 7, "Event"), disabled = prop($$props, "disabled", 7, false), readonly = prop($$props, "readonly", 7, false), minValue = prop($$props, "minValue", 7, void 0), maxValue = prop($$props, "maxValue", 7, void 0), preventDeselect = prop($$props, "preventDeselect", 7, false), type = prop($$props, "type", 7), disableDaysOutsideMonth = prop($$props, "disableDaysOutsideMonth", 7, true), initialFocus = prop($$props, "initialFocus", 7, false), maxDays = prop($$props, "maxDays", 7), monthFormat = prop($$props, "monthFormat", 7, "long"), yearFormat = prop($$props, "yearFormat", 7, "numeric"), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$25);
@@ -25187,7 +25189,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
-			var div = root$37();
+			var div = root$40();
 			attribute_effect(div, () => ({ ...get$2(mergedProps) }));
 			snippet(child(div), () => children() ?? noop$1, () => rootState.snippetProps);
 			reset(div);
@@ -25242,7 +25244,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"ref",
 		"id"
 	]);
-	var root$36 = /* @__PURE__ */ from_html(`<div><!></div>`);
+	var root$39 = /* @__PURE__ */ from_html(`<div><!></div>`);
 	function Calendar_day($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -25297,7 +25299,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		var alternate_1 = ($$anchor) => {
-			var div = root$36();
+			var div = root$39();
 			attribute_effect(div, () => ({ ...get$2(mergedProps) }));
 			var node_2 = child(div);
 			var consequent_1 = ($$anchor) => {
@@ -25342,7 +25344,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"ref",
 		"id"
 	]);
-	var root$35 = /* @__PURE__ */ from_html(`<table><!></table>`);
+	var root$38 = /* @__PURE__ */ from_html(`<table><!></table>`);
 	function Calendar_grid($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -25390,7 +25392,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
-			var table = root$35();
+			var table = root$38();
 			attribute_effect(table, () => ({ ...get$2(mergedProps) }));
 			snippet(child(table), () => children() ?? noop$1);
 			reset(table);
@@ -25421,7 +25423,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"ref",
 		"id"
 	]);
-	var root$34 = /* @__PURE__ */ from_html(`<tbody><!></tbody>`);
+	var root$37 = /* @__PURE__ */ from_html(`<tbody><!></tbody>`);
 	function Calendar_grid_body($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -25469,7 +25471,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
-			var tbody = root$34();
+			var tbody = root$37();
 			attribute_effect(tbody, () => ({ ...get$2(mergedProps) }));
 			snippet(child(tbody), () => children() ?? noop$1);
 			reset(tbody);
@@ -25502,7 +25504,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"date",
 		"month"
 	]);
-	var root$33 = /* @__PURE__ */ from_html(`<td><!></td>`);
+	var root$36 = /* @__PURE__ */ from_html(`<td><!></td>`);
 	function Calendar_cell($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -25573,7 +25575,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
-			var td = root$33();
+			var td = root$36();
 			attribute_effect(td, () => ({ ...get$2(mergedProps) }));
 			snippet(child(td), () => children() ?? noop$1, () => cellState.snippetProps);
 			reset(td);
@@ -25606,7 +25608,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"ref",
 		"id"
 	]);
-	var root$32 = /* @__PURE__ */ from_html(`<thead><!></thead>`);
+	var root$35 = /* @__PURE__ */ from_html(`<thead><!></thead>`);
 	function Calendar_grid_head($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -25654,7 +25656,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
-			var thead = root$32();
+			var thead = root$35();
 			attribute_effect(thead, () => ({ ...get$2(mergedProps) }));
 			snippet(child(thead), () => children() ?? noop$1);
 			reset(thead);
@@ -25685,7 +25687,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"ref",
 		"id"
 	]);
-	var root$31 = /* @__PURE__ */ from_html(`<th><!></th>`);
+	var root$34 = /* @__PURE__ */ from_html(`<th><!></th>`);
 	function Calendar_head_cell($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -25733,7 +25735,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
-			var th = root$31();
+			var th = root$34();
 			attribute_effect(th, () => ({ ...get$2(mergedProps) }));
 			snippet(child(th), () => children() ?? noop$1);
 			reset(th);
@@ -25764,7 +25766,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"ref",
 		"id"
 	]);
-	var root$30 = /* @__PURE__ */ from_html(`<tr><!></tr>`);
+	var root$33 = /* @__PURE__ */ from_html(`<tr><!></tr>`);
 	function Calendar_grid_row($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -25812,7 +25814,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
-			var tr = root$30();
+			var tr = root$33();
 			attribute_effect(tr, () => ({ ...get$2(mergedProps) }));
 			snippet(child(tr), () => children() ?? noop$1);
 			reset(tr);
@@ -25843,7 +25845,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"ref",
 		"id"
 	]);
-	var root$29 = /* @__PURE__ */ from_html(`<header><!></header>`);
+	var root$32 = /* @__PURE__ */ from_html(`<header><!></header>`);
 	function Calendar_header($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -25891,7 +25893,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
-			var header = root$29();
+			var header = root$32();
 			attribute_effect(header, () => ({ ...get$2(mergedProps) }));
 			snippet(child(header), () => children() ?? noop$1);
 			reset(header);
@@ -25922,7 +25924,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"ref",
 		"id"
 	]);
-	var root$28 = /* @__PURE__ */ from_html(`<div><!></div>`);
+	var root$31 = /* @__PURE__ */ from_html(`<div><!></div>`);
 	function Calendar_heading($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -25973,7 +25975,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		var alternate_1 = ($$anchor) => {
-			var div = root$28();
+			var div = root$31();
 			attribute_effect(div, () => ({ ...get$2(mergedProps) }));
 			var node_2 = child(div);
 			var consequent_1 = ($$anchor) => {
@@ -26019,7 +26021,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"ref",
 		"tabindex"
 	]);
-	var root$27 = /* @__PURE__ */ from_html(`<button><!></button>`);
+	var root$30 = /* @__PURE__ */ from_html(`<button><!></button>`);
 	function Calendar_next_button($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -26074,7 +26076,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
-			var button = root$27();
+			var button = root$30();
 			attribute_effect(button, () => ({ ...get$2(mergedProps) }));
 			snippet(child(button), () => children() ?? noop$1);
 			reset(button);
@@ -26107,7 +26109,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"ref",
 		"tabindex"
 	]);
-	var root$26 = /* @__PURE__ */ from_html(`<button><!></button>`);
+	var root$29 = /* @__PURE__ */ from_html(`<button><!></button>`);
 	function Calendar_prev_button($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -26162,7 +26164,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
-			var button = root$26();
+			var button = root$29();
 			attribute_effect(button, () => ({ ...get$2(mergedProps) }));
 			snippet(child(button), () => children() ?? noop$1);
 			reset(button);
@@ -26191,7 +26193,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"$$host",
 		"value"
 	]);
-	var root$25 = /* @__PURE__ */ from_html(`<input/>`);
+	var root$28 = /* @__PURE__ */ from_html(`<input/>`);
 	function Hidden_input($$anchor, $$props) {
 		push($$props, true);
 		let value = prop($$props, "value", 15), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$13);
@@ -26217,7 +26219,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
-			var input = root$25();
+			var input = root$28();
 			attribute_effect(input, () => ({
 				...get$2(mergedProps),
 				value: value()
@@ -26225,7 +26227,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, input);
 		};
 		var alternate = ($$anchor) => {
-			var input_1 = root$25();
+			var input_1 = root$28();
 			attribute_effect(input_1, () => ({ ...get$2(mergedProps) }), void 0, void 0, void 0, void 0, true);
 			bind_value(input_1, value);
 			append($$anchor, input_1);
@@ -28538,7 +28540,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"tooltip",
 		"contentPointerEvents"
 	]);
-	var root$24 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
+	var root$27 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
 	function Popper_layer_inner($$anchor, $$props) {
 		push($$props, true);
 		let popper = prop($$props, "popper", 7), onEscapeKeydown = prop($$props, "onEscapeKeydown", 7), escapeKeydownBehavior = prop($$props, "escapeKeydownBehavior", 7), preventOverflowTextSelection = prop($$props, "preventOverflowTextSelection", 7), id = prop($$props, "id", 7), onPointerDown = prop($$props, "onPointerDown", 7), onPointerUp = prop($$props, "onPointerUp", 7), side = prop($$props, "side", 7), sideOffset = prop($$props, "sideOffset", 7), align = prop($$props, "align", 7), alignOffset = prop($$props, "alignOffset", 7), arrowPadding = prop($$props, "arrowPadding", 7), avoidCollisions = prop($$props, "avoidCollisions", 7), collisionBoundary = prop($$props, "collisionBoundary", 7), collisionPadding = prop($$props, "collisionPadding", 7), sticky = prop($$props, "sticky", 7), hideWhenDetached = prop($$props, "hideWhenDetached", 7), updatePositionStrategy = prop($$props, "updatePositionStrategy", 7), strategy = prop($$props, "strategy", 7), dir = prop($$props, "dir", 7), preventScroll = prop($$props, "preventScroll", 7), wrapperId = prop($$props, "wrapperId", 7), style = prop($$props, "style", 7), onPlaced = prop($$props, "onPlaced", 7), onInteractOutside = prop($$props, "onInteractOutside", 7), onCloseAutoFocus = prop($$props, "onCloseAutoFocus", 7), onOpenAutoFocus = prop($$props, "onOpenAutoFocus", 7), onFocusOutside = prop($$props, "onFocusOutside", 7), interactOutsideBehavior = prop($$props, "interactOutsideBehavior", 7, "close"), loop = prop($$props, "loop", 7), trapFocus = prop($$props, "trapFocus", 7, true), isValidEvent = prop($$props, "isValidEvent", 7, () => false), customAnchor = prop($$props, "customAnchor", 7, null), isStatic = prop($$props, "isStatic", 7, false), enabled = prop($$props, "enabled", 7), ref = prop($$props, "ref", 7), tooltip = prop($$props, "tooltip", 7, false), contentPointerEvents = prop($$props, "contentPointerEvents", 7, "auto"), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$11);
@@ -28816,7 +28818,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const content = ($$anchor, $$arg0) => {
 				let floatingProps = () => $$arg0?.().props;
 				let wrapperProps = () => $$arg0?.().wrapperProps;
-				var fragment_1 = root$24();
+				var fragment_1 = root$27();
 				var node = first_child(fragment_1);
 				var consequent = ($$anchor) => {
 					Scroll_lock($$anchor, { get preventScroll() {
@@ -31180,7 +31182,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"children",
 		"child"
 	]);
-	var root$23 = /* @__PURE__ */ from_html(`<div><!></div>`);
+	var root$26 = /* @__PURE__ */ from_html(`<div><!></div>`);
 	var root_1$10 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
 	function Date_field_input($$anchor, $$props) {
 		const uid = props_id();
@@ -31240,7 +31242,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
-			var div = root$23();
+			var div = root$26();
 			attribute_effect(div, () => ({ ...get$2(mergedProps) }));
 			snippet(child(div), () => children() ?? noop$1, () => ({ segments: inputState.root.segmentContents }));
 			reset(div);
@@ -31273,7 +31275,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"children",
 		"child"
 	]);
-	var root$22 = /* @__PURE__ */ from_html(`<div><!></div>`);
+	var root$25 = /* @__PURE__ */ from_html(`<div><!></div>`);
 	function Date_field_label($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -31321,7 +31323,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
-			var div = root$22();
+			var div = root$25();
 			attribute_effect(div, () => ({ ...get$2(mergedProps) }));
 			snippet(child(div), () => children() ?? noop$1);
 			reset(div);
@@ -31353,7 +31355,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"child",
 		"part"
 	]);
-	var root$21 = /* @__PURE__ */ from_html(`<span><!></span>`);
+	var root$24 = /* @__PURE__ */ from_html(`<span><!></span>`);
 	function Date_field_segment($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -31408,7 +31410,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
-			var span = root$21();
+			var span = root$24();
 			attribute_effect(span, () => ({ ...get$2(mergedProps) }));
 			snippet(child(span), () => children() ?? noop$1);
 			reset(span);
@@ -32430,7 +32432,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"id",
 		"ref"
 	]);
-	var root$20 = /* @__PURE__ */ from_html(`<div><!></div>`);
+	var root$23 = /* @__PURE__ */ from_html(`<div><!></div>`);
 	function Date_picker_calendar($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -32510,7 +32512,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
-			var div = root$20();
+			var div = root$23();
 			attribute_effect(div, () => ({ ...get$2(mergedProps) }));
 			snippet(child(div), () => children() ?? noop$1, () => calendarState.snippetProps);
 			reset(div);
@@ -32550,7 +32552,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"customAnchor",
 		"style"
 	]);
-	var root$19 = /* @__PURE__ */ from_html(`<div><div><!></div></div>`);
+	var root$22 = /* @__PURE__ */ from_html(`<div><div><!></div></div>`);
 	function Popover_content($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -32685,7 +32687,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						append($$anchor, fragment_3);
 					};
 					var alternate = ($$anchor) => {
-						var div = root$19();
+						var div = root$22();
 						attribute_effect(div, () => ({ ...wrapperProps() }));
 						var div_1 = child(div);
 						attribute_effect(div_1, () => ({ ...get$2(finalProps) }));
@@ -32755,7 +32757,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						append($$anchor, fragment_6);
 					};
 					var alternate_1 = ($$anchor) => {
-						var div_2 = root$19();
+						var div_2 = root$22();
 						attribute_effect(div_2, () => ({ ...wrapperProps() }));
 						var div_3 = child(div_2);
 						attribute_effect(div_3, () => ({ ...get$2(finalProps) }));
@@ -32886,7 +32888,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"openDelay",
 		"closeDelay"
 	]);
-	var root$18 = /* @__PURE__ */ from_html(`<button><!></button>`);
+	var root$21 = /* @__PURE__ */ from_html(`<button><!></button>`);
 	function Popover_trigger($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -32981,7 +32983,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					append($$anchor, fragment_2);
 				};
 				var alternate = ($$anchor) => {
-					var button = root$18();
+					var button = root$21();
 					attribute_effect(button, () => ({ ...get$2(mergedProps) }));
 					snippet(child(button), () => children() ?? noop$1);
 					reset(button);
@@ -33061,7 +33063,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/forms/ui/generic/DatePicker.svelte
-	var root$17 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
+	var root$20 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
 	var root_1$9 = /* @__PURE__ */ from_html(`<!> <!> <!>`, 1);
 	function DatePicker_1($$anchor, $$props) {
 		push($$props, true);
@@ -33149,7 +33151,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						{
 							const children = ($$anchor, $$arg0) => {
 								let segments = () => $$arg0?.().segments;
-								var fragment_4 = root$17();
+								var fragment_4 = root$20();
 								var node_5 = first_child(fragment_4);
 								each(node_5, 17, segments, index$1, ($$anchor, $$item) => {
 									let part = () => get$2($$item).part;
@@ -33200,7 +33202,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 										const children = ($$anchor, $$arg0) => {
 											let months = () => $$arg0?.().months;
 											let weekdays = () => $$arg0?.().weekdays;
-											var fragment_8 = root$17();
+											var fragment_8 = root$20();
 											var node_10 = first_child(fragment_8);
 											component(node_10, () => Calendar_header, ($$anchor, DatePicker_Header) => {
 												DatePicker_Header($$anchor, {
@@ -33227,7 +33229,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 												component(first_child(fragment_10), () => Calendar_grid, ($$anchor, DatePicker_Grid) => {
 													DatePicker_Grid($$anchor, {
 														children: ($$anchor, $$slotProps) => {
-															var fragment_11 = root$17();
+															var fragment_11 = root$20();
 															var node_16 = first_child(fragment_11);
 															component(node_16, () => Calendar_grid_head, ($$anchor, DatePicker_GridHead) => {
 																DatePicker_GridHead($$anchor, {
@@ -33355,7 +33357,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"inputClass",
 		"host"
 	]);
-	var root$16 = /* @__PURE__ */ from_html(`<span class="go-field-star" aria-hidden="true">*</span>`);
+	var root$19 = /* @__PURE__ */ from_html(`<span class="go-field-star" aria-hidden="true">*</span>`);
 	var root_1$8 = /* @__PURE__ */ from_html(` <!>`, 1);
 	var root_2$7 = /* @__PURE__ */ from_html(`<label><!></label> <input/>`, 1);
 	var root_3$7 = /* @__PURE__ */ from_html(`<label><!></label> <textarea></textarea>`, 1);
@@ -33381,7 +33383,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var text = first_child(fragment);
 			var node = sibling(text);
 			var consequent = ($$anchor) => {
-				append($$anchor, root$16());
+				append($$anchor, root$19());
 			};
 			if_block(node, ($$render) => {
 				if (field().required) $$render(consequent);
@@ -33781,7 +33783,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/forms/ui/generic/Field.svelte
-	var root$15 = /* @__PURE__ */ from_html(`<span> </span>`);
+	var root$18 = /* @__PURE__ */ from_html(`<span> </span>`);
 	var root_1$7 = /* @__PURE__ */ from_html(`<li> </li>`);
 	var root_2$6 = /* @__PURE__ */ from_html(`<ul class="go-field-errors"></ul>`);
 	var root_3$6 = /* @__PURE__ */ from_html(`<!> <!> <!>`, 1);
@@ -33864,7 +33866,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		});
 		var node_1 = sibling(node, 2);
 		var consequent = ($$anchor) => {
-			var span = root$15();
+			var span = root$18();
 			var text = child(span, true);
 			reset(span);
 			template_effect(() => {
@@ -33920,7 +33922,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}, [], ["getField"]));
 	//#endregion
 	//#region src/components/forms/ui/generic/AllFields.svelte
-	var root$14 = /* @__PURE__ */ from_html(`<go-field></go-field>`, 2);
+	var root$17 = /* @__PURE__ */ from_html(`<go-field></go-field>`, 2);
 	function AllFields($$anchor, $$props) {
 		push($$props, true);
 		let _details = getDetails$1($$props.$$host);
@@ -33928,7 +33930,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		let allFields = /* @__PURE__ */ user_derived(() => get$2(details) ? Forms.getFormFields(get$2(details)?.formId) : []);
 		var fragment = comment();
 		each(first_child(fragment), 17, () => get$2(allFields), (field) => field.key, ($$anchor, field) => {
-			var go_field = root$14();
+			var go_field = root$17();
 			template_effect(() => set_custom_element_data(go_field, "key", get$2(field).key));
 			template_effect(() => set_custom_element_data(go_field, "required", get$2(field).required));
 			append($$anchor, go_field);
@@ -33939,7 +33941,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	customElements.define("go-all-fields", create_custom_element(AllFields, {}, [], []));
 	//#endregion
 	//#region src/components/forms/ui/generic/ErrorsFeedback.svelte
-	var root$13 = /* @__PURE__ */ from_html(`<p aria-hidden="true"> </p>`);
+	var root$16 = /* @__PURE__ */ from_html(`<p aria-hidden="true"> </p>`);
 	var root_1$6 = /* @__PURE__ */ from_html(`<li> </li>`);
 	var root_2$5 = /* @__PURE__ */ from_html(`<ul class="go-error-feedback-api-errors"></ul>`);
 	var root_3$5 = /* @__PURE__ */ from_html(`<div><p aria-live="assertive" class="sr-only"><!></p> <!> <!></div>`);
@@ -33977,7 +33979,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reset(p);
 		var node_1 = sibling(p, 2);
 		var consequent_1 = ($$anchor) => {
-			var p_1 = root$13();
+			var p_1 = root$16();
 			var text_1 = child(p_1, true);
 			reset(p_1);
 			template_effect(($0) => set_text(text_1, $0), [() => shop.t("forms.errorSummary", { count: get$2(errorsRealtime) })]);
@@ -34010,9 +34012,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	customElements.define("go-errors-feedback", create_custom_element(ErrorsFeedback, {}, [], []));
 	//#endregion
 	//#region src/components/forms/ui/generic/FormFeedback.svelte
-	var root$12 = /* @__PURE__ */ from_html(`<div class="go-form-feedback"><!></div>`);
+	var root$15 = /* @__PURE__ */ from_html(`<div class="go-form-feedback"><!></div>`);
 	function FormFeedback($$anchor, $$props) {
-		var div = root$12();
+		var div = root$15();
 		slot(child(div), $$props, "default", {}, null);
 		reset(div);
 		append($$anchor, div);
@@ -34046,7 +34048,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	} }, [], []));
 	//#endregion
 	//#region src/components/forms/ui/generic/SuccessFeedback.svelte
-	var root$11 = /* @__PURE__ */ from_html(`<div aria-live="assertive"> </div>`);
+	var root$14 = /* @__PURE__ */ from_html(`<div aria-live="assertive"> </div>`);
 	function SuccessFeedback($$anchor, $$props) {
 		push($$props, true);
 		const _details = getDetails$1($$props.$$host);
@@ -34054,7 +34056,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
-			var div = root$11();
+			var div = root$14();
 			let classes;
 			var text = child(div, true);
 			reset(div);
@@ -36541,8 +36543,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if (!this.order?.is_valid) return;
 			switch (item.type) {
 				case "Event": return `${shop.apiUrl}/api/v4/orders/${this.order.id}/events/${item.attributes.id}.pdf?locale=${shop.locale}&token=${this.token}`;
+				case "Coupon": return `${shop.apiUrl}/api/v4/orders/${this.order.id}/coupons/${item.attributes.id}.pdf?locale=${shop.locale}&token=${this.token}`;
 				case "Ticket":
-					if (item.attributes.ticket_type === "annual" && !item.attributes.is_voucher) if (configStore.config.urls.annualTicketPersonalizationList?.()) return configStore.config.urls.annualTicketPersonalizationList(this.token);
+					if (item.attributes.ticket_type === "annual" && !item.attributes.is_voucher) if (configStore.config.urls.annualTicketPersonalizationList) return configStore.config.urls.annualTicketPersonalizationList(this.token);
 					else return shop.urls?.annualTicketPersonalizationList(this.token);
 					else return `${shop.apiUrl}/api/v4/orders/${this.order.id}/tickets/${item.attributes.id}.pdf?locale=${shop.locale}&token=${this.token}&barcode_id=${barcodeId}`;
 					break;
@@ -36589,8 +36592,109 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		type: "String"
 	} }, [], ["orderDetails"]));
 	//#endregion
+	//#region src/components/order/components/subcomponents/breakdown/items/Coupon.svelte
+	var root$13 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count"> </li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span> <br/> <a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"></li></ul></article></li>`);
+	function Coupon($$anchor, $$props) {
+		push($$props, true);
+		let item = prop($$props, "item", 7), orderDetails = prop($$props, "orderDetails", 7);
+		const valueCents = /* @__PURE__ */ user_derived(() => item().attributes.value_cents > 0 ? item().attributes.value_cents : item().price_cents);
+		var $$exports = {
+			get item() {
+				return item();
+			},
+			set item($$value) {
+				item($$value);
+				flushSync();
+			},
+			get orderDetails() {
+				return orderDetails();
+			},
+			set orderDetails($$value) {
+				orderDetails($$value);
+				flushSync();
+			}
+		};
+		var li = root$13();
+		var article = child(li);
+		var ul = child(article);
+		var li_1 = child(ul);
+		var text = child(li_1, true);
+		reset(li_1);
+		var li_2 = sibling(li_1, 2);
+		var span = child(li_2);
+		var text_1 = child(span, true);
+		reset(span);
+		var a = sibling(span, 4);
+		var text_2 = child(a, true);
+		reset(a);
+		reset(li_2);
+		var li_3 = sibling(li_2, 2);
+		var text_3 = child(li_3, true);
+		reset(li_3);
+		next(2);
+		reset(ul);
+		reset(article);
+		reset(li);
+		template_effect(($0, $1, $2) => {
+			set_text(text, item().attributes.quantity);
+			set_text(text_1, item().attributes.title);
+			set_attribute(a, "href", $0);
+			set_text(text_2, $1);
+			set_text(text_3, $2);
+		}, [
+			() => orderDetails().downloadLink(item()),
+			() => shop.t("common.download"),
+			() => formatCurrency(get$2(valueCents))
+		]);
+		append($$anchor, li);
+		return pop($$exports);
+	}
+	create_custom_element(Coupon, {
+		item: {},
+		orderDetails: {}
+	}, [], [], { mode: "open" });
+	//#endregion
+	//#region src/components/order/components/subcomponents/breakdown/items/Donation.svelte
+	var root$12 = /* @__PURE__ */ from_html(`<li class="go-order-breakdown-donation"><article><ul><li class="go-order-breakdown-count">1</li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"></li></ul></article></li>`);
+	function Donation($$anchor, $$props) {
+		push($$props, true);
+		let donation = prop($$props, "donation", 7);
+		const campaign = /* @__PURE__ */ user_derived(() => shop.donations?.campaigns?.find((c) => c.id === donation().donation_campaign_id));
+		var $$exports = {
+			get donation() {
+				return donation();
+			},
+			set donation($$value) {
+				donation($$value);
+				flushSync();
+			}
+		};
+		var li = root$12();
+		var article = child(li);
+		var ul = child(article);
+		var li_1 = sibling(child(ul), 2);
+		var span = child(li_1);
+		var text = child(span, true);
+		reset(span);
+		reset(li_1);
+		var li_2 = sibling(li_1, 2);
+		var text_1 = child(li_2, true);
+		reset(li_2);
+		next(2);
+		reset(ul);
+		reset(article);
+		reset(li);
+		template_effect(($0, $1) => {
+			set_text(text, $0);
+			set_text(text_1, $1);
+		}, [() => get$2(campaign)?.name ?? shop.t("common.table.donation"), () => formatCurrency(donation().donation_cents)]);
+		append($$anchor, li);
+		return pop($$exports);
+	}
+	create_custom_element(Donation, { donation: {} }, [], [], { mode: "open" });
+	//#endregion
 	//#region src/components/order/components/subcomponents/breakdown/items/Event.svelte
-	var root$10 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <span class="go-cart-item-time" data-testid="cart-item-time"> </span>`, 1);
+	var root$11 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <span class="go-cart-item-time" data-testid="cart-item-time"> </span>`, 1);
 	var root_1$5 = /* @__PURE__ */ from_html(`<br/> <span class="go-order-item-quantities"> </span>`, 1);
 	var root_2$4 = /* @__PURE__ */ from_html(`<a aria-label="iCal link"> </a>`);
 	var root_3$4 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count">1</li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span> <!> <!> <a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"></li> <li class="go-order-breakdown-ical"><!></li></ul></article></li>`);
@@ -36622,7 +36726,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reset(span);
 		var node = sibling(span, 2);
 		var consequent = ($$anchor) => {
-			var fragment = root$10();
+			var fragment = root$11();
 			var span_1 = first_child(fragment);
 			var text_1 = child(span_1, true);
 			reset(span_1);
@@ -36690,6 +36794,48 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		item: {},
 		orderDetails: {}
 	}, [], [], { mode: "open" });
+	//#endregion
+	//#region src/components/order/components/subcomponents/breakdown/items/Merchandise.svelte
+	var root$10 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count"> </li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"></li></ul></article></li>`);
+	function Merchandise($$anchor, $$props) {
+		push($$props, true);
+		let item = prop($$props, "item", 7);
+		var $$exports = {
+			get item() {
+				return item();
+			},
+			set item($$value) {
+				item($$value);
+				flushSync();
+			}
+		};
+		var li = root$10();
+		var article = child(li);
+		var ul = child(article);
+		var li_1 = child(ul);
+		var text = child(li_1, true);
+		reset(li_1);
+		var li_2 = sibling(li_1, 2);
+		var span = child(li_2);
+		var text_1 = child(span, true);
+		reset(span);
+		reset(li_2);
+		var li_3 = sibling(li_2, 2);
+		var text_2 = child(li_3, true);
+		reset(li_3);
+		next(2);
+		reset(ul);
+		reset(article);
+		reset(li);
+		template_effect(($0) => {
+			set_text(text, item().attributes.quantity);
+			set_text(text_1, item().attributes.title);
+			set_text(text_2, $0);
+		}, [() => formatCurrency(item().price_cents)]);
+		append($$anchor, li);
+		return pop($$exports);
+	}
+	create_custom_element(Merchandise, { item: {} }, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/order/components/subcomponents/breakdown/items/TicketSale.svelte
 	var root$9 = /* @__PURE__ */ from_html(`<span class="go-order-item-subtitle" data-testid="order-item-subtitle"> </span>`);
@@ -37022,7 +37168,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	create_custom_element(Tour, { item: {} }, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/order/components/subcomponents/breakdown/Breakdown.svelte
-	var root$7 = /* @__PURE__ */ from_html(`<ol><li class="data-go-order-breakdown-header"><ul><li class="go-order-breakdown-header-count"> </li> <li class="go-order-breakdown-header-product"> </li> <li class="go-order-breakdown-header-price"> </li> <li class="go-order-breakdown-header-passbook"></li></ul></li> <!> <li class="go-order-breakdown-footer"><ul><li class="go-cart-footer-title"></li> <li class="go-cart-footer-count"></li> <li class="go-cart-footer-price"> </li> <li class="go-cart-footer-passbook"></li></ul></li></ol>`);
+	var root$7 = /* @__PURE__ */ from_html(`<ol><li class="data-go-order-breakdown-header"><ul><li class="go-order-breakdown-header-count"> </li> <li class="go-order-breakdown-header-product"> </li> <li class="go-order-breakdown-header-price"> </li> <li class="go-order-breakdown-header-passbook"></li></ul></li> <!> <!> <li class="go-order-breakdown-footer"><ul><li class="go-cart-footer-title"></li> <li class="go-cart-footer-count"></li> <li class="go-cart-footer-price"> </li> <li class="go-cart-footer-passbook"></li></ul></li></ol>`);
 	function Breakdown($$anchor, $$props) {
 		push($$props, true);
 		const _orderDetails = getDetails($$props.$$host);
@@ -37030,7 +37176,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		let order = /* @__PURE__ */ user_derived(() => get$2(orderDetails)?.order);
 		var fragment = comment();
 		var node = first_child(fragment);
-		var consequent_3 = ($$anchor) => {
+		var consequent_5 = ($$anchor) => {
 			var ol = root$7();
 			var li = child(ol);
 			var ul = child(li);
@@ -37075,14 +37221,37 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						return get$2(item);
 					} });
 				};
+				var consequent_3 = ($$anchor) => {
+					Coupon($$anchor, {
+						get item() {
+							return get$2(item);
+						},
+						get orderDetails() {
+							return get$2(orderDetails);
+						}
+					});
+				};
+				var consequent_4 = ($$anchor) => {
+					Merchandise($$anchor, { get item() {
+						return get$2(item);
+					} });
+				};
 				if_block(node_2, ($$render) => {
 					if (get$2(item).type === "Ticket") $$render(consequent);
 					else if (get$2(item).type === "Event") $$render(consequent_1, 1);
 					else if (get$2(item).type === "Tour") $$render(consequent_2, 2);
+					else if (get$2(item).type === "Coupon") $$render(consequent_3, 3);
+					else if (get$2(item).type === "Merchandise") $$render(consequent_4, 4);
 				});
 				append($$anchor, fragment_1);
 			});
-			var li_4 = sibling(node_1, 2);
+			var node_3 = sibling(node_1, 2);
+			each(node_3, 17, () => get$2(order).donations ?? [], (donation) => donation.id, ($$anchor, donation) => {
+				Donation($$anchor, { get donation() {
+					return get$2(donation);
+				} });
+			});
+			var li_4 = sibling(node_3, 2);
 			var ul_1 = child(li_4);
 			var li_5 = sibling(child(ul_1), 4);
 			var text_3 = child(li_5, true);
@@ -37105,7 +37274,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, ol);
 		};
 		if_block(node, ($$render) => {
-			if (get$2(order) && get$2(orderDetails)) $$render(consequent_3);
+			if (get$2(order) && get$2(orderDetails)) $$render(consequent_5);
 		});
 		append($$anchor, fragment);
 		pop();
