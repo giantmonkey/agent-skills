@@ -13987,6 +13987,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				}
 			});
 		}
+		#fetchId(endpoint, query, path = {}) {
+			return endpoint + JSON.stringify(query) + JSON.stringify(path);
+		}
 		/**
 		* Returns a reactive value that will contain the fetched data, no need to await.
 		*
@@ -14008,7 +14011,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				return get$2(this.#data)[dataKey];
 			}
 			const query = options.query;
-			const fetchId = endpoint + JSON.stringify(query);
+			const fetchId = this.#fetchId(endpoint, query, options.path);
 			const isNotFetchedYet = !this.#fetchStatus[fetchId];
 			const isCacheExpired = this.#fetchStatus[fetchId]?.fetchedAt < Date.now() - options.cache * 1e3;
 			if (isNotFetchedYet || isCacheExpired) this.apiGet(endpoint, query, options.path).then((ret) => {
@@ -14142,7 +14145,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		async apiGet(path, query = {}, pathOptions) {
 			this.#ensureApi();
-			const fetchId = path + JSON.stringify(query);
+			const fetchId = this.#fetchId(path, query, pathOptions);
 			this.#fetchStatus[fetchId] = {
 				status: "fetching",
 				fetchedAt: Date.now()
