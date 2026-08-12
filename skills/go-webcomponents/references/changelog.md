@@ -4,6 +4,18 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.16.1
+
+_Released 2026-08-12_
+
+A small checkout-routing fix: your configured failure URL is now actually used.
+
+## Fixed
+
+- The checkout forms (`<go-checkout-form>`, `<go-checkout-guest>`, `<go-checkout-user>`) ignored a `go.config({ urls: { checkoutFailure } })` override and always redirected failed checkouts (order status `fail`, or a payment response with no payment target) to the legacy built-in failure page. The override is now honored, mirroring `checkoutSuccess`: the function receives the error message (may be empty) and returns the target URL.
+
+---
+
 # v4.16.0
 
 _Released 2026-08-12_

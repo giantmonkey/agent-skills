@@ -18796,13 +18796,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (beforeSubmit) await beforeSubmit(form.details.formData);
 		const meta = checkout.data.meta;
 		const navigateTo = configStore.config.navigateTo;
+		const checkoutFailure = configStore.config.urls.checkoutFailure ?? shop.urls.checkoutFailure;
 		if (meta.status === "success") {
 			const checkoutSuccess = configStore.config.urls.checkoutSuccess ?? shop.urls.checkoutSuccess;
 			navigateTo?.(checkoutSuccess(checkout.data.order.token));
-		} else if (meta.status === "fail") navigateTo?.(shop.urls.checkoutFailure(""));
+		} else if (meta.status === "fail") navigateTo?.(checkoutFailure(""));
 		else if (meta.payment_url) navigateTo?.(meta.payment_url);
 		else if (meta.payment_data) postToPaymentProvider(meta.payment_data);
-		else navigateTo?.(shop.urls.checkoutFailure(""));
+		else navigateTo?.(checkoutFailure(""));
 	}
 	function setupGuestCheckout(host, custom) {
 		Forms.defineForm({

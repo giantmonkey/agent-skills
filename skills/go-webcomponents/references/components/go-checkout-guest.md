@@ -96,14 +96,16 @@ customer by the checkout outcome, using the `navigateTo` handler you configure v
 - **Failed, or no payment target returned** — `navigateTo` receives the shop's
   checkout-failure page URL.
 
-The checkout-success URL defaults to the shop's built-in success page. Override it
-with `go.config({ urls: { checkoutSuccess } })` — the function receives the order
-token and returns the target URL _(Since `v4.14.2`)_:
+The checkout-success and checkout-failure URLs default to the shop's built-in
+pages. Override them with `go.config({ urls: { checkoutSuccess, checkoutFailure } })` —
+`checkoutSuccess` receives the order token _(Since `v4.14.2`)_, `checkoutFailure`
+receives an error message (may be empty), and each returns the target URL:
 
 ```js
 go.config({
   urls: {
     checkoutSuccess: token => `/order-complete?token=${token}`,
+    checkoutFailure: error => `/order-failed?error=${error}`,
   },
 })
 ```
