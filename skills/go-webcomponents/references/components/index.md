@@ -1,6 +1,6 @@
 # Components
 
-Library version: 4.15.0
+Library version: 4.16.0
 
 | Tag | Attributes |
 | --- | --- |
@@ -21,6 +21,7 @@ Library version: 4.15.0
 | [`<go-checkout-guest>`](./go-checkout-guest.md) | 0 |
 | [`<go-checkout-user>`](./go-checkout-user.md) | 0 |
 | [`<go-coupon-redemption>`](./go-coupon-redemption.md) | 0 |
+| [`<go-donation-checkbox>`](./go-donation-checkbox.md) | 3 |
 | [`<go-donations>`](./go-donations.md) | 0 |
 | [`<go-errors-feedback>`](./go-errors-feedback.md) | 0 |
 | [`<go-field>`](./go-field.md) | 4 |

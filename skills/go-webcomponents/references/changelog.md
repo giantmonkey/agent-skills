@@ -4,6 +4,31 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.16.0
+
+_Released 2026-08-12_
+
+Donations become first-class cart citizens: a new opt-in checkbox adds a fixed donation that rides the cart, its totals, and the submitted order.
+
+## New
+
+- `<go-donation-checkbox>` — a standalone opt-in checkbox for a single fixed-amount donation, synced live with the cart. Attributes: `campaign-id` (shop-config donation campaign), `amount-cents` (fixed amount), `describedby` (id of your own description element, forwarded to the input as `aria-describedby`). Renders nothing for unknown campaigns, non-positive amounts, or guests over the campaign's guest limit.
+- Custom labels for `<go-donation-checkbox>` — any markup placed inside the element becomes the checkbox label (adopted into the rendered `<label>`, so it stays the accessible name and click target); with no children the `donations.checkbox.label` translation renders.
+- Donations held in the cart render as removable rows inside `<go-cart-items>` — styling hooks `.go-cart-donation` and `.go-cart-donation-title`, fallback title via the `cart.donation.title` translation. The amount shows in the sum column only; the unit-price and quantity cells stay empty.
+- Translation keys `donations.checkbox.label` (placeholders `{{campaign}}`, `{{amount}}`) and `cart.donation.title`, both with shipped defaults.
+
+## Changed (behavior)
+
+- `<go-cart-subtotal-amount>` and `<go-cart-total-amount>` now include held donations in their amounts.
+- Donations persist with the cart in local storage, so a checked `<go-donation-checkbox>` survives a page reload.
+- `<go-order>` clears held donations along with items and coupons after a completed purchase — a paid donation no longer re-checks its checkbox or rides into the next order.
+
+## Fixed
+
+- `<go-checkout-form>` submitted orders with an empty `donations` array regardless of the customer's choice — donations held in the cart are now carried on the order (`donations: [{ value, campaign_id }]`) and included in the order total.
+
+---
+
 # v4.15.0
 
 _Released 2026-08-05_

@@ -2,7 +2,7 @@
 
 Since `v1.20.0`
 
-The order components display purchase confirmation details after a successful checkout. When `<go-order>` loads, and again whenever its `token` changes to a new order, it empties the shopping cart — the purchase is complete — and ends a guest session.
+The order components display purchase confirmation details after a successful checkout. When `<go-order>` loads, and again whenever its `token` changes to a new order, it empties the shopping cart — the purchase is complete — and ends a guest session. A donation in the cart is cleared too, so `<go-donation-checkbox>` unchecks and the next purchase doesn't charge it again _(Since `v4.16.0`)_.
 
 ## Examples
 
@@ -73,16 +73,16 @@ Displays the order's invoice ID.
 
 ## Localization
 
-| Key                      | Description                                             | Dynamic Values\*                           |
-| ------------------------ | ------------------------------------------------------- | ------------------------------------------ |
-| `common.table.count`     | Count column header                                     | -                                          |
-| `common.table.product`   | Product column header                                   | -                                          |
-| `common.table.price`     | Price column header                                     | -                                          |
-| `common.table.total`     | Total row label                                         | {"{{value}}"} - the calculated order total |
-| `common.download`        | Text for download button                                | -                                          |
-| `common.calendar`        | Text for calendar link                                  | -                                          |
-| `common.personalize`     | Text for the annual-ticket personalization link         | -                                          |
+| Key                      | Description                                                                         | Dynamic Values\*                           |
+| ------------------------ | ----------------------------------------------------------------------------------- | ------------------------------------------ |
+| `common.table.count`     | Count column header                                                                 | -                                          |
+| `common.table.product`   | Product column header                                                               | -                                          |
+| `common.table.price`     | Price column header                                                                 | -                                          |
+| `common.table.total`     | Total row label                                                                     | {"{{value}}"} - the calculated order total |
+| `common.download`        | Text for download button                                                            | -                                          |
+| `common.calendar`        | Text for calendar link                                                              | -                                          |
+| `common.personalize`     | Text for the annual-ticket personalization link                                     | -                                          |
 | `common.table.donation`  | Fallback label for a donation row without a configured campaign _(Since `v4.15.0`)_ | -                                          |
-| `cart.item.participants` | Participants line of a tour booking                     | {"{{count}}"} - the number of participants |
+| `cart.item.participants` | Participants line of a tour booking                                                 | {"{{count}}"} - the number of participants |
 
 - {"{{value}}"} — words in double brackets are automatically replaced with real values when the text is displayed, as long as the translation supports it.
