@@ -4,6 +4,18 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.17.0
+
+_Released 2026-08-12_
+
+The cart quantity stepper's behavior at a line's minimum quantity is now configurable.
+
+## New
+
+- `go.config({ quantityStepperAtMinimum: 'remove' | 'disable' })` — chooses what the cart stepper's `−` button does once a line is at its minimum quantity. `'remove'` (the default, unchanged) turns it into the `✕` remove control that deletes the line. `'disable'` keeps a plain `−` that renders `aria-disabled` at the minimum; a typed `0` then clamps back to the minimum instead of removing, and removal goes only through the line's standalone ✕ button. Ticket selection and the legacy `<select>` are unaffected.
+
+---
+
 # v4.16.1
 
 _Released 2026-08-12_

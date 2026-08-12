@@ -14278,7 +14278,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		},
 		forms: {},
 		fields: {},
-		quantityStepper: true
+		quantityStepper: true,
+		quantityStepperAtMinimum: "remove"
 	};
 	var ConfigStoreSvelte = class {
 		defaultConfig = assign(defaultConfig, window.customOptions);
@@ -16031,6 +16032,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		/** Emits the next committed quantity. The control never mutates anything itself. */
 		let value = prop($$props, "value", 7), min = prop($$props, "min", 7), max = prop($$props, "max", 7), label = prop($$props, "label", 7), floor = prop($$props, "floor", 7, 0), deselectable = prop($$props, "deselectable", 7, true), onDecrementBelowMin = prop($$props, "onDecrementBelowMin", 7), onChange = prop($$props, "onChange", 7);
 		const useStepper = /* @__PURE__ */ user_derived(() => configStore.config.quantityStepper);
+		const disabledAtMinimum = /* @__PURE__ */ user_derived(() => onDecrementBelowMin() != null && configStore.config.quantityStepperAtMinimum === "disable");
 		var $$exports = {
 			get value() {
 				return value();
@@ -16093,11 +16095,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
 			{
-				let $0 = /* @__PURE__ */ user_derived(() => deselectable() ? 0 : min());
+				let $0 = /* @__PURE__ */ user_derived(() => get$2(disabledAtMinimum) ? Math.max(min(), 1) : deselectable() ? 0 : min());
 				let $1 = /* @__PURE__ */ user_derived(() => shop.t("quantity.decrease"));
 				let $2 = /* @__PURE__ */ user_derived(() => shop.t("quantity.increase"));
-				let $3 = /* @__PURE__ */ user_derived(() => shop.t("quantity.remove"));
-				let $4 = /* @__PURE__ */ user_derived(() => shop.t("quantity.remove.label"));
+				let $3 = /* @__PURE__ */ user_derived(() => get$2(disabledAtMinimum) ? void 0 : onDecrementBelowMin());
+				let $4 = /* @__PURE__ */ user_derived(() => shop.t("quantity.remove"));
+				let $5 = /* @__PURE__ */ user_derived(() => shop.t("quantity.remove.label"));
 				QuantityStepper($$anchor, {
 					get value() {
 						return value();
@@ -16121,13 +16124,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						return get$2($2);
 					},
 					get onDecrementBelowMin() {
-						return onDecrementBelowMin();
-					},
-					get removeAriaLabel() {
 						return get$2($3);
 					},
-					get removeLabel() {
+					get removeAriaLabel() {
 						return get$2($4);
+					},
+					get removeLabel() {
+						return get$2($5);
 					},
 					get onChange() {
 						return onChange();
