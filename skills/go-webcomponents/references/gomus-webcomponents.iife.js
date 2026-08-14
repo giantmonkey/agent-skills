@@ -14963,14 +14963,21 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			set(this.#successMessage, value, true);
 		}
 		get formData() {
-			function coerce(x) {
+			const numericTypes = [
+				"select",
+				"radio",
+				"number",
+				"paymentMode"
+			];
+			function coerce(f) {
+				const x = f.value;
 				if (isNumber(x) || isBoolean(x)) return x;
 				if (x === "true" || x === "false") return x === "true";
-				if (!Number.isNaN(+x) && x.trim() !== "") return +x;
+				if (numericTypes.includes(f.type) && !Number.isNaN(+x) && x.trim() !== "") return +x;
 				return x;
 			}
 			const validFields = this.fields.filter((f) => f !== void 0).filter((f) => f.type !== "file").filter((f) => f.value !== "");
-			return Object.fromEntries(validFields.map((f) => [f.apiKey, coerce(f.value)]));
+			return Object.fromEntries(validFields.map((f) => [f.apiKey, coerce(f)]));
 		}
 		fieldValue(key) {
 			return this.fields.find((f) => f.key === key)?.value;

@@ -4,6 +4,18 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.17.1
+
+_Released 2026-08-14_
+
+Text-typed form fields keep their values as strings — a postcode like `01067` is no longer submitted as the number `1067`.
+
+## Changed (behavior)
+
+- Form submissions and `data.formData` no longer convert numeric-looking values of text-typed fields to numbers. Previously, a `<go-field>` of a text-like type (`text`, `email`, `tel`, `textarea`, …) whose value happened to look numeric — a postcode (`addr_zip`), a phone number, a house number — was posted as a number, silently dropping leading zeros. Now only option-valued field types (`select`, `radio`, `number`, `paymentMode`) coerce to numbers; everything else stays a string. `'true'`/`'false'` still become booleans. If a `<go-if>` inside a `<go-form>` compares a text field's value against a number, use loose equality (`data.formData?.addr_zip == 12345`) or compare against a string — strict equality with a number no longer matches.
+
+---
+
 # v4.17.0
 
 _Released 2026-08-12_

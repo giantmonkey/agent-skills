@@ -105,6 +105,7 @@ Notes:
 
 - The `when` expression is a string and can reference `data.formData` directly.
 - `formData` properties are keyed by `apiKey` (e.g., `name`, `email`). Can also access `apiKey` from custom fields
+- Value types follow the field type: `select`, `radio`, `number`, and `paymentMode` values are numbers (option ids), checkboxes are booleans, and text-like fields (`text`, `email`, `tel`, `textarea`, …) always stay strings — a postcode keeps its leading zero. Comparisons match types strictly, so write `data.formData?.language_id == 1` (select → number) but `data.formData?.addr_zip == '01067'` (text → string).
 - The evaluator is CSP-safe (no `eval` / `new Function`), so `go-if` does not require `script-src 'unsafe-eval'`.
 - `when` supports a safe expression subset. For more complex rules, define a function in your app (for example `window.isFormReady = data => ...`) and call it with `when="isFormReady(data)"`.
 
