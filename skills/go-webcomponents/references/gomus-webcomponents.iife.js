@@ -6385,7 +6385,8 @@ createHTML: (html) => {
 			"cart.item.remove": "✕",
 			"common.table.donation": "Donation",
 			"cart.donation.title": "Donation",
-			"donations.checkbox.label": "Add a {{amount}} donation to {{campaign}}"
+			"donations.checkbox.label": "Add a {{amount}} donation to {{campaign}}",
+			"Not signed in": "Not signed in"
 		},
 		de: {
 			"quantity.remove": "Artikel entfernen",
@@ -6393,7 +6394,8 @@ createHTML: (html) => {
 			"cart.item.remove": "✕",
 			"common.table.donation": "Spende",
 			"cart.donation.title": "Spende",
-			"donations.checkbox.label": "{{amount}} für {{campaign}} spenden"
+			"donations.checkbox.label": "{{amount}} für {{campaign}} spenden",
+			"Not signed in": "Nicht angemeldet"
 		}
 	};
 	//#endregion
@@ -13720,12 +13722,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var TICKET_AND_QUOTAS_ENDPOINT = "/api/v4/tickets/list_and_quotas";
 	var TICKETS_ENDPOINT = "/api/v4/tickets";
 	var SIGN_IN_ENDPOINT = "/api/v4/auth/sign_in";
-	var SIGN_UP_ENDPOINT = "/api/v4/auth";
+	var AUTH_ENDPOINT = "/api/v4/auth";
 	var WITHDRAWAL_ENDPOINT = "/api/v4/orders/withdrawals";
 	var MEMBERSHIP_ACTIVATION_ENDPOINT = "/api/v4/customer/memberships/activate";
 	var ORDERS_ENDPOINT = "/api/v4/orders";
 	var CUSTOMER_ADDRESSES_ENDPOINT = "/api/v4/customer/customer_addresses";
 	var CUSTOMER_MEMBERSHIPS_ENDPOINT = "/api/v4/customer/memberships";
+	var CUSTOMER_ADDRESS_ENDPOINT = "/api/v4/customer/customer_addresses/{id}";
 	//#endregion
 	//#region ../../packages/gomus-api/lib/customerLevels.ts
 	var CustomerLevels = {
@@ -13747,6 +13750,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			locales: []
 		}));
 		#fetchStatus = {};
+		#invalidationGens = {};
+		#collectReads = null;
 		constructor(apiUrl, shopDomain, locale, type = "angular") {
 			this.type = type;
 			if (apiUrl && shopDomain && locale) this.load(apiUrl, shopDomain, locale, type);
@@ -13866,6 +13871,66 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if (!this.auth.data.accessToken) return NOT_SIGNED_IN;
 			return this.fetchAndCache(CUSTOMER_MEMBERSHIPS_ENDPOINT, "customerMemberships", "", { cache: 5 });
 		}
+		/**
+		* Shared skeleton of every customer write: the no-local-token guard (a write
+		* must never ride on a same-origin session cookie), the request itself, and
+		* the invalidate-on-ok tail that makes the matching cached read refetch.
+		* Pass `null` when no cached read depends on the written resource.
+		*/
+		async #authedWrite(invalidates, call) {
+			if (!this.auth.data.accessToken) return NOT_SIGNED_IN;
+			const result = await call();
+			if (invalidates && result?.response?.ok) this.invalidate(invalidates);
+			return result;
+		}
+		/**
+		* Creates a saved address for the signed-in customer, then drops the cached
+		* address list so the next getCustomerAddresses() refetches.
+		* The backend body is root-keyed ({ customer_address: {...} }) — rootKey makes
+		* apiCall validate required fields on the inner params, because the backend's
+		* 422 carries no body and would give integrators nothing actionable.
+		*/
+		async createCustomerAddress(params) {
+			return this.#authedWrite(CUSTOMER_ADDRESSES_ENDPOINT, () => this.apiPost(CUSTOMER_ADDRESSES_ENDPOINT, {
+				body: { customer_address: params },
+				requiredFields: [
+					"street",
+					"zip",
+					"city"
+				],
+				rootKey: "customer_address"
+			}));
+		}
+		/**
+		* Updates a saved address (partial body — the backend applies only the sent
+		* fields), then drops the cached address list. No client-side requiredFields:
+		* every field is optional on update.
+		*/
+		async updateCustomerAddress(id, params) {
+			return this.#authedWrite(CUSTOMER_ADDRESSES_ENDPOINT, () => this.apiPut(CUSTOMER_ADDRESS_ENDPOINT, {
+				body: { customer_address: params },
+				params: { path: { id } }
+			}));
+		}
+		/**
+		* Deletes a saved address, then drops the cached address list. Success is
+		* 204 No Content — parseAs 'text' skips openapi-fetch's JSON parse (see apiCall).
+		*/
+		async deleteCustomerAddress(id) {
+			return this.#authedWrite(CUSTOMER_ADDRESSES_ENDPOINT, () => this.apiDELETE(CUSTOMER_ADDRESS_ENDPOINT, {
+				params: { path: { id } },
+				parseAs: "text"
+			}));
+		}
+		/**
+		* Updates the signed-in customer's profile (PUT /api/v4/auth — devise
+		* registrations#update). Profile fields only: password changes go through
+		* updatePassword, which enforces current_password. Invalidates the cached
+		* validate_token payload so getCustomer() refetches the fresh profile.
+		*/
+		async updateCustomer(params) {
+			return this.#authedWrite(VALIDATE_TOKEN_ENDPOINT, () => this.apiPut(AUTH_ENDPOINT, { body: params }));
+		}
 		ticketsCalendar(params) {
 			return this.fetchAndCache(TICKETS_CALENDAR_ENDPOINT, `ticketsCalendar-${JSON.stringify(params)}`, "data", {
 				cache: 60,
@@ -13918,7 +13983,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				"terms"
 			];
 			if (!asGuest) requiredFields.push("password", "password_confirmation");
-			return this.apiPost(SIGN_UP_ENDPOINT, {
+			return this.apiPost(AUTH_ENDPOINT, {
 				body: params,
 				requiredFields
 			});
@@ -13946,15 +14011,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				cache: 60
 			});
 		}
-		updatePassword(params) {
-			return this.apiPut("/api/v4/auth/password", {
+		async updatePassword(params) {
+			return this.#authedWrite(null, () => this.apiPut("/api/v4/auth/password", {
 				body: params,
 				requiredFields: [
 					"current_password",
 					"password",
 					"password_confirmation"
 				]
-			});
+			}));
 		}
 		passwordReset(params) {
 			return this.apiPost("/api/v4/auth/password", {
@@ -14029,6 +14094,25 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				}
 			});
 		}
+		/**
+		* Drops every cached GET slot whose fetch id starts with the endpoint prefix,
+		* so the next fetchAndCache read refetches. #data is left intact — consumers
+		* keep rendering the last known value until the refetch lands (no flash of
+		* empty). Write methods call this after mutating the corresponding resource.
+		*
+		* In-flight slots are marked instead of deleted: their response predates the
+		* write, but deleting them would release waitForAllFetches early AND let
+		* apiGet resurrect the slot as fresh when the stale response lands. apiGet
+		* drops marked slots on completion, so the next read refetches.
+		*/
+		invalidate(endpointPrefix) {
+			for (const [fetchId, slot] of Object.entries(this.#fetchStatus)) {
+				if (!fetchId.startsWith(endpointPrefix)) continue;
+				if (slot.status === "fetching") slot.invalidated = true;
+				else delete this.#fetchStatus[fetchId];
+				this.#invalidationGens[fetchId] = (this.#invalidationGens[fetchId] ?? 0) + 1;
+			}
+		}
 		#fetchId(endpoint, query, path = {}) {
 			return endpoint + JSON.stringify(query) + JSON.stringify(path);
 		}
@@ -14054,6 +14138,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 			const query = options.query;
 			const fetchId = this.#fetchId(endpoint, query, options.path);
+			this.#collectReads?.(fetchId);
 			const isNotFetchedYet = !this.#fetchStatus[fetchId];
 			const isCacheExpired = this.#fetchStatus[fetchId]?.fetchedAt < Date.now() - options.cache * 1e3;
 			if (isNotFetchedYet || isCacheExpired) this.apiGet(endpoint, query, options.path).then((ret) => {
@@ -14164,8 +14249,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		async apiCall(path, options) {
 			this.#ensureApi();
-			const { body, params = {}, requiredFields, parseAs } = options;
-			const validationErrors = validateApiPostBody(body, requiredFields);
+			const { body, params = {}, requiredFields, rootKey, parseAs } = options;
+			const validationErrors = validateApiPostBody((rootKey ? body?.[rootKey] : body) ?? {}, requiredFields);
 			if (Object.keys(validationErrors).length > 0) return { error: { errors: validationErrors } };
 			const httpMethod = this.client[options.method];
 			return await httpMethod(path, {
@@ -14179,8 +14264,28 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		* and returns the result of the method execution.
 		*/
 		async asyncFetch(method) {
-			await this.waitForAllFetches(method());
-			return method();
+			const seenGens = /* @__PURE__ */ new Map();
+			const call = () => {
+				const prev = this.#collectReads;
+				this.#collectReads = (id) => {
+					if (!seenGens.has(id)) seenGens.set(id, this.#invalidationGens[id] ?? 0);
+				};
+				try {
+					return method();
+				} finally {
+					this.#collectReads = prev;
+				}
+			};
+			const invalidatedSinceRead = () => [...seenGens].some(([id, gen]) => (this.#invalidationGens[id] ?? 0) !== gen);
+			call();
+			await this.waitForAllFetches();
+			let result = call();
+			while (invalidatedSinceRead()) {
+				for (const id of seenGens.keys()) seenGens.set(id, this.#invalidationGens[id] ?? 0);
+				await this.waitForAllFetches();
+				result = call();
+			}
+			return result;
 		}
 		async waitForAllFetches(...variables) {
 			while (Object.values(this.#fetchStatus).filter((f) => f.status === "fetching").length) await wait(10);
@@ -14196,7 +14301,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if (query) params = assign(params, { params: { query } });
 			if (path) params = assign(params, { params: { path: pathOptions } });
 			const ret = await this.client.GET(path, params);
-			this.#fetchStatus[fetchId] = {
+			if (this.#fetchStatus[fetchId]?.invalidated) delete this.#fetchStatus[fetchId];
+			else this.#fetchStatus[fetchId] = {
 				status: "completed",
 				fetchedAt: Date.now()
 			};
@@ -37565,10 +37671,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		async function submit(event) {
 			const details = event.target.details;
 			const result = await shop.updatePassword(details.formData);
-			if (result.data) {
+			if ("data" in result && result.data) {
 				details.successMessage = shop.t("user.passwordSuccess.desc.title");
 				details.apiErrors = [];
-			} else details.apiErrors = result.error?.errors || result.error || result.errors;
+			} else {
+				const errors = ("error" in result ? result.error : void 0)?.errors ?? [];
+				details.apiErrors = Array.isArray(errors) ? errors.map((e) => shop.t(e)) : errors;
+			}
 		}
 		init();
 		var go_form = root$6();
@@ -39148,6 +39257,30 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			getCustomerMemberships: async () => {
 				await ensureShopReady();
 				return shop.asyncFetch(() => shop.getCustomerMemberships());
+			},
+			createCustomerAddress: async (params) => {
+				await ensureShopReady();
+				return shop.createCustomerAddress(params);
+			},
+			updateCustomerAddress: async (id, params) => {
+				await ensureShopReady();
+				return shop.updateCustomerAddress(id, params);
+			},
+			deleteCustomerAddress: async (id) => {
+				await ensureShopReady();
+				return shop.deleteCustomerAddress(id);
+			},
+			updateCustomer: async (params) => {
+				await ensureShopReady();
+				return shop.updateCustomer(params);
+			},
+			updatePassword: async (params) => {
+				await ensureShopReady();
+				return shop.updatePassword(params);
+			},
+			requestPasswordReset: async (params) => {
+				await ensureShopReady();
+				return shop.passwordReset(params);
 			}
 		},
 		cart: { addItem: async (options) => {

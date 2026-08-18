@@ -4,6 +4,29 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.18.0
+
+_Released 2026-08-18_
+
+`go.api` can now write customer data: manage the signed-in customer's saved addresses, update their profile, and change or reset their password from your own scripts.
+
+## New
+
+- `go.api.createCustomerAddress(params)` — creates a saved address for the signed-in customer. `street`, `zip`, and `city` are validated client-side; missing fields come back as a per-field `error.errors` map.
+- `go.api.updateCustomerAddress(id, params)` — updates a saved address; only the fields you pass are applied.
+- `go.api.deleteCustomerAddress(id)` — deletes a saved address. Success is `204 No Content` — gate on `res.response?.ok`.
+- `go.api.updateCustomer(params)` — updates the signed-in customer's account profile (name, salutation, phone, default address fields, newsletter groups, …). Profile fields only — passwords go through `updatePassword()`, and avoid changing `email` here: once the customer confirms the change by e-mail, the stored session stops working until they sign in again (see the method docs).
+- `go.api.updatePassword(params)` — changes the signed-in customer's password; `current_password` is required.
+- `go.api.requestPasswordReset(params)` — sends a password-recovery e-mail, with an optional `redirect_url` for the e-mail's link. Works signed-out.
+- After a successful write the matching cached read (`go.api.getCustomerAddresses()`, `go.api.getCustomer()`) refetches automatically on its next call — no page reload needed to see the fresh data.
+- The writes follow the same auth contract as the customer getters: without a local sign-in token they resolve the not-signed-in shape without contacting the backend (except `requestPasswordReset()`, which works signed-out).
+
+## Changed (behavior)
+
+- `<go-profile-password>` no longer sends a password change when there is no local sign-in token — it now reports a not-signed-in error straight away instead of making the request. Previously the form posted regardless and surfaced whatever the backend answered.
+
+---
+
 # v4.17.1
 
 _Released 2026-08-14_
