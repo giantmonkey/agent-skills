@@ -4,6 +4,18 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.19.1
+
+_Released 2026-08-20_
+
+Screen readers now announce post-submit form feedback.
+
+## Fixed
+
+- Screen readers now announce post-submit feedback: `<go-success-feedback>` renders its `.go-success-feedback` div permanently (empty when idle — style the message state via the `is-successful` class, not the div's mere presence), and `<go-errors-feedback>` wraps form-level API errors in an always-present `.go-error-feedback-api-errors-live` container. Both are `aria-live` regions that must already exist in the DOM when the message arrives — regions mounted together with their content are not announced.
+
+---
+
 # v4.19.0
 
 _Released 2026-08-20_

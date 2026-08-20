@@ -34598,7 +34598,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root$16 = /* @__PURE__ */ from_html(`<p aria-hidden="true"> </p>`);
 	var root_1$6 = /* @__PURE__ */ from_html(`<li> </li>`);
 	var root_2$5 = /* @__PURE__ */ from_html(`<ul class="go-error-feedback-api-errors"></ul>`);
-	var root_3$5 = /* @__PURE__ */ from_html(`<div><p aria-live="assertive" class="sr-only"><!></p> <!> <!></div>`);
+	var root_3$5 = /* @__PURE__ */ from_html(`<div><p aria-live="assertive" class="sr-only"><!></p> <!> <div class="go-error-feedback-api-errors-live" aria-live="assertive"><!></div></div>`);
 	function ErrorsFeedback($$anchor, $$props) {
 		push($$props, true);
 		const _details = getDetails$1($$props.$$host);
@@ -34612,7 +34612,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		setInterval(() => {
 			set(errorsRealtime, errors(get$2(details)?.fields) || 0, true);
 		}, 100);
-		let numErrors = /* @__PURE__ */ user_derived(() => get$2(errorsRealtime) + (get$2(details)?.apiErrors?.length || 0));
+		const apiErrors = /* @__PURE__ */ user_derived(() => {
+			const e = get$2(details)?.apiErrors;
+			return isArray(e) ? e : [];
+		});
+		let numErrors = /* @__PURE__ */ user_derived(() => get$2(errorsRealtime) + get$2(apiErrors).length);
 		let errorsOnSubmit = /* @__PURE__ */ state(-1);
 		user_effect(() => {
 			$$props.$$host.classList.toggle("is-invalid", get$2(numErrors) > 0);
@@ -34642,10 +34646,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if_block(node_1, ($$render) => {
 			if (get$2(errorsRealtime) > 0) $$render(consequent_1);
 		});
-		var node_2 = sibling(node_1, 2);
+		var div_1 = sibling(node_1, 2);
+		var node_2 = child(div_1);
 		var consequent_2 = ($$anchor) => {
 			var ul = root_2$5();
-			each(ul, 21, () => get$2(details)?.apiErrors, index$1, ($$anchor, error) => {
+			each(ul, 21, () => get$2(apiErrors), index$1, ($$anchor, error) => {
 				var li = root_1$6();
 				var text_2 = child(li, true);
 				reset(li);
@@ -34655,10 +34660,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			reset(ul);
 			append($$anchor, ul);
 		};
-		var d = /* @__PURE__ */ user_derived(() => get$2(details) && isArray(get$2(details).apiErrors) && get$2(details).apiErrors.length > 0);
 		if_block(node_2, ($$render) => {
-			if (get$2(d)) $$render(consequent_2);
+			if (get$2(apiErrors).length > 0) $$render(consequent_2);
 		});
+		reset(div_1);
 		reset(div);
 		append($$anchor, div);
 		pop();
@@ -34713,23 +34718,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		push($$props, true);
 		const _details = getDetails$1($$props.$$host);
 		const details = /* @__PURE__ */ user_derived(() => _details.value);
-		var fragment = comment();
-		var node = first_child(fragment);
-		var consequent = ($$anchor) => {
-			var div = root$14();
-			let classes;
-			var text = child(div, true);
-			reset(div);
-			template_effect(() => {
-				classes = set_class(div, 1, "go-success-feedback go-feedback", null, classes, { "is-successful": get$2(details).successMessage });
-				set_text(text, get$2(details)?.successMessage);
-			});
-			append($$anchor, div);
-		};
-		if_block(node, ($$render) => {
-			if (get$2(details)?.successMessage) $$render(consequent);
+		var div = root$14();
+		let classes;
+		var text = child(div, true);
+		reset(div);
+		template_effect(() => {
+			classes = set_class(div, 1, "go-success-feedback go-feedback", null, classes, { "is-successful": get$2(details)?.successMessage });
+			set_text(text, get$2(details)?.successMessage ?? "");
 		});
-		append($$anchor, fragment);
+		append($$anchor, div);
 		pop();
 	}
 	customElements.define("go-success-feedback", create_custom_element(SuccessFeedback, {}, [], []));
