@@ -14388,7 +14388,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		quantityStepperAtMinimum: "remove"
 	};
 	var ConfigStoreSvelte = class {
-		defaultConfig = assign(defaultConfig, window.customOptions);
+		defaultConfig = assign(defaultConfig, window.customOptions ?? {});
 		override = this.defaultConfig;
 		#options = /* @__PURE__ */ state(proxy(this.defaultConfig));
 		get options() {
@@ -14676,6 +14676,87 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				value: c.id
 			}))
 		},
+		customerAddressee: {
+			key: "customerAddressee",
+			apiKey: "adressat",
+			type: "text",
+			label: "user.addresses.form.adressat",
+			placeholder: "",
+			description: "",
+			autocomplete: "name"
+		},
+		customerStreet: {
+			key: "customerStreet",
+			apiKey: "street",
+			type: "text",
+			label: "user.addresses.form.street",
+			placeholder: "",
+			description: "",
+			autocomplete: "street-address"
+		},
+		customerZip: {
+			key: "customerZip",
+			apiKey: "zip",
+			type: "text",
+			label: "user.addresses.form.plz",
+			placeholder: "",
+			description: "",
+			autocomplete: "postal-code"
+		},
+		customerCity: {
+			key: "customerCity",
+			apiKey: "city",
+			type: "text",
+			label: "user.addresses.form.city",
+			placeholder: "",
+			description: "",
+			autocomplete: "address-level2"
+		},
+		customerCountry: {
+			key: "customerCountry",
+			apiKey: "country_id",
+			type: "select",
+			label: "user.addresses.form.country",
+			placeholder: "",
+			description: "",
+			autocomplete: "country",
+			options: () => (shop.countries ?? []).map((c) => ({
+				label: c.name,
+				value: c.id
+			}))
+		},
+		addressType: {
+			key: "addressType",
+			apiKey: "adress_type_id",
+			type: "select",
+			label: "user.addresses.addressType.title",
+			placeholder: "",
+			description: "",
+			autocomplete: "off",
+			options: () => [
+				{
+					label: shop.t("user.addresses.addressType.customer"),
+					value: 0
+				},
+				{
+					label: shop.t("user.addresses.addressType.invoice"),
+					value: 1
+				},
+				{
+					label: shop.t("user.addresses.addressType.delivery"),
+					value: 2
+				}
+			]
+		},
+		tel: {
+			key: "tel",
+			apiKey: "tel",
+			type: "tel",
+			label: "user.profile.form.tel",
+			placeholder: "",
+			description: "",
+			autocomplete: "tel"
+		},
 		language: {
 			key: "language",
 			apiKey: "language_id",
@@ -14821,6 +14902,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 			return;
 		}
+		if (!field.required && (field.value === "" || field.value === null || field.value === void 0)) return;
 		const validation = field.validator.safeParse(field.value);
 		if (!validation.success) field.errors = validation.error.format()._errors;
 		else field.errors = [];
@@ -14832,7 +14914,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		static defineForm(options) {
 			configStore.default({ forms: { [options.id]: {
 				fields: options.fields,
-				submitLabel: options.submitLabel
+				submitLabel: options.submitLabel,
+				apiAction: options.apiAction,
+				successMessage: options.successMessage
 			} } });
 		}
 		static defineFields(fields) {
@@ -14840,6 +14924,131 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		static {
 			Forms.defineFields(allFields);
+			Forms.defineForm({
+				id: "addressCreate",
+				apiAction: "createCustomerAddress",
+				submitLabel: "user.addresses.add",
+				successMessage: "user.addresses.createSuccess",
+				fields: [
+					{
+						key: "addressType",
+						required: false
+					},
+					{
+						key: "customerAddressee",
+						required: false
+					},
+					{
+						key: "customerStreet",
+						required: true
+					},
+					{
+						key: "customerZip",
+						required: true
+					},
+					{
+						key: "customerCity",
+						required: true
+					},
+					{
+						key: "customerCountry",
+						required: false
+					},
+					{
+						key: "email",
+						required: false
+					}
+				]
+			});
+			Forms.defineForm({
+				id: "addressUpdate",
+				apiAction: "updateCustomerAddress",
+				submitLabel: "user.addresses.save",
+				successMessage: "user.addresses.updateSuccess",
+				fields: [
+					{
+						key: "customerAddressee",
+						required: false
+					},
+					{
+						key: "customerStreet",
+						required: false
+					},
+					{
+						key: "customerZip",
+						required: false
+					},
+					{
+						key: "customerCity",
+						required: false
+					},
+					{
+						key: "customerCountry",
+						required: false
+					},
+					{
+						key: "email",
+						required: false
+					}
+				]
+			});
+			Forms.defineForm({
+				id: "profileUpdate",
+				apiAction: "updateCustomer",
+				submitLabel: "user.addresses.save",
+				successMessage: "user.profile.updateSuccess",
+				fields: [
+					{
+						key: "salutation",
+						required: false
+					},
+					{
+						key: "firstName",
+						required: false
+					},
+					{
+						key: "lastName",
+						required: false
+					},
+					{
+						key: "tel",
+						required: false
+					},
+					{
+						key: "language",
+						required: false
+					}
+				]
+			});
+			Forms.defineForm({
+				id: "passwordUpdate",
+				apiAction: "updatePassword",
+				submitLabel: "user.passwordReset.actions.resetPassword",
+				successMessage: "user.passwordSuccess.desc.title",
+				fields: [
+					{
+						key: "currentPassword",
+						required: true
+					},
+					{
+						key: "newPassword",
+						required: true
+					},
+					{
+						key: "confirmPassword",
+						required: true
+					}
+				]
+			});
+			Forms.defineForm({
+				id: "passwordResetRequest",
+				apiAction: "requestPasswordReset",
+				submitLabel: "user.passwordReset.actions.requestPasswordReset",
+				fields: [{
+					key: "email",
+					required: true
+				}]
+			});
 		}
 		static setRequiredApiKeys(formId, requiredApiKeys) {
 			Forms.#requiredApiKeysMap[formId] = requiredApiKeys;
@@ -15049,6 +15258,36 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	}, [], ["details"]));
 	//#endregion
+	//#region src/components/forms/lib/apiActions.ts
+	var apiActions = {
+		createCustomerAddress: {
+			requiresRecordId: false,
+			call: (p) => shop.createCustomerAddress(p)
+		},
+		updateCustomerAddress: {
+			requiresRecordId: true,
+			call: (p, id) => shop.updateCustomerAddress(id, p)
+		},
+		updateCustomer: {
+			requiresRecordId: false,
+			call: (p) => shop.updateCustomer(p)
+		},
+		updatePassword: {
+			requiresRecordId: false,
+			call: (p) => shop.updatePassword(p)
+		},
+		requestPasswordReset: {
+			requiresRecordId: false,
+			call: (p) => shop.passwordReset(p)
+		}
+	};
+	function getApiAction(name) {
+		if (!name) return void 0;
+		const action = apiActions[name];
+		if (!action) console.error(`(apiActions) Unknown api action "${name}"`);
+		return action;
+	}
+	//#endregion
 	//#region src/components/forms/ui/generic/FormDetails.svelte.ts
 	var FormDetails = class {
 		formId;
@@ -15060,6 +15299,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		set isValid(value) {
 			set(this.#isValid, value);
+		}
+		#isSubmitting = /* @__PURE__ */ state(false);
+		get isSubmitting() {
+			return get$2(this.#isSubmitting);
+		}
+		set isSubmitting(value) {
+			set(this.#isSubmitting, value, true);
 		}
 		#successMessage = /* @__PURE__ */ state();
 		get successMessage() {
@@ -15115,11 +15361,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				if (key === "success") continue;
 				if (key === "errors") continue;
 				const field = this.fields.find((f) => f.apiKey === key);
+				const messages = isArray(value) ? value : [value];
 				if (!field) {
-					console.error(`(set apiErrors) Field with API key ${key} not found`);
+					set(this.#apiErrors, [...get$2(this.#apiErrors), ...messages.map((v) => `${key}: ${v}`)], true);
 					continue;
 				}
-				field.apiErrors = value;
+				field.apiErrors = messages;
 			}
 		}
 		validateForm() {
@@ -15198,22 +15445,55 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root$62 = /* @__PURE__ */ from_html(`<go-all-fields></go-all-fields> <go-form-feedback><go-errors-feedback></go-errors-feedback> <go-success-feedback></go-success-feedback></go-form-feedback> <go-submit> </go-submit>`, 3);
 	function Form($$anchor, $$props) {
 		push($$props, true);
-		let formId = prop($$props, "formId", 7), custom = prop($$props, "custom", 7);
+		let formId = prop($$props, "formId", 7), custom = prop($$props, "custom", 7), apiAction = prop($$props, "apiAction", 7), recordId = prop($$props, "recordId", 7);
 		const details = new FormDetails(formId(), $$props.$$host);
 		setDetails$1($$props.$$host, details);
 		async function handleSubmit(event) {
 			event.preventDefault();
 			event.stopPropagation();
+			if (details.isSubmitting) return;
 			details.validateForm();
 			details?.form?.dispatchEvent(new Event("go-after-validation", event));
-			if (details.isValid) {
-				details.apiErrors = {};
-				details.successMessage = void 0;
-				details?.form?.dispatchEvent(new Event("go-submit", event));
-				$$props.$$host.dispatchEvent(new Event("submit", {
-					bubbles: true,
-					composed: true
-				}));
+			if (!details.isValid) return;
+			details.apiErrors = {};
+			details.successMessage = void 0;
+			details?.form?.dispatchEvent(new Event("go-submit", event));
+			const proceed = $$props.$$host.dispatchEvent(new Event("submit", {
+				bubbles: true,
+				composed: true,
+				cancelable: true
+			}));
+			const options = Forms.getFormOptions(formId());
+			const actionName = apiAction() || options?.apiAction;
+			if (!proceed || !actionName) return;
+			const action = getApiAction(actionName);
+			if (!action) return;
+			if (action.requiresRecordId && recordId() == null) {
+				console.error(`(go-form) api action "${actionName}" needs a record-id attribute`);
+				return;
+			}
+			details.isSubmitting = true;
+			$$props.$$host.classList.add("is-submitting");
+			try {
+				const result = await action.call(details.formData, recordId());
+				if (result && "data" in result && result.data) {
+					details.apiErrors = [];
+					const apiMessage = result.data?.message;
+					details.successMessage = shop.t(options?.successMessage ?? apiMessage ?? "form.success");
+					$$props.$$host.dispatchEvent(new Event("go-success", {
+						bubbles: true,
+						composed: true
+					}));
+				} else {
+					const apiErrors = result?.error?.errors;
+					details.apiErrors = !apiErrors || (isArray(apiErrors) ? apiErrors.length === 0 : Object.keys(apiErrors).length === 0) ? [shop.t("form.error")] : apiErrors;
+				}
+			} catch (e) {
+				console.error(`(go-form) api action "${actionName}" failed`, e);
+				details.apiErrors = [shop.t("form.error")];
+			} finally {
+				details.isSubmitting = false;
+				$$props.$$host.classList.remove("is-submitting");
 			}
 		}
 		onMount(() => {
@@ -15235,6 +15515,20 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			},
 			set custom($$value) {
 				custom($$value);
+				flushSync();
+			},
+			get apiAction() {
+				return apiAction();
+			},
+			set apiAction($$value) {
+				apiAction($$value);
+				flushSync();
+			},
+			get recordId() {
+				return recordId();
+			},
+			set recordId($$value) {
+				recordId($$value);
 				flushSync();
 			}
 		};
@@ -15264,6 +15558,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			attribute: "custom",
 			reflect: true,
 			type: "Boolean"
+		},
+		apiAction: {
+			attribute: "api-action",
+			reflect: true,
+			type: "String"
+		},
+		recordId: {
+			attribute: "record-id",
+			type: "Number"
 		}
 	}, [], ["details"]));
 	//#endregion
@@ -34376,11 +34679,17 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function Submit($$anchor, $$props) {
 		push($$props, true);
 		let buttonClass = prop($$props, "buttonClass", 7, "");
+		const _details = getDetails$1($$props.$$host);
+		const details = /* @__PURE__ */ user_derived(() => _details.value);
+		let button = /* @__PURE__ */ state(void 0);
 		onMount(() => {
-			wrapInElement($$props.$$host, "button", {
+			set(button, wrapInElement($$props.$$host, "button", {
 				type: "submit",
 				class: buttonClass()
-			});
+			}), true);
+		});
+		user_effect(() => {
+			if (get$2(button)) get$2(button).disabled = get$2(details)?.isSubmitting ?? false;
 		});
 		return pop({
 			get buttonClass() {

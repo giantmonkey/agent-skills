@@ -24,6 +24,61 @@ The `onsubmit` callback receives the form submission event as a parameter.
 
 **Note:** The `onsubmit` callback is only called when the form is valid. If validation fails, the callback will not be invoked.
 
+## Self-submitting forms (`apiAction`)
+
+A form definition can carry a whitelisted write action. `go-form` then calls the endpoint
+itself after client-side validation and renders the result — no JavaScript needed:
+
+- success → `successMessage` appears in `<go-success-feedback>` and the host fires `go-success`
+- error → `details.apiErrors` renders form-level errors (`<go-errors-feedback>`) or inline
+  per-field errors, depending on the shape the endpoint returns
+- while in flight the host has the `is-submitting` class and `<go-submit>` is disabled
+
+These form ids ship pre-registered (overridable via `go.config({ forms })`):
+
+| form-id                | endpoint                | notes                                               |
+| ---------------------- | ----------------------- | --------------------------------------------------- |
+| `addressCreate`        | `createCustomerAddress` | street/zip/city required                            |
+| `addressUpdate`        | `updateCustomerAddress` | needs `record-id`; partial update, nothing required |
+| `profileUpdate`        | `updateCustomer`        | all fields optional                                 |
+| `passwordUpdate`       | `updatePassword`        | signed-in only                                      |
+| `passwordResetRequest` | `requestPasswordReset`  | works signed-out                                    |
+
+```html
+<!-- zero config: default fields + feedback + submit -->
+<go-form form-id="addressCreate"></go-form>
+
+<!-- custom layout: you place the fields; the endpoint wiring is unchanged.
+     Required fields you omit are caught by the API and shown as form-level errors. -->
+<go-form form-id="addressCreate" custom>
+  <go-field key="customerStreet" required></go-field>
+  <go-field key="customerZip" required></go-field>
+  <go-field key="customerCity" required></go-field>
+  <go-errors-feedback></go-errors-feedback>
+  <go-success-feedback></go-success-feedback>
+  <go-submit>Save</go-submit>
+</go-form>
+
+<!-- id-based writes take the record id from the record-id attribute -->
+<go-form form-id="addressUpdate" record-id="42"></go-form>
+```
+
+The `api-action` attribute overrides the definition's action for one element. To take over
+submission yourself, listen for the (cancelable) `submit` event and call `preventDefault()`:
+
+```js
+document.querySelector('go-form').addEventListener('submit', async e => {
+  e.preventDefault() // suppresses the built-in call
+  const details = e.target.details
+  const res = await go.api.createCustomerAddress(details.formData)
+  if (res?.response?.ok) details.successMessage = 'Saved!'
+  else details.apiErrors = res.error.errors
+})
+```
+
+Known limitation: empty inputs are omitted from the payload, so an update form cannot
+_clear_ a previously saved optional field — use the JS escape hatch for that.
+
 # `<go-field>`
 
 `<go-field>` renders a single form control that is registered with the closest `<go-form>` ancestor. The element bootstraps itself from the field definitions provided through `Forms.defineFields`, so all configuration lives in one place while markup stays declarative.
@@ -56,6 +111,7 @@ The keys listed below ship with the default configuration. The `apiKey` column s
 | `postcode`        | `addr_zip`               | `text`        | —                                                                                                                                                                                                                                        |
 | `city`            | `addr_city`              | `text`        | —                                                                                                                                                                                                                                        |
 | `country`         | `addr_country_id`        | `select`      | Options come from `/api/v3/countries` defined in gomus backend.                                                                                                                                                                          |
+| `addressType`     | `adress_type_id`         | `select`      | Static options for customer addresses: `0` customer address (the backend default when omitted), `1` invoice address, `2` delivery address.                                                                                              |
 | `language`        | `language_id`            | `select`      | Options come from `/api/v4/locales` defined in gomus backend.                                                                                                                                                                            |
 | `acceptTerms`     | `terms`                  | `checkbox`    | Typically required for agreements.                                                                                                                                                                                                       |
 | `paymentMode`     | `payment_mode_id`        | `paymentMode` | Renders a radio group of payment modes from `shop.payment_modes`. Auto-selects (and hides the input) when only one mode is available. Icons are rendered from the CDN when provided; modes without an icon show their name as the label. |

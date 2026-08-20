@@ -4,6 +4,29 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.19.0
+
+_Released 2026-08-20_
+
+Forms can now submit themselves: a form definition carries a whitelisted write action, and `<go-form>` calls the endpoint, renders the result, and locks itself while the call is in flight — no JavaScript needed.
+
+## New
+
+- Self-submitting forms: a form definition (or the new `api-action` attribute) names a whitelisted write action — `createCustomerAddress`, `updateCustomerAddress`, `updateCustomer`, `updatePassword`, or `requestPasswordReset` — and `<go-form>` calls it after client-side validation. Success renders in `<go-success-feedback>` and fires `go-success` on the host; errors render form-level in `<go-errors-feedback>` or inline on the matching fields. A failure with no usable message — an error response without a body, or a network failure — renders a generic form-level message (translatable via the `form.error` key).
+- Five pre-registered form ids work with a single tag, e.g. `<go-form form-id="addressCreate"></go-form>`: `addressCreate`, `addressUpdate`, `profileUpdate`, `passwordUpdate`, `passwordResetRequest`. All overridable via `go.config({ forms })`.
+- `<go-form>` gains `api-action` (override the definition's action per element) and `record-id` (the record for id-based writes, e.g. `<go-form form-id="addressUpdate" record-id="42">`).
+- New field keys for the customer-write payloads: `customerAddressee`, `customerStreet`, `customerZip`, `customerCity`, `customerCountry`, `addressType`, and `tel` — their payload keys match the write endpoints (`adressat`, `street`, `zip`, `city`, `country_id`, `adress_type_id`, `tel`), unlike the checkout-shaped `addr_*` fields. `addressType` is a static select (`0` customer address — the backend default when omitted, `1` invoice, `2` delivery) and leads the `addressCreate` form.
+- In-flight state you can style and rely on: the `<go-form>` host carries the `is-submitting` class while a call runs, `<go-submit>`'s button is disabled, and repeat submits are ignored.
+- Form definitions in `go.config({ forms })` accept `apiAction` and `successMessage` (translated; falls back to the endpoint's own message, then a generic one).
+
+## Changed (behavior)
+
+- The `submit` event on the `<go-form>` host is now cancelable: calling `event.preventDefault()` in a listener suppresses the built-in endpoint call so you can take over submission. Existing listeners keep working unchanged — forms without an api action behave exactly as before.
+- Per-field API errors that match no mounted field (e.g. a custom layout omitting a required field) now appear as form-level errors in `<go-errors-feedback>`, prefixed with the field's payload key, instead of being silently dropped. Error shapes carrying a single message per field (not a list) render correctly too.
+- An optional field left empty no longer runs its format validator — an empty optional email no longer blocks submission. A value the user actually entered is still validated.
+
+---
+
 # v4.18.0
 
 _Released 2026-08-18_

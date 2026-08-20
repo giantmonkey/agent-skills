@@ -1,6 +1,6 @@
 # Components
 
-Library version: 4.18.0
+Library version: 4.19.0
 
 | Tag | Attributes |
 | --- | --- |
@@ -25,7 +25,7 @@ Library version: 4.18.0
 | [`<go-donations>`](./go-donations.md) | 0 |
 | [`<go-errors-feedback>`](./go-errors-feedback.md) | 0 |
 | [`<go-field>`](./go-field.md) | 4 |
-| [`<go-form>`](./go-form.md) | 2 |
+| [`<go-form>`](./go-form.md) | 4 |
 | [`<go-form-feedback>`](./go-form-feedback.md) | 0 |
 | [`<go-if>`](./go-if.md) | 2 |
 | [`<go-init>`](./go-init.md) | 3 |
