@@ -3,10 +3,10 @@
 	var g = globalThis;
 	(g.__zod_globalConfig ??= {}).jitless = true;
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/disclose-version.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/disclose-version.js
 	if (typeof window !== "undefined") ((window.__svelte ??= {}).v ??= /* @__PURE__ */ new Set()).add("5");
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/constants.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/constants.js
 	var HYDRATION_ERROR = {};
 	var UNINITIALIZED = Symbol("uninitialized");
 	var NAMESPACE_HTML = "http://www.w3.org/1999/xhtml";
@@ -14,7 +14,7 @@
 	var NAMESPACE_MATHML = "http://www.w3.org/1998/Math/MathML";
 	var ATTACHMENT_KEY = "@attach";
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/shared/utils.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/shared/utils.js
 	var is_array = Array.isArray;
 	var index_of = Array.prototype.indexOf;
 	var includes = Array.prototype.includes;
@@ -82,7 +82,7 @@
 		return array;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/constants.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/constants.js
 	/**
 	* An effect that does not destroy its child effects when it reruns.
 	* Runs as part of render effects, i.e. not eagerly as part of tree traversal or effect flushing.
@@ -138,7 +138,7 @@
 		throw new Error(`https://svelte.dev/e/lifecycle_outside_component`);
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/errors.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/errors.js
 	/**
 	* Cannot create a `$derived(...)` with an `await` expression outside of an effect tree
 	* @returns {never}
@@ -262,7 +262,7 @@
 		console.warn(`https://svelte.dev/e/svelte_boundary_reset_noop`);
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/hydration.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/hydration.js
 	/** @import { TemplateNode } from '#client' */
 	/**
 	* Use this variable to guard everything related to hydration code so it can be treeshaken out
@@ -341,7 +341,7 @@
 		return node.data;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/reactivity/equality.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/equality.js
 	/** @import { Equals } from '#client' */
 	/** @type {Equals} */
 	function equals(value) {
@@ -360,7 +360,7 @@
 		return !safe_not_equal(value, this.v);
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/flags/index.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/flags/index.js
 	/** True if experimental.async=true */
 	var async_mode_flag = false;
 	/** True if we're not certain that we only have Svelte 5 code in the compilation */
@@ -369,7 +369,7 @@
 		legacy_mode_flag = true;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/shared/clone.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/shared/clone.js
 	/** @import { Snapshot } from './types' */
 	/**
 	* In dev, we keep track of which properties could not be cloned. In prod
@@ -440,7 +440,7 @@
 		}
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/context.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/context.js
 	/** @import { ComponentContext, DevStackEntry, Effect } from '#client' */
 	/** @type {ComponentContext | null} */
 	var component_context = null;
@@ -559,7 +559,7 @@
 		return null;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/task.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/task.js
 	/** @type {Array<() => void>} */
 	var micro_tasks = [];
 	function run_micro_tasks() {
@@ -602,6 +602,7 @@
 	* @param {Effect | null} effect
 	*/
 	function invoke_error_boundary(error, effect) {
+		if (effect !== null && (effect.f & 16384) !== 0) return;
 		while (effect !== null) {
 			if ((effect.f & 128) !== 0) {
 				if ((effect.f & 32768) === 0) throw error;
@@ -617,7 +618,7 @@
 		throw error;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/reactivity/status.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/status.js
 	/** @import { Derived, Signal } from '#client' */
 	var STATUS_MASK = ~(DIRTY | MAYBE_DIRTY | CLEAN);
 	/**
@@ -636,7 +637,7 @@
 		else set_signal_status(derived, MAYBE_DIRTY);
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/reactivity/utils.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/utils.js
 	/** @import { Derived, Effect, Value } from '#client' */
 	/**
 	* @param {Value[] | null} deps
@@ -664,7 +665,7 @@
 		set_signal_status(effect, CLEAN);
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/reactivity/store.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/store.js
 	/**
 	* We set this to `true` when updating a store so that we correctly
 	* schedule effects if the update takes place inside a `$:` effect
@@ -694,7 +695,803 @@
 		}
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/reactivity/batch.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/misc.js
+	/**
+	* @param {HTMLElement} dom
+	* @param {boolean} value
+	* @returns {void}
+	*/
+	function autofocus(dom, value) {
+		if (value) {
+			const body = document.body;
+			dom.autofocus = true;
+			queue_micro_task(() => {
+				if (document.activeElement === body) dom.focus();
+			});
+		}
+	}
+	/**
+	* The child of a textarea actually corresponds to the defaultValue property, so we need
+	* to remove it upon hydration to avoid a bug when someone resets the form value.
+	* @param {HTMLTextAreaElement} dom
+	* @returns {void}
+	*/
+	function remove_textarea_child(dom) {
+		if (hydrating && /* @__PURE__ */ get_first_child(dom) !== null) clear_text_content(dom);
+	}
+	var listening_to_form_reset = false;
+	function add_form_reset_listener() {
+		if (!listening_to_form_reset) {
+			listening_to_form_reset = true;
+			document.addEventListener("reset", (evt) => {
+				Promise.resolve().then(() => {
+					if (!evt.defaultPrevented) for (const e of evt.target.elements)
+ /** @type {any} */ e[FORM_RESET_HANDLER]?.();
+				});
+			}, { capture: true });
+		}
+	}
+	//#endregion
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/bindings/shared.js
+	/**
+	* @template T
+	* @param {() => T} fn
+	*/
+	function without_reactive_context(fn) {
+		var previous_reaction = active_reaction;
+		var previous_effect = active_effect;
+		set_active_reaction(null);
+		set_active_effect(null);
+		try {
+			return fn();
+		} finally {
+			set_active_reaction(previous_reaction);
+			set_active_effect(previous_effect);
+		}
+	}
+	/**
+	* Listen to the given event, and then instantiate a global form reset listener if not already done,
+	* to notify all bindings when the form is reset
+	* @param {HTMLElement} element
+	* @param {string} event
+	* @param {(is_reset?: true) => void} handler
+	* @param {(is_reset?: true) => void} [on_reset]
+	*/
+	function listen_to_event_and_reset_event(element, event, handler, on_reset = handler) {
+		element.addEventListener(event, () => without_reactive_context(handler));
+		const prev = element[FORM_RESET_HANDLER];
+		if (prev)
+ /** @type {any} */ element[FORM_RESET_HANDLER] = () => {
+			prev();
+			on_reset(true);
+		};
+		else
+ /** @type {any} */ element[FORM_RESET_HANDLER] = () => on_reset(true);
+		add_form_reset_listener();
+	}
+	//#endregion
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/reactivity/create-subscriber.js
+	/**
+	* Returns a `subscribe` function that integrates external event-based systems with Svelte's reactivity.
+	* It's particularly useful for integrating with web APIs like `MediaQuery`, `IntersectionObserver`, or `WebSocket`.
+	*
+	* If `subscribe` is called inside an effect (including indirectly, for example inside a getter),
+	* the `start` callback will be called with an `update` function. Whenever `update` is called, the effect re-runs.
+	*
+	* If `start` returns a cleanup function, it will be called when the effect is destroyed.
+	*
+	* If `subscribe` is called in multiple effects, `start` will only be called once as long as the effects
+	* are active, and the returned teardown function will only be called when all effects are destroyed.
+	*
+	* It's best understood with an example. Here's an implementation of [`MediaQuery`](https://svelte.dev/docs/svelte/svelte-reactivity#MediaQuery):
+	*
+	* ```js
+	* import { createSubscriber } from 'svelte/reactivity';
+	* import { on } from 'svelte/events';
+	*
+	* export class MediaQuery {
+	* 	#query;
+	* 	#subscribe;
+	*
+	* 	constructor(query) {
+	* 		this.#query = window.matchMedia(`(${query})`);
+	*
+	* 		this.#subscribe = createSubscriber((update) => {
+	* 			// when the `change` event occurs, re-run any effects that read `this.current`
+	* 			const off = on(this.#query, 'change', update);
+	*
+	* 			// stop listening when all the effects are destroyed
+	* 			return () => off();
+	* 		});
+	* 	}
+	*
+	* 	get current() {
+	* 		// This makes the getter reactive, if read in an effect
+	* 		this.#subscribe();
+	*
+	* 		// Return the current state of the query, whether or not we're in an effect
+	* 		return this.#query.matches;
+	* 	}
+	* }
+	* ```
+	* @param {(update: () => void) => (() => void) | void} start
+	* @since 5.7.0
+	*/
+	function createSubscriber(start) {
+		let subscribers = 0;
+		let version = source(0);
+		/** @type {(() => void) | void} */
+		let stop;
+		return () => {
+			if (effect_tracking()) {
+				get$2(version);
+				render_effect(() => {
+					if (subscribers === 0) stop = untrack(() => start(() => increment$1(version)));
+					subscribers += 1;
+					return () => {
+						queue_micro_task(() => {
+							subscribers -= 1;
+							if (subscribers === 0) {
+								stop?.();
+								stop = void 0;
+								increment$1(version);
+							}
+						});
+					};
+				});
+			}
+		};
+	}
+	//#endregion
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/blocks/boundary.js
+	/** @import { Effect, Source, TemplateNode, } from '#client' */
+	/**
+	* @typedef {{
+	* 	 onerror?: ((error: unknown, reset: () => void) => void) | null;
+	*   failed?: ((anchor: Node, error: () => unknown, reset: () => () => void) => void) | null;
+	*   pending?: ((anchor: Node) => void) | null;
+	* }} BoundaryProps
+	*/
+	var flags = EFFECT_TRANSPARENT | EFFECT_PRESERVED;
+	/**
+	* @param {TemplateNode} node
+	* @param {BoundaryProps} props
+	* @param {((anchor: Node) => void)} children
+	* @param {((error: unknown) => unknown) | undefined} [transform_error]
+	* @returns {void}
+	*/
+	function boundary(node, props, children, transform_error) {
+		new Boundary(node, props, children, transform_error);
+	}
+	var Boundary = class {
+		/** @type {Boundary | null} */
+		parent;
+		is_pending = false;
+		/**
+		* API-level transformError transform function. Transforms errors before they reach the `failed` snippet.
+		* Inherited from parent boundary, or defaults to identity.
+		* @type {(error: unknown) => unknown}
+		*/
+		transform_error;
+		/** @type {TemplateNode} */
+		#anchor;
+		/** @type {TemplateNode | null} */
+		#hydrate_open = hydrating ? hydrate_node : null;
+		/** @type {BoundaryProps} */
+		#props;
+		/** @type {((anchor: Node) => void)} */
+		#children;
+		/** @type {Effect} */
+		#effect;
+		/** @type {Effect | null} */
+		#main_effect = null;
+		/** @type {Effect | null} */
+		#pending_effect = null;
+		/** @type {Effect | null} */
+		#failed_effect = null;
+		/** @type {DocumentFragment | null} */
+		#offscreen_fragment = null;
+		#local_pending_count = 0;
+		#pending_count = 0;
+		#pending_count_update_queued = false;
+		/** @type {Set<Effect>} */
+		#dirty_effects = /* @__PURE__ */ new Set();
+		/** @type {Set<Effect>} */
+		#maybe_dirty_effects = /* @__PURE__ */ new Set();
+		/**
+		* A source containing the number of pending async deriveds/expressions.
+		* Only created if `$effect.pending()` is used inside the boundary,
+		* otherwise updating the source results in needless `Batch.ensure()`
+		* calls followed by no-op flushes
+		* @type {Source<number> | null}
+		*/
+		#effect_pending = null;
+		#effect_pending_subscriber = createSubscriber(() => {
+			this.#effect_pending = source(this.#local_pending_count);
+			return () => {
+				this.#effect_pending = null;
+			};
+		});
+		/**
+		* @param {TemplateNode} node
+		* @param {BoundaryProps} props
+		* @param {((anchor: Node) => void)} children
+		* @param {((error: unknown) => unknown) | undefined} [transform_error]
+		*/
+		constructor(node, props, children, transform_error) {
+			this.#anchor = node;
+			this.#props = props;
+			this.#children = (anchor) => {
+				var effect = active_effect;
+				effect.b = this;
+				effect.f |= 128;
+				children(anchor);
+			};
+			this.parent = active_effect.b;
+			this.transform_error = transform_error ?? this.parent?.transform_error ?? ((e) => e);
+			this.#effect = block(() => {
+				if (hydrating) {
+					const comment = this.#hydrate_open;
+					hydrate_next();
+					const server_rendered_pending = comment.data === "[!";
+					if (comment.data.startsWith("[?")) {
+						const serialized_error = JSON.parse(comment.data.slice(2));
+						this.#hydrate_failed_content(serialized_error);
+					} else if (server_rendered_pending) this.#hydrate_pending_content();
+					else this.#hydrate_resolved_content();
+				} else this.#render();
+			}, flags);
+			if (hydrating) this.#anchor = hydrate_node;
+		}
+		#hydrate_resolved_content() {
+			try {
+				this.#main_effect = branch(() => this.#children(this.#anchor));
+			} catch (error) {
+				this.error(error);
+			}
+		}
+		/**
+		* @param {unknown} error The deserialized error from the server's hydration comment
+		*/
+		#hydrate_failed_content(error) {
+			const failed = this.#props.failed;
+			const { reset, invoke_onerror } = this.#create_reset(error);
+			queue_micro_task(invoke_onerror);
+			if (!failed) return;
+			this.#failed_effect = branch(() => {
+				failed(this.#anchor, () => error, () => reset);
+			});
+		}
+		/**
+		* Creates the `reset` function for a failed boundary, along with a function
+		* that invokes `onerror` with it (if provided)
+		* @param {unknown} error
+		* @returns {{ reset: () => void, invoke_onerror: () => void }}
+		*/
+		#create_reset(error) {
+			var did_reset = false;
+			var calling_on_error = false;
+			const reset = () => {
+				if (did_reset) {
+					svelte_boundary_reset_noop();
+					return;
+				}
+				did_reset = true;
+				if (calling_on_error) svelte_boundary_reset_onerror();
+				if (this.#failed_effect !== null) pause_effect(this.#failed_effect, () => {
+					this.#failed_effect = null;
+				});
+				this.#run(() => {
+					this.#render();
+				});
+			};
+			const invoke_onerror = () => {
+				try {
+					calling_on_error = true;
+					this.#props.onerror?.(error, reset);
+					calling_on_error = false;
+				} catch (err) {
+					invoke_error_boundary(err, this.#effect && this.#effect.parent);
+				}
+			};
+			return {
+				reset,
+				invoke_onerror
+			};
+		}
+		#hydrate_pending_content() {
+			const pending = this.#props.pending;
+			if (!pending) return;
+			this.is_pending = true;
+			this.#pending_effect = branch(() => pending(this.#anchor));
+			queue_micro_task(() => {
+				var fragment = this.#offscreen_fragment = document.createDocumentFragment();
+				var anchor = create_text();
+				fragment.append(anchor);
+				this.#main_effect = this.#run(() => {
+					return branch(() => this.#children(anchor));
+				});
+				if (this.#pending_count === 0) {
+					this.#anchor.before(fragment);
+					this.#offscreen_fragment = null;
+					pause_effect(this.#pending_effect, () => {
+						this.#pending_effect = null;
+					});
+					this.#resolve(current_batch);
+				}
+			});
+		}
+		#render() {
+			try {
+				this.is_pending = this.has_pending_snippet();
+				this.#pending_count = 0;
+				this.#local_pending_count = 0;
+				this.#main_effect = branch(() => {
+					this.#children(this.#anchor);
+				});
+				if (this.#pending_count > 0) {
+					var fragment = this.#offscreen_fragment = document.createDocumentFragment();
+					move_effect(this.#main_effect, fragment);
+					const pending = this.#props.pending;
+					this.#pending_effect = branch(() => pending(this.#anchor));
+				} else this.#resolve(current_batch);
+			} catch (error) {
+				this.error(error);
+			}
+		}
+		/**
+		* @param {Batch} batch
+		*/
+		#resolve(batch) {
+			this.is_pending = false;
+			batch.transfer_effects(this.#dirty_effects, this.#maybe_dirty_effects);
+		}
+		/**
+		* Defer an effect inside a pending boundary until the boundary resolves
+		* @param {Effect} effect
+		*/
+		defer_effect(effect) {
+			defer_effect(effect, this.#dirty_effects, this.#maybe_dirty_effects);
+		}
+		/**
+		* Returns `false` if the effect exists inside a boundary whose pending snippet is shown
+		* @returns {boolean}
+		*/
+		is_rendered() {
+			return !this.is_pending && (!this.parent || this.parent.is_rendered());
+		}
+		has_pending_snippet() {
+			return !!this.#props.pending;
+		}
+		/**
+		* @template T
+		* @param {() => T} fn
+		*/
+		#run(fn) {
+			var previous_effect = active_effect;
+			var previous_reaction = active_reaction;
+			var previous_ctx = component_context;
+			set_active_effect(this.#effect);
+			set_active_reaction(this.#effect);
+			set_component_context(this.#effect.ctx);
+			try {
+				Batch.ensure();
+				return fn();
+			} catch (e) {
+				handle_error(e);
+				return null;
+			} finally {
+				set_active_effect(previous_effect);
+				set_active_reaction(previous_reaction);
+				set_component_context(previous_ctx);
+			}
+		}
+		/**
+		* Updates the pending count associated with the currently visible pending snippet,
+		* if any, such that we can replace the snippet with content once work is done
+		* @param {1 | -1} d
+		* @param {Batch} batch
+		*/
+		#update_pending_count(d, batch) {
+			if (!this.has_pending_snippet()) {
+				if (this.parent) this.parent.#update_pending_count(d, batch);
+				return;
+			}
+			this.#pending_count += d;
+			if (this.#pending_count === 0) {
+				this.#resolve(batch);
+				if (this.#pending_effect) pause_effect(this.#pending_effect, () => {
+					this.#pending_effect = null;
+				});
+				if (this.#offscreen_fragment) {
+					this.#anchor.before(this.#offscreen_fragment);
+					this.#offscreen_fragment = null;
+				}
+			}
+		}
+		/**
+		* Update the source that powers `$effect.pending()` inside this boundary,
+		* and controls when the current `pending` snippet (if any) is removed.
+		* Do not call from inside the class
+		* @param {1 | -1} d
+		* @param {Batch} batch
+		*/
+		update_pending_count(d, batch) {
+			this.#update_pending_count(d, batch);
+			this.#local_pending_count += d;
+			if (!this.#effect_pending || this.#pending_count_update_queued) return;
+			this.#pending_count_update_queued = true;
+			queue_micro_task(() => {
+				this.#pending_count_update_queued = false;
+				if (this.#effect_pending) internal_set(this.#effect_pending, this.#local_pending_count);
+			});
+		}
+		get_effect_pending() {
+			this.#effect_pending_subscriber();
+			return get$2(this.#effect_pending);
+		}
+		/** @param {unknown} error */
+		error(error) {
+			if (!this.#props.onerror && !this.#props.failed) throw error;
+			if (current_batch?.is_fork) {
+				if (this.#main_effect) current_batch.skip_effect(this.#main_effect);
+				if (this.#pending_effect) current_batch.skip_effect(this.#pending_effect);
+				if (this.#failed_effect) current_batch.skip_effect(this.#failed_effect);
+				current_batch.oncommit(() => {
+					this.#handle_error(error);
+				});
+			} else this.#handle_error(error);
+		}
+		/**
+		* @param {unknown} error
+		*/
+		#handle_error(error) {
+			if (this.#main_effect) {
+				destroy_effect(this.#main_effect);
+				this.#main_effect = null;
+			}
+			if (this.#pending_effect) {
+				destroy_effect(this.#pending_effect);
+				this.#pending_effect = null;
+			}
+			if (this.#failed_effect) {
+				destroy_effect(this.#failed_effect);
+				this.#failed_effect = null;
+			}
+			if (hydrating) {
+				set_hydrate_node(this.#hydrate_open);
+				next();
+				set_hydrate_node(skip_nodes());
+			}
+			let failed = this.#props.failed;
+			/** @param {unknown} transformed_error */
+			const handle_error_result = (transformed_error) => {
+				const { reset, invoke_onerror } = this.#create_reset(transformed_error);
+				invoke_onerror();
+				if (failed) this.#failed_effect = this.#run(() => {
+					try {
+						return branch(() => {
+							var effect = active_effect;
+							effect.b = this;
+							effect.f |= 128;
+							failed(this.#anchor, () => transformed_error, () => reset);
+						});
+					} catch (error) {
+						invoke_error_boundary(error, this.#effect.parent);
+						return null;
+					}
+				});
+			};
+			queue_micro_task(() => {
+				/** @type {unknown} */
+				var result;
+				try {
+					result = this.transform_error(error);
+				} catch (e) {
+					invoke_error_boundary(e, this.#effect && this.#effect.parent);
+					return;
+				}
+				if (result !== null && typeof result === "object" && typeof result.then === "function")
+ /** @type {any} */ result.then(
+					handle_error_result,
+					/** @param {unknown} e */
+					(e) => invoke_error_boundary(e, this.#effect && this.#effect.parent)
+				);
+				else handle_error_result(result);
+			});
+		}
+	};
+	//#endregion
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/async.js
+	/** @import { Blocker, Effect, Source, Value } from '#client' */
+	/**
+	* @param {Blocker[]} blockers
+	* @param {Array<() => any>} sync
+	* @param {Array<() => Promise<any>>} async
+	* @param {(values: Value[]) => any} fn
+	*/
+	function flatten(blockers, sync, async, fn) {
+		const d = is_runes() ? derived : derived_safe_equal;
+		var pending = blockers.filter((b) => !b.settled);
+		var deriveds = sync.map(d);
+		if (async.length === 0 && pending.length === 0) {
+			fn(deriveds);
+			return;
+		}
+		var parent = active_effect;
+		var restore = capture();
+		var blocker_promise = pending.length === 1 ? pending[0].promise : pending.length > 1 ? Promise.all(pending.map((b) => b.promise)) : null;
+		/**
+		* @param {Source[]} async
+		*/
+		function finish(async) {
+			if ((parent.f & 16384) !== 0) return;
+			restore();
+			try {
+				fn([...deriveds, ...async]);
+			} catch (error) {
+				invoke_error_boundary(error, parent);
+			}
+			unset_context();
+		}
+		var decrement_pending = increment_pending();
+		if (async.length === 0) {
+			/** @type {Promise<any>} */ blocker_promise.then(() => finish([])).finally(decrement_pending);
+			return;
+		}
+		function run() {
+			Promise.all(async.map((expression) => /* @__PURE__ */ async_derived(expression))).then(finish).catch((error) => invoke_error_boundary(error, parent)).finally(decrement_pending);
+		}
+		if (blocker_promise) blocker_promise.then(() => {
+			restore();
+			run();
+			unset_context();
+		});
+		else run();
+	}
+	/**
+	* Captures the current effect context so that we can restore it after
+	* some asynchronous work has happened (so that e.g. `await a + b`
+	* causes `b` to be registered as a dependency).
+	*/
+	function capture() {
+		var previous_effect = active_effect;
+		var previous_reaction = active_reaction;
+		var previous_component_context = component_context;
+		var previous_batch = current_batch;
+		return function restore(activate_batch = true) {
+			set_active_effect(previous_effect);
+			set_active_reaction(previous_reaction);
+			set_component_context(previous_component_context);
+			if (activate_batch && (previous_effect.f & 16384) === 0) {
+				previous_batch?.activate();
+				previous_batch?.apply();
+			}
+		};
+	}
+	function unset_context(deactivate_batch = true) {
+		set_active_effect(null);
+		set_active_reaction(null);
+		set_component_context(null);
+		if (deactivate_batch) current_batch?.deactivate();
+	}
+	/**
+	* @returns {(skip?: boolean) => void}
+	*/
+	function increment_pending() {
+		var effect = active_effect;
+		var boundary = effect.b;
+		var batch = current_batch;
+		var blocking = !!boundary?.is_rendered();
+		boundary?.update_pending_count(1, batch);
+		batch.increment(blocking, effect);
+		return () => {
+			boundary?.update_pending_count(-1, batch);
+			batch.decrement(blocking, effect);
+		};
+	}
+	/**
+	* @template V
+	* @param {() => V} fn
+	* @returns {Derived<V>}
+	*/
+	/*#__NO_SIDE_EFFECTS__*/
+	function derived(fn) {
+		var flags = 2 | DIRTY;
+		if (active_effect !== null) active_effect.f |= EFFECT_PRESERVED;
+		return {
+			ctx: component_context,
+			deps: null,
+			effects: null,
+			equals,
+			f: flags,
+			fn,
+			reactions: null,
+			rv: 0,
+			v: UNINITIALIZED,
+			wv: 0,
+			parent: active_effect,
+			ac: null
+		};
+	}
+	var OBSOLETE = Symbol("obsolete");
+	/**
+	* @template V
+	* @param {() => V | Promise<V>} fn
+	* @param {string} [label]
+	* @param {string} [location] If provided, print a warning if the value is not read immediately after update
+	* @returns {Promise<Source<V>>}
+	*/
+	/*#__NO_SIDE_EFFECTS__*/
+	function async_derived(fn, label, location) {
+		let parent = active_effect;
+		if (parent === null) async_derived_orphan();
+		var promise = void 0;
+		var signal = source(UNINITIALIZED);
+		var should_suspend = !active_reaction;
+		/** @type {Set<ReturnType<typeof deferred<V>>>} */
+		var deferreds = /* @__PURE__ */ new Set();
+		async_effect(() => {
+			var effect = active_effect;
+			/** @type {ReturnType<typeof deferred<V>>} */
+			var d = deferred();
+			promise = d.promise;
+			try {
+				Promise.resolve(fn()).then(d.resolve, (e) => {
+					if (e !== STALE_REACTION) d.reject(e);
+				}).finally(unset_context);
+			} catch (error) {
+				d.reject(error);
+				unset_context();
+			}
+			var batch = current_batch;
+			if (should_suspend) {
+				if ((effect.f & 32768) !== 0) var decrement_pending = increment_pending();
+				if (parent.b?.is_rendered()) batch.async_deriveds.get(effect)?.reject(OBSOLETE);
+				else for (const d of deferreds.values()) d.reject(OBSOLETE);
+				deferreds.add(d);
+				batch.async_deriveds.set(effect, d);
+			}
+			/**
+			* @param {any} value
+			* @param {unknown} error
+			*/
+			const handler = (value, error = void 0) => {
+				decrement_pending?.();
+				deferreds.delete(d);
+				if (error === OBSOLETE) return;
+				batch.activate();
+				if (error) {
+					signal.f |= ERROR_VALUE;
+					internal_set(signal, error);
+				} else {
+					if ((signal.f & 8388608) !== 0) signal.f ^= ERROR_VALUE;
+					internal_set(signal, value);
+				}
+				batch.deactivate();
+			};
+			d.promise.then(handler, (e) => handler(null, e || "unknown"));
+		});
+		teardown(() => {
+			for (const d of deferreds) d.reject(OBSOLETE);
+		});
+		return new Promise((fulfil) => {
+			/** @param {Promise<V>} p */
+			function next(p) {
+				function go() {
+					if (p === promise) fulfil(signal);
+					else next(promise);
+				}
+				p.then(go, go);
+			}
+			next(promise);
+		});
+	}
+	/**
+	* @template V
+	* @param {() => V} fn
+	* @returns {Derived<V>}
+	*/
+	/*#__NO_SIDE_EFFECTS__*/
+	function user_derived(fn) {
+		const d = /* @__PURE__ */ derived(fn);
+		if (!async_mode_flag) push_reaction_value(d);
+		return d;
+	}
+	/**
+	* @template V
+	* @param {() => V} fn
+	* @returns {Derived<V>}
+	*/
+	/*#__NO_SIDE_EFFECTS__*/
+	function derived_safe_equal(fn) {
+		const signal = /* @__PURE__ */ derived(fn);
+		signal.equals = safe_equals;
+		return signal;
+	}
+	/**
+	* @param {Derived} derived
+	* @returns {void}
+	*/
+	function destroy_derived_effects(derived) {
+		var effects = derived.effects;
+		if (effects !== null) {
+			derived.effects = null;
+			for (var i = 0; i < effects.length; i += 1) destroy_effect(effects[i]);
+		}
+	}
+	/**
+	* @template T
+	* @param {Derived} derived
+	* @returns {T}
+	*/
+	function execute_derived(derived) {
+		var value;
+		var prev_active_effect = active_effect;
+		var parent = derived.parent;
+		if (!is_destroying_effect && parent !== null && derived.v !== UNINITIALIZED && (parent.f & 24576) !== 0) {
+			derived_inert();
+			return derived.v;
+		}
+		set_active_effect(parent);
+		try {
+			derived.f &= ~WAS_MARKED;
+			destroy_derived_effects(derived);
+			value = update_reaction(derived);
+		} finally {
+			set_active_effect(prev_active_effect);
+		}
+		return value;
+	}
+	/**
+	* @param {Derived} derived
+	* @returns {void}
+	*/
+	function update_derived(derived) {
+		var value = execute_derived(derived);
+		if (!derived.equals(value)) {
+			derived.wv = increment_write_version();
+			if (!current_batch?.is_fork || derived.deps === null) {
+				if (current_batch !== null) {
+					current_batch.capture(derived, value, true);
+					previous_batch?.capture(derived, value, true);
+				} else derived.v = value;
+				if (derived.deps === null) {
+					set_signal_status(derived, CLEAN);
+					return;
+				}
+			}
+		}
+		if (is_destroying_effect) return;
+		if (batch_values !== null) {
+			if (effect_tracking() || current_batch?.is_fork) batch_values.set(derived, value);
+		} else update_derived_status(derived);
+	}
+	/**
+	* @param {Derived} derived
+	*/
+	function freeze_derived_effects(derived) {
+		if (derived.effects === null) return;
+		for (const e of derived.effects) if (e.teardown || e.ac) {
+			e.teardown?.();
+			if (e.ac !== null) without_reactive_context(() => {
+				/** @type {AbortController} */ e.ac.abort(STALE_REACTION);
+				e.ac = null;
+			});
+			if (e.fn !== null) e.teardown = noop$1;
+			remove_reactions(e, 0);
+			destroy_effect_children(e);
+		}
+	}
+	/**
+	* @param {Derived} derived
+	*/
+	function unfreeze_derived_effects(derived) {
+		if (derived.effects === null) return;
+		for (const e of derived.effects) if (e.teardown && e.fn !== null) update_effect(e);
+	}
+	//#endregion
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/batch.js
 	/** @import { Fork } from 'svelte' */
 	/** @import { Derived, Effect, Reaction, Source, Value } from '#client' */
 	/** @type {Batch | null} */
@@ -950,10 +1747,12 @@
 					current_batch = next_batch;
 				}
 			}
-			if (this.#roots.length > 0) if (next_batch !== null) {
-				const batch = next_batch;
-				batch.#roots.push(...this.#roots.filter((r) => !batch.#roots.includes(r)));
-			} else next_batch = this;
+			if (this.#roots.length > 0) {
+				if (next_batch !== null) {
+					const batch = next_batch;
+					batch.#roots.push(...this.#roots.filter((r) => !batch.#roots.includes(r)));
+				} else next_batch = this;
+			}
 			if (next_batch !== null) next_batch.#process();
 		}
 		/**
@@ -1015,6 +1814,7 @@
 				const d = this.async_deriveds.get(effect);
 				if (d) deferred.promise.then(d.resolve).catch(d.reject);
 			}
+			batch.async_deriveds.clear();
 			this.transfer_effects(batch.#dirty_effects, batch.#maybe_dirty_effects);
 			/**
 			* mark all effects that depend on `batch.current`, except the
@@ -1027,6 +1827,7 @@
 			const mark = (value) => {
 				var reactions = value.reactions;
 				if (reactions === null) return;
+				if ((value.f & 2) !== 0 && (value.f & 6144) === 0) return;
 				for (const reaction of reactions) {
 					var flags = reaction.f;
 					if ((flags & 2) !== 0) mark(reaction);
@@ -1093,6 +1894,7 @@
 		discard() {
 			for (const fn of this.#discard_callbacks) fn(this);
 			this.#discard_callbacks.clear();
+			for (const deferred of this.async_deriveds.values()) deferred.reject(OBSOLETE);
 			this.#unlink();
 			this.#deferred?.resolve();
 		}
@@ -1119,8 +1921,9 @@
 					const d = batch.async_deriveds.get(effect);
 					if (d) deferred.promise.then(d.resolve).catch(d.reject);
 				}
-				if (!batch.#started) continue;
-				var others = [...batch.current.keys()].filter((s) => !batch.current.get(s)[1] && !this.current.has(s));
+				var current = [...batch.current.keys()].filter((source) => !batch.current.get(source)[1]);
+				if (!batch.#started || current.length === 0) continue;
+				var others = current.filter((source) => !this.current.has(source));
 				if (others.length === 0) {
 					if (is_earlier) batch.discard();
 				} else if (sources.length > 0) {
@@ -1141,10 +1944,12 @@
 						return v2[0] !== v1[0] || v2[1] !== v1[1];
 					}).map(([c]) => c);
 					if (current_unequal.length > 0) {
-						for (const effect of this.#new_effects) if ((effect.f & 155648) === 0 && depends_on(effect, current_unequal, checked)) if ((effect.f & 4194320) !== 0) {
-							set_signal_status(effect, DIRTY);
-							batch.schedule(effect);
-						} else batch.#dirty_effects.add(effect);
+						for (const effect of this.#new_effects) if ((effect.f & 155648) === 0 && depends_on(effect, current_unequal, checked)) {
+							if ((effect.f & 4194320) !== 0) {
+								set_signal_status(effect, DIRTY);
+								batch.schedule(effect);
+							} else batch.#dirty_effects.add(effect);
+						}
 					}
 					if (batch.#roots.length > 0 && !batch.#decrement_queued) {
 						batch.apply();
@@ -1423,709 +2228,7 @@
 		}
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/reactivity/create-subscriber.js
-	/**
-	* Returns a `subscribe` function that integrates external event-based systems with Svelte's reactivity.
-	* It's particularly useful for integrating with web APIs like `MediaQuery`, `IntersectionObserver`, or `WebSocket`.
-	*
-	* If `subscribe` is called inside an effect (including indirectly, for example inside a getter),
-	* the `start` callback will be called with an `update` function. Whenever `update` is called, the effect re-runs.
-	*
-	* If `start` returns a cleanup function, it will be called when the effect is destroyed.
-	*
-	* If `subscribe` is called in multiple effects, `start` will only be called once as long as the effects
-	* are active, and the returned teardown function will only be called when all effects are destroyed.
-	*
-	* It's best understood with an example. Here's an implementation of [`MediaQuery`](https://svelte.dev/docs/svelte/svelte-reactivity#MediaQuery):
-	*
-	* ```js
-	* import { createSubscriber } from 'svelte/reactivity';
-	* import { on } from 'svelte/events';
-	*
-	* export class MediaQuery {
-	* 	#query;
-	* 	#subscribe;
-	*
-	* 	constructor(query) {
-	* 		this.#query = window.matchMedia(`(${query})`);
-	*
-	* 		this.#subscribe = createSubscriber((update) => {
-	* 			// when the `change` event occurs, re-run any effects that read `this.current`
-	* 			const off = on(this.#query, 'change', update);
-	*
-	* 			// stop listening when all the effects are destroyed
-	* 			return () => off();
-	* 		});
-	* 	}
-	*
-	* 	get current() {
-	* 		// This makes the getter reactive, if read in an effect
-	* 		this.#subscribe();
-	*
-	* 		// Return the current state of the query, whether or not we're in an effect
-	* 		return this.#query.matches;
-	* 	}
-	* }
-	* ```
-	* @param {(update: () => void) => (() => void) | void} start
-	* @since 5.7.0
-	*/
-	function createSubscriber(start) {
-		let subscribers = 0;
-		let version = source(0);
-		/** @type {(() => void) | void} */
-		let stop;
-		return () => {
-			if (effect_tracking()) {
-				get$2(version);
-				render_effect(() => {
-					if (subscribers === 0) stop = untrack(() => start(() => increment$1(version)));
-					subscribers += 1;
-					return () => {
-						queue_micro_task(() => {
-							subscribers -= 1;
-							if (subscribers === 0) {
-								stop?.();
-								stop = void 0;
-								increment$1(version);
-							}
-						});
-					};
-				});
-			}
-		};
-	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/blocks/boundary.js
-	/** @import { Effect, Source, TemplateNode, } from '#client' */
-	/**
-	* @typedef {{
-	* 	 onerror?: ((error: unknown, reset: () => void) => void) | null;
-	*   failed?: ((anchor: Node, error: () => unknown, reset: () => () => void) => void) | null;
-	*   pending?: ((anchor: Node) => void) | null;
-	* }} BoundaryProps
-	*/
-	var flags = EFFECT_TRANSPARENT | EFFECT_PRESERVED;
-	/**
-	* @param {TemplateNode} node
-	* @param {BoundaryProps} props
-	* @param {((anchor: Node) => void)} children
-	* @param {((error: unknown) => unknown) | undefined} [transform_error]
-	* @returns {void}
-	*/
-	function boundary(node, props, children, transform_error) {
-		new Boundary(node, props, children, transform_error);
-	}
-	var Boundary = class {
-		/** @type {Boundary | null} */
-		parent;
-		is_pending = false;
-		/**
-		* API-level transformError transform function. Transforms errors before they reach the `failed` snippet.
-		* Inherited from parent boundary, or defaults to identity.
-		* @type {(error: unknown) => unknown}
-		*/
-		transform_error;
-		/** @type {TemplateNode} */
-		#anchor;
-		/** @type {TemplateNode | null} */
-		#hydrate_open = hydrating ? hydrate_node : null;
-		/** @type {BoundaryProps} */
-		#props;
-		/** @type {((anchor: Node) => void)} */
-		#children;
-		/** @type {Effect} */
-		#effect;
-		/** @type {Effect | null} */
-		#main_effect = null;
-		/** @type {Effect | null} */
-		#pending_effect = null;
-		/** @type {Effect | null} */
-		#failed_effect = null;
-		/** @type {DocumentFragment | null} */
-		#offscreen_fragment = null;
-		#local_pending_count = 0;
-		#pending_count = 0;
-		#pending_count_update_queued = false;
-		/** @type {Set<Effect>} */
-		#dirty_effects = /* @__PURE__ */ new Set();
-		/** @type {Set<Effect>} */
-		#maybe_dirty_effects = /* @__PURE__ */ new Set();
-		/**
-		* A source containing the number of pending async deriveds/expressions.
-		* Only created if `$effect.pending()` is used inside the boundary,
-		* otherwise updating the source results in needless `Batch.ensure()`
-		* calls followed by no-op flushes
-		* @type {Source<number> | null}
-		*/
-		#effect_pending = null;
-		#effect_pending_subscriber = createSubscriber(() => {
-			this.#effect_pending = source(this.#local_pending_count);
-			return () => {
-				this.#effect_pending = null;
-			};
-		});
-		/**
-		* @param {TemplateNode} node
-		* @param {BoundaryProps} props
-		* @param {((anchor: Node) => void)} children
-		* @param {((error: unknown) => unknown) | undefined} [transform_error]
-		*/
-		constructor(node, props, children, transform_error) {
-			this.#anchor = node;
-			this.#props = props;
-			this.#children = (anchor) => {
-				var effect = active_effect;
-				effect.b = this;
-				effect.f |= 128;
-				children(anchor);
-			};
-			this.parent = active_effect.b;
-			this.transform_error = transform_error ?? this.parent?.transform_error ?? ((e) => e);
-			this.#effect = block(() => {
-				if (hydrating) {
-					const comment = this.#hydrate_open;
-					hydrate_next();
-					const server_rendered_pending = comment.data === "[!";
-					if (comment.data.startsWith("[?")) {
-						const serialized_error = JSON.parse(comment.data.slice(2));
-						this.#hydrate_failed_content(serialized_error);
-					} else if (server_rendered_pending) this.#hydrate_pending_content();
-					else this.#hydrate_resolved_content();
-				} else this.#render();
-			}, flags);
-			if (hydrating) this.#anchor = hydrate_node;
-		}
-		#hydrate_resolved_content() {
-			try {
-				this.#main_effect = branch(() => this.#children(this.#anchor));
-			} catch (error) {
-				this.error(error);
-			}
-		}
-		/**
-		* @param {unknown} error The deserialized error from the server's hydration comment
-		*/
-		#hydrate_failed_content(error) {
-			const failed = this.#props.failed;
-			if (!failed) return;
-			this.#failed_effect = branch(() => {
-				failed(this.#anchor, () => error, () => () => {});
-			});
-		}
-		#hydrate_pending_content() {
-			const pending = this.#props.pending;
-			if (!pending) return;
-			this.is_pending = true;
-			this.#pending_effect = branch(() => pending(this.#anchor));
-			queue_micro_task(() => {
-				var fragment = this.#offscreen_fragment = document.createDocumentFragment();
-				var anchor = create_text();
-				fragment.append(anchor);
-				this.#main_effect = this.#run(() => {
-					return branch(() => this.#children(anchor));
-				});
-				if (this.#pending_count === 0) {
-					this.#anchor.before(fragment);
-					this.#offscreen_fragment = null;
-					pause_effect(this.#pending_effect, () => {
-						this.#pending_effect = null;
-					});
-					this.#resolve(current_batch);
-				}
-			});
-		}
-		#render() {
-			try {
-				this.is_pending = this.has_pending_snippet();
-				this.#pending_count = 0;
-				this.#local_pending_count = 0;
-				this.#main_effect = branch(() => {
-					this.#children(this.#anchor);
-				});
-				if (this.#pending_count > 0) {
-					var fragment = this.#offscreen_fragment = document.createDocumentFragment();
-					move_effect(this.#main_effect, fragment);
-					const pending = this.#props.pending;
-					this.#pending_effect = branch(() => pending(this.#anchor));
-				} else this.#resolve(current_batch);
-			} catch (error) {
-				this.error(error);
-			}
-		}
-		/**
-		* @param {Batch} batch
-		*/
-		#resolve(batch) {
-			this.is_pending = false;
-			batch.transfer_effects(this.#dirty_effects, this.#maybe_dirty_effects);
-		}
-		/**
-		* Defer an effect inside a pending boundary until the boundary resolves
-		* @param {Effect} effect
-		*/
-		defer_effect(effect) {
-			defer_effect(effect, this.#dirty_effects, this.#maybe_dirty_effects);
-		}
-		/**
-		* Returns `false` if the effect exists inside a boundary whose pending snippet is shown
-		* @returns {boolean}
-		*/
-		is_rendered() {
-			return !this.is_pending && (!this.parent || this.parent.is_rendered());
-		}
-		has_pending_snippet() {
-			return !!this.#props.pending;
-		}
-		/**
-		* @template T
-		* @param {() => T} fn
-		*/
-		#run(fn) {
-			var previous_effect = active_effect;
-			var previous_reaction = active_reaction;
-			var previous_ctx = component_context;
-			set_active_effect(this.#effect);
-			set_active_reaction(this.#effect);
-			set_component_context(this.#effect.ctx);
-			try {
-				Batch.ensure();
-				return fn();
-			} catch (e) {
-				handle_error(e);
-				return null;
-			} finally {
-				set_active_effect(previous_effect);
-				set_active_reaction(previous_reaction);
-				set_component_context(previous_ctx);
-			}
-		}
-		/**
-		* Updates the pending count associated with the currently visible pending snippet,
-		* if any, such that we can replace the snippet with content once work is done
-		* @param {1 | -1} d
-		* @param {Batch} batch
-		*/
-		#update_pending_count(d, batch) {
-			if (!this.has_pending_snippet()) {
-				if (this.parent) this.parent.#update_pending_count(d, batch);
-				return;
-			}
-			this.#pending_count += d;
-			if (this.#pending_count === 0) {
-				this.#resolve(batch);
-				if (this.#pending_effect) pause_effect(this.#pending_effect, () => {
-					this.#pending_effect = null;
-				});
-				if (this.#offscreen_fragment) {
-					this.#anchor.before(this.#offscreen_fragment);
-					this.#offscreen_fragment = null;
-				}
-			}
-		}
-		/**
-		* Update the source that powers `$effect.pending()` inside this boundary,
-		* and controls when the current `pending` snippet (if any) is removed.
-		* Do not call from inside the class
-		* @param {1 | -1} d
-		* @param {Batch} batch
-		*/
-		update_pending_count(d, batch) {
-			this.#update_pending_count(d, batch);
-			this.#local_pending_count += d;
-			if (!this.#effect_pending || this.#pending_count_update_queued) return;
-			this.#pending_count_update_queued = true;
-			queue_micro_task(() => {
-				this.#pending_count_update_queued = false;
-				if (this.#effect_pending) internal_set(this.#effect_pending, this.#local_pending_count);
-			});
-		}
-		get_effect_pending() {
-			this.#effect_pending_subscriber();
-			return get$2(this.#effect_pending);
-		}
-		/** @param {unknown} error */
-		error(error) {
-			if (!this.#props.onerror && !this.#props.failed) throw error;
-			if (current_batch?.is_fork) {
-				if (this.#main_effect) current_batch.skip_effect(this.#main_effect);
-				if (this.#pending_effect) current_batch.skip_effect(this.#pending_effect);
-				if (this.#failed_effect) current_batch.skip_effect(this.#failed_effect);
-				current_batch.oncommit(() => {
-					this.#handle_error(error);
-				});
-			} else this.#handle_error(error);
-		}
-		/**
-		* @param {unknown} error
-		*/
-		#handle_error(error) {
-			if (this.#main_effect) {
-				destroy_effect(this.#main_effect);
-				this.#main_effect = null;
-			}
-			if (this.#pending_effect) {
-				destroy_effect(this.#pending_effect);
-				this.#pending_effect = null;
-			}
-			if (this.#failed_effect) {
-				destroy_effect(this.#failed_effect);
-				this.#failed_effect = null;
-			}
-			if (hydrating) {
-				set_hydrate_node(this.#hydrate_open);
-				next();
-				set_hydrate_node(skip_nodes());
-			}
-			var onerror = this.#props.onerror;
-			let failed = this.#props.failed;
-			var did_reset = false;
-			var calling_on_error = false;
-			const reset = () => {
-				if (did_reset) {
-					svelte_boundary_reset_noop();
-					return;
-				}
-				did_reset = true;
-				if (calling_on_error) svelte_boundary_reset_onerror();
-				if (this.#failed_effect !== null) pause_effect(this.#failed_effect, () => {
-					this.#failed_effect = null;
-				});
-				this.#run(() => {
-					this.#render();
-				});
-			};
-			/** @param {unknown} transformed_error */
-			const handle_error_result = (transformed_error) => {
-				try {
-					calling_on_error = true;
-					onerror?.(transformed_error, reset);
-					calling_on_error = false;
-				} catch (error) {
-					invoke_error_boundary(error, this.#effect && this.#effect.parent);
-				}
-				if (failed) this.#failed_effect = this.#run(() => {
-					try {
-						return branch(() => {
-							var effect = active_effect;
-							effect.b = this;
-							effect.f |= 128;
-							failed(this.#anchor, () => transformed_error, () => reset);
-						});
-					} catch (error) {
-						invoke_error_boundary(error, this.#effect.parent);
-						return null;
-					}
-				});
-			};
-			queue_micro_task(() => {
-				/** @type {unknown} */
-				var result;
-				try {
-					result = this.transform_error(error);
-				} catch (e) {
-					invoke_error_boundary(e, this.#effect && this.#effect.parent);
-					return;
-				}
-				if (result !== null && typeof result === "object" && typeof result.then === "function")
- /** @type {any} */ result.then(
-					handle_error_result,
-					/** @param {unknown} e */
-					(e) => invoke_error_boundary(e, this.#effect && this.#effect.parent)
-				);
-				else handle_error_result(result);
-			});
-		}
-	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/reactivity/async.js
-	/** @import { Blocker, Effect, Source, Value } from '#client' */
-	/**
-	* @param {Blocker[]} blockers
-	* @param {Array<() => any>} sync
-	* @param {Array<() => Promise<any>>} async
-	* @param {(values: Value[]) => any} fn
-	*/
-	function flatten(blockers, sync, async, fn) {
-		const d = is_runes() ? derived : derived_safe_equal;
-		var pending = blockers.filter((b) => !b.settled);
-		var deriveds = sync.map(d);
-		if (async.length === 0 && pending.length === 0) {
-			fn(deriveds);
-			return;
-		}
-		var parent = active_effect;
-		var restore = capture();
-		var blocker_promise = pending.length === 1 ? pending[0].promise : pending.length > 1 ? Promise.all(pending.map((b) => b.promise)) : null;
-		/**
-		* @param {Source[]} async
-		*/
-		function finish(async) {
-			if ((parent.f & 16384) !== 0) return;
-			restore();
-			try {
-				fn([...deriveds, ...async]);
-			} catch (error) {
-				invoke_error_boundary(error, parent);
-			}
-			unset_context();
-		}
-		var decrement_pending = increment_pending();
-		if (async.length === 0) {
-			/** @type {Promise<any>} */ blocker_promise.then(() => finish([])).finally(decrement_pending);
-			return;
-		}
-		function run() {
-			Promise.all(async.map((expression) => /* @__PURE__ */ async_derived(expression))).then(finish).catch((error) => invoke_error_boundary(error, parent)).finally(decrement_pending);
-		}
-		if (blocker_promise) blocker_promise.then(() => {
-			restore();
-			run();
-			unset_context();
-		});
-		else run();
-	}
-	/**
-	* Captures the current effect context so that we can restore it after
-	* some asynchronous work has happened (so that e.g. `await a + b`
-	* causes `b` to be registered as a dependency).
-	*/
-	function capture() {
-		var previous_effect = active_effect;
-		var previous_reaction = active_reaction;
-		var previous_component_context = component_context;
-		var previous_batch = current_batch;
-		return function restore(activate_batch = true) {
-			set_active_effect(previous_effect);
-			set_active_reaction(previous_reaction);
-			set_component_context(previous_component_context);
-			if (activate_batch && (previous_effect.f & 16384) === 0) {
-				previous_batch?.activate();
-				previous_batch?.apply();
-			}
-		};
-	}
-	function unset_context(deactivate_batch = true) {
-		set_active_effect(null);
-		set_active_reaction(null);
-		set_component_context(null);
-		if (deactivate_batch) current_batch?.deactivate();
-	}
-	/**
-	* @returns {(skip?: boolean) => void}
-	*/
-	function increment_pending() {
-		var effect = active_effect;
-		var boundary = effect.b;
-		var batch = current_batch;
-		var blocking = !!boundary?.is_rendered();
-		boundary?.update_pending_count(1, batch);
-		batch.increment(blocking, effect);
-		return () => {
-			boundary?.update_pending_count(-1, batch);
-			batch.decrement(blocking, effect);
-		};
-	}
-	/**
-	* @template V
-	* @param {() => V} fn
-	* @returns {Derived<V>}
-	*/
-	/*#__NO_SIDE_EFFECTS__*/
-	function derived(fn) {
-		var flags = 2 | DIRTY;
-		if (active_effect !== null) active_effect.f |= EFFECT_PRESERVED;
-		return {
-			ctx: component_context,
-			deps: null,
-			effects: null,
-			equals,
-			f: flags,
-			fn,
-			reactions: null,
-			rv: 0,
-			v: UNINITIALIZED,
-			wv: 0,
-			parent: active_effect,
-			ac: null
-		};
-	}
-	var OBSOLETE = Symbol("obsolete");
-	/**
-	* @template V
-	* @param {() => V | Promise<V>} fn
-	* @param {string} [label]
-	* @param {string} [location] If provided, print a warning if the value is not read immediately after update
-	* @returns {Promise<Source<V>>}
-	*/
-	/*#__NO_SIDE_EFFECTS__*/
-	function async_derived(fn, label, location) {
-		let parent = active_effect;
-		if (parent === null) async_derived_orphan();
-		var promise = void 0;
-		var signal = source(UNINITIALIZED);
-		var should_suspend = !active_reaction;
-		/** @type {Set<ReturnType<typeof deferred<V>>>} */
-		var deferreds = /* @__PURE__ */ new Set();
-		async_effect(() => {
-			var effect = active_effect;
-			/** @type {ReturnType<typeof deferred<V>>} */
-			var d = deferred();
-			promise = d.promise;
-			try {
-				Promise.resolve(fn()).then(d.resolve, (e) => {
-					if (e !== STALE_REACTION) d.reject(e);
-				}).finally(unset_context);
-			} catch (error) {
-				d.reject(error);
-				unset_context();
-			}
-			var batch = current_batch;
-			if (should_suspend) {
-				if ((effect.f & 32768) !== 0) var decrement_pending = increment_pending();
-				if (parent.b?.is_rendered()) batch.async_deriveds.get(effect)?.reject(OBSOLETE);
-				else for (const d of deferreds.values()) d.reject(OBSOLETE);
-				deferreds.add(d);
-				batch.async_deriveds.set(effect, d);
-			}
-			/**
-			* @param {any} value
-			* @param {unknown} error
-			*/
-			const handler = (value, error = void 0) => {
-				decrement_pending?.();
-				deferreds.delete(d);
-				if (error === OBSOLETE) return;
-				batch.activate();
-				if (error) {
-					signal.f |= ERROR_VALUE;
-					internal_set(signal, error);
-				} else {
-					if ((signal.f & 8388608) !== 0) signal.f ^= ERROR_VALUE;
-					internal_set(signal, value);
-				}
-				batch.deactivate();
-			};
-			d.promise.then(handler, (e) => handler(null, e || "unknown"));
-		});
-		teardown(() => {
-			for (const d of deferreds) d.reject(OBSOLETE);
-		});
-		return new Promise((fulfil) => {
-			/** @param {Promise<V>} p */
-			function next(p) {
-				function go() {
-					if (p === promise) fulfil(signal);
-					else next(promise);
-				}
-				p.then(go, go);
-			}
-			next(promise);
-		});
-	}
-	/**
-	* @template V
-	* @param {() => V} fn
-	* @returns {Derived<V>}
-	*/
-	/*#__NO_SIDE_EFFECTS__*/
-	function user_derived(fn) {
-		const d = /* @__PURE__ */ derived(fn);
-		if (!async_mode_flag) push_reaction_value(d);
-		return d;
-	}
-	/**
-	* @template V
-	* @param {() => V} fn
-	* @returns {Derived<V>}
-	*/
-	/*#__NO_SIDE_EFFECTS__*/
-	function derived_safe_equal(fn) {
-		const signal = /* @__PURE__ */ derived(fn);
-		signal.equals = safe_equals;
-		return signal;
-	}
-	/**
-	* @param {Derived} derived
-	* @returns {void}
-	*/
-	function destroy_derived_effects(derived) {
-		var effects = derived.effects;
-		if (effects !== null) {
-			derived.effects = null;
-			for (var i = 0; i < effects.length; i += 1) destroy_effect(effects[i]);
-		}
-	}
-	/**
-	* @template T
-	* @param {Derived} derived
-	* @returns {T}
-	*/
-	function execute_derived(derived) {
-		var value;
-		var prev_active_effect = active_effect;
-		var parent = derived.parent;
-		if (!is_destroying_effect && parent !== null && derived.v !== UNINITIALIZED && (parent.f & 24576) !== 0) {
-			derived_inert();
-			return derived.v;
-		}
-		set_active_effect(parent);
-		try {
-			derived.f &= ~WAS_MARKED;
-			destroy_derived_effects(derived);
-			value = update_reaction(derived);
-		} finally {
-			set_active_effect(prev_active_effect);
-		}
-		return value;
-	}
-	/**
-	* @param {Derived} derived
-	* @returns {void}
-	*/
-	function update_derived(derived) {
-		var value = execute_derived(derived);
-		if (!derived.equals(value)) {
-			derived.wv = increment_write_version();
-			if (!current_batch?.is_fork || derived.deps === null) {
-				if (current_batch !== null) {
-					current_batch.capture(derived, value, true);
-					previous_batch?.capture(derived, value, true);
-				} else derived.v = value;
-				if (derived.deps === null) {
-					set_signal_status(derived, CLEAN);
-					return;
-				}
-			}
-		}
-		if (is_destroying_effect) return;
-		if (batch_values !== null) {
-			if (effect_tracking() || current_batch?.is_fork) batch_values.set(derived, value);
-		} else update_derived_status(derived);
-	}
-	/**
-	* @param {Derived} derived
-	*/
-	function freeze_derived_effects(derived) {
-		if (derived.effects === null) return;
-		for (const e of derived.effects) if (e.teardown || e.ac) {
-			e.teardown?.();
-			e.ac?.abort(STALE_REACTION);
-			if (e.fn !== null) e.teardown = noop$1;
-			e.ac = null;
-			remove_reactions(e, 0);
-			destroy_effect_children(e);
-		}
-	}
-	/**
-	* @param {Derived} derived
-	*/
-	function unfreeze_derived_effects(derived) {
-		if (derived.effects === null) return;
-		for (const e of derived.effects) if (e.teardown && e.fn !== null) update_effect(e);
-	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/reactivity/sources.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/sources.js
 	/** @import { Derived, Effect, Source, Value } from '#client' */
 	/** @type {Set<Effect>} */
 	var eager_effects = /* @__PURE__ */ new Set();
@@ -2202,8 +2305,10 @@
 			}
 			source.wv = increment_write_version();
 			mark_reactions(source, DIRTY, updated_during_traversal);
-			if (is_runes() && active_effect !== null && (active_effect.f & 1024) !== 0 && (active_effect.f & 96) === 0) if (untracked_writes === null) set_untracked_writes([source]);
-			else untracked_writes.push(source);
+			if (is_runes() && active_effect !== null && (active_effect.f & 1024) !== 0 && (active_effect.f & 96) === 0) {
+				if (untracked_writes === null) set_untracked_writes([source]);
+				else untracked_writes.push(source);
+			}
 			if (!batch.is_fork && eager_effects.size > 0 && !eager_effects_deferred) flush_eager_effects();
 		}
 		return value;
@@ -2436,19 +2541,8 @@
 	function is(a, b) {
 		return Object.is(get_proxied_value(a), get_proxied_value(b));
 	}
-	new Set([
-		"copyWithin",
-		"fill",
-		"pop",
-		"push",
-		"reverse",
-		"shift",
-		"sort",
-		"splice",
-		"unshift"
-	]);
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/operations.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/operations.js
 	/** @import { Effect, TemplateNode } from '#client' */
 	/** @type {Window} */
 	var $window;
@@ -2633,82 +2727,7 @@
 		}
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/elements/misc.js
-	/**
-	* @param {HTMLElement} dom
-	* @param {boolean} value
-	* @returns {void}
-	*/
-	function autofocus(dom, value) {
-		if (value) {
-			const body = document.body;
-			dom.autofocus = true;
-			queue_micro_task(() => {
-				if (document.activeElement === body) dom.focus();
-			});
-		}
-	}
-	/**
-	* The child of a textarea actually corresponds to the defaultValue property, so we need
-	* to remove it upon hydration to avoid a bug when someone resets the form value.
-	* @param {HTMLTextAreaElement} dom
-	* @returns {void}
-	*/
-	function remove_textarea_child(dom) {
-		if (hydrating && /* @__PURE__ */ get_first_child(dom) !== null) clear_text_content(dom);
-	}
-	var listening_to_form_reset = false;
-	function add_form_reset_listener() {
-		if (!listening_to_form_reset) {
-			listening_to_form_reset = true;
-			document.addEventListener("reset", (evt) => {
-				Promise.resolve().then(() => {
-					if (!evt.defaultPrevented) for (const e of evt.target.elements)
- /** @type {any} */ e[FORM_RESET_HANDLER]?.();
-				});
-			}, { capture: true });
-		}
-	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/elements/bindings/shared.js
-	/**
-	* @template T
-	* @param {() => T} fn
-	*/
-	function without_reactive_context(fn) {
-		var previous_reaction = active_reaction;
-		var previous_effect = active_effect;
-		set_active_reaction(null);
-		set_active_effect(null);
-		try {
-			return fn();
-		} finally {
-			set_active_reaction(previous_reaction);
-			set_active_effect(previous_effect);
-		}
-	}
-	/**
-	* Listen to the given event, and then instantiate a global form reset listener if not already done,
-	* to notify all bindings when the form is reset
-	* @param {HTMLElement} element
-	* @param {string} event
-	* @param {(is_reset?: true) => void} handler
-	* @param {(is_reset?: true) => void} [on_reset]
-	*/
-	function listen_to_event_and_reset_event(element, event, handler, on_reset = handler) {
-		element.addEventListener(event, () => without_reactive_context(handler));
-		const prev = element[FORM_RESET_HANDLER];
-		if (prev)
- /** @type {any} */ element[FORM_RESET_HANDLER] = () => {
-			prev();
-			on_reset(true);
-		};
-		else
- /** @type {any} */ element[FORM_RESET_HANDLER] = () => on_reset(true);
-		add_form_reset_listener();
-	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/reactivity/effects.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/effects.js
 	/** @import { Blocker, ComponentContext, ComponentContextLegacy, Derived, Effect, TemplateNode, TransitionManager } from '#client' */
 	/**
 	* @param {'$effect' | '$effect.pre' | '$inspect'} rune
@@ -2761,9 +2780,10 @@
 		current_batch?.register_created_effect(effect);
 		/** @type {Effect | null} */
 		var e = effect;
-		if ((type & 4) !== 0) if (collected_effects !== null) collected_effects.push(effect);
-		else Batch.ensure().schedule(effect);
-		else if (fn !== null) {
+		if ((type & 4) !== 0) {
+			if (collected_effects !== null) collected_effects.push(effect);
+			else Batch.ensure().schedule(effect);
+		} else if (fn !== null) {
 			try {
 				update_effect(effect);
 			} catch (e) {
@@ -3110,15 +3130,18 @@
 		}
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/legacy.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/legacy.js
 	/**
 	* @type {Set<Value> | null}
 	* @deprecated
 	*/
 	var captured_signals = null;
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/runtime.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/runtime.js
 	/** @import { Derived, Effect, Reaction, Source, Value } from '#client' */
+	/**
+	* True if updating in an effect context that is reactive (i.e. not branch/root effects)
+	*/
 	var is_updating_effect = false;
 	var is_destroying_effect = false;
 	/** @param {boolean} value */
@@ -3271,8 +3294,10 @@
 				read_version++;
 				if (previous_reaction.deps !== null) for (let i = 0; i < previous_skipped_deps; i += 1) previous_reaction.deps[i].rv = read_version;
 				if (previous_deps !== null) for (const dep of previous_deps) dep.rv = read_version;
-				if (untracked_writes !== null) if (previous_untracked_writes === null) previous_untracked_writes = untracked_writes;
-				else previous_untracked_writes.push(...untracked_writes);
+				if (untracked_writes !== null) {
+					if (previous_untracked_writes === null) previous_untracked_writes = untracked_writes;
+					else previous_untracked_writes.push(...untracked_writes);
+				}
 			}
 			if ((reaction.f & 8388608) !== 0) reaction.f ^= ERROR_VALUE;
 			return result;
@@ -3316,6 +3341,11 @@
 				derived.f &= ~WAS_MARKED;
 			}
 			if (derived.v !== UNINITIALIZED) update_derived_status(derived);
+			if (derived.ac !== null) without_reactive_context(() => {
+				/** @type {AbortController} */ derived.ac.abort(STALE_REACTION);
+				derived.ac = null;
+				set_signal_status(derived, DIRTY);
+			});
 			freeze_derived_effects(derived);
 			remove_reactions(derived, 0);
 		}
@@ -3341,7 +3371,7 @@
 		var previous_effect = active_effect;
 		var was_updating_effect = is_updating_effect;
 		active_effect = effect;
-		is_updating_effect = true;
+		is_updating_effect = (flags & 96) === 0;
 		try {
 			if ((flags & 16777232) !== 0) destroy_block_effect_children(effect);
 			else destroy_effect_children(effect);
@@ -3509,7 +3539,7 @@
 		}
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/elements/events.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/events.js
 	/**
 	* Used on elements, as a map of event type -> event handler,
 	* and on events themselves to track which element handled an event
@@ -3665,7 +3695,7 @@
 		}
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/reconciler.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/reconciler.js
 	var policy = globalThis?.window?.trustedTypes && /* @__PURE__ */ globalThis.window.trustedTypes.createPolicy("svelte-trusted-html", { 
 	/** @param {string} html */
 createHTML: (html) => {
@@ -3684,7 +3714,7 @@ createHTML: (html) => {
 		return elem.content;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/template.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/template.js
 	/** @import { Effect, EffectNodes, TemplateNode } from '#client' */
 	/** @import { TemplateStructure } from './types' */
 	/**
@@ -4100,7 +4130,7 @@ createHTML: (html) => {
 		return Promise.resolve();
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/blocks/branches.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/blocks/branches.js
 	/** @import { Effect, TemplateNode } from '#client' */
 	/**
 	* @typedef {{ effect: Effect, fragment: DocumentFragment }} Branch
@@ -4222,15 +4252,17 @@ createHTML: (html) => {
 		ensure(key, fn) {
 			var batch = current_batch;
 			var defer = should_defer_append();
-			if (fn && !this.#onscreen.has(key) && !this.#offscreen.has(key)) if (defer) {
-				var fragment = document.createDocumentFragment();
-				var target = create_text();
-				fragment.append(target);
-				this.#offscreen.set(key, {
-					effect: branch(() => fn(target)),
-					fragment
-				});
-			} else this.#onscreen.set(key, branch(() => fn(this.anchor)));
+			if (fn && !this.#onscreen.has(key) && !this.#offscreen.has(key)) {
+				if (defer) {
+					var fragment = document.createDocumentFragment();
+					var target = create_text();
+					fragment.append(target);
+					this.#offscreen.set(key, {
+						effect: branch(() => fn(target)),
+						fragment
+					});
+				} else this.#onscreen.set(key, branch(() => fn(this.anchor)));
+			}
 			this.#batches.set(batch, key);
 			if (defer) {
 				for (const [k, effect] of this.#onscreen) if (k === key) batch.unskip_effect(effect);
@@ -4246,7 +4278,7 @@ createHTML: (html) => {
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/blocks/snippet.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/blocks/snippet.js
 	/** @import { Snippet } from 'svelte' */
 	/** @import { TemplateNode } from '#client' */
 	/** @import { Getters } from '#shared' */
@@ -4299,7 +4331,7 @@ createHTML: (html) => {
 		};
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/attachments/index.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/attachments/index.js
 	/**
 	* Creates an object key that will be recognised as an attachment when the object is spread onto an element,
 	* as a programmatic alternative to using `{@attach ...}`. This can be useful for library authors, though
@@ -4326,7 +4358,7 @@ createHTML: (html) => {
 		return Symbol(ATTACHMENT_KEY);
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/blocks/if.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/blocks/if.js
 	/** @import { TemplateNode } from '#client' */
 	/**
 	* @param {TemplateNode} node
@@ -4372,7 +4404,7 @@ createHTML: (html) => {
 		}, flags);
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/blocks/each.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/blocks/each.js
 	/** @import { EachItem, EachOutroGroup, EachState, Effect, EffectNodes, MaybeSource, Source, TemplateNode, TransitionManager, Value } from '#client' */
 	/** @import { Batch } from '../../reactivity/batch.js'; */
 	/**
@@ -4412,7 +4444,7 @@ createHTML: (html) => {
 			}, false);
 		}
 		if (remaining === 0) {
-			var fast_path = transitions.length === 0 && controlled_anchor !== null;
+			var fast_path = transitions.length === 0 && controlled_anchor !== null && state.pending.size === 0;
 			if (fast_path) {
 				var anchor = controlled_anchor;
 				var parent_node = anchor.parentNode;
@@ -4492,14 +4524,17 @@ createHTML: (html) => {
 			state.pending.delete(batch);
 			state.fallback = fallback;
 			reconcile(state, array, anchor, flags, get_key);
-			if (fallback !== null) if (array.length === 0) if ((fallback.f & 33554432) === 0) resume_effect(fallback);
-			else {
-				fallback.f ^= EFFECT_OFFSCREEN;
-				move(fallback, null, anchor);
+			if (fallback !== null) {
+				if (array.length === 0) {
+					if ((fallback.f & 33554432) === 0) resume_effect(fallback);
+					else {
+						fallback.f ^= EFFECT_OFFSCREEN;
+						move(fallback, null, anchor);
+					}
+				} else pause_effect(fallback, () => {
+					fallback = null;
+				});
 			}
-			else pause_effect(fallback, () => {
-				fallback = null;
-			});
 		}
 		/**
 		* @param {Batch} batch
@@ -4545,10 +4580,12 @@ createHTML: (html) => {
 					}
 					keys.add(key);
 				}
-				if (length === 0 && fallback_fn && !fallback) if (first_run) fallback = branch(() => fallback_fn(anchor));
-				else {
-					fallback = branch(() => fallback_fn(offscreen_anchor ??= create_text()));
-					fallback.f |= EFFECT_OFFSCREEN;
+				if (length === 0 && fallback_fn && !fallback) {
+					if (first_run) fallback = branch(() => fallback_fn(anchor));
+					else {
+						fallback = branch(() => fallback_fn(offscreen_anchor ??= create_text()));
+						fallback.f |= EFFECT_OFFSCREEN;
+					}
 				}
 				if (length > keys.size) each_key_duplicate("", "", "");
 				if (hydrating && length > 0) set_hydrate_node(skip_nodes());
@@ -4837,14 +4874,14 @@ createHTML: (html) => {
 			var wrapper = create_element(svg ? "svg" : mathml ? "math" : "template", svg ? NAMESPACE_SVG : mathml ? NAMESPACE_MATHML : void 0);
 			wrapper.innerHTML = value;
 			/** @type {DocumentFragment | Element} */
-			var node = svg || mathml ? wrapper : 			/** @type {HTMLTemplateElement} */ wrapper.content;
+			var node = svg || mathml ? wrapper : /** @type {HTMLTemplateElement} */ wrapper.content;
 			assign_nodes(/* @__PURE__ */ get_first_child(node), node.lastChild);
 			if (svg || mathml) while (/* @__PURE__ */ get_first_child(node)) anchor.before(/* @__PURE__ */ get_first_child(node));
 			else anchor.before(node);
 		});
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/blocks/slot.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/blocks/slot.js
 	/**
 	* @param {Comment} anchor
 	* @param {Record<string, any>} $$props
@@ -4865,7 +4902,7 @@ createHTML: (html) => {
 		} else slot_fn(anchor, is_interop ? () => slot_props : slot_props);
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/blocks/svelte-component.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/blocks/svelte-component.js
 	/** @import { TemplateNode, Dom } from '#client' */
 	/**
 	* @template P
@@ -4900,7 +4937,7 @@ createHTML: (html) => {
 		}, EFFECT_TRANSPARENT);
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/elements/attachments.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/attachments.js
 	/** @import { Effect } from '#client' */
 	/**
 	* @param {Element} node
@@ -4939,7 +4976,7 @@ createHTML: (html) => {
 		return n;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/shared/attributes.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/shared/attributes.js
 	/**
 	* Small wrapper around clsx to preserve Svelte's (weird) handling of falsy values.
 	* TODO Svelte 6 revisit this, and likely turn all falsy values into the empty string (what clsx also does)
@@ -5058,7 +5095,7 @@ createHTML: (html) => {
 		return value == null ? null : String(value);
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/elements/class.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/class.js
 	/**
 	* @param {Element} dom
 	* @param {boolean | number} is_html
@@ -5072,9 +5109,11 @@ createHTML: (html) => {
 		var prev = dom[CLASS_CACHE];
 		if (hydrating || prev !== value || prev === void 0) {
 			var next_class_name = to_class(value, hash, next_classes);
-			if (!hydrating || next_class_name !== dom.getAttribute("class")) if (next_class_name == null) dom.removeAttribute("class");
-			else if (is_html) dom.className = next_class_name;
-			else dom.setAttribute("class", next_class_name);
+			if (!hydrating || next_class_name !== dom.getAttribute("class")) {
+				if (next_class_name == null) dom.removeAttribute("class");
+				else if (is_html) dom.className = next_class_name;
+				else dom.setAttribute("class", next_class_name);
+			}
 			/** @type {any} */ dom[CLASS_CACHE] = value;
 		} else if (next_classes && prev_classes !== next_classes) for (var key in next_classes) {
 			var is_present = !!next_classes[key];
@@ -5083,7 +5122,7 @@ createHTML: (html) => {
 		return next_classes;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/elements/style.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/style.js
 	/**
 	* @param {Element & ElementCSSInlineStyle} dom
 	* @param {Record<string, any>} prev
@@ -5093,8 +5132,10 @@ createHTML: (html) => {
 	function update_styles(dom, prev = {}, next, priority) {
 		for (var key in next) {
 			var value = next[key];
-			if (prev[key] !== value) if (next[key] == null) dom.style.removeProperty(key);
-			else dom.style.setProperty(key, value, priority);
+			if (prev[key] !== value) {
+				if (next[key] == null) dom.style.removeProperty(key);
+				else dom.style.setProperty(key, value, priority);
+			}
 		}
 	}
 	/**
@@ -5107,17 +5148,21 @@ createHTML: (html) => {
 		var prev = dom[STYLE_CACHE];
 		if (hydrating || prev !== value) {
 			var next_style_attr = to_style(value, next_styles);
-			if (!hydrating || next_style_attr !== dom.getAttribute("style")) if (next_style_attr == null) dom.removeAttribute("style");
-			else dom.style.cssText = next_style_attr;
+			if (!hydrating || next_style_attr !== dom.getAttribute("style")) {
+				if (next_style_attr == null) dom.removeAttribute("style");
+				else dom.style.cssText = next_style_attr;
+			}
 			/** @type {any} */ dom[STYLE_CACHE] = value;
-		} else if (next_styles) if (Array.isArray(next_styles)) {
-			update_styles(dom, prev_styles?.[0], next_styles[0]);
-			update_styles(dom, prev_styles?.[1], next_styles[1], "important");
-		} else update_styles(dom, prev_styles, next_styles);
+		} else if (next_styles) {
+			if (Array.isArray(next_styles)) {
+				update_styles(dom, prev_styles?.[0], next_styles[0]);
+				update_styles(dom, prev_styles?.[1], next_styles[1], "important");
+			} else update_styles(dom, prev_styles, next_styles);
+		}
 		return next_styles;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/elements/bindings/select.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/bindings/select.js
 	/**
 	* Selects the correct option(s) (depending on whether this is a multiple select)
 	* @template V
@@ -5148,7 +5193,7 @@ createHTML: (html) => {
 	*/
 	function init_select(select) {
 		var observer = new MutationObserver(() => {
-			select_option(select, select.__value);
+			if ("__value" in select) select_option(select, select.__value);
 		});
 		observer.observe(select, {
 			childList: true,
@@ -5209,7 +5254,7 @@ createHTML: (html) => {
 		else return option.value;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/elements/attributes.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/attributes.js
 	/** @import { Blocker, Effect } from '#client' */
 	var CLASS = Symbol("class");
 	var STYLE = Symbol("style");
@@ -5517,7 +5562,7 @@ createHTML: (html) => {
 		return setters;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/elements/customizable-select.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/customizable-select.js
 	/** @type {boolean | null} */
 	var supported = null;
 	/**
@@ -5551,15 +5596,17 @@ createHTML: (html) => {
 		try {
 			rich_fn();
 		} finally {
-			if (was_hydrating) if (hydrating) reset(element);
-			else {
-				set_hydrating(true);
-				set_hydrate_node(element);
+			if (was_hydrating) {
+				if (hydrating) reset(element);
+				else {
+					set_hydrating(true);
+					set_hydrate_node(element);
+				}
 			}
 		}
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/elements/bindings/input.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/bindings/input.js
 	/** @import { Batch } from '../../../reactivity/batch.js' */
 	/**
 	* @param {HTMLInputElement} input
@@ -5704,7 +5751,7 @@ createHTML: (html) => {
 		return value === "" ? null : +value;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/elements/bindings/this.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/bindings/this.js
 	/** @import { ComponentContext, Effect } from '#client' */
 	/**
 	* @param {any} bound_value
@@ -5756,7 +5803,7 @@ createHTML: (html) => {
 		return element_or_component;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/legacy/lifecycle.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/legacy/lifecycle.js
 	/** @import { ComponentContextLegacy } from '#client' */
 	/**
 	* Legacy-mode only: Call `onMount` callbacks and set up `beforeUpdate`/`afterUpdate` effects
@@ -5808,7 +5855,7 @@ createHTML: (html) => {
 		props();
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/reactivity/props.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/props.js
 	/** @import { Derived, Effect, Source } from './types.js' */
 	/**
 	* The proxy handler for rest props (i.e. `const { x, ...rest } = $props()`).
@@ -6010,7 +6057,7 @@ createHTML: (html) => {
 		});
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/legacy/legacy-client.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/legacy/legacy-client.js
 	/** @import { ComponentConstructorOptions, ComponentType, SvelteComponent, Component } from 'svelte' */
 	/**
 	* Takes the same options as a Svelte 4 component and the component function and returns a Svelte 4 compatible component.
@@ -6129,7 +6176,7 @@ createHTML: (html) => {
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/client/dom/elements/custom-element.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/custom-element.js
 	/**
 	* @typedef {Object} CustomElementPropDefinition
 	* @property {string} [attribute]
@@ -6220,10 +6267,12 @@ createHTML: (html) => {
 				/** @type {Record<string, any>} */
 				const $$slots = {};
 				const existing_slots = get_custom_elements_slots(this);
-				for (const name of this.$$s) if (name in existing_slots) if (name === "default" && !this.$$d.children) {
-					this.$$d.children = create_slot(name);
-					$$slots.default = true;
-				} else $$slots[name] = create_slot(name);
+				for (const name of this.$$s) if (name in existing_slots) {
+					if (name === "default" && !this.$$d.children) {
+						this.$$d.children = create_slot(name);
+						$$slots.default = true;
+					} else $$slots[name] = create_slot(name);
+				}
 				for (const attribute of this.attributes) {
 					const name = this.$$g_p(attribute.name);
 					if (!(name in this.$$d)) this.$$d[name] = get_custom_element_value(name, attribute.value, this.$$p_d, "toProp");
@@ -6355,8 +6404,10 @@ createHTML: (html) => {
 					value = get_custom_element_value(prop, value, props_definition);
 					this.$$d[prop] = value;
 					var component = this.$$c;
-					if (component) if (get_descriptor(component, prop)?.get) component[prop] = value;
-					else component.$set({ [prop]: value });
+					if (component) {
+						if (get_descriptor(component, prop)?.get) component[prop] = value;
+						else component.$set({ [prop]: value });
+					}
 				}
 			});
 		});
@@ -6384,6 +6435,7 @@ createHTML: (html) => {
 			"quantity.remove.label": "✕",
 			"cart.item.remove": "✕",
 			"common.table.donation": "Donation",
+			"common.wallet": "Add to wallet",
 			"cart.donation.title": "Donation",
 			"donations.checkbox.label": "Add a {{amount}} donation to {{campaign}}",
 			"Not signed in": "Not signed in"
@@ -6393,6 +6445,7 @@ createHTML: (html) => {
 			"quantity.remove.label": "✕",
 			"cart.item.remove": "✕",
 			"common.table.donation": "Spende",
+			"common.wallet": "Zum Wallet hinzufügen",
 			"cart.donation.title": "Spende",
 			"donations.checkbox.label": "{{amount}} für {{campaign}} spenden",
 			"Not signed in": "Nicht angemeldet"
@@ -6775,7 +6828,6 @@ createHTML: (html) => {
 				Object.defineProperty(this, "value", { value });
 				return value;
 			}
-			throw new Error("cached value already set");
 		} };
 	}
 	function nullish(input) {
@@ -6821,7 +6873,10 @@ createHTML: (html) => {
 	}
 	function mergeDefs(...defs) {
 		const mergedDescriptors = {};
-		for (const def of defs) Object.assign(mergedDescriptors, Object.getOwnPropertyDescriptors(def));
+		for (const def of defs) {
+			const descriptors = Object.getOwnPropertyDescriptors(def);
+			Object.assign(mergedDescriptors, descriptors);
+		}
 		return Object.defineProperties({}, mergedDescriptors);
 	}
 	function esc(str) {
@@ -7143,7 +7198,7 @@ createHTML: (html) => {
 		}, ctx);
 		if (result instanceof Promise) throw new $ZodAsyncError();
 		if (result.issues.length) {
-			const e = new (_params?.Err ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())));
+			const e = new ((_params?.Err) ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())));
 			captureStackTrace(e, _params?.callee);
 			throw e;
 		}
@@ -7160,7 +7215,7 @@ createHTML: (html) => {
 		}, ctx);
 		if (result instanceof Promise) result = await result;
 		if (result.issues.length) {
-			const e = new (params?.Err ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())));
+			const e = new ((params?.Err) ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())));
 			captureStackTrace(e, params?.callee);
 			throw e;
 		}
@@ -7326,8 +7381,10 @@ createHTML: (html) => {
 		inst._zod.onattach.push((inst) => {
 			const bag = inst._zod.bag;
 			const curr = (def.inclusive ? bag.maximum : bag.exclusiveMaximum) ?? Number.POSITIVE_INFINITY;
-			if (def.value < curr) if (def.inclusive) bag.maximum = def.value;
-			else bag.exclusiveMaximum = def.value;
+			if (def.value < curr) {
+				if (def.inclusive) bag.maximum = def.value;
+				else bag.exclusiveMaximum = def.value;
+			}
 		});
 		inst._zod.check = (payload) => {
 			if (def.inclusive ? payload.value <= def.value : payload.value < def.value) return;
@@ -7348,8 +7405,10 @@ createHTML: (html) => {
 		inst._zod.onattach.push((inst) => {
 			const bag = inst._zod.bag;
 			const curr = (def.inclusive ? bag.minimum : bag.exclusiveMinimum) ?? Number.NEGATIVE_INFINITY;
-			if (def.value > curr) if (def.inclusive) bag.minimum = def.value;
-			else bag.exclusiveMinimum = def.value;
+			if (def.value > curr) {
+				if (def.inclusive) bag.minimum = def.value;
+				else bag.exclusiveMinimum = def.value;
+			}
 		});
 		inst._zod.check = (payload) => {
 			if (def.inclusive ? payload.value >= def.value : payload.value > def.value) return;
@@ -8589,7 +8648,7 @@ createHTML: (html) => {
 		inst._zod.optin = "optional";
 		inst._zod.optout = "optional";
 		defineLazy(inst._zod, "values", () => {
-			return def.innerType._zod.values ? new Set([...def.innerType._zod.values, void 0]) : void 0;
+			return def.innerType._zod.values ? /* @__PURE__ */ new Set([...def.innerType._zod.values, void 0]) : void 0;
 		});
 		defineLazy(inst._zod, "pattern", () => {
 			const pattern = def.innerType._zod.pattern;
@@ -8623,7 +8682,7 @@ createHTML: (html) => {
 			return pattern ? new RegExp(`^(${cleanRegex(pattern.source)}|null)$`) : void 0;
 		});
 		defineLazy(inst._zod, "values", () => {
-			return def.innerType._zod.values ? new Set([...def.innerType._zod.values, null]) : void 0;
+			return def.innerType._zod.values ? /* @__PURE__ */ new Set([...def.innerType._zod.values, null]) : void 0;
 		});
 		inst._zod.parse = (payload, ctx) => {
 			if (payload.value === null) return payload;
@@ -9550,8 +9609,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				defs[seen.defId] = seen.def;
 			}
 		}
-		if (ctx.external) {} else if (Object.keys(defs).length > 0) if (ctx.target === "draft-2020-12") result.$defs = defs;
-		else result.definitions = defs;
+		if (ctx.external) {} else if (Object.keys(defs).length > 0) {
+			if (ctx.target === "draft-2020-12") result.$defs = defs;
+			else result.definitions = defs;
+		}
 		try {
 			const finalized = JSON.parse(JSON.stringify(result));
 			Object.defineProperty(finalized, "~standard", {
@@ -9664,16 +9725,18 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const exMin = typeof exclusiveMinimum === "number" && exclusiveMinimum >= (minimum ?? Number.NEGATIVE_INFINITY);
 		const exMax = typeof exclusiveMaximum === "number" && exclusiveMaximum <= (maximum ?? Number.POSITIVE_INFINITY);
 		const legacy = ctx.target === "draft-04" || ctx.target === "openapi-3.0";
-		if (exMin) if (legacy) {
-			json.minimum = exclusiveMinimum;
-			json.exclusiveMinimum = true;
-		} else json.exclusiveMinimum = exclusiveMinimum;
-		else if (typeof minimum === "number") json.minimum = minimum;
-		if (exMax) if (legacy) {
-			json.maximum = exclusiveMaximum;
-			json.exclusiveMaximum = true;
-		} else json.exclusiveMaximum = exclusiveMaximum;
-		else if (typeof maximum === "number") json.maximum = maximum;
+		if (exMin) {
+			if (legacy) {
+				json.minimum = exclusiveMinimum;
+				json.exclusiveMinimum = true;
+			} else json.exclusiveMinimum = exclusiveMinimum;
+		} else if (typeof minimum === "number") json.minimum = minimum;
+		if (exMax) {
+			if (legacy) {
+				json.maximum = exclusiveMaximum;
+				json.exclusiveMaximum = true;
+			} else json.exclusiveMaximum = exclusiveMaximum;
+		} else if (typeof maximum === "number") json.maximum = maximum;
 		if (typeof multipleOf === "number") json.multipleOf = multipleOf;
 	};
 	var neverProcessor = (_schema, _ctx, json, _params) => {
@@ -10687,12 +10750,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		personalizations: array(PersonalizationSchema)
 	});
 	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.2/node_modules/@internationalized/date/dist/private/utils.mjs
+	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/utils.mjs
 	function $09ec6a572d60460f$export$842a2cf37af977e1(amount, numerator) {
 		return amount - numerator * Math.floor(amount / numerator);
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.2/node_modules/@internationalized/date/dist/private/calendars/GregorianCalendar.mjs
+	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/calendars/GregorianCalendar.mjs
 	var $93635573935797de$var$EPOCH = 1721426;
 	function $93635573935797de$export$f297eb839006d339(era, year, month, day) {
 		year = $93635573935797de$export$c36e0ecb2d4fa69d(era, year);
@@ -10700,7 +10763,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		let monthOffset = -2;
 		if (month <= 2) monthOffset = 0;
 		else if ($93635573935797de$export$553d7fa8e3805fc0(year)) monthOffset = -1;
-		return $93635573935797de$var$EPOCH - 1 + 365 * y1 + Math.floor(y1 / 4) - Math.floor(y1 / 100) + Math.floor(y1 / 400) + Math.floor((367 * month - 362) / 12 + monthOffset + day);
+		return 1721425 + 365 * y1 + Math.floor(y1 / 4) - Math.floor(y1 / 100) + Math.floor(y1 / 400) + Math.floor((367 * month - 362) / 12 + monthOffset + day);
 	}
 	function $93635573935797de$export$553d7fa8e3805fc0(year) {
 		return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
@@ -10803,7 +10866,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.2/node_modules/@internationalized/date/dist/private/weekStartData.mjs
+	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/weekStartData.mjs
 	var $d2ca8165c9aa885a$export$7a5acbd77d414bd9 = {
 		"001": 1,
 		AD: 1,
@@ -10902,7 +10965,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		XK: 1
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.2/node_modules/@internationalized/date/dist/private/queries.mjs
+	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/queries.mjs
 	function $ad063034c8620db8$export$ea39ec197993aef0(a, b) {
 		b = $d07e34cce18680fd$export$b4a036af3fc0b032(b, a.calendar);
 		return a.era === b.era && a.year === b.year && a.month === b.month && a.day === b.day;
@@ -11009,7 +11072,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return weekInfo.firstDay;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.2/node_modules/@internationalized/date/dist/private/conversion.mjs
+	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/conversion.mjs
 	function $d07e34cce18680fd$export$bd4fb2bc8bb06fb(date) {
 		date = $d07e34cce18680fd$export$b4a036af3fc0b032(date, new $93635573935797de$export$80ee6245ec4f29ec());
 		return $d07e34cce18680fd$var$epochFromParts($93635573935797de$export$c36e0ecb2d4fa69d(date.era, date.year), date.month, date.day, date.hour, date.minute, date.second, date.millisecond);
@@ -11148,7 +11211,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return $d07e34cce18680fd$export$b4a036af3fc0b032($d07e34cce18680fd$export$1b96692a1ba042ac($d07e34cce18680fd$export$bd4fb2bc8bb06fb(date) - date.offset, timeZone), date.calendar);
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.2/node_modules/@internationalized/date/dist/private/manipulation.mjs
+	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/manipulation.mjs
 	var $435a2ceaa8778ed8$var$ONE_HOUR = 36e5;
 	function $435a2ceaa8778ed8$export$e16d8520af44a096(date, duration) {
 		let mutableDate = date.copy();
@@ -11261,7 +11324,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return days;
 	}
 	function $435a2ceaa8778ed8$export$7555de1e070510cb(time) {
-		time.millisecond = Math.max(0, Math.min(time.millisecond, 1e3));
+		time.millisecond = Math.max(0, Math.min(time.millisecond, 999));
 		time.second = Math.max(0, Math.min(time.second, 59));
 		time.minute = Math.max(0, Math.min(time.minute, 59));
 		time.hour = Math.max(0, Math.min(time.hour, 23));
@@ -11407,7 +11470,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return $d07e34cce18680fd$export$b4a036af3fc0b032($d07e34cce18680fd$export$1b96692a1ba042ac($d07e34cce18680fd$export$5107c82f94518f5c(res, dateTime.timeZone, disambiguation), dateTime.timeZone), dateTime.calendar);
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.2/node_modules/@internationalized/date/dist/private/string.mjs
+	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/string.mjs
 	var $58246871e4652552$var$DATE_RE = /^([+-]\d{6}|\d{4})-(\d{2})-(\d{2})$/;
 	var $58246871e4652552$var$DATE_TIME_RE = /^([+-]\d{6}|\d{4})-(\d{2})-(\d{2})(?:T(\d{2}))?(?::(\d{2}))?(?::(\d{2}))?(\.\d+)?$/;
 	var $58246871e4652552$var$ZONED_DATE_TIME_RE = /^([+-]\d{6}|\d{4})-(\d{2})-(\d{2})(?:T(\d{2}))?(?::(\d{2}))?(?::(\d{2}))?(\.\d+)?(?:([+-]\d{2})(?::?(\d{2}))?(?::?(\d{2}))?)?\[(.*?)\]$/;
@@ -11490,7 +11553,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return `${$58246871e4652552$export$4223de14708adc63(date)}${$58246871e4652552$var$offsetToString(date.offset)}[${date.timeZone}]`;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.2/node_modules/@internationalized/date/dist/private/CalendarDate.mjs
+	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/CalendarDate.mjs
 	function $2aaf608024c21ca1$var$shiftArgs(args) {
 		let calendar = typeof args[0] === "object" ? args.shift() : new $93635573935797de$export$80ee6245ec4f29ec();
 		let era;
@@ -11678,7 +11741,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.2/node_modules/@internationalized/date/dist/private/DateFormatter.mjs
+	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/DateFormatter.mjs
 	var $12a3c853105e5a70$var$formatterCache = /* @__PURE__ */ new Map();
 	var $12a3c853105e5a70$export$ad991b66133851cf = class {
 		constructor(locale, options = {}) {
@@ -13015,10 +13078,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			this._promise = res;
 		}
 		static fromSafePromise(promise) {
-			return new ResultAsync(promise.then((value) => new Ok(value)));
+			const newPromise = promise.then((value) => new Ok(value));
+			return new ResultAsync(newPromise);
 		}
 		static fromPromise(promise, errorFn) {
-			return new ResultAsync(promise.then((value) => new Ok(value)).catch((e) => new Err(errorFn(e))));
+			const newPromise = promise.then((value) => new Ok(value)).catch((e) => new Err(errorFn(e)));
+			return new ResultAsync(newPromise);
 		}
 		static fromThrowable(fn, errorFn) {
 			return (...args) => {
@@ -13381,11 +13446,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						options,
 						id
 					});
-					if (result) if (result instanceof Request) request = result;
-					else if (result instanceof Response) {
-						response = result;
-						break;
-					} else throw new Error("onRequest: must return new Request() or Response() when modifying the request");
+					if (result) {
+						if (result instanceof Request) request = result;
+						else if (result instanceof Response) {
+							response = result;
+							break;
+						} else throw new Error("onRequest: must return new Request() or Response() when modifying the request");
+					}
 				}
 			}
 			if (!response) {
@@ -15486,7 +15553,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					}));
 				} else {
 					const apiErrors = result?.error?.errors;
-					details.apiErrors = !apiErrors || (isArray(apiErrors) ? apiErrors.length === 0 : Object.keys(apiErrors).length === 0) ? [shop.t("form.error")] : apiErrors;
+					const isEmpty = !apiErrors || (isArray(apiErrors) ? apiErrors.length === 0 : Object.keys(apiErrors).length === 0);
+					details.apiErrors = isEmpty ? [shop.t("form.error")] : apiErrors;
 				}
 			} catch (e) {
 				console.error(`(go-form) api action "${actionName}" failed`, e);
@@ -16263,7 +16331,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				case "Enter":
 					e.preventDefault();
 					commitTyped();
-					break;
 			}
 		}
 		var $$exports = {
@@ -16430,7 +16497,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function QuantityControl($$anchor, $$props) {
 		push($$props, true);
 		/** Current committed quantity. */
-		/** Current committed quantity. */
 		/** Order minimum (min_persons); the stepper skips the `1..min-1` band. */
 		/** Capacity ceiling. */
 		/** Accessible name (product / sub-ticket title) for either control. */
@@ -16592,8 +16658,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		onChange: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/dompurify@3.4.7/node_modules/dompurify/dist/purify.es.mjs
-	/*! @license DOMPurify 3.4.7 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.4.7/LICENSE */
+	//#region ../../node_modules/.pnpm/dompurify@3.4.14/node_modules/dompurify/dist/purify.es.mjs
+	/*! @license DOMPurify 3.4.14 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.4.14/LICENSE */
 	function _arrayLikeToArray(r, a) {
 		(null == a || a > r.length) && (a = r.length);
 		for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
@@ -16634,9 +16700,17 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0;
 		}
 	}
-	var entries = Object.entries, setPrototypeOf = Object.setPrototypeOf, isFrozen = Object.isFrozen, getPrototypeOf = Object.getPrototypeOf, getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-	var freeze = Object.freeze, seal = Object.seal, create = Object.create;
-	var _ref = typeof Reflect !== "undefined" && Reflect, apply = _ref.apply, construct = _ref.construct;
+	var entries = Object.entries;
+	var setPrototypeOf = Object.setPrototypeOf;
+	var isFrozen = Object.isFrozen;
+	var getPrototypeOf = Object.getPrototypeOf;
+	var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
+	var freeze = Object.freeze;
+	var seal = Object.seal;
+	var create = Object.create;
+	var _ref = typeof Reflect !== "undefined" && Reflect;
+	var apply = _ref.apply;
+	var construct = _ref.construct;
 	if (!freeze) freeze = function freeze(x) {
 		return x;
 	};
@@ -16744,9 +16818,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var _ref3 = _slicedToArray(_ref2, 2);
 			const property = _ref3[0];
 			const value = _ref3[1];
-			if (objectHasOwnProperty(object, property)) if (arrayIsArray(value)) newObject[property] = cleanArray(value);
-			else if (value && typeof value === "object" && value.constructor === Object) newObject[property] = clone(value);
-			else newObject[property] = value;
+			if (objectHasOwnProperty(object, property)) {
+				if (arrayIsArray(value)) newObject[property] = cleanArray(value);
+				else if (value && typeof value === "object" && value.constructor === Object) newObject[property] = clone(value);
+				else newObject[property] = value;
+			}
 		}
 		return newObject;
 	}
@@ -17232,6 +17308,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"direction",
 		"display",
 		"divisor",
+		"dominant-baseline",
 		"dur",
 		"edgemode",
 		"elevation",
@@ -17313,6 +17390,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"patterncontentunits",
 		"patterntransform",
 		"patternunits",
+		"pointer-events",
 		"points",
 		"preservealpha",
 		"preserveaspectratio",
@@ -17359,6 +17437,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"transform-origin",
 		"text-anchor",
 		"text-decoration",
+		"text-orientation",
 		"text-rendering",
 		"textlength",
 		"type",
@@ -17366,6 +17445,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"u2",
 		"unicode",
 		"values",
+		"vector-effect",
 		"viewbox",
 		"visibility",
 		"version",
@@ -17461,6 +17541,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var ATTR_WHITESPACE = seal(/[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\u3000]/g);
 	var DOCTYPE_NAME = seal(/^html$/i);
 	var CUSTOM_ELEMENT = seal(/^[a-z][.\w]*(-[.\w]+)+$/i);
+	var ELEMENT_MARKUP_PROBE = seal(/<[/\w!]/g);
+	var COMMENT_MARKUP_PROBE = seal(/<[/\w]/g);
+	var FALLBACK_TAG_CLOSE = seal(/<\/no(script|embed|frames)/i);
+	var SELF_CLOSING_TAG = seal(/\/>/i);
 	var NODE_TYPE = {
 		element: 1,
 		attribute: 2,
@@ -17468,13 +17552,31 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		cdataSection: 4,
 		entityReference: 5,
 		entityNode: 6,
-		progressingInstruction: 7,
+		processingInstruction: 7,
 		comment: 8,
 		document: 9,
 		documentType: 10,
 		documentFragment: 11,
 		notation: 12
 	};
+	var LITERAL_TEXT_ELEMENT_NAMES = [
+		"style",
+		"script",
+		"xmp",
+		"iframe",
+		"noembed",
+		"noframes",
+		"plaintext",
+		"noscript"
+	];
+	var LITERAL_TEXT_ELEMENTS = freeze(addToSet({}, LITERAL_TEXT_ELEMENT_NAMES));
+	var LITERAL_TEXT_CLOSE = function() {
+		const map = {};
+		arrayForEach(LITERAL_TEXT_ELEMENT_NAMES, (name) => {
+			map[name] = seal(new RegExp("</" + name + "(?=[\\t\\n\\f\\r />])", "i"));
+		});
+		return freeze(map);
+	}();
 	var getGlobal = function getGlobal() {
 		return typeof window === "undefined" ? null : window;
 	};
@@ -17519,10 +17621,40 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			uponSanitizeShadowNode: []
 		};
 	};
+	/**
+	* Resolve a set-valued configuration option: a fresh set built from
+	* cfg[key] when it is an own array property (seeded with a clone of
+	* options.base when given, case-normalized via options.transform),
+	* the fallback set otherwise.
+	*
+	* @param cfg the cloned, prototype-free configuration object
+	* @param key the configuration property to read
+	* @param fallback the set to use when the option is absent or not an array
+	* @param options transform and optional base set to merge into
+	* @returns the resolved set
+	*/
+	var _resolveSetOption = function _resolveSetOption(cfg, key, fallback, options) {
+		return objectHasOwnProperty(cfg, key) && arrayIsArray(cfg[key]) ? addToSet(options.base ? clone(options.base) : {}, cfg[key], options.transform) : fallback;
+	};
+	/**
+	* Resolve an object-valued configuration option: a prototype-free clone
+	* of cfg[key] when it is an own, truthy object property, else a fresh
+	* fallback built by makeFallback (fresh on every parse, so a previous
+	* parse can never leak state into the next one).
+	*
+	* @param cfg the cloned, prototype-free configuration object
+	* @param key the configuration property to read
+	* @param makeFallback builds the fallback value when the option is absent
+	* @returns the resolved object
+	*/
+	var _resolveObjectOption = function _resolveObjectOption(cfg, key, makeFallback) {
+		const value = objectHasOwnProperty(cfg, key) ? cfg[key] : void 0;
+		return value && typeof value === "object" ? clone(value) : makeFallback();
+	};
 	function createDOMPurify() {
 		let window = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : getGlobal();
 		const DOMPurify = (root) => createDOMPurify(root);
-		DOMPurify.version = "3.4.7";
+		DOMPurify.version = "3.4.14";
 		DOMPurify.removed = [];
 		if (!window || !window.document || window.document.nodeType !== NODE_TYPE.document || !window.Element) {
 			DOMPurify.isSupported = false;
@@ -17546,12 +17678,50 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const getAttributes = lookupGetter(ElementPrototype, "attributes");
 		const getNodeType = Node && Node.prototype ? lookupGetter(Node.prototype, "nodeType") : null;
 		const getNodeName = Node && Node.prototype ? lookupGetter(Node.prototype, "nodeName") : null;
+		const getOwnerDocument = Node && Node.prototype ? lookupGetter(Node.prototype, "ownerDocument") : null;
+		const _readNodeType = function _readNodeType(node) {
+			return getNodeType ? getNodeType(node) : node.nodeType;
+		};
+		const _readNodeName = function _readNodeName(node) {
+			return getNodeName ? getNodeName(node) : node.nodeName;
+		};
 		if (typeof HTMLTemplateElement === "function") {
 			const template = document.createElement("template");
 			if (template.content && template.content.ownerDocument) document = template.content.ownerDocument;
 		}
 		let trustedTypesPolicy;
 		let emptyHTML = "";
+		let defaultTrustedTypesPolicy;
+		let defaultTrustedTypesPolicyResolved = false;
+		let IN_TRUSTED_TYPES_POLICY = 0;
+		const _assertNotInTrustedTypesPolicy = function _assertNotInTrustedTypesPolicy() {
+			if (IN_TRUSTED_TYPES_POLICY > 0) throw typeErrorCreate("A configured TRUSTED_TYPES_POLICY callback (createHTML or createScriptURL) must not call DOMPurify.sanitize, as that causes infinite recursion. Do not pass a policy whose callbacks wrap DOMPurify as TRUSTED_TYPES_POLICY; see the \"DOMPurify and Trusted Types\" section of the README.");
+		};
+		const _createTrustedHTML = function _createTrustedHTML(html) {
+			_assertNotInTrustedTypesPolicy();
+			IN_TRUSTED_TYPES_POLICY++;
+			try {
+				return trustedTypesPolicy.createHTML(html);
+			} finally {
+				IN_TRUSTED_TYPES_POLICY--;
+			}
+		};
+		const _createTrustedScriptURL = function _createTrustedScriptURL(scriptUrl) {
+			_assertNotInTrustedTypesPolicy();
+			IN_TRUSTED_TYPES_POLICY++;
+			try {
+				return trustedTypesPolicy.createScriptURL(scriptUrl);
+			} finally {
+				IN_TRUSTED_TYPES_POLICY--;
+			}
+		};
+		const _getDefaultTrustedTypesPolicy = function _getDefaultTrustedTypesPolicy() {
+			if (!defaultTrustedTypesPolicyResolved) {
+				defaultTrustedTypesPolicy = _createTrustedTypesPolicy(trustedTypes, currentScript);
+				defaultTrustedTypesPolicyResolved = true;
+			}
+			return defaultTrustedTypesPolicy;
+		};
 		const _document = document, implementation = _document.implementation, createNodeIterator = _document.createNodeIterator, createDocumentFragment = _document.createDocumentFragment, getElementsByTagName = _document.getElementsByTagName;
 		const importNode = originalDocument.importNode;
 		let hooks = _createHooksMap();
@@ -17624,6 +17794,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		let SAFE_FOR_XML = true;
 		let WHOLE_DOCUMENT = false;
 		let SET_CONFIG = false;
+		let SET_CONFIG_ALLOWED_TAGS = null;
+		let SET_CONFIG_ALLOWED_ATTR = null;
 		let FORCE_BODY = false;
 		let RETURN_DOM = false;
 		let RETURN_DOM_FRAGMENT = false;
@@ -17654,6 +17826,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			"noscript",
 			"plaintext",
 			"script",
+			"selectedcontent",
 			"style",
 			"svg",
 			"template",
@@ -17699,14 +17872,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			SVG_NAMESPACE,
 			HTML_NAMESPACE
 		], stringToString);
-		let MATHML_TEXT_INTEGRATION_POINTS = addToSet({}, [
+		const DEFAULT_MATHML_TEXT_INTEGRATION_POINTS = freeze([
 			"mi",
 			"mo",
 			"mn",
 			"ms",
 			"mtext"
 		]);
-		let HTML_INTEGRATION_POINTS = addToSet({}, ["annotation-xml"]);
+		let MATHML_TEXT_INTEGRATION_POINTS = addToSet({}, DEFAULT_MATHML_TEXT_INTEGRATION_POINTS);
+		const DEFAULT_HTML_INTEGRATION_POINTS = freeze(["annotation-xml"]);
+		let HTML_INTEGRATION_POINTS = addToSet({}, DEFAULT_HTML_INTEGRATION_POINTS);
 		const COMMON_SVG_AND_HTML_ELEMENTS = addToSet({}, [
 			"title",
 			"style",
@@ -17735,14 +17910,20 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			cfg = clone(cfg);
 			PARSER_MEDIA_TYPE = SUPPORTED_PARSER_MEDIA_TYPES.indexOf(cfg.PARSER_MEDIA_TYPE) === -1 ? DEFAULT_PARSER_MEDIA_TYPE : cfg.PARSER_MEDIA_TYPE;
 			transformCaseFunc = PARSER_MEDIA_TYPE === "application/xhtml+xml" ? stringToString : stringToLowerCase;
-			ALLOWED_TAGS = objectHasOwnProperty(cfg, "ALLOWED_TAGS") && arrayIsArray(cfg.ALLOWED_TAGS) ? addToSet({}, cfg.ALLOWED_TAGS, transformCaseFunc) : DEFAULT_ALLOWED_TAGS;
-			ALLOWED_ATTR = objectHasOwnProperty(cfg, "ALLOWED_ATTR") && arrayIsArray(cfg.ALLOWED_ATTR) ? addToSet({}, cfg.ALLOWED_ATTR, transformCaseFunc) : DEFAULT_ALLOWED_ATTR;
-			ALLOWED_NAMESPACES = objectHasOwnProperty(cfg, "ALLOWED_NAMESPACES") && arrayIsArray(cfg.ALLOWED_NAMESPACES) ? addToSet({}, cfg.ALLOWED_NAMESPACES, stringToString) : DEFAULT_ALLOWED_NAMESPACES;
-			URI_SAFE_ATTRIBUTES = objectHasOwnProperty(cfg, "ADD_URI_SAFE_ATTR") && arrayIsArray(cfg.ADD_URI_SAFE_ATTR) ? addToSet(clone(DEFAULT_URI_SAFE_ATTRIBUTES), cfg.ADD_URI_SAFE_ATTR, transformCaseFunc) : DEFAULT_URI_SAFE_ATTRIBUTES;
-			DATA_URI_TAGS = objectHasOwnProperty(cfg, "ADD_DATA_URI_TAGS") && arrayIsArray(cfg.ADD_DATA_URI_TAGS) ? addToSet(clone(DEFAULT_DATA_URI_TAGS), cfg.ADD_DATA_URI_TAGS, transformCaseFunc) : DEFAULT_DATA_URI_TAGS;
-			FORBID_CONTENTS = objectHasOwnProperty(cfg, "FORBID_CONTENTS") && arrayIsArray(cfg.FORBID_CONTENTS) ? addToSet({}, cfg.FORBID_CONTENTS, transformCaseFunc) : DEFAULT_FORBID_CONTENTS;
-			FORBID_TAGS = objectHasOwnProperty(cfg, "FORBID_TAGS") && arrayIsArray(cfg.FORBID_TAGS) ? addToSet({}, cfg.FORBID_TAGS, transformCaseFunc) : clone({});
-			FORBID_ATTR = objectHasOwnProperty(cfg, "FORBID_ATTR") && arrayIsArray(cfg.FORBID_ATTR) ? addToSet({}, cfg.FORBID_ATTR, transformCaseFunc) : clone({});
+			ALLOWED_TAGS = _resolveSetOption(cfg, "ALLOWED_TAGS", DEFAULT_ALLOWED_TAGS, { transform: transformCaseFunc });
+			ALLOWED_ATTR = _resolveSetOption(cfg, "ALLOWED_ATTR", DEFAULT_ALLOWED_ATTR, { transform: transformCaseFunc });
+			ALLOWED_NAMESPACES = _resolveSetOption(cfg, "ALLOWED_NAMESPACES", DEFAULT_ALLOWED_NAMESPACES, { transform: stringToString });
+			URI_SAFE_ATTRIBUTES = _resolveSetOption(cfg, "ADD_URI_SAFE_ATTR", DEFAULT_URI_SAFE_ATTRIBUTES, {
+				transform: transformCaseFunc,
+				base: DEFAULT_URI_SAFE_ATTRIBUTES
+			});
+			DATA_URI_TAGS = _resolveSetOption(cfg, "ADD_DATA_URI_TAGS", DEFAULT_DATA_URI_TAGS, {
+				transform: transformCaseFunc,
+				base: DEFAULT_DATA_URI_TAGS
+			});
+			FORBID_CONTENTS = _resolveSetOption(cfg, "FORBID_CONTENTS", DEFAULT_FORBID_CONTENTS, { transform: transformCaseFunc });
+			FORBID_TAGS = _resolveSetOption(cfg, "FORBID_TAGS", clone({}), { transform: transformCaseFunc });
+			FORBID_ATTR = _resolveSetOption(cfg, "FORBID_ATTR", clone({}), { transform: transformCaseFunc });
 			USE_PROFILES = objectHasOwnProperty(cfg, "USE_PROFILES") ? cfg.USE_PROFILES && typeof cfg.USE_PROFILES === "object" ? clone(cfg.USE_PROFILES) : cfg.USE_PROFILES : false;
 			ALLOW_ARIA_ATTR = cfg.ALLOW_ARIA_ATTR !== false;
 			ALLOW_DATA_ATTR = cfg.ALLOW_DATA_ATTR !== false;
@@ -17761,19 +17942,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			IN_PLACE = cfg.IN_PLACE || false;
 			IS_ALLOWED_URI$1 = isRegex(cfg.ALLOWED_URI_REGEXP) ? cfg.ALLOWED_URI_REGEXP : IS_ALLOWED_URI;
 			NAMESPACE = typeof cfg.NAMESPACE === "string" ? cfg.NAMESPACE : HTML_NAMESPACE;
-			MATHML_TEXT_INTEGRATION_POINTS = objectHasOwnProperty(cfg, "MATHML_TEXT_INTEGRATION_POINTS") && cfg.MATHML_TEXT_INTEGRATION_POINTS && typeof cfg.MATHML_TEXT_INTEGRATION_POINTS === "object" ? clone(cfg.MATHML_TEXT_INTEGRATION_POINTS) : addToSet({}, [
-				"mi",
-				"mo",
-				"mn",
-				"ms",
-				"mtext"
-			]);
-			HTML_INTEGRATION_POINTS = objectHasOwnProperty(cfg, "HTML_INTEGRATION_POINTS") && cfg.HTML_INTEGRATION_POINTS && typeof cfg.HTML_INTEGRATION_POINTS === "object" ? clone(cfg.HTML_INTEGRATION_POINTS) : addToSet({}, ["annotation-xml"]);
-			const customElementHandling = objectHasOwnProperty(cfg, "CUSTOM_ELEMENT_HANDLING") && cfg.CUSTOM_ELEMENT_HANDLING && typeof cfg.CUSTOM_ELEMENT_HANDLING === "object" ? clone(cfg.CUSTOM_ELEMENT_HANDLING) : create(null);
+			MATHML_TEXT_INTEGRATION_POINTS = _resolveObjectOption(cfg, "MATHML_TEXT_INTEGRATION_POINTS", () => addToSet({}, DEFAULT_MATHML_TEXT_INTEGRATION_POINTS));
+			HTML_INTEGRATION_POINTS = _resolveObjectOption(cfg, "HTML_INTEGRATION_POINTS", () => addToSet({}, DEFAULT_HTML_INTEGRATION_POINTS));
+			const customElementHandling = _resolveObjectOption(cfg, "CUSTOM_ELEMENT_HANDLING", () => create(null));
 			CUSTOM_ELEMENT_HANDLING = create(null);
 			if (objectHasOwnProperty(customElementHandling, "tagNameCheck") && isRegexOrFunction(customElementHandling.tagNameCheck)) CUSTOM_ELEMENT_HANDLING.tagNameCheck = customElementHandling.tagNameCheck;
 			if (objectHasOwnProperty(customElementHandling, "attributeNameCheck") && isRegexOrFunction(customElementHandling.attributeNameCheck)) CUSTOM_ELEMENT_HANDLING.attributeNameCheck = customElementHandling.attributeNameCheck;
 			if (objectHasOwnProperty(customElementHandling, "allowCustomizedBuiltInElements") && typeof customElementHandling.allowCustomizedBuiltInElements === "boolean") CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements = customElementHandling.allowCustomizedBuiltInElements;
+			seal(CUSTOM_ELEMENT_HANDLING);
 			if (SAFE_FOR_TEMPLATES) ALLOW_DATA_ATTR = false;
 			if (RETURN_DOM_FRAGMENT) RETURN_DOM = true;
 			if (USE_PROFILES) {
@@ -17815,11 +17991,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					addToSet(ALLOWED_ATTR, cfg.ADD_ATTR, transformCaseFunc);
 				}
 			}
-			if (objectHasOwnProperty(cfg, "ADD_URI_SAFE_ATTR") && arrayIsArray(cfg.ADD_URI_SAFE_ATTR)) addToSet(URI_SAFE_ATTRIBUTES, cfg.ADD_URI_SAFE_ATTR, transformCaseFunc);
-			if (objectHasOwnProperty(cfg, "FORBID_CONTENTS") && arrayIsArray(cfg.FORBID_CONTENTS)) {
-				if (FORBID_CONTENTS === DEFAULT_FORBID_CONTENTS) FORBID_CONTENTS = clone(FORBID_CONTENTS);
-				addToSet(FORBID_CONTENTS, cfg.FORBID_CONTENTS, transformCaseFunc);
-			}
 			if (objectHasOwnProperty(cfg, "ADD_FORBID_CONTENTS") && arrayIsArray(cfg.ADD_FORBID_CONTENTS)) {
 				if (FORBID_CONTENTS === DEFAULT_FORBID_CONTENTS) FORBID_CONTENTS = clone(FORBID_CONTENTS);
 				addToSet(FORBID_CONTENTS, cfg.ADD_FORBID_CONTENTS, transformCaseFunc);
@@ -17837,14 +18008,21 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if (cfg.TRUSTED_TYPES_POLICY) {
 				if (typeof cfg.TRUSTED_TYPES_POLICY.createHTML !== "function") throw typeErrorCreate("TRUSTED_TYPES_POLICY configuration option must provide a \"createHTML\" hook.");
 				if (typeof cfg.TRUSTED_TYPES_POLICY.createScriptURL !== "function") throw typeErrorCreate("TRUSTED_TYPES_POLICY configuration option must provide a \"createScriptURL\" hook.");
+				const previousTrustedTypesPolicy = trustedTypesPolicy;
 				trustedTypesPolicy = cfg.TRUSTED_TYPES_POLICY;
-				emptyHTML = trustedTypesPolicy.createHTML("");
+				try {
+					emptyHTML = _createTrustedHTML("");
+				} catch (error) {
+					trustedTypesPolicy = previousTrustedTypesPolicy;
+					throw error;
+				}
+			} else if (cfg.TRUSTED_TYPES_POLICY === null) {
+				trustedTypesPolicy = void 0;
+				emptyHTML = "";
 			} else {
-				if (trustedTypesPolicy === void 0) trustedTypesPolicy = _createTrustedTypesPolicy(trustedTypes, currentScript);
-				if (trustedTypesPolicy !== null && typeof emptyHTML === "string") emptyHTML = trustedTypesPolicy.createHTML("");
+				if (trustedTypesPolicy === void 0) trustedTypesPolicy = _getDefaultTrustedTypesPolicy();
+				if (trustedTypesPolicy && typeof emptyHTML === "string") emptyHTML = _createTrustedHTML("");
 			}
-			if ((hooks.uponSanitizeElement.length > 0 || hooks.uponSanitizeAttribute.length > 0) && ALLOWED_TAGS === DEFAULT_ALLOWED_TAGS) ALLOWED_TAGS = clone(ALLOWED_TAGS);
-			if (hooks.uponSanitizeAttribute.length > 0 && ALLOWED_ATTR === DEFAULT_ALLOWED_ATTR) ALLOWED_ATTR = clone(ALLOWED_ATTR);
 			if (freeze) freeze(cfg);
 			CONFIG = cfg;
 		};
@@ -17854,6 +18032,45 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			...svgDisallowed
 		]);
 		const ALL_MATHML_TAGS = addToSet({}, [...mathMl$1, ...mathMlDisallowed]);
+		/**
+		* Namespace rules for an element in the SVG namespace.
+		*
+		* @param tagName the element's lowercase tag name
+		* @param parent the (possibly simulated) parent node
+		* @param parentTagName the parent's lowercase tag name
+		* @returns true if a spec-compliant parser could produce this element
+		*/
+		const _checkSvgNamespace = function _checkSvgNamespace(tagName, parent, parentTagName) {
+			if (parent.namespaceURI === HTML_NAMESPACE) return tagName === "svg";
+			if (parent.namespaceURI === MATHML_NAMESPACE) return tagName === "svg" && (parentTagName === "annotation-xml" || MATHML_TEXT_INTEGRATION_POINTS[parentTagName]);
+			return Boolean(ALL_SVG_TAGS[tagName]);
+		};
+		/**
+		* Namespace rules for an element in the MathML namespace.
+		*
+		* @param tagName the element's lowercase tag name
+		* @param parent the (possibly simulated) parent node
+		* @param parentTagName the parent's lowercase tag name
+		* @returns true if a spec-compliant parser could produce this element
+		*/
+		const _checkMathMlNamespace = function _checkMathMlNamespace(tagName, parent, parentTagName) {
+			if (parent.namespaceURI === HTML_NAMESPACE) return tagName === "math";
+			if (parent.namespaceURI === SVG_NAMESPACE) return tagName === "math" && HTML_INTEGRATION_POINTS[parentTagName];
+			return Boolean(ALL_MATHML_TAGS[tagName]);
+		};
+		/**
+		* Namespace rules for an element in the HTML namespace.
+		*
+		* @param tagName the element's lowercase tag name
+		* @param parent the (possibly simulated) parent node
+		* @param parentTagName the parent's lowercase tag name
+		* @returns true if a spec-compliant parser could produce this element
+		*/
+		const _checkHtmlNamespace = function _checkHtmlNamespace(tagName, parent, parentTagName) {
+			if (parent.namespaceURI === SVG_NAMESPACE && !HTML_INTEGRATION_POINTS[parentTagName]) return false;
+			if (parent.namespaceURI === MATHML_NAMESPACE && !MATHML_TEXT_INTEGRATION_POINTS[parentTagName]) return false;
+			return !ALL_MATHML_TAGS[tagName] && (COMMON_SVG_AND_HTML_ELEMENTS[tagName] || !ALL_SVG_TAGS[tagName]);
+		};
 		/**
 		* @param element a DOM element whose namespace is being checked
 		* @returns Return false if the element has a
@@ -17869,21 +18086,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const tagName = stringToLowerCase(element.tagName);
 			const parentTagName = stringToLowerCase(parent.tagName);
 			if (!ALLOWED_NAMESPACES[element.namespaceURI]) return false;
-			if (element.namespaceURI === SVG_NAMESPACE) {
-				if (parent.namespaceURI === HTML_NAMESPACE) return tagName === "svg";
-				if (parent.namespaceURI === MATHML_NAMESPACE) return tagName === "svg" && (parentTagName === "annotation-xml" || MATHML_TEXT_INTEGRATION_POINTS[parentTagName]);
-				return Boolean(ALL_SVG_TAGS[tagName]);
-			}
-			if (element.namespaceURI === MATHML_NAMESPACE) {
-				if (parent.namespaceURI === HTML_NAMESPACE) return tagName === "math";
-				if (parent.namespaceURI === SVG_NAMESPACE) return tagName === "math" && HTML_INTEGRATION_POINTS[parentTagName];
-				return Boolean(ALL_MATHML_TAGS[tagName]);
-			}
-			if (element.namespaceURI === HTML_NAMESPACE) {
-				if (parent.namespaceURI === SVG_NAMESPACE && !HTML_INTEGRATION_POINTS[parentTagName]) return false;
-				if (parent.namespaceURI === MATHML_NAMESPACE && !MATHML_TEXT_INTEGRATION_POINTS[parentTagName]) return false;
-				return !ALL_MATHML_TAGS[tagName] && (COMMON_SVG_AND_HTML_ELEMENTS[tagName] || !ALL_SVG_TAGS[tagName]);
-			}
+			if (element.namespaceURI === SVG_NAMESPACE) return _checkSvgNamespace(tagName, parent, parentTagName);
+			if (element.namespaceURI === MATHML_NAMESPACE) return _checkMathMlNamespace(tagName, parent, parentTagName);
+			if (element.namespaceURI === HTML_NAMESPACE) return _checkHtmlNamespace(tagName, parent, parentTagName);
 			if (PARSER_MEDIA_TYPE === "application/xhtml+xml" && ALLOWED_NAMESPACES[element.namespaceURI]) return true;
 			return false;
 		};
@@ -17898,33 +18103,242 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				getParentNode(node).removeChild(node);
 			} catch (_) {
 				remove(node);
+				if (!getParentNode(node)) throw typeErrorCreate("a node selected for removal could not be detached from its tree and cannot be safely returned; refusing to sanitize in place");
+			}
+		};
+		/**
+		* _stripAttributeNode
+		*
+		* Remove a single Attr node case/namespace-exactly on an attribute-teardown
+		* path. Name-based removeAttribute() ASCII-lowercases its lookup key for an
+		* HTML element in an HTML document and so silently misses a case-preserved
+		* handler (e.g. `ONERROR` off an XML/XHTML import) - the same defect
+		* _removeAttribute() was fixed for, which a name-based call would reintroduce
+		* on these IN_PLACE teardown paths. Unlike _removeAttribute this does not
+		* record into DOMPurify.removed: the neutralize passes intentionally do not
+		* book-keep. A clobbered/detached node falls back to best-effort name-based
+		* removal.
+		*
+		* @param element the element to strip the attribute from
+		* @param attribute the Attr node to remove
+		* @param name the attribute's name, for the fallback path
+		*/
+		const _stripAttributeNode = function _stripAttributeNode(element, attribute, name) {
+			try {
+				element.removeAttributeNode(attribute);
+			} catch (_) {
+				try {
+					element.removeAttribute(name);
+				} catch (_) {}
+			}
+		};
+		/**
+		* _neutralizeRoot
+		*
+		* Fail-closed teardown of an in-place root after the sanitize walk aborts
+		* (campaign-3 F2). An internal throw mid-walk — e.g. a page-registered
+		* custom element's reaction detaches a node so `_forceRemove`'s deliberate
+		* parentless guard throws, or any other re-entrant engine mutation — would
+		* otherwise leave the caller's *live* tree half-sanitized, with everything
+		* after the abort point still carrying its handlers. There is no safe way
+		* to resume the walk (the tree mutated under us), so we strip the root bare:
+		* remove every child and every attribute, then let the caller's catch see
+		* the original error. Clobber-safe (cached `remove`/`childNodes`/`attributes`
+		* getters; the root was already clobber-pre-flighted at the IN_PLACE entry).
+		*
+		* @param root the in-place root to empty
+		*/
+		const _neutralizeRoot = function _neutralizeRoot(root) {
+			_neutralizeSubtree(root);
+			const childNodes = getChildNodes(root);
+			if (childNodes) {
+				const snapshot = [];
+				arrayForEach(childNodes, (child) => {
+					arrayPush(snapshot, child);
+				});
+				arrayForEach(snapshot, (child) => {
+					try {
+						remove(child);
+					} catch (_) {}
+				});
+			}
+			const attributes = getAttributes(root);
+			if (attributes) for (let i = attributes.length - 1; i >= 0; --i) {
+				const attribute = attributes[i];
+				const name = attribute && attribute.name;
+				if (typeof name === "string") _stripAttributeNode(root, attribute, name);
 			}
 		};
 		/**
 		* _removeAttribute
 		*
+		* Name-based getAttributeNode()/removeAttribute() ASCII-lowercase their
+		* lookup key for HTML elements in an HTML document, so they silently miss an
+		* attribute whose stored qualified name still contains uppercase ASCII
+		* letters. That happens when the node came from a case-preserving source
+		* (an XML/XHTML document imported via importNode(), or createAttributeNS()),
+		* where e.g. `ONERROR` survives the walk: the policy check lowercases to
+		* `onerror` and rejects it, but `removeAttribute('ONERROR')` looks up
+		* `onerror` and finds nothing. Remove the exact Attr node instead, which is
+		* case- and namespace-exact, and fall back to name-based removal only when
+		* the caller could not supply the node.
+		*
 		* @param name an Attribute name
 		* @param element a DOM node
+		* @param attr the exact Attr node to remove, when the caller has it
 		*/
-		const _removeAttribute = function _removeAttribute(name, element) {
-			try {
-				arrayPush(DOMPurify.removed, {
-					attribute: element.getAttributeNode(name),
-					from: element
-				});
+		const _removeAttribute = function _removeAttribute(name, element, attr) {
+			if (!attr) try {
+				attr = element.getAttributeNode(name);
 			} catch (_) {
-				arrayPush(DOMPurify.removed, {
-					attribute: null,
-					from: element
-				});
+				attr = null;
 			}
-			element.removeAttribute(name);
-			if (name === "is") if (RETURN_DOM || RETURN_DOM_FRAGMENT) try {
-				_forceRemove(element);
-			} catch (_) {}
-			else try {
-				element.setAttribute(name, "");
-			} catch (_) {}
+			arrayPush(DOMPurify.removed, {
+				attribute: attr || null,
+				from: element
+			});
+			try {
+				if (attr) element.removeAttributeNode(attr);
+				else element.removeAttribute(name);
+			} catch (_) {
+				try {
+					element.removeAttribute(name);
+				} catch (_) {}
+			}
+			if (name === "is") {
+				if (RETURN_DOM || RETURN_DOM_FRAGMENT) try {
+					_forceRemove(element);
+				} catch (_) {}
+				else try {
+					element.setAttribute(name, "");
+				} catch (_) {}
+			}
+		};
+		/**
+		* _stripDisallowedAttributes
+		*
+		* Removes every attribute the active configuration does not allow from a
+		* single element, using the same allowlist as the main attribute pass (so
+		* `on*` handlers go, but no `/^on/` blocklist is introduced). Used only to
+		* neutralise nodes that are being discarded from an in-place tree.
+		*
+		* @param element the element to strip
+		*/
+		const _stripDisallowedAttributes = function _stripDisallowedAttributes(element) {
+			const attributes = getAttributes(element);
+			if (!attributes) return;
+			for (let i = attributes.length - 1; i >= 0; --i) {
+				const attribute = attributes[i];
+				const name = attribute && attribute.name;
+				if (typeof name !== "string" || ALLOWED_ATTR[transformCaseFunc(name)]) continue;
+				_stripAttributeNode(element, attribute, name);
+			}
+		};
+		/**
+		* _neutralizeSubtree
+		*
+		* Completes the audit-5 F1 fix across every removal path. The KEEP_CONTENT
+		* move-hoist neutralises only disallowed-tag removals; clobber, mXSS-canary,
+		* namespace, comment, processing-instruction and KEEP_CONTENT:false removals
+		* all drop their subtree wholesale via `_forceRemove`. On the IN_PLACE path
+		* those dropped nodes are detached from the caller's LIVE tree but a
+		* handler-bearing original among them (an `<img onerror>`/`<video>` that was
+		* loading) keeps its queued resource event, which fires in page scope after
+		* sanitize returns. This walks a removed subtree and strips every attribute
+		* the active configuration does not allow — so `on*` handlers are cancelled
+		* through the SAME allowlist that governs kept nodes, not a separate `/^on/`
+		* blocklist. Run synchronously before sanitize returns, i.e. before any
+		* queued event can fire. Hook-free by design: these nodes leave the output,
+		* so firing attribute hooks for them would be surprising. Clobber-safe reads;
+		* a doomed clobbered node may shadow `removeAttribute` (its own attributes are
+		* irrelevant — it is discarded — while its non-clobbered descendants, e.g.
+		* the `<img>`, are reached and scrubbed).
+		*
+		* @param root the root of a removed subtree to neutralise
+		*/
+		const _neutralizeSubtree = function _neutralizeSubtree(root) {
+			const stack = [root];
+			while (stack.length > 0) {
+				const node = stack.pop();
+				if (_readNodeType(node) === NODE_TYPE.element) _stripDisallowedAttributes(node);
+				const childNodes = getChildNodes(node);
+				if (childNodes) for (let i = childNodes.length - 1; i >= 0; --i) stack.push(childNodes[i]);
+			}
+		};
+		/**
+		* _neutralizePatchLinkage
+		*
+		* IN_PLACE entry pre-pass (declarative-partial-updates / streaming
+		* hardening, https://github.com/WICG/declarative-partial-updates).
+		*
+		* The main walk strips patch linkage (`for`/`patchsrc`) and removes range
+		* markers (PIs / markup comments) node-by-node, in document order, AS it
+		* reaches each node. On a live in-place root that leaves a window: from the
+		* moment the root is connected until the walk arrives at a given node, that
+		* node's linkage is live. A patch applied on connection/stream can fire as
+		* a microtask during the walk and inject or teleport an unsanitized DOM
+		* range into a region the iterator has already passed and will not revisit,
+		* so the post-return "tree is sanitized" contract is violated. Sweep the
+		* whole tree once up front and sever every linkage before the walk begins,
+		* closing that window.
+		*
+		* This CANNOT undo a patch that already fired before sanitize ran — that is
+		* the irreducible "do not IN_PLACE a live-connected attacker tree" caveat —
+		* but it closes everything from sanitize-start onward. Gated on SAFE_FOR_XML
+		* to group with the rest of the declarative-partial-updates handling and
+		* stay overridable, consistent with the codebase.
+		*
+		* Clobber-safe traversal (cached childNodes getter); per-node try/catch so a
+		* clobbered root cannot defeat the sweep of its non-clobbered descendants.
+		*
+		* NOTE (pending real-Chrome confirmation, see test/declarative-patch-probe
+		* .html Q1): this mirrors the existing policy of keeping `for` on
+		* <label>/<output>. If the shipping feature can drive a patch through a
+		* surviving `for`-on-label/output + `id` pair, this pre-pass and the
+		* attribute check at _isBasicCustomElement's caller must additionally drop
+		* that pair on the IN_PLACE path. Left as-is until the taxonomy is verified.
+		*
+		* @param root the in-place root to sweep
+		*/
+		/**
+		* Central policy for declarative-partial-updates patch-linkage attributes,
+		* shared by the _neutralizePatchLinkage pre-pass and _isValidAttribute so
+		* the two sites cannot drift: `patchsrc` always links, `for` links
+		* everywhere except on <label>/<output>, and the whole policy is gated on
+		* SAFE_FOR_XML (see the rationale block in _isValidAttribute).
+		*
+		* @param lcName the transformCaseFunc'd attribute name
+		* @param lcTag the transformCaseFunc'd tag name of the carrying element
+		* @return true if the attribute is patch linkage and must be dropped
+		*/
+		const _isPatchLinkageAttribute = function _isPatchLinkageAttribute(lcName, lcTag) {
+			if (!SAFE_FOR_XML) return false;
+			if (lcName === "patchsrc") return true;
+			return lcName === "for" && lcTag !== "label" && lcTag !== "output";
+		};
+		const _neutralizePatchLinkage = function _neutralizePatchLinkage(root) {
+			if (!SAFE_FOR_XML) return;
+			const stack = [root];
+			while (stack.length > 0) {
+				const node = stack.pop();
+				const nodeType = _readNodeType(node);
+				if (nodeType === NODE_TYPE.processingInstruction || nodeType === NODE_TYPE.comment && regExpTest(COMMENT_MARKUP_PROBE, node.data)) {
+					try {
+						remove(node);
+					} catch (_) {}
+					continue;
+				}
+				if (nodeType === NODE_TYPE.element) {
+					const element = node;
+					const lcTag = transformCaseFunc(_readNodeName(node));
+					try {
+						if (element.hasAttribute && element.hasAttribute("patchsrc")) element.removeAttribute("patchsrc");
+						if (element.hasAttribute && element.hasAttribute("for") && _isPatchLinkageAttribute("for", lcTag)) element.removeAttribute("for");
+					} catch (_) {}
+				}
+				const childNodes = getChildNodes(node);
+				if (childNodes) for (let i = childNodes.length - 1; i >= 0; --i) stack.push(childNodes[i]);
+			}
 		};
 		/**
 		* _initDocument
@@ -17941,7 +18355,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				leadingWhitespace = matches && matches[0];
 			}
 			if (PARSER_MEDIA_TYPE === "application/xhtml+xml" && NAMESPACE === HTML_NAMESPACE) dirty = "<html xmlns=\"http://www.w3.org/1999/xhtml\"><head></head><body>" + dirty + "</body></html>";
-			const dirtyPayload = trustedTypesPolicy ? trustedTypesPolicy.createHTML(dirty) : dirty;
+			const dirtyPayload = trustedTypesPolicy ? _createTrustedHTML(dirty) : dirty;
 			if (NAMESPACE === HTML_NAMESPACE) try {
 				doc = new DOMParser().parseFromString(dirtyPayload, PARSER_MEDIA_TYPE);
 			} catch (_) {}
@@ -17963,7 +18377,22 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		* @return The created NodeIterator
 		*/
 		const _createNodeIterator = function _createNodeIterator(root) {
-			return createNodeIterator.call(root.ownerDocument || root, root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT | NodeFilter.SHOW_PROCESSING_INSTRUCTION | NodeFilter.SHOW_CDATA_SECTION, null);
+			const doc = getOwnerDocument ? getOwnerDocument(root) : root.ownerDocument;
+			return createNodeIterator.call(doc || root, root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT | NodeFilter.SHOW_PROCESSING_INSTRUCTION | NodeFilter.SHOW_CDATA_SECTION, null);
+		};
+		/**
+		* Replace template expression syntax (mustache, ERB, template
+		* literal) with a space; shared by all SAFE_FOR_TEMPLATES scrub
+		* sites. Order matters: mustache, then ERB, then template literal.
+		*
+		* @param value the string to scrub
+		* @returns the scrubbed string
+		*/
+		const _stripTemplateExpressions = function _stripTemplateExpressions(value) {
+			value = stringReplace(value, MUSTACHE_EXPR$1, " ");
+			value = stringReplace(value, ERB_EXPR$1, " ");
+			value = stringReplace(value, TMPLIT_EXPR$1, " ");
+			return value;
 		};
 		/**
 		* Strip template-engine expressions ({{...}}, ${...}, <%...%>) from the
@@ -17984,22 +18413,20 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		*
 		* @param node The root element whose character data should be scrubbed.
 		*/
-		const _scrubTemplateExpressions = function _scrubTemplateExpressions(node) {
+		const _scrubTemplateExpressions2 = function _scrubTemplateExpressions(node) {
+			var _node$querySelectorAl;
 			node.normalize();
-			const walker = createNodeIterator.call(node.ownerDocument || node, node, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_CDATA_SECTION | NodeFilter.SHOW_PROCESSING_INSTRUCTION, null);
+			const doc = getOwnerDocument ? getOwnerDocument(node) : node.ownerDocument;
+			const walker = createNodeIterator.call(doc || node, node, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_CDATA_SECTION | NodeFilter.SHOW_PROCESSING_INSTRUCTION, null);
 			let currentNode = walker.nextNode();
 			while (currentNode) {
-				let data = currentNode.data;
-				arrayForEach([
-					MUSTACHE_EXPR$1,
-					ERB_EXPR$1,
-					TMPLIT_EXPR$1
-				], (expr) => {
-					data = stringReplace(data, expr, " ");
-				});
-				currentNode.data = data;
+				currentNode.data = _stripTemplateExpressions(currentNode.data);
 				currentNode = walker.nextNode();
 			}
+			const templates = (_node$querySelectorAl = node.querySelectorAll) === null || _node$querySelectorAl === void 0 ? void 0 : _node$querySelectorAl.call(node, "template");
+			if (templates) arrayForEach(templates, (tmpl) => {
+				if (_isDocumentFragment(tmpl.content)) _scrubTemplateExpressions2(tmpl.content);
+			});
 		};
 		/**
 		* _isClobbered
@@ -18058,10 +18485,135 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 		};
 		function _executeHooks(hooks, currentNode, data) {
+			if (hooks.length === 0) return;
 			arrayForEach(hooks, (hook) => {
 				hook.call(DOMPurify, currentNode, data, CONFIG);
 			});
 		}
+		/**
+		* Structural-threat checks that condemn a node regardless of the
+		* allowlists: mXSS via namespace confusion, risky CSS construction,
+		* processing instructions, markup-bearing comments. Pure predicate;
+		* the caller removes. Check order is load-bearing.
+		*
+		* @param currentNode the node to inspect
+		* @param tagName the node's transformCaseFunc'd tag name
+		* @return true if the node must be removed
+		*/
+		const _isUnsafeNode = function _isUnsafeNode(currentNode, tagName) {
+			if (SAFE_FOR_XML && currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && regExpTest(ELEMENT_MARKUP_PROBE, currentNode.textContent) && regExpTest(ELEMENT_MARKUP_PROBE, currentNode.innerHTML)) return true;
+			if (SAFE_FOR_XML && currentNode.namespaceURI === HTML_NAMESPACE && LITERAL_TEXT_ELEMENTS[tagName] && (_isNode(currentNode.firstElementChild) || typeof currentNode.textContent === "string" && regExpTest(LITERAL_TEXT_CLOSE[tagName], currentNode.textContent))) return true;
+			if (currentNode.nodeType === NODE_TYPE.processingInstruction) return true;
+			if (SAFE_FOR_XML && currentNode.nodeType === NODE_TYPE.comment && regExpTest(COMMENT_MARKUP_PROBE, currentNode.data)) return true;
+			return false;
+		};
+		/**
+		* Evaluate a CUSTOM_ELEMENT_HANDLING check (a RegExp or a predicate
+		* function, per the validation in _parseConfig) against a name.
+		* Additional arguments are forwarded to predicate functions - the
+		* attributeNameCheck predicate receives the tag name as its second
+		* argument. A null/absent check never matches.
+		*
+		* @param check the configured tagNameCheck / attributeNameCheck value
+		* @param name the name to test
+		* @param args extra arguments forwarded to a predicate function
+		* @return true if the check matches the name
+		*/
+		const _matchesNameCheck = function _matchesNameCheck(check, name) {
+			if (check instanceof RegExp) return regExpTest(check, name);
+			if (check instanceof Function) {
+				for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) args[_key - 2] = arguments[_key];
+				return Boolean(check(name, ...args));
+			}
+			return false;
+		};
+		/**
+		* Handle a node whose tag is forbidden or not allowlisted: keep
+		* allowed custom elements (false return exits _sanitizeElements
+		* early - the namespace and fallback-tag removal checks are
+		* intentionally skipped for kept custom elements), else hoist
+		* content per KEEP_CONTENT and remove.
+		*
+		* A kept custom element is the ONLY case in which this function
+		* returns false, so the caller uses that return value to run the
+		* afterSanitizeElements hook on the kept element and keep the
+		* element-hook lifecycle consistent with normal allowlisted
+		* elements (GHSA-c2j3-45gr-mqc4).
+		*
+		* @param currentNode the disallowed node
+		* @param tagName the node's transformCaseFunc'd tag name
+		* @return true if the node was removed, false if kept
+		*/
+		const _sanitizeDisallowedNode = function _sanitizeDisallowedNode(currentNode, tagName, root) {
+			if (!FORBID_TAGS[tagName] && _isBasicCustomElement(tagName) && _matchesNameCheck(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName)) return false;
+			if (KEEP_CONTENT && !FORBID_CONTENTS[tagName]) {
+				const parentNode = getParentNode(currentNode);
+				const childNodes = getChildNodes(currentNode);
+				if (childNodes && parentNode) {
+					const childCount = childNodes.length;
+					for (let i = childCount - 1; i >= 0; --i) {
+						const hoisted = currentNode === root ? cloneNode(childNodes[i], true) : childNodes[i];
+						parentNode.insertBefore(hoisted, getNextSibling(currentNode));
+					}
+				}
+			}
+			_forceRemove(currentNode);
+			return true;
+		};
+		/**
+		* Fork a hook-mutable allowlist off its shared binding the first time a
+		* (possibly lazily-installed) uponSanitize* hook is about to see it, so the
+		* hook cannot widen the per-instance default or the setConfig binding by
+		* reference and leak past the call. Returns the set unchanged once it is
+		* already call-local, so repeated calls across elements are idempotent.
+		*
+		* @param hookList the uponSanitize* hook array for this event
+		* @param set the current ALLOWED_TAGS / ALLOWED_ATTR binding
+		* @param defaultSet the per-instance DEFAULT_ALLOWED_* constant
+		* @param setConfigSet the captured setConfig() binding, or null
+		* @return a call-local clone if a hook is present and set is still shared,
+		*   else set unchanged
+		*/
+		const _forkSharedAllowlist = function _forkSharedAllowlist(hookList, set, defaultSet, setConfigSet) {
+			if (hookList.length === 0) return set;
+			return set === defaultSet || set === setConfigSet ? clone(set) : set;
+		};
+		/**
+		* Shared guard for a node that a hook has detached from the walk tree,
+		* used after each element-hook site in _sanitizeElements. Detaching is a
+		* long-standing user pattern (issue #469; draw.io-style foreignObject
+		* filtering). Per the cached, unclobberable parentNode getter the node is
+		* genuinely out of the tree, so it can reach neither the serialized
+		* output nor an IN_PLACE live tree; treat it as removed and stop
+		* processing it. Without this guard, the unsafe-node / namespace checks
+		* would call _forceRemove on a parentless node and hit the REPORT-3
+		* fail-closed throw — which exists for nodes DOMPurify wants gone but
+		* *cannot* detach (clobbered / parentless roots), the opposite of a node
+		* that is already safely gone. The walk root is exempt: a detached
+		* IN_PLACE root is legitimate input and must still be fully sanitized,
+		* and a kill-decision on it must keep hitting the REPORT-3 throw.
+		*
+		* Nodes detached by hooks stay the hook's responsibility for placement:
+		* they are not recorded in DOMPurify.removed, so the post-walk IN_PLACE
+		* pass (which iterates DOMPurify.removed) does not reach them. But a
+		* hook-detached subtree can still hold a queued resource-event handler -
+		* e.g. an <img onload> that began loading when the caller built the live
+		* tree - which fires in page scope after sanitize returns even though the
+		* handler never reached the returned tree. That is the audit-5 F1 hazard,
+		* and the documented node.remove() hook pattern walks straight into it.
+		* So on the IN_PLACE path we neutralize the detached subtree inline,
+		* stripping its non-allow-listed attributes before returning, exactly as
+		* the post-walk pass does for _forceRemove'd subtrees.
+		*
+		* @param currentNode the node a hook may have detached
+		* @param root the current walk root
+		* @return true if the node is detached and now handled, false otherwise
+		*/
+		const _handleHookDetachedNode = function _handleHookDetachedNode(currentNode, root) {
+			if (currentNode === root || getParentNode(currentNode) !== null) return false;
+			if (IN_PLACE) _neutralizeSubtree(currentNode);
+			return true;
+		};
 		/**
 		* _sanitizeElements
 		*
@@ -18071,70 +18623,39 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		* @param currentNode to check for permission to exist
 		* @return true if node was killed, false if left alive
 		*/
-		const _sanitizeElements = function _sanitizeElements(currentNode) {
-			let content = null;
+		const _sanitizeElements = function _sanitizeElements(currentNode, root) {
 			_executeHooks(hooks.beforeSanitizeElements, currentNode, null);
+			if (_handleHookDetachedNode(currentNode, root)) return true;
 			if (_isClobbered(currentNode)) {
 				_forceRemove(currentNode);
 				return true;
 			}
-			const tagName = transformCaseFunc(currentNode.nodeName);
+			const tagName = transformCaseFunc(_readNodeName(currentNode));
+			ALLOWED_TAGS = _forkSharedAllowlist(hooks.uponSanitizeElement, ALLOWED_TAGS, DEFAULT_ALLOWED_TAGS, SET_CONFIG_ALLOWED_TAGS);
 			_executeHooks(hooks.uponSanitizeElement, currentNode, {
 				tagName,
 				allowedTags: ALLOWED_TAGS
 			});
-			if (SAFE_FOR_XML && currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && regExpTest(/<[/\w!]/g, currentNode.innerHTML) && regExpTest(/<[/\w!]/g, currentNode.textContent)) {
-				_forceRemove(currentNode);
-				return true;
-			}
-			if (SAFE_FOR_XML && currentNode.namespaceURI === HTML_NAMESPACE && tagName === "style" && _isNode(currentNode.firstElementChild)) {
-				_forceRemove(currentNode);
-				return true;
-			}
-			if (currentNode.nodeType === NODE_TYPE.progressingInstruction) {
-				_forceRemove(currentNode);
-				return true;
-			}
-			if (SAFE_FOR_XML && currentNode.nodeType === NODE_TYPE.comment && regExpTest(/<[/\w]/g, currentNode.data)) {
+			if (_handleHookDetachedNode(currentNode, root)) return true;
+			if (_isUnsafeNode(currentNode, tagName)) {
 				_forceRemove(currentNode);
 				return true;
 			}
 			if (FORBID_TAGS[tagName] || !(EXTRA_ELEMENT_HANDLING.tagCheck instanceof Function && EXTRA_ELEMENT_HANDLING.tagCheck(tagName)) && !ALLOWED_TAGS[tagName]) {
-				if (!FORBID_TAGS[tagName] && _isBasicCustomElement(tagName)) {
-					if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName)) return false;
-					if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(tagName)) return false;
-				}
-				if (KEEP_CONTENT && !FORBID_CONTENTS[tagName]) {
-					const parentNode = getParentNode(currentNode);
-					const childNodes = getChildNodes(currentNode);
-					if (childNodes && parentNode) {
-						const childCount = childNodes.length;
-						for (let i = childCount - 1; i >= 0; --i) {
-							const childClone = cloneNode(childNodes[i], true);
-							parentNode.insertBefore(childClone, getNextSibling(currentNode));
-						}
-					}
-				}
+				const removed = _sanitizeDisallowedNode(currentNode, tagName, root);
+				if (removed === false) _executeHooks(hooks.afterSanitizeElements, currentNode, null);
+				return removed;
+			}
+			if (_readNodeType(currentNode) === NODE_TYPE.element && !_checkValidNamespace(currentNode)) {
 				_forceRemove(currentNode);
 				return true;
 			}
-			if ((getNodeType ? getNodeType(currentNode) : currentNode.nodeType) === NODE_TYPE.element && !_checkValidNamespace(currentNode)) {
-				_forceRemove(currentNode);
-				return true;
-			}
-			if ((tagName === "noscript" || tagName === "noembed" || tagName === "noframes") && regExpTest(/<\/no(script|embed|frames)/i, currentNode.innerHTML)) {
+			if ((tagName === "noscript" || tagName === "noembed" || tagName === "noframes") && regExpTest(FALLBACK_TAG_CLOSE, currentNode.innerHTML)) {
 				_forceRemove(currentNode);
 				return true;
 			}
 			if (SAFE_FOR_TEMPLATES && currentNode.nodeType === NODE_TYPE.text) {
-				content = currentNode.textContent;
-				arrayForEach([
-					MUSTACHE_EXPR$1,
-					ERB_EXPR$1,
-					TMPLIT_EXPR$1
-				], (expr) => {
-					content = stringReplace(content, expr, " ");
-				});
+				const content = _stripTemplateExpressions(currentNode.textContent);
 				if (currentNode.textContent !== content) {
 					arrayPush(DOMPurify.removed, { element: currentNode.cloneNode() });
 					currentNode.textContent = content;
@@ -18153,18 +18674,17 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		*/
 		const _isValidAttribute = function _isValidAttribute(lcTag, lcName, value) {
 			if (FORBID_ATTR[lcName]) return false;
+			if (_isPatchLinkageAttribute(lcName, lcTag)) return false;
 			if (SANITIZE_DOM && (lcName === "id" || lcName === "name") && (value in document || value in formElement)) return false;
 			const nameIsPermitted = ALLOWED_ATTR[lcName] || EXTRA_ELEMENT_HANDLING.attributeCheck instanceof Function && EXTRA_ELEMENT_HANDLING.attributeCheck(lcName, lcTag);
-			if (ALLOW_DATA_ATTR && !FORBID_ATTR[lcName] && regExpTest(DATA_ATTR$1, lcName));
-			else if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$1, lcName));
-			else if (!nameIsPermitted || FORBID_ATTR[lcName]) if (_isBasicCustomElement(lcTag) && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(lcTag)) && (CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName) || CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.attributeNameCheck(lcName, lcTag)) || lcName === "is" && CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, value) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(value)));
-			else return false;
-			else if (URI_SAFE_ATTRIBUTES[lcName]);
-			else if (regExpTest(IS_ALLOWED_URI$1, stringReplace(value, ATTR_WHITESPACE$1, "")));
-			else if ((lcName === "src" || lcName === "xlink:href" || lcName === "href") && lcTag !== "script" && stringIndexOf(value, "data:") === 0 && DATA_URI_TAGS[lcTag]);
-			else if (ALLOW_UNKNOWN_PROTOCOLS && !regExpTest(IS_SCRIPT_OR_DATA$1, stringReplace(value, ATTR_WHITESPACE$1, "")));
-			else if (value) return false;
-			return true;
+			if (ALLOW_DATA_ATTR && regExpTest(DATA_ATTR$1, lcName)) return true;
+			if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$1, lcName)) return true;
+			if (!nameIsPermitted) return _isBasicCustomElement(lcTag) && _matchesNameCheck(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) && _matchesNameCheck(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName, lcTag) || lcName === "is" && CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements && _matchesNameCheck(CUSTOM_ELEMENT_HANDLING.tagNameCheck, value);
+			if (URI_SAFE_ATTRIBUTES[lcName]) return true;
+			if (regExpTest(IS_ALLOWED_URI$1, stringReplace(value, ATTR_WHITESPACE$1, ""))) return true;
+			if ((lcName === "src" || lcName === "xlink:href" || lcName === "href") && lcTag !== "script" && stringIndexOf(value, "data:") === 0 && DATA_URI_TAGS[lcTag]) return true;
+			if (ALLOW_UNKNOWN_PROTOCOLS && !regExpTest(IS_SCRIPT_OR_DATA$1, stringReplace(value, ATTR_WHITESPACE$1, ""))) return true;
+			return !value;
 		};
 		const RESERVED_CUSTOM_ELEMENT_NAMES = addToSet({}, [
 			"annotation-xml",
@@ -18188,6 +18708,48 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return !RESERVED_CUSTOM_ELEMENT_NAMES[stringToLowerCase(tagName)] && regExpTest(CUSTOM_ELEMENT$1, tagName);
 		};
 		/**
+		* Wrap an attribute value in the matching Trusted Types object when
+		* the active policy requires it. Namespaced attributes pass through
+		* unchanged (no TT support yet, see
+		* https://bugs.chromium.org/p/chromium/issues/detail?id=1305293).
+		*
+		* @param lcTag lowercase tag name of the containing element
+		* @param lcName lowercase attribute name
+		* @param namespaceURI the attribute's namespace, if any
+		* @param value the attribute value to wrap
+		* @return the value, wrapped when Trusted Types demand it
+		*/
+		const _applyTrustedTypesToAttribute = function _applyTrustedTypesToAttribute(lcTag, lcName, namespaceURI, value) {
+			if (trustedTypesPolicy && typeof trustedTypes === "object" && typeof trustedTypes.getAttributeType === "function" && !namespaceURI) switch (trustedTypes.getAttributeType(lcTag, lcName)) {
+				case "TrustedHTML": return _createTrustedHTML(value);
+				case "TrustedScriptURL": return _createTrustedScriptURL(value);
+			}
+			return value;
+		};
+		/**
+		* Write a modified attribute value back onto the element. On
+		* success, re-probe for clobbering introduced by the new value and
+		* remove the element when found; otherwise pop the removal entry
+		* recorded by the earlier _removeAttribute (long-standing pairing
+		* with the SANITIZE_NAMED_PROPS path - do not "fix" casually). On
+		* failure, remove the attribute instead.
+		*
+		* @param currentNode the element carrying the attribute
+		* @param name the attribute name as present on the element
+		* @param namespaceURI the attribute's namespace, if any
+		* @param value the new attribute value
+		*/
+		const _setAttributeValue = function _setAttributeValue(currentNode, name, namespaceURI, value) {
+			try {
+				if (namespaceURI) currentNode.setAttributeNS(namespaceURI, name, value);
+				else currentNode.setAttribute(name, value);
+				if (_isClobbered(currentNode)) _forceRemove(currentNode);
+				else arrayPop(DOMPurify.removed);
+			} catch (_) {
+				_removeAttribute(name, currentNode);
+			}
+		};
+		/**
 		* _sanitizeAttributes
 		*
 		* @protect attributes
@@ -18201,6 +18763,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			_executeHooks(hooks.beforeSanitizeAttributes, currentNode, null);
 			const attributes = currentNode.attributes;
 			if (!attributes || _isClobbered(currentNode)) return;
+			ALLOWED_ATTR = _forkSharedAllowlist(hooks.uponSanitizeAttribute, ALLOWED_ATTR, DEFAULT_ALLOWED_ATTR, SET_CONFIG_ALLOWED_ATTR);
 			const hookEvent = {
 				attrName: "",
 				attrValue: "",
@@ -18209,6 +18772,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				forceKeepAttr: void 0
 			};
 			let l = attributes.length;
+			const lcTag = transformCaseFunc(currentNode.nodeName);
 			while (l--) {
 				const attr = attributes[l];
 				const name = attr.name, namespaceURI = attr.namespaceURI, attrValue = attr.value;
@@ -18222,55 +18786,33 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				_executeHooks(hooks.uponSanitizeAttribute, currentNode, hookEvent);
 				value = hookEvent.attrValue;
 				if (SANITIZE_NAMED_PROPS && (lcName === "id" || lcName === "name") && stringIndexOf(value, SANITIZE_NAMED_PROPS_PREFIX) !== 0) {
-					_removeAttribute(name, currentNode);
+					_removeAttribute(name, currentNode, attr);
 					value = SANITIZE_NAMED_PROPS_PREFIX + value;
 				}
 				if (SAFE_FOR_XML && regExpTest(/((--!?|])>)|<\/(style|script|title|xmp|textarea|noscript|iframe|noembed|noframes)/i, value)) {
-					_removeAttribute(name, currentNode);
+					_removeAttribute(name, currentNode, attr);
 					continue;
 				}
 				if (lcName === "attributename" && stringMatch(value, "href")) {
-					_removeAttribute(name, currentNode);
+					_removeAttribute(name, currentNode, attr);
 					continue;
 				}
 				if (hookEvent.forceKeepAttr) continue;
 				if (!hookEvent.keepAttr) {
-					_removeAttribute(name, currentNode);
+					_removeAttribute(name, currentNode, attr);
 					continue;
 				}
-				if (!ALLOW_SELF_CLOSE_IN_ATTR && regExpTest(/\/>/i, value)) {
-					_removeAttribute(name, currentNode);
+				if (!ALLOW_SELF_CLOSE_IN_ATTR && regExpTest(SELF_CLOSING_TAG, value)) {
+					_removeAttribute(name, currentNode, attr);
 					continue;
 				}
-				if (SAFE_FOR_TEMPLATES) arrayForEach([
-					MUSTACHE_EXPR$1,
-					ERB_EXPR$1,
-					TMPLIT_EXPR$1
-				], (expr) => {
-					value = stringReplace(value, expr, " ");
-				});
-				const lcTag = transformCaseFunc(currentNode.nodeName);
+				if (SAFE_FOR_TEMPLATES) value = _stripTemplateExpressions(value);
 				if (!_isValidAttribute(lcTag, lcName, value)) {
-					_removeAttribute(name, currentNode);
+					_removeAttribute(name, currentNode, attr);
 					continue;
 				}
-				if (trustedTypesPolicy && typeof trustedTypes === "object" && typeof trustedTypes.getAttributeType === "function") if (namespaceURI);
-				else switch (trustedTypes.getAttributeType(lcTag, lcName)) {
-					case "TrustedHTML":
-						value = trustedTypesPolicy.createHTML(value);
-						break;
-					case "TrustedScriptURL":
-						value = trustedTypesPolicy.createScriptURL(value);
-						break;
-				}
-				if (value !== initValue) try {
-					if (namespaceURI) currentNode.setAttributeNS(namespaceURI, name, value);
-					else currentNode.setAttribute(name, value);
-					if (_isClobbered(currentNode)) _forceRemove(currentNode);
-					else arrayPop(DOMPurify.removed);
-				} catch (_) {
-					_removeAttribute(name, currentNode);
-				}
+				value = _applyTrustedTypesToAttribute(lcTag, lcName, namespaceURI, value);
+				if (value !== initValue) _setAttributeValue(currentNode, name, namespaceURI, value);
 			}
 			_executeHooks(hooks.afterSanitizeAttributes, currentNode, null);
 		};
@@ -18285,13 +18827,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			_executeHooks(hooks.beforeSanitizeShadowDOM, fragment, null);
 			while (shadowNode = shadowIterator.nextNode()) {
 				_executeHooks(hooks.uponSanitizeShadowNode, shadowNode, null);
-				_sanitizeElements(shadowNode);
+				_sanitizeElements(shadowNode, fragment);
 				_sanitizeAttributes(shadowNode);
 				if (_isDocumentFragment(shadowNode.content)) _sanitizeShadowDOM2(shadowNode.content);
-				if ((getNodeType ? getNodeType(shadowNode) : shadowNode.nodeType) === NODE_TYPE.element) {
-					const innerSr = getShadowRoot ? getShadowRoot(shadowNode) : shadowNode.shadowRoot;
+				if (_readNodeType(shadowNode) === NODE_TYPE.element) {
+					const innerSr = getShadowRoot(shadowNode);
 					if (_isDocumentFragment(innerSr)) {
-						_sanitizeAttachedShadowRoots2(innerSr);
+						_sanitizeAttachedShadowRoots(innerSr);
 						_sanitizeShadowDOM2(innerSr);
 					}
 				}
@@ -18317,27 +18859,43 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		*
 		* @param root the subtree root to walk for attached shadow roots
 		*/
-		const _sanitizeAttachedShadowRoots2 = function _sanitizeAttachedShadowRoots(root) {
-			const nodeType = getNodeType ? getNodeType(root) : root.nodeType;
-			if (nodeType === NODE_TYPE.element) {
-				const sr = getShadowRoot ? getShadowRoot(root) : root.shadowRoot;
-				if (_isDocumentFragment(sr)) {
-					_sanitizeAttachedShadowRoots2(sr);
-					_sanitizeShadowDOM2(sr);
+		const _sanitizeAttachedShadowRoots = function _sanitizeAttachedShadowRoots(root) {
+			const stack = [{
+				node: root,
+				shadow: null
+			}];
+			while (stack.length > 0) {
+				const item = stack.pop();
+				if (item.shadow) {
+					_sanitizeShadowDOM2(item.shadow);
+					continue;
 				}
-			}
-			const childNodes = getChildNodes ? getChildNodes(root) : root.childNodes;
-			if (!childNodes) return;
-			const snapshot = [];
-			arrayForEach(childNodes, (child) => {
-				arrayPush(snapshot, child);
-			});
-			for (const child of snapshot) _sanitizeAttachedShadowRoots2(child);
-			if (nodeType === NODE_TYPE.element) {
-				const rootName = getNodeName ? getNodeName(root) : null;
-				if (typeof rootName === "string" && transformCaseFunc(rootName) === "template") {
-					const content = root.content;
-					if (_isDocumentFragment(content)) _sanitizeAttachedShadowRoots2(content);
+				const node = item.node;
+				const isElement = _readNodeType(node) === NODE_TYPE.element;
+				const childNodes = getChildNodes(node);
+				if (childNodes) for (let i = childNodes.length - 1; i >= 0; --i) stack.push({
+					node: childNodes[i],
+					shadow: null
+				});
+				if (isElement) {
+					const rootName = getNodeName ? getNodeName(node) : null;
+					if (typeof rootName === "string" && transformCaseFunc(rootName) === "template") {
+						const content = node.content;
+						if (_isDocumentFragment(content)) stack.push({
+							node: content,
+							shadow: null
+						});
+					}
+				}
+				if (isElement) {
+					const sr = getShadowRoot(node);
+					if (_isDocumentFragment(sr)) stack.push({
+						node: null,
+						shadow: sr
+					}, {
+						node: sr,
+						shadow: null
+					});
 				}
 			}
 		};
@@ -18354,42 +18912,73 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				if (typeof dirty !== "string") throw typeErrorCreate("dirty is not a string, aborting");
 			}
 			if (!DOMPurify.isSupported) return dirty;
-			if (!SET_CONFIG) _parseConfig(cfg);
+			if (SET_CONFIG) {
+				ALLOWED_TAGS = SET_CONFIG_ALLOWED_TAGS;
+				ALLOWED_ATTR = SET_CONFIG_ALLOWED_ATTR;
+			} else _parseConfig(cfg);
+			if (hooks.uponSanitizeElement.length > 0 || hooks.uponSanitizeAttribute.length > 0) ALLOWED_TAGS = clone(ALLOWED_TAGS);
+			if (hooks.uponSanitizeAttribute.length > 0) ALLOWED_ATTR = clone(ALLOWED_ATTR);
 			DOMPurify.removed = [];
-			if (typeof dirty === "string") IN_PLACE = false;
-			if (IN_PLACE) {
-				const nn = getNodeName ? getNodeName(dirty) : dirty.nodeName;
+			const inPlace = IN_PLACE && typeof dirty !== "string" && _isNode(dirty);
+			if (inPlace) {
+				_neutralizePatchLinkage(dirty);
+				const nn = _readNodeName(dirty);
 				if (typeof nn === "string") {
 					const tagName = transformCaseFunc(nn);
-					if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) throw typeErrorCreate("root node is forbidden and cannot be sanitized in-place");
+					if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) {
+						_neutralizeRoot(dirty);
+						throw typeErrorCreate("root node is forbidden and cannot be sanitized in-place");
+					}
 				}
-				if (_isClobbered(dirty)) throw typeErrorCreate("root node is clobbered and cannot be sanitized in-place");
-				_sanitizeAttachedShadowRoots2(dirty);
+				if (_isClobbered(dirty)) {
+					_neutralizeRoot(dirty);
+					throw typeErrorCreate("root node is clobbered and cannot be sanitized in-place");
+				}
+				try {
+					_sanitizeAttachedShadowRoots(dirty);
+				} catch (error) {
+					_neutralizeRoot(dirty);
+					throw error;
+				}
 			} else if (_isNode(dirty)) {
 				body = _initDocument("<!---->");
 				importedNode = body.ownerDocument.importNode(dirty, true);
 				if (importedNode.nodeType === NODE_TYPE.element && importedNode.nodeName === "BODY") body = importedNode;
 				else if (importedNode.nodeName === "HTML") body = importedNode;
 				else body.appendChild(importedNode);
-				_sanitizeAttachedShadowRoots2(importedNode);
+				_sanitizeAttachedShadowRoots(importedNode);
 			} else {
-				if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT && dirty.indexOf("<") === -1) return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(dirty) : dirty;
+				if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT && dirty.indexOf("<") === -1) return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? _createTrustedHTML(dirty) : dirty;
 				body = _initDocument(dirty);
 				if (!body) return RETURN_DOM ? null : RETURN_TRUSTED_TYPE ? emptyHTML : "";
 			}
 			if (body && FORCE_BODY) _forceRemove(body.firstChild);
-			const nodeIterator = _createNodeIterator(IN_PLACE ? dirty : body);
-			while (currentNode = nodeIterator.nextNode()) {
-				_sanitizeElements(currentNode);
-				_sanitizeAttributes(currentNode);
-				if (_isDocumentFragment(currentNode.content)) _sanitizeShadowDOM2(currentNode.content);
+			const walkRoot = inPlace ? dirty : body;
+			try {
+				const nodeIterator = _createNodeIterator(walkRoot);
+				while (currentNode = nodeIterator.nextNode()) {
+					_sanitizeElements(currentNode, walkRoot);
+					_sanitizeAttributes(currentNode);
+					if (_isDocumentFragment(currentNode.content)) _sanitizeShadowDOM2(currentNode.content);
+				}
+			} catch (error) {
+				if (inPlace) {
+					_neutralizeRoot(dirty);
+					arrayForEach(DOMPurify.removed, (entry) => {
+						if (entry.element) _neutralizeSubtree(entry.element);
+					});
+				}
+				throw error;
 			}
-			if (IN_PLACE) {
-				if (SAFE_FOR_TEMPLATES) _scrubTemplateExpressions(dirty);
+			if (inPlace) {
+				arrayForEach(DOMPurify.removed, (entry) => {
+					if (entry.element) _neutralizeSubtree(entry.element);
+				});
+				if (SAFE_FOR_TEMPLATES) _scrubTemplateExpressions2(dirty);
 				return dirty;
 			}
 			if (RETURN_DOM) {
-				if (SAFE_FOR_TEMPLATES) _scrubTemplateExpressions(body);
+				if (SAFE_FOR_TEMPLATES) _scrubTemplateExpressions2(body);
 				if (RETURN_DOM_FRAGMENT) {
 					returnNode = createDocumentFragment.call(body.ownerDocument);
 					while (body.firstChild) returnNode.appendChild(body.firstChild);
@@ -18399,32 +18988,37 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 			let serializedHTML = WHOLE_DOCUMENT ? body.outerHTML : body.innerHTML;
 			if (WHOLE_DOCUMENT && ALLOWED_TAGS["!doctype"] && body.ownerDocument && body.ownerDocument.doctype && body.ownerDocument.doctype.name && regExpTest(DOCTYPE_NAME, body.ownerDocument.doctype.name)) serializedHTML = "<!DOCTYPE " + body.ownerDocument.doctype.name + ">\n" + serializedHTML;
-			if (SAFE_FOR_TEMPLATES) arrayForEach([
-				MUSTACHE_EXPR$1,
-				ERB_EXPR$1,
-				TMPLIT_EXPR$1
-			], (expr) => {
-				serializedHTML = stringReplace(serializedHTML, expr, " ");
-			});
-			return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(serializedHTML) : serializedHTML;
+			if (SAFE_FOR_TEMPLATES) serializedHTML = _stripTemplateExpressions(serializedHTML);
+			return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? _createTrustedHTML(serializedHTML) : serializedHTML;
 		};
 		DOMPurify.setConfig = function() {
-			_parseConfig(arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {});
+			let cfg = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
+			_parseConfig(cfg);
 			SET_CONFIG = true;
+			SET_CONFIG_ALLOWED_TAGS = ALLOWED_TAGS;
+			SET_CONFIG_ALLOWED_ATTR = ALLOWED_ATTR;
 		};
 		DOMPurify.clearConfig = function() {
 			CONFIG = null;
 			SET_CONFIG = false;
+			SET_CONFIG_ALLOWED_TAGS = null;
+			SET_CONFIG_ALLOWED_ATTR = null;
+			trustedTypesPolicy = defaultTrustedTypesPolicy;
+			emptyHTML = "";
 		};
 		DOMPurify.isValidAttribute = function(tag, attr, value) {
 			if (!CONFIG) _parseConfig({});
-			return _isValidAttribute(transformCaseFunc(tag), transformCaseFunc(attr), value);
+			const lcTag = transformCaseFunc(tag);
+			const lcName = transformCaseFunc(attr);
+			return _isValidAttribute(lcTag, lcName, value);
 		};
 		DOMPurify.addHook = function(entryPoint, hookFunction) {
 			if (typeof hookFunction !== "function") return;
+			if (!objectHasOwnProperty(hooks, entryPoint)) return;
 			arrayPush(hooks[entryPoint], hookFunction);
 		};
 		DOMPurify.removeHook = function(entryPoint, hookFunction) {
+			if (!objectHasOwnProperty(hooks, entryPoint)) return;
 			if (hookFunction !== void 0) {
 				const index = arrayLastIndexOf(hooks[entryPoint], hookFunction);
 				return index === -1 ? void 0 : arraySplice(hooks[entryPoint], index, 1)[0];
@@ -18432,6 +19026,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return arrayPop(hooks[entryPoint]);
 		};
 		DOMPurify.removeHooks = function(entryPoint) {
+			if (!objectHasOwnProperty(hooks, entryPoint)) return;
 			hooks[entryPoint] = [];
 		};
 		DOMPurify.removeAllHooks = function() {
@@ -19552,7 +20147,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	}, [], []));
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/internal/flags/legacy.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/flags/legacy.js
 	enable_legacy_mode_flag();
 	//#endregion
 	//#region src/components/donations/lib/donation.svelte.ts
@@ -19777,7 +20372,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	delegate(["click"]);
 	customElements.define("go-donations", create_custom_element(Donations, {}, [], []));
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_30a9f2c917609fd3cb2070420016a0e2/node_modules/svelte-toolbelt/dist/utils/is.js
+	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/is.js
 	function isFunction$1(value) {
 		return typeof value === "function";
 	}
@@ -19801,7 +20396,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return false;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_30a9f2c917609fd3cb2070420016a0e2/node_modules/svelte-toolbelt/dist/box/box-extras.svelte.js
+	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/box/box-extras.svelte.js
 	var BoxSymbol = Symbol("box");
 	var isWritableSymbol = Symbol("is-writable");
 	function boxWith(getter, setter) {
@@ -19850,7 +20445,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_30a9f2c917609fd3cb2070420016a0e2/node_modules/svelte-toolbelt/dist/utils/compose-handlers.js
+	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/compose-handlers.js
 	/**
 	* Composes event handlers into a single function that can be called with an event.
 	* If the previous handler cancels the event using `event.preventDefault()`, the handlers
@@ -20097,7 +20692,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return styleObject;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_30a9f2c917609fd3cb2070420016a0e2/node_modules/svelte-toolbelt/dist/utils/strings.js
+	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/strings.js
 	var NUMBER_CHAR_RE = /\d/;
 	var STR_SPLITTERS = [
 		"-",
@@ -20159,7 +20754,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return str ? str[0].toLowerCase() + str.slice(1) : "";
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_30a9f2c917609fd3cb2070420016a0e2/node_modules/svelte-toolbelt/dist/utils/css-to-style-obj.js
+	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/css-to-style-obj.js
 	function cssToStyleObj(css) {
 		if (!css) return {};
 		const styleObj = {};
@@ -20178,7 +20773,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return styleObj;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_30a9f2c917609fd3cb2070420016a0e2/node_modules/svelte-toolbelt/dist/utils/execute-callbacks.js
+	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/execute-callbacks.js
 	/**
 	* Executes an array of callback functions with the same arguments.
 	* @template T The types of the arguments that the callback functions take.
@@ -20191,7 +20786,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_30a9f2c917609fd3cb2070420016a0e2/node_modules/svelte-toolbelt/dist/utils/style-to-css.js
+	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/style-to-css.js
 	function createParser(matcher, replacer) {
 		const regex = RegExp(matcher, "g");
 		return (str) => {
@@ -20206,11 +20801,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return Object.keys(styleObj).map((property) => `${camelToKebab(property)}: ${styleObj[property]};`).join("\n");
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_30a9f2c917609fd3cb2070420016a0e2/node_modules/svelte-toolbelt/dist/utils/style.js
+	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/style.js
 	function styleToString(style = {}) {
 		return styleToCSS(style).replace("\n", " ");
 	}
-	var EVENT_LIST_SET = new Set([
+	var EVENT_LIST_SET = /* @__PURE__ */ new Set([
 		"onabort",
 		"onanimationcancel",
 		"onanimationend",
@@ -20316,7 +20911,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"onwheel"
 	]);
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_30a9f2c917609fd3cb2070420016a0e2/node_modules/svelte-toolbelt/dist/utils/merge-props.js
+	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/merge-props.js
 	/**
 	* Modified from https://github.com/adobe/react-spectrum/blob/main/packages/%40react-aria/utils/src/mergeProps.ts (see NOTICE.txt for source)
 	*/
@@ -20400,7 +20995,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return result;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_30a9f2c917609fd3cb2070420016a0e2/node_modules/svelte-toolbelt/dist/utils/sr-only-styles.js
+	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/sr-only-styles.js
 	var srOnlyStyles = {
 		position: "absolute",
 		width: "1px",
@@ -20415,13 +21010,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	};
 	var srOnlyStylesString = styleToString(srOnlyStyles);
 	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_1f96119c3718044e5b928abd417f4834/node_modules/runed/dist/internal/configurable-globals.js
+	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/internal/configurable-globals.js
 	var defaultWindow = typeof window !== "undefined" ? window : void 0;
 	typeof window !== "undefined" && window.document;
 	typeof window !== "undefined" && window.navigator;
 	typeof window !== "undefined" && window.location;
 	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_1f96119c3718044e5b928abd417f4834/node_modules/runed/dist/internal/utils/dom.js
+	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/internal/utils/dom.js
 	/**
 	* Handles getting the active element in a document or shadow root.
 	* If the active element is within a shadow root, it will traverse the shadow root
@@ -20441,7 +21036,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return activeElement;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.1_@typescript-eslint+types@8.60.1/node_modules/svelte/src/reactivity/map.js
+	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/reactivity/map.js
 	/** @import { Source } from '#client' */
 	/**
 	* A reactive version of the built-in [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) object.
@@ -20521,12 +21116,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		has(key) {
 			var sources = this.#sources;
 			var s = sources.get(key);
-			if (s === void 0) if (super.has(key)) {
-				s = this.#source(0);
-				sources.set(key, s);
-			} else {
-				get$2(this.#version);
-				return false;
+			if (s === void 0) {
+				if (super.has(key)) {
+					s = this.#source(0);
+					sources.set(key, s);
+				} else {
+					get$2(this.#version);
+					return false;
+				}
 			}
 			get$2(s);
 			return true;
@@ -20543,12 +21140,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		get(key) {
 			var sources = this.#sources;
 			var s = sources.get(key);
-			if (s === void 0) if (super.has(key)) {
-				s = this.#source(0);
-				sources.set(key, s);
-			} else {
-				get$2(this.#version);
-				return;
+			if (s === void 0) {
+				if (super.has(key)) {
+					s = this.#source(0);
+					sources.set(key, s);
+				} else {
+					get$2(this.#version);
+					return;
+				}
 			}
 			get$2(s);
 			return super.get(key);
@@ -20631,7 +21230,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_1f96119c3718044e5b928abd417f4834/node_modules/runed/dist/utilities/active-element/active-element.svelte.js
+	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/utilities/active-element/active-element.svelte.js
 	var ActiveElement = class {
 		#document;
 		#subscribe;
@@ -20656,12 +21255,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	};
 	new ActiveElement();
 	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_1f96119c3718044e5b928abd417f4834/node_modules/runed/dist/internal/utils/is.js
+	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/internal/utils/is.js
 	function isFunction(value) {
 		return typeof value === "function";
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_1f96119c3718044e5b928abd417f4834/node_modules/runed/dist/utilities/context/context.js
+	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/utilities/context/context.js
 	var Context = class {
 		#name;
 		#key;
@@ -20723,15 +21322,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_1f96119c3718044e5b928abd417f4834/node_modules/runed/dist/utilities/watch/watch.svelte.js
+	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/utilities/watch/watch.svelte.js
 	function runEffect(flush, effect) {
 		switch (flush) {
 			case "post":
 				user_effect(effect);
 				break;
-			case "pre":
-				user_pre_effect(effect);
-				break;
+			case "pre": user_pre_effect(effect);
 		}
 	}
 	function runWatcher(sources, flush, effect, options = {}) {
@@ -20782,13 +21379,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	watchOnce.pre = watchOncePre;
 	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_1f96119c3718044e5b928abd417f4834/node_modules/runed/dist/internal/utils/get.js
+	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/internal/utils/get.js
 	function get$1(value) {
 		if (isFunction(value)) return value();
 		return value;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_1f96119c3718044e5b928abd417f4834/node_modules/runed/dist/utilities/element-size/element-size.svelte.js
+	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/utilities/element-size/element-size.svelte.js
 	var ElementSize = class {
 		#size = {
 			width: 0,
@@ -20871,7 +21468,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_1f96119c3718044e5b928abd417f4834/node_modules/runed/dist/utilities/resource/resource.svelte.js
+	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/utilities/resource/resource.svelte.js
 	function debounce$1(fn, delay) {
 		let timeoutId;
 		let lastResolve = null;
@@ -20983,7 +21580,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	resource.pre = resourcePre;
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_30a9f2c917609fd3cb2070420016a0e2/node_modules/svelte-toolbelt/dist/utils/on-destroy-effect.svelte.js
+	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/on-destroy-effect.svelte.js
 	function onDestroyEffect(fn) {
 		user_effect(() => {
 			return () => {
@@ -20992,7 +21589,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		});
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_30a9f2c917609fd3cb2070420016a0e2/node_modules/svelte-toolbelt/dist/utils/after-sleep.js
+	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/after-sleep.js
 	/**
 	* A utility function that executes a callback after a specified number of milliseconds.
 	*/
@@ -21000,12 +21597,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return setTimeout(cb, ms);
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_30a9f2c917609fd3cb2070420016a0e2/node_modules/svelte-toolbelt/dist/utils/after-tick.js
+	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/after-tick.js
 	function afterTick(fn) {
 		tick().then(fn);
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_30a9f2c917609fd3cb2070420016a0e2/node_modules/svelte-toolbelt/dist/utils/dom.js
+	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/dom.js
 	var ELEMENT_NODE = 1;
 	var DOCUMENT_NODE = 9;
 	var DOCUMENT_FRAGMENT_NODE = 11;
@@ -21060,7 +21657,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return activeElement;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_30a9f2c917609fd3cb2070420016a0e2/node_modules/svelte-toolbelt/dist/utils/dom-context.svelte.js
+	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/dom-context.svelte.js
 	var DOMContext = class {
 		element;
 		#root = /* @__PURE__ */ user_derived(() => {
@@ -21108,7 +21705,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_30a9f2c917609fd3cb2070420016a0e2/node_modules/svelte-toolbelt/dist/utils/attach-ref.js
+	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/attach-ref.js
 	/**
 	* Creates a Svelte Attachment that attaches a DOM element to a ref.
 	* The ref can be either a WritableBox or a callback function.
@@ -21151,7 +21748,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		} };
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/attrs.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/attrs.js
 	function boolToStr(condition) {
 		return condition ? "true" : "false";
 	}
@@ -21197,7 +21794,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/kbd-constants.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/kbd-constants.js
 	var ARROW_DOWN = "ArrowDown";
 	var ARROW_LEFT = "ArrowLeft";
 	var ARROW_RIGHT = "ArrowRight";
@@ -21205,7 +21802,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var BACKSPACE = "Backspace";
 	var ENTER = "Enter";
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/is.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/is.js
 	var isBrowser = typeof document !== "undefined";
 	var isIOS = getIsIOS();
 	function getIsIOS() {
@@ -21233,7 +21830,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return value !== null;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/animations-complete.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/animations-complete.js
 	var AnimationsComplete = class {
 		#opts;
 		#currentFrame = null;
@@ -21322,7 +21919,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/presence-manager.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/presence-manager.svelte.js
 	var PresenceManager = class {
 		#opts;
 		#enabled;
@@ -21386,19 +21983,19 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/noop.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/noop.js
 	/**
 	* A no operation function (does nothing)
 	*/
 	function noop() {}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/create-id.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/create-id.js
 	function createId(prefixOrUid, uid) {
 		if (uid === void 0) return `bits-${prefixOrUid}`;
 		return `bits-${prefixOrUid}-${uid}`;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/config/bits-config.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/config/bits-config.js
 	var BitsConfigContext = new Context("BitsConfig");
 	/**
 	* Gets the current Bits UI configuration state from the context.
@@ -21465,7 +22062,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/config/prop-resolvers.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/config/prop-resolvers.js
 	/**
 	* Creates a generic prop resolver that follows a standard priority chain:
 	* 1. The getter's prop value (if defined)
@@ -21491,7 +22088,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	*/
 	var resolveLocaleProp = createPropResolver((config) => config.defaultLocale, "en");
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/events.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/events.js
 	/**
 	* Creates a typed event dispatcher and listener pair for custom events
 	* @template T - The type of data that will be passed in the event detail
@@ -21527,7 +22124,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/debounce.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/debounce.js
 	function debounce(fn, wait = 500) {
 		let timeout = null;
 		const debounced = (...args) => {
@@ -21545,7 +22142,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return debounced;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/elements.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/elements.js
 	function isOrContainsTarget(node, target) {
 		return node === target || node.contains(target);
 	}
@@ -21553,7 +22150,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return el?.ownerDocument ?? document;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/dom.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/dom.js
 	/**
 	* Determines if the click event truly occurred outside the content node.
 	* This was added to handle password managers and other elements that may be injected
@@ -21565,9 +22162,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/tabbable@6.4.0/node_modules/tabbable/dist/index.esm.js
+	//#region ../../node_modules/.pnpm/tabbable@6.5.0/node_modules/tabbable/dist/index.esm.js
 	/*!
-	* tabbable 6.4.0
+	* tabbable 6.5.0
 	* @license MIT, https://github.com/focus-trap/tabbable/blob/master/LICENSE
 	*/
 	var candidateSelectors = [
@@ -21575,6 +22172,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"select:not([inert]):not([inert] *)",
 		"textarea:not([inert]):not([inert] *)",
 		"a[href]:not([inert]):not([inert] *)",
+		"area[href]:not([inert]):not([inert] *)",
 		"button:not([inert]):not([inert] *)",
 		"[tabindex]:not(slot):not([inert]):not([inert] *)",
 		"audio[controls]:not([inert]):not([inert] *)",
@@ -21796,7 +22394,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				checkVisibilityCSS: true
 			});
 		}
-		if (getComputedStyle(node).visibility === "hidden") return true;
+		var visibility = getComputedStyle(node).visibility;
+		if (visibility === "hidden" || visibility === "collapse") return true;
 		var nodeUnderDetails = matches.call(node, "details>summary:first-of-type") ? node.parentElement : node;
 		if (matches.call(nodeUnderDetails, "details:not([open]) *")) return true;
 		if (!displayCheck || displayCheck === "full" || displayCheck === "full-native" || displayCheck === "legacy-full") {
@@ -21909,7 +22508,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return isNodeMatchingSelectorFocusable(options, node);
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/arrays.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/arrays.js
 	/**
 	* Splits an array into chunks of a given size.
 	* @param arr The array to split.
@@ -21937,7 +22536,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return index >= 0 && index < arr.length;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/menu/menu.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/menu/menu.svelte.js
 	var CONTEXT_MENU_TRIGGER_ATTR = "data-context-menu-trigger";
 	var CONTEXT_MENU_CONTENT_ATTR = "data-context-menu-content";
 	new Context("Menu.Root");
@@ -21969,7 +22568,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		]
 	});
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/dismissible-layer/use-dismissable-layer.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/dismissible-layer/use-dismissable-layer.svelte.js
 	globalThis.bitsDismissableLayers ??= /* @__PURE__ */ new Map();
 	var DismissibleLayerState = class DismissibleLayerState {
 		static create(opts) {
@@ -22151,7 +22750,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		} });
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/dismissible-layer/dismissible-layer.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/dismissible-layer/dismissible-layer.svelte
 	function Dismissible_layer($$anchor, $$props) {
 		push($$props, true);
 		let interactOutsideBehavior = prop($$props, "interactOutsideBehavior", 7, "close"), onInteractOutside = prop($$props, "onInteractOutside", 7, noop), onFocusOutside = prop($$props, "onFocusOutside", 7, noop), id = prop($$props, "id", 7), children = prop($$props, "children", 7), enabled = prop($$props, "enabled", 7), isValidEvent = prop($$props, "isValidEvent", 7, () => false), ref = prop($$props, "ref", 7);
@@ -22238,7 +22837,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/escape-layer/use-escape-layer.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/escape-layer/use-escape-layer.svelte.js
 	globalThis.bitsEscapeLayers ??= /* @__PURE__ */ new Map();
 	var EscapeLayerState = class EscapeLayerState {
 		static create(opts) {
@@ -22287,7 +22886,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return firstLayerNode === instance;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/escape-layer/escape-layer.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/escape-layer/escape-layer.svelte
 	function Escape_layer($$anchor, $$props) {
 		push($$props, true);
 		let escapeKeydownBehavior = prop($$props, "escapeKeydownBehavior", 7, "close"), onEscapeKeydown = prop($$props, "onEscapeKeydown", 7, noop), children = prop($$props, "children", 7), enabled = prop($$props, "enabled", 7), ref = prop($$props, "ref", 7);
@@ -22347,7 +22946,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope-manager.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope-manager.js
 	var FocusScopeManager = class FocusScopeManager {
 		static instance;
 		#scopeStack = simpleBox([]);
@@ -22393,7 +22992,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope.svelte.js
 	var FocusScope = class FocusScope {
 		#paused = false;
 		#container = null;
@@ -22554,7 +23153,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope.svelte
 	function Focus_scope($$anchor, $$props) {
 		push($$props, true);
 		let enabled = prop($$props, "enabled", 7, false), trapFocus = prop($$props, "trapFocus", 7, false), loop = prop($$props, "loop", 7, false), onCloseAutoFocus = prop($$props, "onCloseAutoFocus", 7, noop), onOpenAutoFocus = prop($$props, "onOpenAutoFocus", 7, noop), focusScope = prop($$props, "focusScope", 7), ref = prop($$props, "ref", 7);
@@ -22632,7 +23231,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/text-selection-layer/use-text-selection-layer.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/text-selection-layer/use-text-selection-layer.svelte.js
 	var noopPointer = () => {};
 	globalThis.bitsTextSelectionLayers ??= /* @__PURE__ */ new Map();
 	var TextSelectionLayerState = class TextSelectionLayerState {
@@ -22718,7 +23317,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return highestLayer[0] === instance;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/text-selection-layer/text-selection-layer.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/text-selection-layer/text-selection-layer.svelte
 	function Text_selection_layer($$anchor, $$props) {
 		push($$props, true);
 		let preventOverflowTextSelection = prop($$props, "preventOverflowTextSelection", 7, true), onPointerDown = prop($$props, "onPointerDown", 7, noop), onPointerUp = prop($$props, "onPointerUp", 7, noop), id = prop($$props, "id", 7), children = prop($$props, "children", 7), enabled = prop($$props, "enabled", 7), ref = prop($$props, "ref", 7);
@@ -22795,7 +23394,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/use-id.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/use-id.js
 	globalThis.bitsIdCounter ??= { current: 0 };
 	/**
 	* Generates a unique ID based on a global counter.
@@ -22805,7 +23404,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return `${prefix}-${globalThis.bitsIdCounter.current}`;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/shared-state.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/shared-state.svelte.js
 	var SharedState = class {
 		#factory;
 		#subscribers = 0;
@@ -22836,7 +23435,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/body-scroll-lock.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/body-scroll-lock.svelte.js
 	var lockMap = new SvelteMap();
 	var initialBodyStyle = /* @__PURE__ */ state(null);
 	var stopTouchMoveListener = null;
@@ -22989,7 +23588,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return false;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/scroll-lock/scroll-lock.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/scroll-lock/scroll-lock.svelte
 	function Scroll_lock($$anchor, $$props) {
 		push($$props, true);
 		let preventScroll = prop($$props, "preventScroll", 7, true), restoreScrollDelay = prop($$props, "restoreScrollDelay", 7, null);
@@ -23016,7 +23615,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		restoreScrollDelay: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/date-time/announcer.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/date-time/announcer.js
 	/**
 	* Creates or gets an announcer element which is used to announce messages to screen readers.
 	* Within the date components, we use this to announce when the values of the individual segments
@@ -23080,7 +23679,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return { announce };
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/date-time/utils.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/date-time/utils.js
 	var defaultDateDefaults = {
 		defaultValue: void 0,
 		granularity: "day"
@@ -23212,7 +23811,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return date.add({ days: lastDayOfWeek - day });
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/date-time/field/parts.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/date-time/field/parts.js
 	var DATE_SEGMENT_PARTS = [
 		"day",
 		"month",
@@ -23231,7 +23830,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	ALL_SEGMENT_PARTS.filter((part) => part !== "literal");
 	ALL_TIME_SEGMENT_PARTS.filter((part) => part !== "literal");
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/date-time/placeholders.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/date-time/placeholders.js
 	var supportedLocales = [
 		"ach",
 		"af",
@@ -23721,7 +24320,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return locale.split("-")[0];
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/date-time/field/helpers.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/date-time/field/helpers.js
 	function initializeSegmentValues(granularity) {
 		const calendarDateTimeGranularities = [
 			"hour",
@@ -24004,7 +24603,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return new Intl.DateTimeFormat(locale, { hour: "numeric" }).formatToParts(/* @__PURE__ */ new Date("2023-01-01T13:00:00")).find((part) => part.type === "hour")?.value === "1" ? 12 : 24;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/date-time/field/segments.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/date-time/field/segments.js
 	/**
 	* Handles segment navigation based on the provided keyboard event and field ID.
 	*
@@ -24109,7 +24708,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return getSegments(fieldNode)[0];
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/date-time/formatter.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/date-time/formatter.js
 	var defaultPartOptions = {
 		year: "numeric",
 		month: "numeric",
@@ -24197,7 +24796,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/date-time/calendar-helpers.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/date-time/calendar-helpers.svelte.js
 	function isCalendarDayNode(node) {
 		if (!isHTMLElement$1(node)) return false;
 		if (!node.hasAttribute("data-bits-day")) return false;
@@ -24657,7 +25256,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return Array.from({ length: totalYears }, (_, i) => minYear + i);
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/calendar/calendar.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/calendar.svelte.js
 	var CalendarRootContext = new Context("Calendar.Root | RangeCalender.Root");
 	var CalendarRootState = class CalendarRootState {
 		static create(opts) {
@@ -25536,8 +26135,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/calendar/components/calendar.svelte
-	var rest_excludes$25 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar.svelte
+	var rest_excludes$25 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -25887,8 +26486,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		yearFormat: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/calendar/components/calendar-day.svelte
-	var rest_excludes$24 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-day.svelte
+	var rest_excludes$24 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -25987,8 +26586,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		id: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid.svelte
-	var rest_excludes$23 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid.svelte
+	var rest_excludes$23 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -26066,8 +26665,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		id: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-body.svelte
-	var rest_excludes$22 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-body.svelte
+	var rest_excludes$22 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -26145,8 +26744,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		id: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/calendar/components/calendar-cell.svelte
-	var rest_excludes$21 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-cell.svelte
+	var rest_excludes$21 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -26251,8 +26850,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		month: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-head.svelte
-	var rest_excludes$20 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-head.svelte
+	var rest_excludes$20 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -26330,8 +26929,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		id: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/calendar/components/calendar-head-cell.svelte
-	var rest_excludes$19 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-head-cell.svelte
+	var rest_excludes$19 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -26409,8 +27008,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		id: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-row.svelte
-	var rest_excludes$18 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-row.svelte
+	var rest_excludes$18 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -26488,8 +27087,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		id: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/calendar/components/calendar-header.svelte
-	var rest_excludes$17 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-header.svelte
+	var rest_excludes$17 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -26567,8 +27166,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		id: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/calendar/components/calendar-heading.svelte
-	var rest_excludes$16 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-heading.svelte
+	var rest_excludes$16 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -26663,8 +27262,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		id: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/calendar/components/calendar-next-button.svelte
-	var rest_excludes$15 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-next-button.svelte
+	var rest_excludes$15 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -26751,8 +27350,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		tabindex: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/calendar/components/calendar-prev-button.svelte
-	var rest_excludes$14 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-prev-button.svelte
+	var rest_excludes$14 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -26839,8 +27438,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		tabindex: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/hidden-input.svelte
-	var rest_excludes$13 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/hidden-input.svelte
+	var rest_excludes$13 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -26895,7 +27494,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	create_custom_element(Hidden_input, { value: {} }, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/@floating-ui+utils@0.2.11/node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs
+	//#region ../../node_modules/.pnpm/@floating-ui+utils@0.2.12/node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs
 	/**
 	* Custom positioning reference element.
 	* @see https://floating-ui.com/docs/virtual-elements
@@ -26994,12 +27593,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return oppositeSideMap[side] + placement.slice(side.length);
 	}
 	function expandPaddingObject(padding) {
+		var _padding$top, _padding$right, _padding$bottom, _padding$left;
 		return {
-			top: 0,
-			right: 0,
-			bottom: 0,
-			left: 0,
-			...padding
+			top: (_padding$top = padding.top) != null ? _padding$top : 0,
+			right: (_padding$right = padding.right) != null ? _padding$right : 0,
+			bottom: (_padding$bottom = padding.bottom) != null ? _padding$bottom : 0,
+			left: (_padding$left = padding.left) != null ? _padding$left : 0
 		};
 	}
 	function getPaddingObject(padding) {
@@ -27024,7 +27623,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/@floating-ui+core@1.7.5/node_modules/@floating-ui/core/dist/floating-ui.core.mjs
+	//#region ../../node_modules/.pnpm/@floating-ui+core@1.8.0/node_modules/@floating-ui/core/dist/floating-ui.core.mjs
 	function computeCoordsFromPlacement(_ref, placement, rtl) {
 		let { reference, floating } = _ref;
 		const sideAxis = getSideAxis(placement);
@@ -27066,14 +27665,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				y: reference.y
 			};
 		}
-		switch (getAlignment(placement)) {
-			case "start":
-				coords[alignmentAxis] -= commonAlign * (rtl && isVertical ? -1 : 1);
-				break;
-			case "end":
-				coords[alignmentAxis] += commonAlign * (rtl && isVertical ? -1 : 1);
-				break;
-		}
+		const alignment = getAlignment(placement);
+		if (alignment) coords[alignmentAxis] += commonAlign * (alignment === "end" ? 1 : -1) * (rtl && isVertical ? -1 : 1);
 		return coords;
 	}
 	/**
@@ -27104,10 +27697,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			height: rects.floating.height
 		} : rects.reference;
 		const offsetParent = await (platform.getOffsetParent == null ? void 0 : platform.getOffsetParent(elements.floating));
-		const offsetScale = await (platform.isElement == null ? void 0 : platform.isElement(offsetParent)) ? await (platform.getScale == null ? void 0 : platform.getScale(offsetParent)) || {
-			x: 1,
-			y: 1
-		} : {
+		const offsetScale = await (platform.isElement == null ? void 0 : platform.isElement(offsetParent)) && await (platform.getScale == null ? void 0 : platform.getScale(offsetParent)) || {
 			x: 1,
 			y: 1
 		};
@@ -27227,12 +27817,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const largestPossiblePadding = clientSize / 2 - arrowDimensions[length] / 2 - 1;
 			const minPadding = min$1(paddingObject[minProp], largestPossiblePadding);
 			const maxPadding = min$1(paddingObject[maxProp], largestPossiblePadding);
-			const min$1$1 = minPadding;
 			const max = clientSize - arrowDimensions[length] - maxPadding;
 			const center = clientSize / 2 - arrowDimensions[length] / 2 + centerToReference;
-			const offset = clamp(min$1$1, center, max);
-			const shouldAddOffset = !middlewareData.arrow && getAlignment(placement) != null && center !== offset && rects.reference[length] / 2 - (center < min$1$1 ? minPadding : maxPadding) - arrowDimensions[length] / 2 < 0;
-			const alignmentOffset = shouldAddOffset ? center < min$1$1 ? center - min$1$1 : center - max : 0;
+			const offset = clamp(minPadding, center, max);
+			const shouldAddOffset = !middlewareData.arrow && getAlignment(placement) != null && center !== offset && rects.reference[length] / 2 - (center < minPadding ? minPadding : maxPadding) - arrowDimensions[length] / 2 < 0;
+			const alignmentOffset = shouldAddOffset ? center < minPadding ? center - minPadding : center - max : 0;
 			return {
 				[axis]: coords[axis] + alignmentOffset,
 				data: {
@@ -27307,9 +27896,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 							if (placement) resetPlacement = placement;
 							break;
 						}
-						case "initialPlacement":
-							resetPlacement = initialPlacement;
-							break;
+						case "initialPlacement": resetPlacement = initialPlacement;
 					}
 					if (placement !== resetPlacement) return { reset: { placement: resetPlacement } };
 				}
@@ -27447,24 +28034,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					y
 				};
 				const overflow = await platform.detectOverflow(state, detectOverflowOptions);
-				const crossAxis = getSideAxis(getSide$1(placement));
+				const crossAxis = getSideAxis(placement);
 				const mainAxis = getOppositeAxis(crossAxis);
 				let mainAxisCoord = coords[mainAxis];
 				let crossAxisCoord = coords[crossAxis];
-				if (checkMainAxis) {
-					const minSide = mainAxis === "y" ? "top" : "left";
-					const maxSide = mainAxis === "y" ? "bottom" : "right";
-					const min = mainAxisCoord + overflow[minSide];
-					const max = mainAxisCoord - overflow[maxSide];
-					mainAxisCoord = clamp(min, mainAxisCoord, max);
-				}
-				if (checkCrossAxis) {
-					const minSide = crossAxis === "y" ? "top" : "left";
-					const maxSide = crossAxis === "y" ? "bottom" : "right";
-					const min = crossAxisCoord + overflow[minSide];
-					const max = crossAxisCoord - overflow[maxSide];
-					crossAxisCoord = clamp(min, crossAxisCoord, max);
-				}
+				const clampCoord = (axis, coord) => clamp(coord + overflow[axis === "y" ? "top" : "left"], coord, coord - overflow[axis === "y" ? "bottom" : "right"]);
+				if (checkMainAxis) mainAxisCoord = clampCoord(mainAxis, mainAxisCoord);
+				if (checkCrossAxis) crossAxisCoord = clampCoord(crossAxis, crossAxisCoord);
 				const limitedCoords = limiter.fn({
 					...state,
 					[mainAxis]: mainAxisCoord,
@@ -27492,6 +28068,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return {
 			options,
 			fn(state) {
+				var _rawOffset$mainAxis, _rawOffset$crossAxis;
 				const { x, y, placement, rects, middlewareData } = state;
 				const { offset = 0, mainAxis: checkMainAxis = true, crossAxis: checkCrossAxis = true } = evaluate$1(options, state);
 				const coords = {
@@ -27507,9 +28084,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					mainAxis: rawOffset,
 					crossAxis: 0
 				} : {
-					mainAxis: 0,
-					crossAxis: 0,
-					...rawOffset
+					mainAxis: (_rawOffset$mainAxis = rawOffset.mainAxis) != null ? _rawOffset$mainAxis : 0,
+					crossAxis: (_rawOffset$crossAxis = rawOffset.crossAxis) != null ? _rawOffset$crossAxis : 0
 				};
 				if (checkMainAxis) {
 					const len = mainAxis === "y" ? "height" : "width";
@@ -27546,7 +28122,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			name: "size",
 			options,
 			async fn(state) {
-				var _state$middlewareData, _state$middlewareData2;
 				const { placement, rects, platform, elements } = state;
 				const { apply = () => {}, ...detectOverflowOptions } = evaluate$1(options, state);
 				const overflow = await platform.detectOverflow(state, detectOverflowOptions);
@@ -27567,18 +28142,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				const maximumClippingWidth = width - overflow.left - overflow.right;
 				const overflowAvailableHeight = min$1(height - overflow[heightSide], maximumClippingHeight);
 				const overflowAvailableWidth = min$1(width - overflow[widthSide], maximumClippingWidth);
-				const noShift = !state.middlewareData.shift;
+				const shiftData = state.middlewareData.shift;
+				const noShift = !shiftData;
 				let availableHeight = overflowAvailableHeight;
 				let availableWidth = overflowAvailableWidth;
-				if ((_state$middlewareData = state.middlewareData.shift) != null && _state$middlewareData.enabled.x) availableWidth = maximumClippingWidth;
-				if ((_state$middlewareData2 = state.middlewareData.shift) != null && _state$middlewareData2.enabled.y) availableHeight = maximumClippingHeight;
+				if (shiftData != null && shiftData.enabled.x) availableWidth = maximumClippingWidth;
+				if (shiftData != null && shiftData.enabled.y) availableHeight = maximumClippingHeight;
 				if (noShift && !alignment) {
-					const xMin = max$1(overflow.left, 0);
-					const xMax = max$1(overflow.right, 0);
-					const yMin = max$1(overflow.top, 0);
-					const yMax = max$1(overflow.bottom, 0);
-					if (isYAxis) availableWidth = width - 2 * (xMin !== 0 || xMax !== 0 ? xMin + xMax : max$1(overflow.left, overflow.right));
-					else availableHeight = height - 2 * (yMin !== 0 || yMax !== 0 ? yMin + yMax : max$1(overflow.top, overflow.bottom));
+					if (isYAxis) availableWidth = width - 2 * max$1(overflow.left, overflow.right);
+					else availableHeight = height - 2 * max$1(overflow.top, overflow.bottom);
 				}
 				await apply({
 					...state,
@@ -27592,7 +28164,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/@floating-ui+utils@0.2.11/node_modules/@floating-ui/utils/dist/floating-ui.utils.dom.mjs
+	//#region ../../node_modules/.pnpm/@floating-ui+utils@0.2.12/node_modules/@floating-ui/utils/dist/floating-ui.utils.dom.mjs
 	function hasWindow() {
 		return typeof window !== "undefined";
 	}
@@ -27685,7 +28257,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	function getNearestOverflowAncestor(node) {
 		const parentNode = getParentNode(node);
-		if (isLastTraversableNode(parentNode)) return node.ownerDocument ? node.ownerDocument.body : node.body;
+		if (isLastTraversableNode(parentNode)) return (node.ownerDocument || node).body;
 		if (isHTMLElement(parentNode) && isOverflowElement(parentNode)) return parentNode;
 		return getNearestOverflowAncestor(parentNode);
 	}
@@ -27705,7 +28277,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return win.parent && Object.getPrototypeOf(win.parent) ? win.frameElement : null;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/@floating-ui+dom@1.7.6/node_modules/@floating-ui/dom/dist/floating-ui.dom.mjs
+	//#region ../../node_modules/.pnpm/@floating-ui+dom@1.8.0/node_modules/@floating-ui/dom/dist/floating-ui.dom.mjs
 	function getCssDimensions(element) {
 		const css = getComputedStyle$1(element);
 		let width = parseFloat(css.width) || 0;
@@ -27752,8 +28324,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	function shouldAddVisualOffsets(element, isFixed, floatingOffsetParent) {
 		if (isFixed === void 0) isFixed = false;
-		if (!floatingOffsetParent || isFixed && floatingOffsetParent !== getWindow(element)) return false;
-		return isFixed;
+		return !!floatingOffsetParent && isFixed && floatingOffsetParent === getWindow(element);
 	}
 	function getBoundingClientRect(element, includeScale, isFixedStrategy, offsetParent) {
 		if (includeScale === void 0) includeScale = false;
@@ -27761,20 +28332,22 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const clientRect = element.getBoundingClientRect();
 		const domElement = unwrapElement(element);
 		let scale = createCoords(1);
-		if (includeScale) if (offsetParent) {
-			if (isElement(offsetParent)) scale = getScale(offsetParent);
-		} else scale = getScale(element);
+		if (includeScale) {
+			if (offsetParent) {
+				if (isElement(offsetParent)) scale = getScale(offsetParent);
+			} else scale = getScale(element);
+		}
 		const visualOffsets = shouldAddVisualOffsets(domElement, isFixedStrategy, offsetParent) ? getVisualOffsets(domElement) : createCoords(0);
 		let x = (clientRect.left + visualOffsets.x) / scale.x;
 		let y = (clientRect.top + visualOffsets.y) / scale.y;
 		let width = clientRect.width / scale.x;
 		let height = clientRect.height / scale.y;
-		if (domElement) {
+		if (domElement && offsetParent) {
 			const win = getWindow(domElement);
-			const offsetWin = offsetParent && isElement(offsetParent) ? getWindow(offsetParent) : offsetParent;
+			const offsetWin = isElement(offsetParent) ? getWindow(offsetParent) : offsetParent;
 			let currentWin = win;
 			let currentIFrame = getFrameElement(currentWin);
-			while (currentIFrame && offsetParent && offsetWin !== currentWin) {
+			while (currentIFrame && offsetWin !== currentWin) {
 				const iframeScale = getScale(currentIFrame);
 				const iframeRect = currentIFrame.getBoundingClientRect();
 				const css = getComputedStyle$1(currentIFrame);
@@ -27822,7 +28395,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		let scale = createCoords(1);
 		const offsets = createCoords(0);
 		const isOffsetParentAnElement = isHTMLElement(offsetParent);
-		if (isOffsetParentAnElement || !isOffsetParentAnElement && !isFixed) {
+		if (isOffsetParentAnElement || !isFixed) {
 			if (getNodeName(offsetParent) !== "body" || isOverflowElement(documentElement)) scroll = getNodeScroll(offsetParent);
 			if (isOffsetParentAnElement) {
 				const offsetRect = getBoundingClientRect(offsetParent);
@@ -27840,15 +28413,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	}
 	function getClientRects(element) {
-		return Array.from(element.getClientRects());
+		return element.getClientRects ? Array.from(element.getClientRects()) : [];
 	}
-	function getDocumentRect(element) {
-		const html = getDocumentElement(element);
-		const scroll = getNodeScroll(element);
-		const body = element.ownerDocument.body;
+	function getDocumentRect(html) {
+		const scroll = getNodeScroll(html);
+		const body = html.ownerDocument.body;
 		const width = max$1(html.scrollWidth, html.clientWidth, body.scrollWidth, body.clientWidth);
 		const height = max$1(html.scrollHeight, html.clientHeight, body.scrollHeight, body.clientHeight);
-		let x = -scroll.scrollLeft + getWindowScrollBarX(element);
+		let x = -scroll.scrollLeft + getWindowScrollBarX(html);
 		const y = -scroll.scrollTop;
 		if (getComputedStyle$1(body).direction === "rtl") x += max$1(html.clientWidth, body.clientWidth) - width;
 		return {
@@ -27859,7 +28431,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	}
 	var SCROLLBAR_MAX = 25;
-	function getViewportRect(element, strategy) {
+	function getViewportRect(element, strategy, rootBoundary) {
+		if (rootBoundary === void 0) rootBoundary = "viewport";
+		const isLayoutViewport = rootBoundary === "layoutViewport";
 		const win = getWindow(element);
 		const html = getDocumentElement(element);
 		const visualViewport = win.visualViewport;
@@ -27868,23 +28442,30 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		let x = 0;
 		let y = 0;
 		if (visualViewport) {
-			width = visualViewport.width;
-			height = visualViewport.height;
-			const visualViewportBased = isWebKit();
-			if (!visualViewportBased || visualViewportBased && strategy === "fixed") {
-				x = visualViewport.offsetLeft;
-				y = visualViewport.offsetTop;
+			const layoutRelativeClientCoords = !isWebKit() || strategy === "fixed";
+			if (isLayoutViewport) {
+				if (!layoutRelativeClientCoords) {
+					x = -visualViewport.offsetLeft;
+					y = -visualViewport.offsetTop;
+				}
+			} else {
+				width = visualViewport.width;
+				height = visualViewport.height;
+				if (layoutRelativeClientCoords) {
+					x = visualViewport.offsetLeft;
+					y = visualViewport.offsetTop;
+				}
 			}
 		}
-		const windowScrollbarX = getWindowScrollBarX(html);
-		if (windowScrollbarX <= 0) {
+		if (getWindowScrollBarX(html) <= 0) {
 			const doc = html.ownerDocument;
 			const body = doc.body;
 			const bodyStyles = getComputedStyle(body);
 			const bodyMarginInline = doc.compatMode === "CSS1Compat" ? parseFloat(bodyStyles.marginLeft) + parseFloat(bodyStyles.marginRight) || 0 : 0;
-			const clippingStableScrollbarWidth = Math.abs(html.clientWidth - body.clientWidth - bodyMarginInline);
-			if (clippingStableScrollbarWidth <= SCROLLBAR_MAX) width -= clippingStableScrollbarWidth;
-		} else if (windowScrollbarX <= SCROLLBAR_MAX) width += windowScrollbarX;
+			const reservedWidth = Math.abs(html.clientWidth - body.clientWidth - bodyMarginInline);
+			const gutter = getComputedStyle(html).scrollbarGutter === "stable both-edges" ? reservedWidth / 2 : reservedWidth;
+			if (gutter <= SCROLLBAR_MAX) width -= gutter;
+		}
 		return {
 			width,
 			height,
@@ -27896,7 +28477,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const clientRect = getBoundingClientRect(element, true, strategy === "fixed");
 		const top = clientRect.top + element.clientTop;
 		const left = clientRect.left + element.clientLeft;
-		const scale = isHTMLElement(element) ? getScale(element) : createCoords(1);
+		const scale = getScale(element);
 		return {
 			width: element.clientWidth * scale.x,
 			height: element.clientHeight * scale.y,
@@ -27906,7 +28487,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	function getClientRectFromClippingAncestor(element, clippingAncestor, strategy) {
 		let rect;
-		if (clippingAncestor === "viewport") rect = getViewportRect(element, strategy);
+		if (clippingAncestor === "viewport" || clippingAncestor === "layoutViewport") rect = getViewportRect(element, strategy, clippingAncestor);
 		else if (clippingAncestor === "document") rect = getDocumentRect(getDocumentElement(element));
 		else if (isElement(clippingAncestor)) rect = getInnerBoundingClientRect(clippingAncestor, strategy);
 		else {
@@ -27920,24 +28501,19 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		return rectToClientRect(rect);
 	}
-	function hasFixedPositionAncestor(element, stopNode) {
-		const parentNode = getParentNode(element);
-		if (parentNode === stopNode || !isElement(parentNode) || isLastTraversableNode(parentNode)) return false;
-		return getComputedStyle$1(parentNode).position === "fixed" || hasFixedPositionAncestor(parentNode, stopNode);
-	}
 	function getClippingElementAncestors(element, cache) {
 		const cachedResult = cache.get(element);
 		if (cachedResult) return cachedResult;
 		let result = getOverflowAncestors(element, [], false).filter((el) => isElement(el) && getNodeName(el) !== "body");
-		let currentContainingBlockComputedStyle = null;
+		let lastKeptComputedStyle = null;
 		const elementIsFixed = getComputedStyle$1(element).position === "fixed";
 		let currentNode = elementIsFixed ? getParentNode(element) : element;
 		while (isElement(currentNode) && !isLastTraversableNode(currentNode)) {
 			const computedStyle = getComputedStyle$1(currentNode);
 			const currentNodeIsContaining = isContainingBlock(currentNode);
-			if (!currentNodeIsContaining && computedStyle.position === "fixed") currentContainingBlockComputedStyle = null;
-			if (elementIsFixed ? !currentNodeIsContaining && !currentContainingBlockComputedStyle : !currentNodeIsContaining && computedStyle.position === "static" && !!currentContainingBlockComputedStyle && (currentContainingBlockComputedStyle.position === "absolute" || currentContainingBlockComputedStyle.position === "fixed") || isOverflowElement(currentNode) && !currentNodeIsContaining && hasFixedPositionAncestor(element, currentNode)) result = result.filter((ancestor) => ancestor !== currentNode);
-			else currentContainingBlockComputedStyle = computedStyle;
+			const lastPosition = lastKeptComputedStyle ? lastKeptComputedStyle.position : elementIsFixed ? "fixed" : "";
+			if (!currentNodeIsContaining && (lastPosition === "fixed" || lastPosition === "absolute" && computedStyle.position === "static")) result = result.filter((ancestor) => ancestor !== currentNode);
+			else lastKeptComputedStyle = computedStyle;
 			currentNode = getParentNode(currentNode);
 		}
 		cache.set(element, result);
@@ -27982,18 +28558,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			scrollTop: 0
 		};
 		const offsets = createCoords(0);
-		function setLeftRTLScrollbarOffset() {
-			offsets.x = getWindowScrollBarX(documentElement);
-		}
-		if (isOffsetParentAnElement || !isOffsetParentAnElement && !isFixed) {
+		if (isOffsetParentAnElement || !isFixed) {
 			if (getNodeName(offsetParent) !== "body" || isOverflowElement(documentElement)) scroll = getNodeScroll(offsetParent);
 			if (isOffsetParentAnElement) {
 				const offsetRect = getBoundingClientRect(offsetParent, true, isFixed, offsetParent);
 				offsets.x = offsetRect.x + offsetParent.clientLeft;
 				offsets.y = offsetRect.y + offsetParent.clientTop;
-			} else if (documentElement) setLeftRTLScrollbarOffset();
+			}
 		}
-		if (isFixed && !isOffsetParentAnElement && documentElement) setLeftRTLScrollbarOffset();
+		if (!isOffsetParentAnElement && documentElement) offsets.x = getWindowScrollBarX(documentElement);
 		const htmlOffset = documentElement && !isOffsetParentAnElement && !isFixed ? getHTMLOffset(documentElement, scroll) : createCoords(0);
 		return {
 			x: rect.left + scroll.scrollLeft - offsets.x - htmlOffset.x,
@@ -28060,7 +28633,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function rectsAreEqual(a, b) {
 		return a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
 	}
-	function observeMove(element, onMove) {
+	function observeMove(element, onMove, ancestorResize) {
 		let io = null;
 		let timeoutId;
 		const root = getDocumentElement(element);
@@ -28089,6 +28662,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			let isFirstUpdate = true;
 			function handleObserve(entries) {
 				const ratio = entries[0].intersectionRatio;
+				if (!rectsAreEqual(elementRectForRootMargin, element.getBoundingClientRect())) return refresh();
 				if (ratio !== threshold) {
 					if (!isFirstUpdate) return refresh();
 					if (!ratio) timeoutId = setTimeout(() => {
@@ -28096,7 +28670,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					}, 1e3);
 					else refresh(false, ratio);
 				}
-				if (ratio === 1 && !rectsAreEqual(elementRectForRootMargin, element.getBoundingClientRect())) refresh();
 				isFirstUpdate = false;
 			}
 			try {
@@ -28109,8 +28682,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 			io.observe(element);
 		}
+		const win = getWindow(element);
+		const handleResize = () => refresh(ancestorResize);
+		win.addEventListener("resize", handleResize);
 		refresh(true);
-		return cleanup;
+		return () => {
+			win.removeEventListener("resize", handleResize);
+			cleanup();
+		};
 	}
 	/**
 	* Automatically updates the position of the floating element when necessary.
@@ -28126,10 +28705,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const referenceEl = unwrapElement(reference);
 		const ancestors = ancestorScroll || ancestorResize ? [...referenceEl ? getOverflowAncestors(referenceEl) : [], ...floating ? getOverflowAncestors(floating) : []] : [];
 		ancestors.forEach((ancestor) => {
-			ancestorScroll && ancestor.addEventListener("scroll", update, { passive: true });
+			ancestorScroll && ancestor.addEventListener("scroll", update);
 			ancestorResize && ancestor.addEventListener("resize", update);
 		});
-		const cleanupIo = referenceEl && layoutShift ? observeMove(referenceEl, update) : null;
+		const cleanupIo = referenceEl && layoutShift ? observeMove(referenceEl, update, ancestorResize) : null;
 		let reobserveFrame = -1;
 		let resizeObserver = null;
 		if (elementResize) {
@@ -28220,11 +28799,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	*/
 	var computePosition = (reference, floating, options) => {
 		const cache = /* @__PURE__ */ new Map();
-		const mergedOptions = {
-			platform,
-			...options
-		};
+		const mergedOptions = options != null ? options : {};
 		const platformWithCache = {
+			...platform,
 			...mergedOptions.platform,
 			_c: cache
 		};
@@ -28234,7 +28811,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		});
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/floating-svelte/floating-utils.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/floating-svelte/floating-utils.svelte.js
 	function get(valueOrGetValue) {
 		return typeof valueOrGetValue === "function" ? valueOrGetValue() : valueOrGetValue;
 	}
@@ -28256,7 +28833,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/floating-svelte/use-floating.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/floating-svelte/use-floating.svelte.js
 	function useFloating(options) {
 		/** Options */
 		const whileElementsMountedOption = options.whileElementsMounted;
@@ -28415,7 +28992,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return node.getClientRects().length === 0;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/floating-layer/use-floating-layer.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/floating-layer/use-floating-layer.svelte.js
 	var OPPOSITE_SIDE = {
 		top: "bottom",
 		right: "left",
@@ -28434,9 +29011,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		triggerNode = simpleBox(null);
 		constructor() {
 			user_effect(() => {
-				if (this.customAnchorNode.current) if (typeof this.customAnchorNode.current === "string") this.anchorNode.current = document.querySelector(this.customAnchorNode.current);
-				else this.anchorNode.current = this.customAnchorNode.current;
-				else this.anchorNode.current = this.triggerNode.current;
+				if (this.customAnchorNode.current) {
+					if (typeof this.customAnchorNode.current === "string") this.anchorNode.current = document.querySelector(this.customAnchorNode.current);
+					else this.anchorNode.current = this.customAnchorNode.current;
+				} else this.anchorNode.current = this.triggerNode.current;
 			});
 		}
 	};
@@ -28745,7 +29323,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return getSideAndAlignFromPlacement(placement)[1];
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer.svelte
 	function Floating_layer($$anchor, $$props) {
 		push($$props, true);
 		let children = prop($$props, "children", 7), tooltip = prop($$props, "tooltip", 7, false);
@@ -28776,7 +29354,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		tooltip: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-anchor.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-anchor.svelte
 	function Floating_layer_anchor($$anchor, $$props) {
 		push($$props, true);
 		let id = prop($$props, "id", 7), children = prop($$props, "children", 7), virtualEl = prop($$props, "virtualEl", 7), ref = prop($$props, "ref", 7), tooltip = prop($$props, "tooltip", 7, false);
@@ -28835,7 +29413,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		tooltip: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-content.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-content.svelte
 	function Floating_layer_content($$anchor, $$props) {
 		push($$props, true);
 		let content = prop($$props, "content", 7), side = prop($$props, "side", 7, "bottom"), sideOffset = prop($$props, "sideOffset", 7, 0), align = prop($$props, "align", 7, "center"), alignOffset = prop($$props, "alignOffset", 7, 0), id = prop($$props, "id", 7), arrowPadding = prop($$props, "arrowPadding", 7, 0), avoidCollisions = prop($$props, "avoidCollisions", 7, true), collisionBoundary = prop($$props, "collisionBoundary", 23, () => []), collisionPadding = prop($$props, "collisionPadding", 7, 0), hideWhenDetached = prop($$props, "hideWhenDetached", 7, false), onPlaced = prop($$props, "onPlaced", 7, () => {}), sticky = prop($$props, "sticky", 7, "partial"), updatePositionStrategy = prop($$props, "updatePositionStrategy", 7, "optimized"), strategy = prop($$props, "strategy", 7, "fixed"), dir = prop($$props, "dir", 7, "ltr"), style = prop($$props, "style", 23, () => ({})), wrapperId = prop($$props, "wrapperId", 23, useId), customAnchor = prop($$props, "customAnchor", 7, null), enabled = prop($$props, "enabled", 7), tooltip = prop($$props, "tooltip", 7, false);
@@ -29042,7 +29620,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		tooltip: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-content-static.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-content-static.svelte
 	function Floating_layer_content_static($$anchor, $$props) {
 		push($$props, true);
 		let content = prop($$props, "content", 7), onPlaced = prop($$props, "onPlaced", 7);
@@ -29078,8 +29656,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		onPlaced: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-content.svelte
-	var rest_excludes$12 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-content.svelte
+	var rest_excludes$12 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -29149,8 +29727,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		onPlaced: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer-inner.svelte
-	var rest_excludes$11 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer-inner.svelte
+	var rest_excludes$11 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -29470,8 +30048,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		{
 			const content = ($$anchor, $$arg0) => {
-				let floatingProps = () => $$arg0?.().props;
-				let wrapperProps = () => $$arg0?.().wrapperProps;
+				let floatingProps = () => ($$arg0?.()).props;
+				let wrapperProps = () => ($$arg0?.()).wrapperProps;
 				var fragment_1 = root$27();
 				var node = first_child(fragment_1);
 				var consequent = ($$anchor) => {
@@ -29491,7 +30069,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				var node_1 = sibling(node, 2);
 				{
 					const focusScope = ($$anchor, $$arg0) => {
-						let focusScopeProps = () => $$arg0?.().props;
+						let focusScopeProps = () => ($$arg0?.()).props;
 						Escape_layer($$anchor, {
 							get onEscapeKeydown() {
 								return onEscapeKeydown();
@@ -29508,7 +30086,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 							children: ($$anchor, $$slotProps) => {
 								{
 									const children = ($$anchor, $$arg0) => {
-										let dismissibleProps = () => $$arg0?.().props;
+										let dismissibleProps = () => ($$arg0?.()).props;
 										Text_selection_layer($$anchor, {
 											get id() {
 												return id();
@@ -29712,8 +30290,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		contentPointerEvents: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer.svelte
-	var rest_excludes$10 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer.svelte
+	var rest_excludes$10 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -30181,8 +30759,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		shouldRender: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer-force-mount.svelte
-	var rest_excludes$9 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer-force-mount.svelte
+	var rest_excludes$9 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -30620,7 +31198,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		enabled: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/date-field/date-field.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-field/date-field.svelte.js
 	var dateFieldAttrs = createBitsAttrs({
 		component: "date-field",
 		parts: [
@@ -30905,9 +31483,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			});
 			if ("hour" in value) {
 				const timeValues = EDITABLE_TIME_SEGMENT_PARTS.map((part) => {
-					if (part === "dayPeriod") if (this.states.dayPeriod.updating) return [part, this.states.dayPeriod.updating];
-					else return [part, this.formatter.dayPeriod(toDate(value))];
-					else if (part === "hour") {
+					if (part === "dayPeriod") {
+						if (this.states.dayPeriod.updating) return [part, this.states.dayPeriod.updating];
+						else return [part, this.formatter.dayPeriod(toDate(value))];
+					} else if (part === "hour") {
 						if (this.states.hour.updating) return [part, this.states.hour.updating];
 						if (value[part] !== void 0 && value[part] < 10) return [part, `0${value[part]}`];
 						if (value[part] === 0) {
@@ -31806,7 +32385,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return `${"0".repeat(diff)}${year}`;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/date-field/components/date-field-hidden-input.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-field/components/date-field-hidden-input.svelte
 	function Date_field_hidden_input($$anchor, $$props) {
 		push($$props, false);
 		const hiddenInputState = DateFieldHiddenInputState.create();
@@ -31824,8 +32403,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	create_custom_element(Date_field_hidden_input, {}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/date-field/components/date-field-input.svelte
-	var rest_excludes$8 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-field/components/date-field-input.svelte
+	var rest_excludes$8 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -31918,8 +32497,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		child: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/date-field/components/date-field-label.svelte
-	var rest_excludes$7 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-field/components/date-field-label.svelte
+	var rest_excludes$7 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -31997,8 +32576,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		child: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/date-field/components/date-field-segment.svelte
-	var rest_excludes$6 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-field/components/date-field-segment.svelte
+	var rest_excludes$6 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -32085,7 +32664,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		part: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/date-picker/date-picker.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-picker/date-picker.svelte.js
 	var DatePickerRootContext = new Context("DatePicker.Root");
 	var DatePickerRootState = class DatePickerRootState {
 		static create(opts) {
@@ -32097,7 +32676,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/internal/safe-polygon.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/safe-polygon.svelte.js
 	function isPointInPolygon(point, polygon) {
 		const [x, y] = point;
 		let isInside = false;
@@ -32343,7 +32922,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/popover/popover.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/popover/popover.svelte.js
 	var popoverAttrs = createBitsAttrs({
 		component: "popover",
 		parts: [
@@ -32689,7 +33268,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/date-picker/components/date-picker.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-picker/components/date-picker.svelte
 	function Date_picker($$anchor, $$props) {
 		push($$props, true);
 		let open = prop($$props, "open", 15, false), onOpenChange = prop($$props, "onOpenChange", 7, noop), onOpenChangeComplete = prop($$props, "onOpenChangeComplete", 7, noop), value = prop($$props, "value", 15), onValueChange = prop($$props, "onValueChange", 7, noop), placeholder = prop($$props, "placeholder", 15), onPlaceholderChange = prop($$props, "onPlaceholderChange", 7, noop), isDateUnavailable = prop($$props, "isDateUnavailable", 7, () => false), validate = prop($$props, "validate", 7, noop), onInvalid = prop($$props, "onInvalid", 7, noop), minValue = prop($$props, "minValue", 7), maxValue = prop($$props, "maxValue", 7), disabled = prop($$props, "disabled", 7, false), readonly = prop($$props, "readonly", 7, false), granularity = prop($$props, "granularity", 7), readonlySegments = prop($$props, "readonlySegments", 23, () => []), hourCycle = prop($$props, "hourCycle", 7), locale = prop($$props, "locale", 7), hideTimeZone = prop($$props, "hideTimeZone", 7, false), required = prop($$props, "required", 7, false), calendarLabel = prop($$props, "calendarLabel", 7, "Event"), disableDaysOutsideMonth = prop($$props, "disableDaysOutsideMonth", 7, true), preventDeselect = prop($$props, "preventDeselect", 7, false), pagedNavigation = prop($$props, "pagedNavigation", 7, false), weekStartsOn = prop($$props, "weekStartsOn", 7), weekdayFormat = prop($$props, "weekdayFormat", 7, "narrow"), isDateDisabled = prop($$props, "isDateDisabled", 7, () => false), fixedWeeks = prop($$props, "fixedWeeks", 7, false), numberOfMonths = prop($$props, "numberOfMonths", 7, 1), closeOnDateSelect = prop($$props, "closeOnDateSelect", 7, true), initialFocus = prop($$props, "initialFocus", 7, false), errorMessageId = prop($$props, "errorMessageId", 7), children = prop($$props, "children", 7), monthFormat = prop($$props, "monthFormat", 7, "long"), yearFormat = prop($$props, "yearFormat", 7, "numeric");
@@ -33075,8 +33654,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		yearFormat: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-calendar.svelte
-	var rest_excludes$5 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-calendar.svelte
+	var rest_excludes$5 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -33186,8 +33765,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/popover/components/popover-content.svelte
-	var rest_excludes$4 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/popover/components/popover-content.svelte
+	var rest_excludes$4 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -33322,8 +33901,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var consequent_1 = ($$anchor) => {
 			{
 				const popper = ($$anchor, $$arg0) => {
-					let props = () => $$arg0?.().props;
-					let wrapperProps = () => $$arg0?.().wrapperProps;
+					let props = () => ($$arg0?.()).props;
+					let wrapperProps = () => ($$arg0?.()).wrapperProps;
 					const finalProps = /* @__PURE__ */ user_derived(() => mergeProps(props(), { style: getFloatingContentCSSVars("popover") }, { style: style() }));
 					var fragment_2 = comment();
 					var node_1 = first_child(fragment_2);
@@ -33392,8 +33971,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var consequent_3 = ($$anchor) => {
 			{
 				const popper = ($$anchor, $$arg0) => {
-					let props = () => $$arg0?.().props;
-					let wrapperProps = () => $$arg0?.().wrapperProps;
+					let props = () => ($$arg0?.()).props;
+					let wrapperProps = () => ($$arg0?.()).wrapperProps;
 					const finalProps = /* @__PURE__ */ user_derived(() => mergeProps(props(), { style: getFloatingContentCSSVars("popover") }, { style: style() }));
 					var fragment_5 = comment();
 					var node_4 = first_child(fragment_5);
@@ -33482,8 +34061,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		style: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-content.svelte
-	var rest_excludes$3 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-content.svelte
+	var rest_excludes$3 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -33526,8 +34105,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		onOpenAutoFocus: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/popover/components/popover-trigger.svelte
-	var rest_excludes$2 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/popover/components/popover-trigger.svelte
+	var rest_excludes$2 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -33665,8 +34244,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		closeDelay: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.2_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83c2510af1aa7554f33aa32ca276e681/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-trigger.svelte
-	var rest_excludes$1 = new Set([
+	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-trigger.svelte
+	var rest_excludes$1 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -33804,7 +34383,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						var node_4 = sibling(node_1, 2);
 						{
 							const children = ($$anchor, $$arg0) => {
-								let segments = () => $$arg0?.().segments;
+								let segments = () => ($$arg0?.()).segments;
 								var fragment_4 = root$20();
 								var node_5 = first_child(fragment_4);
 								each(node_5, 17, segments, index$1, ($$anchor, $$item) => {
@@ -33854,8 +34433,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 									var node_9 = first_child(fragment_7);
 									{
 										const children = ($$anchor, $$arg0) => {
-											let months = () => $$arg0?.().months;
-											let weekdays = () => $$arg0?.().weekdays;
+											let months = () => ($$arg0?.()).months;
+											let weekdays = () => ($$arg0?.()).weekdays;
 											var fragment_8 = root$20();
 											var node_10 = first_child(fragment_8);
 											component(node_10, () => Calendar_header, ($$anchor, DatePicker_Header) => {
@@ -34000,7 +34579,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}, [], [], { mode: "open" });
 	//#endregion
 	//#region src/components/forms/ui/generic/InputAndLabel.svelte
-	var rest_excludes = new Set([
+	var rest_excludes = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -34048,7 +34627,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const input = ($$anchor) => {
 			var fragment_1 = root_2$7();
 			var label_1 = first_child(fragment_1);
-			labelText(child(label_1));
+			var node_1 = child(label_1);
+			labelText(node_1);
 			reset(label_1);
 			var input_1 = sibling(label_1, 2);
 			attribute_effect(input_1, () => ({
@@ -34069,7 +34649,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const textarea = ($$anchor) => {
 			var fragment_2 = root_3$7();
 			var label_2 = first_child(fragment_2);
-			labelText(child(label_2));
+			var node_2 = child(label_2);
+			labelText(node_2);
 			reset(label_2);
 			var textarea_1 = sibling(label_2, 2);
 			remove_textarea_child(textarea_1);
@@ -34090,7 +34671,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const file = ($$anchor) => {
 			var fragment_3 = root_5$2();
 			var label_3 = first_child(fragment_3);
-			labelText(child(label_3));
+			var node_3 = child(label_3);
+			labelText(node_3);
 			reset(label_3);
 			var input_2 = sibling(label_3, 2);
 			var event_handler = (e) => {
@@ -34144,7 +34726,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				value: "true"
 			}), void 0, void 0, void 0, void 0, true);
 			var span_1 = sibling(input_3, 2);
-			labelText(child(span_1));
+			var node_5 = child(span_1);
+			labelText(node_5);
 			reset(span_1);
 			reset(label_4);
 			template_effect(() => {
@@ -34161,7 +34744,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const select = ($$anchor) => {
 			var fragment_4 = root_9$1();
 			var label_5 = first_child(fragment_4);
-			labelText(child(label_5));
+			var node_6 = child(label_5);
+			labelText(node_6);
 			reset(label_5);
 			var select_1 = sibling(label_5, 2);
 			attribute_effect(select_1, () => ({
@@ -34230,7 +34814,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const modes = /* @__PURE__ */ user_derived(() => shop.payment_modes ? Object.values(shop.payment_modes) : []);
 			var fieldset = root_14();
 			var legend = child(fieldset);
-			labelText(child(legend));
+			var node_9 = child(legend);
+			labelText(node_9);
 			reset(legend);
 			each(sibling(legend, 2), 17, () => get$2(modes), (mode) => mode.id, ($$anchor, mode) => {
 				var label_6 = root_13();
@@ -34290,7 +34875,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const radio = ($$anchor) => {
 			var fieldset_1 = root_16();
 			var legend_1 = child(fieldset_1);
-			labelText(child(legend_1));
+			var node_12 = child(legend_1);
+			labelText(node_12);
 			reset(legend_1);
 			var node_13 = sibling(legend_1, 2);
 			var consequent_4 = ($$anchor) => {
@@ -34782,11 +35368,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		for (var i = 0; i < tokens.length; i++) {
 			var item = tokens[i];
 			var type = item.type;
-			if (type === INUMBER || type === IVARNAME) if (Array.isArray(item.value)) nstack.push.apply(nstack, simplify(item.value.map(function(x) {
-				return new Instruction(INUMBER, x);
-			}).concat(new Instruction(IARRAY, item.value.length)), unaryOps, binaryOps, ternaryOps, values));
-			else nstack.push(item);
-			else if (type === IVAR && values.hasOwnProperty(item.value)) {
+			if (type === INUMBER || type === IVARNAME) {
+				if (Array.isArray(item.value)) nstack.push.apply(nstack, simplify(item.value.map(function(x) {
+					return new Instruction(INUMBER, x);
+				}).concat(new Instruction(IARRAY, item.value.length)), unaryOps, binaryOps, ternaryOps, values));
+				else nstack.push(item);
+			} else if (type === IVAR && values.hasOwnProperty(item.value)) {
 				item = new Instruction(INUMBER, values[item.value]);
 				nstack.push(item);
 			} else if (type === IOP2 && nstack.length > 1) {
@@ -34874,14 +35461,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					f = expr.ternaryOps[item.value];
 					nstack.push(f(resolveExpression(n1, values), resolveExpression(n2, values), resolveExpression(n3, values)));
 				}
-			} else if (type === IVAR) if (item.value in expr.functions) nstack.push(expr.functions[item.value]);
-			else if (item.value in expr.unaryOps && expr.parser.isOperatorEnabled(item.value)) nstack.push(expr.unaryOps[item.value]);
-			else {
-				var v = values[item.value];
-				if (v !== void 0) nstack.push(v);
-				else throw new Error("undefined variable: " + item.value);
-			}
-			else if (type === IOP1) {
+			} else if (type === IVAR) {
+				if (item.value in expr.functions) nstack.push(expr.functions[item.value]);
+				else if (item.value in expr.unaryOps && expr.parser.isOperatorEnabled(item.value)) nstack.push(expr.unaryOps[item.value]);
+				else {
+					var v = values[item.value];
+					if (v !== void 0) nstack.push(v);
+					else throw new Error("undefined variable: " + item.value);
+				}
+			} else if (type === IOP1) {
 				n1 = nstack.pop();
 				f = expr.unaryOps[item.value];
 				nstack.push(f(resolveExpression(n1, values)));
@@ -34948,22 +35536,24 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		for (var i = 0; i < tokens.length; i++) {
 			var item = tokens[i];
 			var type = item.type;
-			if (type === INUMBER) if (typeof item.value === "number" && item.value < 0) nstack.push("(" + item.value + ")");
-			else if (Array.isArray(item.value)) nstack.push("[" + item.value.map(escapeValue).join(", ") + "]");
-			else nstack.push(escapeValue(item.value));
-			else if (type === IOP2) {
+			if (type === INUMBER) {
+				if (typeof item.value === "number" && item.value < 0) nstack.push("(" + item.value + ")");
+				else if (Array.isArray(item.value)) nstack.push("[" + item.value.map(escapeValue).join(", ") + "]");
+				else nstack.push(escapeValue(item.value));
+			} else if (type === IOP2) {
 				n2 = nstack.pop();
 				n1 = nstack.pop();
 				f = item.value;
-				if (toJS) if (f === "^") nstack.push("Math.pow(" + n1 + ", " + n2 + ")");
-				else if (f === "and") nstack.push("(!!" + n1 + " && !!" + n2 + ")");
-				else if (f === "or") nstack.push("(!!" + n1 + " || !!" + n2 + ")");
-				else if (f === "||") nstack.push("(function(a,b){ return Array.isArray(a) && Array.isArray(b) ? a.concat(b) : String(a) + String(b); }((" + n1 + "),(" + n2 + ")))");
-				else if (f === "==") nstack.push("(" + n1 + " === " + n2 + ")");
-				else if (f === "!=") nstack.push("(" + n1 + " !== " + n2 + ")");
-				else if (f === "[") nstack.push(n1 + "[(" + n2 + ") | 0]");
-				else nstack.push("(" + n1 + " " + f + " " + n2 + ")");
-				else if (f === "[") nstack.push(n1 + "[" + n2 + "]");
+				if (toJS) {
+					if (f === "^") nstack.push("Math.pow(" + n1 + ", " + n2 + ")");
+					else if (f === "and") nstack.push("(!!" + n1 + " && !!" + n2 + ")");
+					else if (f === "or") nstack.push("(!!" + n1 + " || !!" + n2 + ")");
+					else if (f === "||") nstack.push("(function(a,b){ return Array.isArray(a) && Array.isArray(b) ? a.concat(b) : String(a) + String(b); }((" + n1 + "),(" + n2 + ")))");
+					else if (f === "==") nstack.push("(" + n1 + " === " + n2 + ")");
+					else if (f === "!=") nstack.push("(" + n1 + " !== " + n2 + ")");
+					else if (f === "[") nstack.push(n1 + "[(" + n2 + ") | 0]");
+					else nstack.push("(" + n1 + " " + f + " " + n2 + ")");
+				} else if (f === "[") nstack.push(n1 + "[" + n2 + "]");
 				else nstack.push("(" + n1 + " " + f + " " + n2 + ")");
 			} else if (type === IOP3) {
 				n3 = nstack.pop();
@@ -34977,10 +35567,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				n1 = nstack.pop();
 				f = item.value;
 				if (f === "-" || f === "+") nstack.push("(" + f + n1 + ")");
-				else if (toJS) if (f === "not") nstack.push("(!" + n1 + ")");
-				else if (f === "!") nstack.push("fac(" + n1 + ")");
-				else nstack.push(f + "(" + n1 + ")");
-				else if (f === "!") nstack.push("(" + n1 + "!)");
+				else if (toJS) {
+					if (f === "not") nstack.push("(!" + n1 + ")");
+					else if (f === "!") nstack.push("fac(" + n1 + ")");
+					else nstack.push(f + "(" + n1 + ")");
+				} else if (f === "!") nstack.push("(" + n1 + "!)");
 				else nstack.push("(" + f + " " + n1 + ")");
 			} else if (type === IFUNCALL) {
 				argCount = item.value;
@@ -35008,8 +35599,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			else if (type === IENDSTATEMENT);
 			else throw new Error("invalid Expression");
 		}
-		if (nstack.length > 1) if (toJS) nstack = [nstack.join(",")];
-		else nstack = [nstack.join(";")];
+		if (nstack.length > 1) {
+			if (toJS) nstack = [nstack.join(",")];
+			else nstack = [nstack.join(";")];
+		}
 		return String(nstack[0]);
 	}
 	function escapeValue(v) {
@@ -35026,12 +35619,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var prevVar = null;
 		for (var i = 0; i < tokens.length; i++) {
 			var item = tokens[i];
-			if (item.type === IVAR || item.type === IVARNAME) if (!withMembers && !contains(symbols, item.value)) symbols.push(item.value);
-			else if (prevVar !== null) {
-				if (!contains(symbols, prevVar)) symbols.push(prevVar);
-				prevVar = item.value;
-			} else prevVar = item.value;
-			else if (item.type === IMEMBER && withMembers && prevVar !== null) prevVar += "." + item.value;
+			if (item.type === IVAR || item.type === IVARNAME) {
+				if (!withMembers && !contains(symbols, item.value)) symbols.push(item.value);
+				else if (prevVar !== null) {
+					if (!contains(symbols, prevVar)) symbols.push(prevVar);
+					prevVar = item.value;
+				} else prevVar = item.value;
+			} else if (item.type === IMEMBER && withMembers && prevVar !== null) prevVar += "." + item.value;
 			else if (item.type === IEXPR) getSymbols(item.value, symbols, options);
 			else if (prevVar !== null) {
 				if (!contains(symbols, prevVar)) symbols.push(prevVar);
@@ -35387,27 +35981,32 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var c = this.expression.charAt(this.pos);
 		if (c === "+" || c === "-" || c === "*" || c === "/" || c === "%" || c === "^" || c === "?" || c === ":" || c === ".") this.current = this.newToken(TOP, c);
 		else if (c === "∙" || c === "•") this.current = this.newToken(TOP, "*");
-		else if (c === ">") if (this.expression.charAt(this.pos + 1) === "=") {
-			this.current = this.newToken(TOP, ">=");
-			this.pos++;
-		} else this.current = this.newToken(TOP, ">");
-		else if (c === "<") if (this.expression.charAt(this.pos + 1) === "=") {
-			this.current = this.newToken(TOP, "<=");
-			this.pos++;
-		} else this.current = this.newToken(TOP, "<");
-		else if (c === "|") if (this.expression.charAt(this.pos + 1) === "|") {
-			this.current = this.newToken(TOP, "||");
-			this.pos++;
+		else if (c === ">") {
+			if (this.expression.charAt(this.pos + 1) === "=") {
+				this.current = this.newToken(TOP, ">=");
+				this.pos++;
+			} else this.current = this.newToken(TOP, ">");
+		} else if (c === "<") {
+			if (this.expression.charAt(this.pos + 1) === "=") {
+				this.current = this.newToken(TOP, "<=");
+				this.pos++;
+			} else this.current = this.newToken(TOP, "<");
+		} else if (c === "|") {
+			if (this.expression.charAt(this.pos + 1) === "|") {
+				this.current = this.newToken(TOP, "||");
+				this.pos++;
+			} else return false;
+		} else if (c === "=") {
+			if (this.expression.charAt(this.pos + 1) === "=") {
+				this.current = this.newToken(TOP, "==");
+				this.pos++;
+			} else this.current = this.newToken(TOP, c);
+		} else if (c === "!") {
+			if (this.expression.charAt(this.pos + 1) === "=") {
+				this.current = this.newToken(TOP, "!=");
+				this.pos++;
+			} else this.current = this.newToken(TOP, c);
 		} else return false;
-		else if (c === "=") if (this.expression.charAt(this.pos + 1) === "=") {
-			this.current = this.newToken(TOP, "==");
-			this.pos++;
-		} else this.current = this.newToken(TOP, c);
-		else if (c === "!") if (this.expression.charAt(this.pos + 1) === "=") {
-			this.current = this.newToken(TOP, "!=");
-			this.pos++;
-		} else this.current = this.newToken(TOP, c);
-		else return false;
 		this.pos++;
 		if (this.isOperatorEnabled(this.current.value)) return true;
 		else {
@@ -35490,12 +36089,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		else if (this.accept(TPAREN, "(")) {
 			this.parseExpression(instr);
 			this.expect(TPAREN, ")");
-		} else if (this.accept(TBRACKET, "[")) if (this.accept(TBRACKET, "]")) instr.push(new Instruction(IARRAY, 0));
-		else {
-			var argCount = this.parseArrayList(instr);
-			instr.push(new Instruction(IARRAY, argCount));
-		}
-		else throw new Error("unexpected " + this.nextToken);
+		} else if (this.accept(TBRACKET, "[")) {
+			if (this.accept(TBRACKET, "]")) instr.push(new Instruction(IARRAY, 0));
+			else {
+				var argCount = this.parseArrayList(instr);
+				instr.push(new Instruction(IARRAY, argCount));
+			}
+		} else throw new Error("unexpected " + this.nextToken);
 	};
 	ParserState.prototype.parseExpression = function(instr) {
 		var exprInstr = [];
@@ -36162,7 +36762,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	];
 	//#endregion
 	//#region src/components/ticketSelection/filters/_helpers.ts
-	var TWO_HOURS_MS = 7200 * 1e3;
+	var TWO_HOURS_MS = 72e5;
 	/**
 	* The common tail of every ticket filter's `addToCart`: given the ticket
 	* its loader resolved, build the cart line, reject if the ticket is unavailable
@@ -37201,12 +37801,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			switch (item.type) {
 				case "Event": return `${shop.apiUrl}/api/v4/orders/${this.order.id}/events/${item.attributes.id}.pdf?locale=${shop.locale}&token=${this.token}`;
 				case "Coupon": return `${shop.apiUrl}/api/v4/orders/${this.order.id}/coupons/${item.attributes.id}.pdf?locale=${shop.locale}&token=${this.token}`;
-				case "Ticket":
-					if (item.attributes.ticket_type === "annual" && !item.attributes.is_voucher) if (configStore.config.urls.annualTicketPersonalizationList) return configStore.config.urls.annualTicketPersonalizationList(this.token);
+				case "Ticket": if (item.attributes.ticket_type === "annual" && !item.attributes.is_voucher) {
+					if (configStore.config.urls.annualTicketPersonalizationList) return configStore.config.urls.annualTicketPersonalizationList(this.token);
 					else return shop.urls?.annualTicketPersonalizationList(this.token);
-					else return `${shop.apiUrl}/api/v4/orders/${this.order.id}/tickets/${item.attributes.id}.pdf?locale=${shop.locale}&token=${this.token}&barcode_id=${barcodeId}`;
-					break;
-				default: break;
+				} else return `${shop.apiUrl}/api/v4/orders/${this.order.id}/tickets/${item.attributes.id}.pdf?locale=${shop.locale}&token=${this.token}&barcode_id=${barcodeId}`;
 			}
 		}
 	};
@@ -37502,7 +38100,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root_3$3 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date"> </span>`);
 	var root_4$2 = /* @__PURE__ */ from_html(`<!> <br/> <a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a>`, 1);
 	var root_5$1 = /* @__PURE__ */ from_html(`<br/> <a class="go-ticket-personalization"> </a>`, 1);
-	var root_6 = /* @__PURE__ */ from_html(`<a aria-label="passbook link"><img alt="apple wallet icon"/></a>`);
+	var root_6 = /* @__PURE__ */ from_html(`<a class="go-ticket-passbook"> </a>`);
 	var root_7 = /* @__PURE__ */ from_html(`<a aria-label="iCal link"> </a>`);
 	var root_8 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count"></li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span> <!> <!> <!></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"><!></li> <li class="go-order-breakdown-ical"><!></li></ul></article></li>`);
 	var root_9 = /* @__PURE__ */ from_html(`<a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a>`);
@@ -37510,7 +38108,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root_11 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count"> </li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span> <!> <!></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"></li></ul></article></li>`);
 	function TicketSale($$anchor, $$props) {
 		push($$props, true);
-		const APPLE_WALLET_CDN_PATH = `https://cdn.shop.platform.gomus.de/apple_wallet_${shop.locale}.svg`;
 		let item = prop($$props, "item", 7), orderDetails = prop($$props, "orderDetails", 7);
 		const subTicketSales = /* @__PURE__ */ user_derived(() => (item().attributes.sub_ticket_sales ?? []).filter((s) => s.quantity > 0));
 		var $$exports = {
@@ -37625,27 +38222,27 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				var node_6 = child(li_4);
 				var consequent_4 = ($$anchor) => {
 					var a_2 = root_6();
-					var img = child(a_2);
+					var text_9 = child(a_2, true);
 					reset(a_2);
-					template_effect(() => {
+					template_effect(($0) => {
 						set_attribute(a_2, "href", shop.apiUrl + item().attributes.barcodes[index]?.passbook_url);
-						set_attribute(img, "src", APPLE_WALLET_CDN_PATH);
-					});
+						set_text(text_9, $0);
+					}, [() => shop.t("common.wallet")]);
 					append($$anchor, a_2);
 				};
 				if_block(node_6, ($$render) => {
-					if (item().attributes.barcodes[index] && item().attributes.barcodes[index]?.passbook_url) $$render(consequent_4);
+					if (item().attributes.barcodes[index]?.passbook_url) $$render(consequent_4);
 				});
 				reset(li_4);
 				var li_5 = sibling(li_4, 2);
 				var node_7 = child(li_5);
 				var consequent_5 = ($$anchor) => {
 					var a_3 = root_7();
-					var text_9 = child(a_3, true);
+					var text_10 = child(a_3, true);
 					reset(a_3);
 					template_effect(($0) => {
 						set_attribute(a_3, "href", shop.apiUrl + item().attributes.ical_url);
-						set_text(text_9, $0);
+						set_text(text_10, $0);
 					}, [() => shop.t("common.calendar")]);
 					append($$anchor, a_3);
 				};
@@ -37669,18 +38266,18 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var article_1 = child(li_6);
 			var ul_1 = child(article_1);
 			var li_7 = child(ul_1);
-			var text_10 = child(li_7, true);
+			var text_11 = child(li_7, true);
 			reset(li_7);
 			var li_8 = sibling(li_7, 2);
 			var span_6 = child(li_8);
-			var text_11 = child(span_6, true);
+			var text_12 = child(span_6, true);
 			reset(span_6);
 			var node_8 = sibling(span_6, 2);
 			var consequent_7 = ($$anchor) => {
 				var span_7 = root$9();
-				var text_12 = child(span_7, true);
+				var text_13 = child(span_7, true);
 				reset(span_7);
-				template_effect(() => set_text(text_12, item().attributes.sub_title));
+				template_effect(() => set_text(text_13, item().attributes.sub_title));
 				append($$anchor, span_7);
 			};
 			if_block(node_8, ($$render) => {
@@ -37689,21 +38286,21 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var node_9 = sibling(node_8, 2);
 			var consequent_8 = ($$anchor) => {
 				var a_4 = root_9();
-				var text_13 = child(a_4, true);
+				var text_14 = child(a_4, true);
 				reset(a_4);
 				template_effect(($0, $1) => {
 					set_attribute(a_4, "href", $0);
-					set_text(text_13, $1);
+					set_text(text_14, $1);
 				}, [() => orderDetails().downloadLink(item()), () => shop.t("common.download")]);
 				append($$anchor, a_4);
 			};
 			var alternate_1 = ($$anchor) => {
 				var a_5 = root_10();
-				var text_14 = child(a_5, true);
+				var text_15 = child(a_5, true);
 				reset(a_5);
 				template_effect(($0, $1) => {
 					set_attribute(a_5, "href", $0);
-					set_text(text_14, $1);
+					set_text(text_15, $1);
 				}, [() => orderDetails().downloadLink(item()), () => shop.t("common.personalize")]);
 				append($$anchor, a_5);
 			};
@@ -37713,16 +38310,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			});
 			reset(li_8);
 			var li_9 = sibling(li_8, 2);
-			var text_15 = child(li_9, true);
+			var text_16 = child(li_9, true);
 			reset(li_9);
 			next(2);
 			reset(ul_1);
 			reset(article_1);
 			reset(li_6);
 			template_effect(($0) => {
-				set_text(text_10, item().attributes.quantity);
-				set_text(text_11, item().attributes.title);
-				set_text(text_15, $0);
+				set_text(text_11, item().attributes.quantity);
+				set_text(text_12, item().attributes.title);
+				set_text(text_16, $0);
 			}, [() => formatCurrency(item().price_cents)]);
 			append($$anchor, li_6);
 		};
@@ -39125,8 +39722,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var node = child(div);
 		{
 			const children = ($$anchor, $$arg0) => {
-				let months = () => $$arg0?.().months;
-				let weekdays = () => $$arg0?.().weekdays;
+				let months = () => ($$arg0?.()).months;
+				let weekdays = () => ($$arg0?.()).weekdays;
 				var fragment = root_3();
 				var node_1 = first_child(fragment);
 				component(node_1, () => Calendar_header, ($$anchor, Calendar_Header) => {

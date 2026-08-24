@@ -26,8 +26,8 @@ With the reset e-mail linking back to your own page (recommended — the page sh
 
 ## Attributes
 
-| Attribute      | Type   | Default | Description                                                                                                          | Since        |
-| -------------- | ------ | ------- | -------------------------------------------------------------------------------------------------------------------- | ------------ |
+| Attribute      | Type   | Default | Description                                                                                                          | Since    |
+| -------------- | ------ | ------- | -------------------------------------------------------------------------------------------------------------------- | -------- |
 | `redirect-url` | string | —       | Where the reset-mail link sends the visitor back to. Must be on your shop's domain; otherwise the shop root is used. | `v4.9.0` |
 
 Without `redirect-url` the shop's configured password-reset page is used — if none is configured, the mail link lands on the shop root, where nothing handles the reset. Prefer setting `redirect-url`.

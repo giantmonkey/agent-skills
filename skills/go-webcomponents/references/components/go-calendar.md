@@ -10,8 +10,8 @@ The `go-calendar` component renders a calendar widget to select dates with avail
 
 ## Attributes
 
-| Attribute               | Type   | Default | Description                                                                   | Since        |
-| ----------------------- | ------ | ------- | ----------------------------------------------------------------------------- | ------------ |
+| Attribute               | Type   | Default | Description                                                                   | Since     |
+| ----------------------- | ------ | ------- | ----------------------------------------------------------------------------- | --------- |
 | `availability-override` | string | —       | Name of a global function that overrides each date's availability — see below | `v4.12.0` |
 
 ### availability-override

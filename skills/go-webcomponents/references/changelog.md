@@ -4,6 +4,23 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.20.0
+
+_Released 2026-08-24_
+
+The order breakdown's Apple Wallet pass is now a headless text link you style yourself, instead of a hard-coded icon.
+
+## New
+
+- `.go-ticket-passbook` — class on the Apple Wallet pass link in `<go-order-breakdown>` ticket rows; use it to style the link or add an icon with pure CSS (e.g. a `::before` mask or background image).
+- `common.wallet` translation key — the pass link's label. Defaults to "Add to wallet" (de: "Zum Wallet hinzufügen"); override it via your shop's translations.
+
+## Changed (behavior)
+
+- `<go-order-breakdown>` no longer renders the Apple Wallet pass as an icon image loaded from the gomus CDN — it renders a plain, translated text link instead. If your CSS targeted the old image (`.go-order-breakdown-passbook img`), restyle against the `.go-ticket-passbook` link.
+
+---
+
 # v4.19.1
 
 _Released 2026-08-20_
