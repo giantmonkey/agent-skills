@@ -4,6 +4,26 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.21.0
+
+_Released 2026-08-25_
+
+Coupon redemption gets a dedicated event and now handles vouchers for exclusive-group tickets.
+
+## New
+
+- `<go-coupon-redemption>` dispatches `go-coupon-redeemed` after a successful redemption. Its `detail` carries `{ code, kind }`, where `kind` is `actionToken`, `serviceVoucher` or `valueVoucher` — react per coupon type without inspecting the cart.
+
+## Fixed
+
+- A coupon voucher whose ticket belongs to an exclusive ticket group can now be redeemed; previously the redemption failed with the generic coupon error because the ticket could not be resolved.
+
+## Deprecated
+
+- `go-success` on `<go-coupon-redemption>` — listen to `go-coupon-redeemed` instead. It still fires alongside the new event and will be removed in a future release. (Other components' `go-success` events are unaffected.)
+
+---
+
 # v4.20.1
 
 _Released 2026-08-25_

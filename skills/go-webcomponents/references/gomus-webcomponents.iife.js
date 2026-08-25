@@ -14022,6 +14022,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				query: assign({ per_page: 100 }, params ?? {})
 			});
 		}
+		getTicket(id) {
+			return this.fetchAndCache(`/api/v4/tickets/${id}`, `single_ticket_${id}`, "ticket", { cache: 60 });
+		}
 		ticketsContent(ticketIds) {
 			return this.fetchAndCache("/api/v4/tickets/content", `ticketsContent-${JSON.stringify(ticketIds)}`, "data", {
 				cache: 300,
@@ -19950,7 +19953,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				code: token,
 				kind: "actionToken"
 			});
-			return { success: true };
+			return {
+				success: true,
+				redemption: {
+					code: token,
+					kind: "actionToken"
+				}
+			};
 		}
 		if (couponSale.is_voucher_for) return applyVoucher(token, couponSale);
 		if (couponSale.value_cents && couponSale.value_cents > 0) return applyValueCoupon(token, couponSale.value_cents);
@@ -19962,13 +19971,24 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			kind: "valueVoucher",
 			valueCents
 		});
-		return { success: true };
+		return {
+			success: true,
+			redemption: {
+				code: token,
+				kind: "valueVoucher"
+			}
+		};
 	}
 	async function applyVoucher(token, couponSale) {
 		const code = token.toUpperCase();
-		if (shop.cart.coupons.some((c) => c.code === code)) return { success: true };
-		const tickets = await shop.asyncFetch(() => shop.tickets({ "by_ticket_ids[]": [couponSale.is_voucher_for] }));
-		const ticket = Array.isArray(tickets) ? tickets.find((t) => t.id === couponSale.is_voucher_for) : void 0;
+		if (shop.cart.coupons.some((c) => c.code === code)) return {
+			success: true,
+			redemption: {
+				code,
+				kind: "serviceVoucher"
+			}
+		};
+		const ticket = await shop.asyncFetch(() => shop.getTicket(couponSale.is_voucher_for));
 		if (!ticket) return fail([shop.t("cart.coupon.form.errors.error")]);
 		const voucherTicket = {
 			...ticket,
@@ -19982,7 +20002,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			code,
 			kind: "serviceVoucher"
 		});
-		return { success: true };
+		return {
+			success: true,
+			redemption: {
+				code,
+				kind: "serviceVoucher"
+			}
+		};
 	}
 	function fail(errors) {
 		return {
@@ -20015,6 +20041,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			form.details.apiErrors = [];
 			if (field) field.value = "";
 			form.dispatchEvent(new Event("go-success", {
+				bubbles: true,
+				composed: true
+			}));
+			if (result.redemption) $$props.$$host.dispatchEvent(new CustomEvent("go-coupon-redeemed", {
+				detail: result.redemption,
 				bubbles: true,
 				composed: true
 			}));

@@ -29,9 +29,19 @@ This component takes no attributes.
 
 ## Events
 
-| Event        | Description                                                                                                                                                          | `detail` | bubbles |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- |
-| `go-success` | Fires after a coupon is redeemed successfully — an action token's discount is applied, a service voucher's ticket is added, or a Wertgutschein's credit is recorded. | none     | yes     |
+| Event                | Description                                                                                                                                                                                                                                                 | `detail`                                                                       | bubbles | Since        |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------- | ------------ |
+| `go-coupon-redeemed` | Fires after a coupon is redeemed successfully, carrying what was redeemed — an action token's discount is applied, a service voucher's ticket is added, or a Wertgutschein's credit is recorded. Redeeming an already-applied voucher again fires it again. | `{ code, kind }` — `kind` is `actionToken`, `serviceVoucher` or `valueVoucher` | yes     | `v4.21.0` |
+| `go-success`         | **Deprecated** — fires alongside `go-coupon-redeemed` and will be removed in a future release. New integrations should listen to `go-coupon-redeemed` instead.                                                                                              | none                                                                           | yes     |              |
+
+React to a redemption, e.g. to show a confirmation tailored to the coupon type:
+
+```js
+document.querySelector('go-coupon-redemption').addEventListener('go-coupon-redeemed', e => {
+  const { code, kind } = e.detail
+  console.log(`Redeemed ${code} (${kind})`)
+})
+```
 
 ## Styling
 
