@@ -2,7 +2,7 @@
 
 Since `v1.20.0`
 
-The order components display purchase confirmation details after a successful checkout. When `<go-order>` loads, and again whenever its `token` changes to a new order, it empties the shopping cart — the purchase is complete — and ends a guest session. A donation in the cart is cleared too, so `<go-donation-checkbox>` unchecks and the next purchase doesn't charge it again _(Since `v4.16.0`)_.
+The order components display purchase confirmation details after a successful checkout. When `<go-order>` loads, and again whenever its `token` changes to a new order, it empties the shopping cart — the purchase is complete — and ends a guest session. Redeemed coupon codes are dropped as well, so a spent value voucher doesn't carry into the next purchase _(Since `v4.14.4`)_. A donation in the cart is cleared too, so `<go-donation-checkbox>` unchecks and the next purchase doesn't charge it again _(Since `v4.16.0`)_. The cleanup runs once per token, so reloading the confirmation page is safe.
 
 ## Examples
 
@@ -41,7 +41,7 @@ Everything renders in light DOM — target the tags and these classes:
 - `.go-cart-item-date`, `.go-cart-item-time` — date and time of dated items
 - `.go-ticket-download`, `.go-ticket-personalization` — PDF download and personalization links
 - `.go-order-breakdown-passbook` — Apple Wallet cell
-- `.go-ticket-passbook` — the Apple Wallet pass link inside that cell, a plain text link (add an icon via CSS, e.g. a `::before` background image)
+- `.go-ticket-passbook` — the Apple Wallet pass link inside that cell, a plain text link (add an icon via CSS, e.g. a `::before` background image) _(Since `v4.20.0`)_
 - `.go-order-breakdown-ical` — iCal link cell
 - `.go-order-breakdown-donation` — a donation row _(Since `v4.15.0`)_
 - `.go-order-breakdown-footer` — total row
@@ -60,7 +60,7 @@ go-order-breakdown .go-order-item-title {
 
 ### `<go-order-breakdown>`
 
-Renders the order's line items followed by the order total. Timeslot and day tickets render one row per ticket, each with its own PDF download link and, when available, an Apple Wallet pass — a plain text link (`.go-ticket-passbook`, label from the `common.wallet` translation key, default "Add to wallet") that integrators can decorate with an icon via CSS. Annual tickets render one row linking to personalization (vouchers link to a PDF download instead). Tickets configured with a subtitle show it beneath the title on every row _(Since `v4.11.0`)_. Events render one row per booking with a `quantity x label` line per price and a PDF download link. Rows with a date also offer an iCal link when the order provides one.
+Renders the order's line items followed by the order total. Timeslot and day tickets render one row per ticket, each with its own PDF download link and, when available, an Apple Wallet pass — a plain text link (`.go-ticket-passbook`, label from the `common.wallet` translation key, default "Add to wallet") that integrators can decorate with an icon via CSS _(Since `v4.20.0`)_. Bundle tickets (Mantelticket) list their composition beneath the title — one `quantity x label` line per sub-ticket (`.go-order-item-quantities`) _(Since `v4.0.0`)_. Annual tickets render one row linking to personalization (vouchers link to a PDF download instead). Tickets configured with a subtitle show it beneath the title on every row _(Since `v4.11.0`)_. Events render one row per booking with a `quantity x label` line per price and a PDF download link. Rows with a date also offer an iCal link when the order provides one.
 
 Tour bookings added via `go.cart.addItem({ filter: 'tour', … })` render one row per booking _(Since `v4.3.0`)_: count `1`, the tour title, a participants line, the booking's date and time, and a `quantity x label` line per price. Tours have no PDF download — the iCal link is the only attachment.
 
@@ -74,13 +74,14 @@ Displays the order's invoice ID.
 
 ## Localization
 
-| Key                      | Description                                                                         | Dynamic Values\*                           |
+| Key                      | Purpose                                                                             | Dynamic Values\*                           |
 | ------------------------ | ----------------------------------------------------------------------------------- | ------------------------------------------ |
 | `common.table.count`     | Count column header                                                                 | -                                          |
 | `common.table.product`   | Product column header                                                               | -                                          |
 | `common.table.price`     | Price column header                                                                 | -                                          |
 | `common.table.total`     | Total row label                                                                     | {"{{value}}"} - the calculated order total |
 | `common.download`        | Text for download button                                                            | -                                          |
+| `common.wallet`          | Text for the Apple Wallet pass link _(Since `v4.20.0`)_                             | -                                          |
 | `common.calendar`        | Text for calendar link                                                              | -                                          |
 | `common.personalize`     | Text for the annual-ticket personalization link                                     | -                                          |
 | `common.table.donation`  | Fallback label for a donation row without a configured campaign _(Since `v4.15.0`)_ | -                                          |

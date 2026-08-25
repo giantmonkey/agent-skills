@@ -1,6 +1,6 @@
 # Gomus web components — AI integration reference
 
-These are tool-agnostic Markdown docs for integrating the gomus museum-ticketing web components (`<go-*>` custom elements) into any HTML page. Library version 4.20.0 (npm: `@gomusdev/web-components`).
+These are tool-agnostic Markdown docs for integrating the gomus museum-ticketing web components (`<go-*>` custom elements) into any HTML page. Library version 4.20.1 (npm: `@gomusdev/web-components`).
 
 Point your AI assistant at this folder, or paste these files into a chat. (Claude users: the sibling `SKILL.md` exposes the same content as a Claude skill.)
 
@@ -12,6 +12,7 @@ Point your AI assistant at this folder, or paste these files into a chat. (Claud
 - [Integration flows](./references/flows/index.md) — full-page examples.
 - [Migrating versions](./references/migration.md) — upgrade your `<go-*>` markup to a newer library version.
 - [Changelog](./references/changelog.md) — per-version New / Changed / Deprecated / Breaking, newest first.
+- [Troubleshooting](./references/troubleshooting.md)
 - [Nesting graph](./references/nesting.md) — which `<go-*>` tags nest inside which.
 - [All guides](./references/guides/index.md)
 

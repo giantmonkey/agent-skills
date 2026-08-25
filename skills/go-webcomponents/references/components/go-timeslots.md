@@ -33,9 +33,9 @@ date selected in `<go-calendar>`.
 
 ## Events
 
-| Event                | Description                                                                                       | `detail`                                                                                                                            | bubbles |
-| -------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| `go-timeslot-select` | A timeslot becomes selected — by a click, or auto-selected when the date has only one usable slot | `{ selected }` — the chosen slot's start time as an ISO 8601 string (e.g. `"2024-05-22T14:00:00+02:00"`), or `undefined` if cleared | yes     |
+| Event                | Description                                                                                      | `detail`                                                                                                 | bubbles |
+| -------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- | ------- |
+| `go-timeslot-select` | A timeslot becomes selected — by a click, or auto-selected when the date's only slot is bookable | `{ selected }` — the chosen slot's start time as an ISO 8601 string (e.g. `"2026-07-01T14:00:00+02:00"`) | yes     |
 
 The event bubbles, so listen on the enclosing `<go-ticket-selection>`:
 
@@ -49,10 +49,12 @@ The radio inputs also emit the standard DOM `change` event.
 
 ### Auto-selection
 
-When the date offers exactly one usable slot, it is selected automatically and
-`go-timeslot-select` fires without any user interaction — single-slot offers (common
-for day tickets) skip a redundant click. A lone slot that is sold out is left
-unselected so the visitor is not trapped on a dead end.
+When the date offers exactly one slot and that slot is still bookable, it is
+selected automatically and `go-timeslot-select` fires without any user
+interaction — single-slot offers (common for day tickets) skip a redundant click.
+Auto-selection never applies when the date has several slots, even if only one of
+them is bookable; a lone slot that is sold out is likewise left unselected so the
+visitor is not trapped on a dead end.
 
 ## Styling
 
@@ -60,7 +62,8 @@ Each slot is an `<li>` wrapping a `<label>` (the formatted time) and a radio `<i
 
 - `.go-timeslot` — each slot
 - `.go-timeslot.is-selected` — the selected slot
-- `.go-timeslot.is-sold-out` — sold out (zero capacity)
+- `.go-timeslot.is-sold-out` — sold out (had capacity, none left)
+- `.go-timeslot.is-unavailable` — the slot has no bookable capacity at all _(Since `v3.3.3`)_
 - `.go-timeslot.is-disabled` — not selectable (sold out or otherwise unavailable); its `<input>` is also `disabled`
 
 ```css

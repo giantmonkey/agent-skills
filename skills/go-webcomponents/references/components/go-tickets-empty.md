@@ -1,10 +1,87 @@
-# Ticket Selection Component
+# `<go-tickets>`
 
 Since `v1.0.0`
 
-The `go-tickets` component lists tickets to be added to the cart.
+The ticket list of a ticket selection. `<go-tickets>` wraps one or more `<go-ticket-segment>` elements that load and render the selectable tickets, together with per-segment and overall price sums and empty states. Place it inside `<go-ticket-selection>` — it only functions there.
 
-This component is a subcomponent of `go-ticket-selection` component, and will only function when it is placed inside one.
+## Examples
+
+Basic — one segment, inheriting the selection's filters:
+
+```html
+<go-ticket-selection filters="ticket:timeslot">
+  <go-calendar></go-calendar>
+  <go-timeslots></go-timeslots>
+  <go-tickets>
+    <go-ticket-segment>
+      <go-ticket-segment-body></go-ticket-segment-body>
+    </go-ticket-segment>
+  </go-tickets>
+  <go-add-to-cart-button></go-add-to-cart-button>
+</go-ticket-selection>
+```
+
+Multiple segments with their own filters, sums and empty states:
+
+```html
+<go-ticket-selection filters="ticket:day,ticket:annual" selected-date="2026-07-01">
+  <go-calendar></go-calendar>
+  <go-tickets>
+    <go-ticket-segment filters="ticket:day" ticket-group-ids="12">
+      <go-ticket-segment-body></go-ticket-segment-body>
+      <go-ticket-segment-sum></go-ticket-segment-sum>
+      <go-ticket-segment-empty>
+        <p>No day tickets available.</p>
+      </go-ticket-segment-empty>
+    </go-ticket-segment>
+    <go-ticket-segment filters="ticket:annual">
+      <go-ticket-segment-body></go-ticket-segment-body>
+    </go-ticket-segment>
+    <go-tickets-sum></go-tickets-sum>
+  </go-tickets>
+  <go-tickets-empty>
+    <p>No tickets available for the selected date.</p>
+  </go-tickets-empty>
+  <go-add-to-cart-button></go-add-to-cart-button>
+</go-ticket-selection>
+```
+
+Event prices for a single event date:
+
+```html
+<go-ticket-selection filters="event:price" event-ids="263">
+  <go-tickets>
+    <go-ticket-segment date-id="1234">
+      <go-ticket-segment-body></go-ticket-segment-body>
+    </go-ticket-segment>
+  </go-tickets>
+  <go-add-to-cart-button></go-add-to-cart-button>
+</go-ticket-selection>
+```
+
+## Attributes
+
+`<go-tickets>`, `<go-tickets-empty>`, `<go-tickets-sum>`, `<go-ticket-segment-body>`, `<go-ticket-segment-empty>` and `<go-ticket-segment-sum>` take no attributes.
+
+`<go-ticket-segment>`:
+
+| Attribute          | Type    | Default   | Description                                                                                  | Since     |
+| ------------------ | ------- | --------- | -------------------------------------------------------------------------------------------- | --------- |
+| `filters`          | string  | inherited | Comma-separated filter list for this segment; falls back to the parent selection's `filters` |           |
+| `date-id`          | number  | —         | Event date to load prices for — required by the `event:price` filter                         | `v1.21.0` |
+| `museum-ids`       | string  | inherited | Comma-separated museum IDs; overrides the parent selection's                                 | `v1.34.0` |
+| `ticket-group-ids` | string  | inherited | Comma-separated ticket-group IDs; overrides the parent selection's                           | `v1.34.0` |
+| `language-ids`     | string  | —         | Comma-separated language IDs (`events:price`)                                                | `v1.34.0` |
+| `catch-word-ids`   | string  | —         | Comma-separated catchword IDs (`events:price`)                                               | `v1.34.0` |
+| `query`            | string  | —         | Only keep tickets whose title contains this text (`events:price`)                            |           |
+| `limit`            | number  | `30`      | Maximum number of event dates fetched (`events:price`)                                       | `v1.34.0` |
+| `with-content`     | boolean | off       | Fetch extra ticket content and render per-ticket info buttons — see below                    | `v3.11.0` |
+
+The segment reloads its tickets automatically whenever one of these attributes — or the parent selection's date or timeslot — changes.
+
+## Events
+
+These components emit no custom events.
 
 ## Styling
 
@@ -14,6 +91,16 @@ The component dynamically applies CSS classes based on its visibility state:
 - `is-hidden` - applied when the component is hidden
 
 The component's `display` style property is automatically set to `block` when visible and `none` when hidden.
+
+### Ticket list
+
+Inside a segment, `go-ticket-segment-body` renders the ticket table with these hooks:
+
+- `.go-tickets` — the list element
+- `.go-tickets-header` — the header row, with `.go-tickets-header-title`, `.go-tickets-header-description`, `.go-tickets-header-price` and `.go-tickets-header-quality` cells
+- `.go-tickets-item` — one ticket row; gets `.is-booked-out` when the ticket is sold out
+- `.go-tickets-item-title`, `.go-tickets-item-description`, `.go-tickets-item-price`, `.go-tickets-item-quality` — the row's cells
+- `.go-tickets-item-title-event-title` / `.go-tickets-item-title-product-title` — for event tickets, the event title (with time) and the price title inside the title cell
 
 ### Ticket subtitle
 
@@ -39,69 +126,28 @@ minimum party size, and `−` at that minimum returns to `0`. Set
 `go.config({ quantityStepper: false })` to render the legacy
 `.go-quantity-select` `<select>` instead. _(Since `v4.0.0`)_
 
-## Localization
+## Nesting
 
-| Translation Key                 | Default Value |
-| ------------------------------- | ------------- |
-| `product.detail.table.title`    | Title         |
-| `product.detail.table.desc`     | Description   |
-| `product.detail.table.price`    | Price         |
-| `product.detail.table.quantity` | Quantity      |
-| `common.actions.cart`           | Add to Basket |
+All components on this page must be placed inside `<go-ticket-selection>`. `<go-ticket-segment-body>`, `<go-ticket-segment-sum>` and `<go-ticket-segment-empty>` additionally belong inside a `<go-ticket-segment>`.
 
-## Sub components
+## Subcomponents
 
-These subcomponents work and interact with each other when they are placed inside the `Tickets` component.
+- `<go-ticket-segment>` — loads and holds one group of tickets
+- `<go-ticket-segment-body>` — renders the segment's ticket rows
+- `<go-ticket-segment-sum>` — the segment's price sum
+- `<go-ticket-segment-empty>` — your empty state for one segment
+- `<go-tickets-sum>` — the price sum across all segments
+- `<go-tickets-empty>` — your empty state for the whole ticket list
+
+The sections below describe each in detail.
 
 ### `go-ticket-segment`
 
-The `go-ticket-segment` component filters tickets based on the selected filters. A `go-ticket` can have multiple `go-ticket-segment` components.
+Since `v1.9.0`
 
-#### `timeslot`
+The `go-ticket-segment` component loads one group of tickets, driven by its `filters` (inherited from the parent `go-ticket-selection` when not set). A `go-tickets` can contain multiple `go-ticket-segment` components, each with its own filters. The segment renders nothing by itself — add a `go-ticket-segment-body` child to show the ticket rows.
 
-Loads time slot based tickets for a specific date and time.
-
-| Attribute           | Required | Applies to                                  |
-| ------------------- | -------- | ------------------------------------------- |
-| `selected-date`     | Yes      | `go-ticket-selection`                       |
-| `selected-timeslot` | Yes      | `go-ticket-selection`                       |
-| `filters`           | Yes      | `go-ticket-selection`                       |
-| `museum-ids`        | No       | `go-ticket-selection` / `go-ticket-segment` |
-| `exhibition-ids`    | No       | `go-ticket-selection`                       |
-| `ticket-ids`        | No       | `go-ticket-selection`                       |
-| `ticket-group-ids`  | No       | `go-ticket-selection` / `go-ticket-segment` |
-| `with-content`      | No       | `go-ticket-segment`                         |
-
-**Note:** `filters` must include `ticket:timeslot`. Segment's `ticket-group-ids` overrides parent.
-
-#### `day`
-
-Loads day tickets (normal ticket type) for a specific date.
-
-| Attribute          | Required | Applies to                                  |
-| ------------------ | -------- | ------------------------------------------- |
-| `selected-date`    | Yes      | `go-ticket-selection`                       |
-| `filters`          | Yes      | `go-ticket-selection`                       |
-| `museum-ids`       | No       | `go-ticket-selection` / `go-ticket-segment` |
-| `exhibition-ids`   | No       | `go-ticket-selection`                       |
-| `ticket-ids`       | No       | `go-ticket-selection`                       |
-| `ticket-group-ids` | No       | `go-ticket-selection` / `go-ticket-segment` |
-| `with-content`     | No       | `go-ticket-segment`                         |
-
-**Note:** `filters` must include `ticket:day`. Segment's `museum-ids` and `ticket-group-ids` override parent.
-
-#### `annual`
-
-Loads annual/membership tickets (no date/time requirements).
-
-| Attribute          | Required | Applies to                                  |
-| ------------------ | -------- | ------------------------------------------- |
-| `filters`          | Yes      | `go-ticket-selection`                       |
-| `ticket-ids`       | No       | `go-ticket-selection`                       |
-| `ticket-group-ids` | No       | `go-ticket-selection` / `go-ticket-segment` |
-| `with-content`     | No       | `go-ticket-segment`                         |
-
-**Note:** `filters` must include `ticket:annual`. Segment's `ticket-group-ids` overrides parent.
+Which filters exist, what each one loads, and which attributes it needs — on the selection or on the segment — is documented per filter under **Components / Ticket Selection / Filters**. The attributes table above lists every segment-level attribute.
 
 #### `with-content` (per-ticket info button)
 
@@ -129,65 +175,6 @@ list.
 <go-ticket-segment filters="event:admission" with-content></go-ticket-segment>
 ```
 
-### Event Ticket Types
-
-Event tickets come in two subtypes, both represented by a single `Event` product type:
-
-- **flat** — single fixed price per ticket.
-- **scale** — price scales by attribute (e.g. age group), keyed by `scale_price_id`.
-
-The subtype is selected automatically from the API response (`scale_price_id` present → `scale`, absent → `flat`). Integrators do not choose it; the filters below determine which API endpoint is queried.
-
-#### `event:admission`
-
-Loads an event's admission tickets for a specific date and time.
-
-| Attribute       | Required | Applies to            |
-| --------------- | -------- | --------------------- |
-| `event-ids`     | Yes      | `go-ticket-selection` |
-| `selected-date` | Yes      | `go-ticket-selection` |
-| `selected-time` | Yes      | `go-ticket-selection` |
-| `with-content`  | No       | `go-ticket-segment`   |
-
-**Note:** `filters` must include `event:admission`. Only supports one event ID.
-
-#### `event:price`
-
-Loads the price tickets for a single event date (flat or scaled, per the event's configuration).
-
-| Attribute   | Required | Applies to            |
-| ----------- | -------- | --------------------- |
-| `event-ids` | Yes      | `go-ticket-selection` |
-| `filters`   | Yes      | `go-ticket-selection` |
-| `date-id`   | Yes      | `go-ticket-segment`   |
-
-**Note:** `filters` must include `event:price`. Only supports one event ID.
-
-#### `events:price`
-
-Loads price tickets across multiple event dates (flat or scaled, per each event's configuration).
-
-| Attribute        | Required | Applies to                                  |
-| ---------------- | -------- | ------------------------------------------- |
-| `selected-date`  | Yes      | `go-ticket-selection`                       |
-| `selected-time`  | Yes      | `go-ticket-selection`                       |
-| `filters`        | Yes      | `go-ticket-selection`                       |
-| `museum-ids`     | No       | `go-ticket-selection` / `go-ticket-segment` |
-| `exhibition-ids` | No       | `go-ticket-selection`                       |
-| `event-ids`      | No       | `go-ticket-selection`                       |
-| `limit`          | No       | `go-ticket-segment`                         |
-| `query`          | No       | `go-ticket-segment`                         |
-| `language-ids`   | No       | `go-ticket-segment`                         |
-| `catch-word-ids` | No       | `go-ticket-segment`                         |
-
-**Note:** `filters` must include `events:price`. Segment's `limit` defaults to 30. `query` filters tickets by title.
-
-#### `custom`
-
-Custom filter with no automatic ticket loading.
-
-No attributes required. Requires manual implementation.
-
 #### Bundle tickets (Mantelticket)
 
 Since `v4.0.0`
@@ -214,9 +201,9 @@ Set the bundle's quantity to `1` and its sub-ticket rows appear beneath it (the 
 
 #### Styling
 
-The `go-ticket-segment` component dynamically applies CSS classes based on the number of tickets in the cart:
+The `go-ticket-segment` component dynamically applies CSS classes based on the tickets it has loaded:
 
-- `is-empty` - applied when there are no tickets selected (numTickets === 0)
+- `is-empty` - applied while the segment has no tickets to show
 
 Bundle tickets (Mantelticket) render their sub-ticket rows with these hooks:
 
@@ -238,20 +225,33 @@ Bundle tickets (Mantelticket) render their sub-ticket rows with these hooks:
 }
 ```
 
-### `go-ticket-segment-sum`:
+### `go-ticket-segment-body`
 
-Shows the price sum of all selected tickets in the ticket group.
-it has to be placed inside a `go-ticket-segment` component.
+Since `v1.9.0`
 
-### `go-tickets-sum`:
+Renders the segment's ticket rows — a header row plus one row per loaded ticket with title, description, price and a quantity control. Must be placed inside a `go-ticket-segment`; without it the segment shows no tickets.
 
-Show the price sum of all selected tickets.
+### `go-ticket-segment-sum`
 
-### Empty Tickets Component
+Since `v1.9.0`
 
-The `go-tickets-empty` component displays content when no tickets are available or visible in the ticket selection interface.
+Shows the price sum of all selected tickets in the ticket group. Must be placed inside a `go-ticket-segment` component.
 
-This is a subcomponent of `go-ticket-selection` component. It automatically shows or hides based on ticket availability and visibility state.
+### `go-ticket-segment-empty`
+
+Since `v1.34.0`
+
+Wraps your own empty state for a single segment: shown while that segment has no tickets (or while the tickets step is hidden), hidden as soon as tickets load. Toggles `is-visible` / `is-hidden` classes and its `display` style. Must be placed inside a `go-ticket-segment`.
+
+### `go-tickets-sum`
+
+Shows the price sum of all selected tickets across every segment.
+
+### `go-tickets-empty`
+
+Since `v1.31.0`
+
+The `go-tickets-empty` component displays your own markup while no tickets are available (or while the tickets step is hidden), and hides as soon as any segment has tickets. It toggles the same `is-visible` / `is-hidden` classes and `display` style as `go-tickets`.
 
 #### Example
 
@@ -260,3 +260,25 @@ This is a subcomponent of `go-ticket-selection` component. It automatically show
   <p>No tickets available for the selected date and time.</p>
 </go-tickets-empty>
 ```
+
+## Conditional rendering with `<go-if>`
+
+`<go-tickets>` shows and hides itself, so it rarely needs gating. To gate your own surrounding markup on the tickets step, use the selection's handle:
+
+```html
+<go-if when="data.ticketSelection.isTicketsVisible">
+  <h2>Choose your tickets</h2>
+</go-if>
+```
+
+## Localization
+
+| Key                             | Purpose                                       |
+| ------------------------------- | --------------------------------------------- |
+| `product.detail.table.title`    | Header — title column                         |
+| `product.detail.table.desc`     | Header — description column                   |
+| `product.detail.table.price`    | Header — price column                         |
+| `product.detail.table.quantity` | Header — quantity column                      |
+| `quantity.decrease`             | Accessible name of the stepper's `−` button   |
+| `quantity.increase`             | Accessible name of the stepper's `+` button   |
+| `ticket.list.additionalInfo`    | Accessible name of the per-ticket info button |

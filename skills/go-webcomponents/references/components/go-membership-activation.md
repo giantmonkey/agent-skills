@@ -18,11 +18,12 @@ Custom layout — pass `custom` and provide your own markup. The component still
 <go-membership-activation custom>
   <go-field key="email" required></go-field>
 
-  <go-success-feedback></go-success-feedback>
   <go-errors-feedback></go-errors-feedback>
   <go-submit>Activate membership</go-submit>
 </go-membership-activation>
 ```
+
+There is no built-in success message — `<go-success-feedback>` stays empty for this form. Listen for the `go-success` event and render your own confirmation.
 
 ## Attributes
 
@@ -32,11 +33,11 @@ Custom layout — pass `custom` and provide your own markup. The component still
 
 ## Events
 
-| Event        | Description                                                            | `detail` | bubbles |
-| ------------ | ---------------------------------------------------------------------- | -------- | ------- |
-| `go-success` | The activation request returned a 2xx response (a `204` with no body). | none     | yes     |
+| Event        | Description                       | `detail` | bubbles |
+| ------------ | --------------------------------- | -------- | ------- |
+| `go-success` | The activation request succeeded. | none     | yes     |
 
-The endpoint answers `204 No Content` on success and `404` (empty body) when no membership matches the email. A non-2xx response does **not** fire `go-success` — a generic error message is surfaced through `<go-errors-feedback>` instead.
+The endpoint answers `204 No Content` on success and `404` (empty body) when no membership matches the email. On success gomus also emails the customer a link to set their shop password and complete the activation. A non-2xx response does **not** fire `go-success` — a generic error message is surfaced through `<go-errors-feedback>` instead.
 
 ## Fields
 
@@ -71,12 +72,36 @@ In custom mode you compose the form building blocks:
 
 - `<go-field>`
 - `<go-submit>`
-- `<go-success-feedback>`
 - `<go-errors-feedback>`
+
+## Conditional rendering with `<go-if>`
+
+Show the activation form only to visitors who are not signed in to a customer account:
+
+```html
+<go-if when="!data.auth.isLoggedIn">
+  <go-membership-activation></go-membership-activation>
+</go-if>
+```
+
+In a custom layout, `data.formData?.<apiKey>` reads the live form values (a field appears in `formData` once it is filled):
+
+```html
+<go-membership-activation custom>
+  <go-field key="email" required></go-field>
+
+  <go-if when="data.formData?.email">
+    <p>We will send the activation instructions to this address.</p>
+  </go-if>
+
+  <go-errors-feedback></go-errors-feedback>
+  <go-submit>Activate membership</go-submit>
+</go-membership-activation>
+```
 
 ## Localization
 
-| Key                                               | Description                                        |
+| Key                                               | Purpose                                            |
 | ------------------------------------------------- | -------------------------------------------------- |
 | `membership.activation.actions.submit`            | Submit button label                                |
 | `membership.activation.form.errors.requestFailed` | Error message when no membership matches the email |

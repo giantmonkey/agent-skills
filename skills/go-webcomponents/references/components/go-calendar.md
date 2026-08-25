@@ -1,11 +1,26 @@
-# Calendar Component
+# `<go-calendar>`
 
-The `go-calendar` component renders a calendar widget to select dates with available tickets.
+Since `v1.0.0`
 
-## Example
+The `<go-calendar>` component renders a calendar widget to select dates with available tickets.
+Place it inside `<go-ticket-selection>`.
+
+## Examples
+
+Basic:
 
 ```html
 <go-calendar></go-calendar>
+```
+
+Inside a ticket selection (calendar + timeslots + tickets):
+
+```html
+<go-ticket-selection filters="ticket:timeslot" event-ids="263">
+  <go-calendar></go-calendar>
+  <go-timeslots></go-timeslots>
+  <go-tickets></go-tickets>
+</go-ticket-selection>
 ```
 
 ## Attributes
@@ -113,9 +128,18 @@ Things to know:
 - An `availability-override` that does not name a function on `window` logs a single `console.warn`;
   the gomus defaults are used.
 
+## Events
+
+| Event            | Description                                                                                               | `detail`                                                                | bubbles |
+| ---------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------- |
+| `go-date-select` | The selected date changes; also fires once when the calendar preselects from the parent's `selected-date` | `{ selected }` — the picked date; `String(selected)` gives `YYYY-MM-DD` | yes     |
+
+Picking a **different** date resets the surrounding selection's selected timeslot; re-picking the
+already-selected date keeps it.
+
 ## Styling
 
-The `go-calendar` component provides multiple data attributes for styling and customization.
+The `<go-calendar>` component provides multiple data attributes for styling and customization.
 
 ### CSS Selectors
 
@@ -128,9 +152,13 @@ The `go-calendar` component provides multiple data attributes for styling and cu
 - `[data-calendar-cell][data-value]`: The cell's date as `YYYY-MM-DD`.
 - `[data-calendar-cell][data-selected]`: Styles for the selected date.
 - `[data-calendar-cell][data-today]`: Highlights the current day.
-- `[data-calendar-cell][data-outside-month]`: Hidden days outside the current month.
+- `[data-calendar-cell][data-outside-month]`: Days from the previous/next month that fill out the grid.
 
 ### Class hooks
+
+Each part carries a class: `.go-calendar-root` (root), `.go-calendar-heading` (month/year heading),
+`.go-calendar-prev-button` / `.go-calendar-next-button` (month navigation), `.go-calendar-grid`,
+`.go-calendar-grid-head`, `.go-calendar-grid-body`, `.go-calendar-grid-row` and `.go-calendar-cell`.
 
 Each day also carries classes, which `availability-override` drives:
 
@@ -142,21 +170,24 @@ Each day also carries classes, which `availability-override` drives:
 ### CSS Example
 
 ```css
-[data-calendar-grid] {
-  //css
-}
-
 [data-calendar-cell][data-selected] {
-  background-color: #12826A;
+  background-color: #12826a;
   color: #fff;
 }
 ```
 
-## Events
+## Nesting
 
-| Event            | Description                                                                         | `detail`                                                                                                         | bubbles |
-| ---------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------- |
-| `go-date-select` | Fires when the selected date changes, and once on load before anything is selected. | `{ selected }` — the picked date, `undefined` before the first selection. `String(selected)` gives `YYYY-MM-DD`. | yes     |
+Must be placed inside `<go-ticket-selection>`. The calendar renders only while one of the active
+`filters` uses a calendar (e.g. `ticket:timeslot`, `ticket:day`, `event:admission`).
+
+If the surrounding `<go-ticket-selection>` carries a `selected-date` attribute, the calendar opens
+at that date's month with the day preselected, and follows later changes to the attribute. The
+preselection is announced with a single `go-date-select` event. _(Since `v4.20.1`)_
+
+## Subcomponents
+
+None.
 
 ## Conditional rendering with `<go-if>`
 
@@ -182,8 +213,3 @@ window.isBoxOfficeDate = function (data) {
   return !!selected && window.boxOfficeOnly.indexOf(String(selected)) !== -1
 }
 ```
-
-## Sub component
-
-This component is a subcomponent of `go-ticket-selection` component, and will only
-function when it is placed inside one.

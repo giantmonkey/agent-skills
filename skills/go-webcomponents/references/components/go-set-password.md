@@ -58,7 +58,20 @@ The reset link appends these query parameters to your page's URL: `access-token`
 
 ## Styling
 
-No style hooks beyond the root element — the rendered form uses the shared form classes (`.go-field`, `.go-field.is-invalid`, `.go-form-feedback`).
+The form renders through the shared form subcomponents; style their hooks:
+
+- `go-set-password` — root element
+- `.go-field` / `.go-field.is-invalid` — each field and its invalid state
+- `.go-field-errors` — per-field validation messages
+- `.go-form-feedback` — feedback area
+- `.go-success-feedback` — success message
+- `.go-error-feedback-api-errors` — API error messages
+
+```css
+.go-field.is-invalid {
+  border-color: #c00;
+}
+```
 
 ## Nesting
 
@@ -70,10 +83,11 @@ None.
 
 ## Localization
 
-| Key                                        | Purpose                     |
-| ------------------------------------------ | --------------------------- |
-| `user.passwordReset.actions.resetPassword` | Submit button label         |
-| `user.registration.form.password`          | New-password field label    |
-| `user.registration.form.confirmPassword`   | Confirmation field label    |
-| `user.fieldErrors.passwordMatch`           | Passwords-don't-match error |
-| `user.fieldErrors.passwordTooShort`        | Minimum-length error        |
+| Key                                        | Purpose                                        |
+| ------------------------------------------ | ---------------------------------------------- |
+| `user.passwordReset.actions.resetPassword` | Submit button label                            |
+| `user.registration.form.password`          | New-password field label                       |
+| `user.registration.form.confirmPassword`   | Confirmation field label                       |
+| `common.fieldErrors.required`              | Empty required-field error                     |
+| `user.fieldErrors.passwordMatch`           | Passwords-don't-match error                    |
+| `user.fieldErrors.passwordTooShort`        | Minimum-length error (fewer than 6 characters) |

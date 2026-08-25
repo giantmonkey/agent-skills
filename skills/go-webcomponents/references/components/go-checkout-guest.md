@@ -55,7 +55,7 @@ Add the `custom` attribute and supply your own fields; the legacy
 `<go-checkout-form custom>` works the same way. Define any extra fields first:
 
 ```js
-go.defineConfig({
+go.config({
   fields: {
     newsletter: {
       key: 'newsletter',
@@ -85,8 +85,8 @@ The built-in (non-`custom`) fields are:
 ## Events
 
 This component emits no custom events. Once the order is created, it routes the
-customer by the checkout outcome, using the `navigateTo` handler you configure via
-`go.defineConfig(...)`:
+customer by the checkout outcome, using the `navigateTo` handler (a plain location
+change by default; override it via `go.config({ navigateTo })`):
 
 - **Payment via redirect** — `navigateTo` receives the payment provider's URL.
 - **Payment via POST** (some embedded providers) — the component submits a hidden
@@ -99,7 +99,8 @@ customer by the checkout outcome, using the `navigateTo` handler you configure v
 The checkout-success and checkout-failure URLs default to the shop's built-in
 pages. Override them with `go.config({ urls: { checkoutSuccess, checkoutFailure } })` —
 `checkoutSuccess` receives the order token _(Since `v4.14.2`)_, `checkoutFailure`
-receives an error message (may be empty), and each returns the target URL:
+receives an error message (may be empty) _(Since `v4.16.1`)_, and each returns the
+target URL:
 
 ```js
 go.config({
@@ -121,7 +122,7 @@ No style hooks beyond the root element (`go-checkout-guest`, `go-checkout-user`,
 
 ## Nesting
 
-Standalone — no required parent. Initialize the shop with `go.init(...)` first.
+Standalone — no required parent.
 
 ## Subcomponents
 
@@ -155,7 +156,7 @@ fresh guest account on submit.
 redirect. Configure it per form id so the guest and signed-in flows can differ:
 
 ```js
-go.defineConfig({
+go.config({
   forms: {
     checkoutGuest: {
       beforeSubmit: formData => {
@@ -173,6 +174,6 @@ go.defineConfig({
 
 ## Localization
 
-| Key                            | Description                 |
+| Key                            | Purpose                     |
 | ------------------------------ | --------------------------- |
 | `cart.detail.actions.checkout` | Label for the submit button |

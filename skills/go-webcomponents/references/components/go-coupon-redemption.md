@@ -39,7 +39,9 @@ The component renders a single `<go-form>`; it adds no wrapper class of its own.
 
 - `go-coupon-redemption` — the custom element itself
 - `.go-field` — the token input row
+- `.go-field.is-invalid` — present while the token field has a validation error; the messages render in `.go-field-errors`
 - `.go-feedback` — the error/success message area
+- `go-submit button` — the redeem button
 
 ```css
 go-coupon-redemption .go-field {
@@ -49,17 +51,38 @@ go-coupon-redemption .go-field {
 
 ## Nesting
 
-Standalone — no required parent. Placed directly inside `<go-cart>`, a pending (typed-but-not-yet-submitted) token is automatically applied when the cart's `<go-submit>` is clicked, so users don't have to press the coupon's own button first.
+Standalone — no required parent. Placed directly inside `<go-cart>`, a pending (typed-but-not-yet-submitted) token is automatically applied when the cart's `<go-submit>` is clicked, so users don't have to press the coupon's own button first. If that pending token is invalid, the error is shown inline and the cart's submit does not fire — checkout never proceeds with an unredeemed coupon.
 
 ## Subcomponents
 
 None.
 
+## Conditional rendering with `<go-if>`
+
+Offer coupon redemption only once the cart has items:
+
+```html
+<go-if when="data.cart.items.length > 0">
+  <go-coupon-redemption></go-coupon-redemption>
+</go-if>
+```
+
+Inside `<go-cart>`, show a note once an action token's discount or a Wertgutschein's credit has been applied:
+
+```html
+<go-cart>
+  <go-coupon-redemption></go-coupon-redemption>
+  <go-if when="data.cartView.isDiscounted">
+    <p>Your discount has been applied.</p>
+  </go-if>
+</go-cart>
+```
+
 ## Localization
 
 Translation keys used by the component:
 
-| Key                                | Default Description                     |
+| Key                                | Purpose                                 |
 | ---------------------------------- | --------------------------------------- |
 | `cart.coupon.form.submit`          | Submit button text                      |
 | `cart.coupon.form.code`            | Label text                              |

@@ -4,6 +4,19 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.20.1
+
+_Released 2026-08-25_
+
+The `selected-date` attribute on `<go-ticket-selection>` now actually preselects the date in a nested `<go-calendar>`.
+
+## Fixed
+
+- A `selected-date` set on `<go-ticket-selection>` was ignored (and silently cleared) once a nested `<go-calendar>` mounted. The calendar now renders that day as selected and opens at its month, and later changes to the attribute update the calendar too.
+- A `selected-timeslot` provided alongside `selected-date` is no longer wiped while the calendar initializes; it is still cleared when the visitor picks a different day.
+
+---
+
 # v4.20.0
 
 _Released 2026-08-24_

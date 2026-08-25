@@ -1,6 +1,51 @@
 # `<go-form>`
 
+Since `v1.0.0`
+
 `<go-form>` creates a form container that manages validation, submission, and state for all `<go-field>` children. It provides built-in validation handling and customizable submission behavior.
+
+## Examples
+
+A custom form — you register the definition and lay out the fields yourself:
+
+```html
+<script>
+  go.config({
+    forms: {
+      contact: {
+        fields: [
+          { key: 'firstName', required: true },
+          { key: 'lastName', required: true },
+        ],
+      },
+    },
+  })
+</script>
+
+<go-form form-id="contact" custom>
+  <go-field key="firstName" required></go-field>
+  <go-field key="lastName" required></go-field>
+  <go-submit>Submit</go-submit>
+</go-form>
+```
+
+A pre-registered self-submitting form, zero config:
+
+```html
+<go-form form-id="addressCreate"></go-form>
+```
+
+A custom layout with feedback elements:
+
+```html
+<go-form form-id="profileUpdate" custom>
+  <go-field key="firstName"></go-field>
+  <go-field key="lastName"></go-field>
+  <go-errors-feedback></go-errors-feedback>
+  <go-success-feedback></go-success-feedback>
+  <go-submit>Save</go-submit>
+</go-form>
+```
 
 ## Form Submission
 
@@ -20,9 +65,14 @@ The `<go-form>` element exposes an `onsubmit` property — assign a callback to 
 </script>
 ```
 
-The `onsubmit` callback receives the form submission event as a parameter.
+## Attributes
 
-**Note:** The `onsubmit` callback is only called when the form is valid. If validation fails, the callback will not be invoked.
+| Attribute    | Type    | Default | Description                                                                                   | Since     |
+| ------------ | ------- | ------- | --------------------------------------------------------------------------------------------- | --------- |
+| `form-id`    | string  | —       | The registered form definition to render and wire                                             |           |
+| `custom`     | boolean | `false` | Suppresses the auto-rendered fields, feedback, and submit — you lay out the children yourself |           |
+| `api-action` | string  | —       | Overrides the definition's write action for this element (see self-submitting forms below)    | `v4.19.0` |
+| `record-id`  | number  | —       | Record id for id-based write actions such as `addressUpdate`                                  | `v4.19.0` |
 
 ## Self-submitting forms (`apiAction`)
 
@@ -79,51 +129,77 @@ document.querySelector('go-form').addEventListener('submit', async e => {
 Known limitation: empty inputs are omitted from the payload, so an update form cannot
 _clear_ a previously saved optional field — use the JS escape hatch for that.
 
+## Events
+
+| Event                 | Description                                                                                                                                              | `detail` | bubbles | Since     |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- | --------- |
+| `go-after-validation` | Fires on every submit attempt, right after validation runs — valid or not                                                                                | —        | yes     | `v1.21.0` |
+| `go-submit`           | Fires when a submit passes validation, before any built-in API call                                                                                      | —        | yes     |           |
+| `submit`              | Fires on the `<go-form>` element when a submit passes validation. Cancelable — `preventDefault()` suppresses the built-in call of a self-submitting form | —        | yes     |           |
+| `go-success`          | Fires on the `<go-form>` element after a self-submitting form's call succeeds                                                                            | —        | yes     |           |
+
 # `<go-field>`
 
-`<go-field>` renders a single form control that is registered with the closest `<go-form>` ancestor. The element bootstraps itself from the field definitions provided through `Forms.defineFields`, so all configuration lives in one place while markup stays declarative.
+`<go-field>` renders a single form control that is registered with the closest `<go-form>` ancestor. The element bootstraps itself from the registered field definitions (extend them via `go.config({ fields })`), so all configuration lives in one place while markup stays declarative.
 
-## Properties
+## Field attributes
 
-This properties applies to `<go-field>`
+These attributes apply to `<go-field>`:
 
-| Property      | Description                                    | Type     |
-| ------------- | ---------------------------------------------- | :------- |
-| `label-class` | Pass classes to the label inside of `go-field` | `string` |
-| `input-class` | Pass classes to the input inside of `go-field` | `string` |
+| Attribute     | Description                                                            | Type      |
+| ------------- | ---------------------------------------------------------------------- | :-------- |
+| `key`         | The field key to render — see the available field keys below           | `string`  |
+| `required`    | Marks the field as required, overriding the field definition's default | `boolean` |
+| `label-class` | Pass classes to the label inside of `go-field` _(Since `v1.12.0`)_     | `string`  |
+| `input-class` | Pass classes to the input inside of `go-field` _(Since `v1.12.0`)_     | `string`  |
+
+`<go-submit>` takes a `button-class` attribute _(Since `v1.12.0`)_ — its value is set as the `class` of the `<button type="submit">` it renders.
 
 ## Available field keys
 
 The keys listed below ship with the default configuration. The `apiKey` column shows the payload property written to `formData`.
 
-| key               | apiKey                   | type          | notes                                                                                                                                                                                                                                    |
-| ----------------- | ------------------------ | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `salutation`      | `customer_salutation_id` | `select`      | Options come from `/api/v3/customer_salutations` defined in gomus backend.                                                                                                                                                               |
-| `firstName`       | `name`                   | `text`        | Uses `autocomplete="given-name"`.                                                                                                                                                                                                        |
-| `lastName`        | `surname`                | `text`        | Uses `autocomplete="family-name"`.                                                                                                                                                                                                       |
-| `email`           | `email`                  | `email`       | Includes a zod e-mail validator.                                                                                                                                                                                                         |
-| `confirmEmail`    | `email_confirmation`     | `email`       | Validates e-mail format and non-empty.                                                                                                                                                                                                   |
-| `password`        | `password`               | `password`    | Basic password field.                                                                                                                                                                                                                    |
-| `newPassword`     | `password`               | `password`    | Variant with `min(6)` validator for new passwords.                                                                                                                                                                                       |
-| `confirmPassword` | `password_confirmation`  | `password`    | Requires at least 6 characters.                                                                                                                                                                                                          |
-| `addressee`       | `addr_addressat`         | `text`        | General addressee line.                                                                                                                                                                                                                  |
-| `street`          | `addr_street`            | `text`        | —                                                                                                                                                                                                                                        |
-| `postcode`        | `addr_zip`               | `text`        | —                                                                                                                                                                                                                                        |
-| `city`            | `addr_city`              | `text`        | —                                                                                                                                                                                                                                        |
-| `country`         | `addr_country_id`        | `select`      | Options come from `/api/v3/countries` defined in gomus backend.                                                                                                                                                                          |
-| `addressType`     | `adress_type_id`         | `select`      | Static options for customer addresses: `0` customer address (the backend default when omitted), `1` invoice address, `2` delivery address.                                                                                               |
-| `language`        | `language_id`            | `select`      | Options come from `/api/v4/locales` defined in gomus backend.                                                                                                                                                                            |
-| `acceptTerms`     | `terms`                  | `checkbox`    | Typically required for agreements.                                                                                                                                                                                                       |
-| `paymentMode`     | `payment_mode_id`        | `paymentMode` | Renders a radio group of payment modes from `shop.payment_modes`. Auto-selects (and hides the input) when only one mode is available. Icons are rendered from the CDN when provided; modes without an icon show their name as the label. |
-| `startAt`         | —                        | `date`        | Client-only field; add an `apiKey` if you need to submit it.                                                                                                                                                                             |
-| `dateOfBirth`     | `date_of_birth`          | `date`        | Birth date for annual-ticket personalization. Uses `autocomplete="bday"` and an ISO-date (`YYYY-MM-DD`) validator.                                                                                                                       |
+| key                   | apiKey                   | type          | notes                                                                                                                                                                                                                                    |
+| --------------------- | ------------------------ | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `salutation`          | `customer_salutation_id` | `select`      | Options come from the shop's configured customer salutations.                                                                                                                                                                            |
+| `firstName`           | `name`                   | `text`        | Uses `autocomplete="given-name"`.                                                                                                                                                                                                        |
+| `lastName`            | `surname`                | `text`        | Uses `autocomplete="family-name"`.                                                                                                                                                                                                       |
+| `email`               | `email`                  | `email`       | Includes a zod e-mail validator.                                                                                                                                                                                                         |
+| `confirmEmail`        | `email_confirmation`     | `email`       | Validates e-mail format and non-empty.                                                                                                                                                                                                   |
+| `password`            | `password`               | `password`    | Basic password field.                                                                                                                                                                                                                    |
+| `newPassword`         | `password`               | `password`    | Variant with `min(6)` validator for new passwords.                                                                                                                                                                                       |
+| `confirmPassword`     | `password_confirmation`  | `password`    | Requires at least 6 characters.                                                                                                                                                                                                          |
+| `addressee`           | `addr_addressat`         | `text`        | General addressee line.                                                                                                                                                                                                                  |
+| `street`              | `addr_street`            | `text`        | —                                                                                                                                                                                                                                        |
+| `postcode`            | `addr_zip`               | `text`        | —                                                                                                                                                                                                                                        |
+| `city`                | `addr_city`              | `text`        | —                                                                                                                                                                                                                                        |
+| `country`             | `addr_country_id`        | `select`      | Options come from the shop's configured countries.                                                                                                                                                                                       |
+| `addressType`         | `adress_type_id`         | `select`      | Static options for customer addresses: `0` customer address (the backend default when omitted), `1` invoice address, `2` delivery address.                                                                                               |
+| `language`            | `language_id`            | `select`      | Options come from the shop's available locales.                                                                                                                                                                                          |
+| `acceptTerms`         | `terms`                  | `checkbox`    | Typically required for agreements.                                                                                                                                                                                                       |
+| `paymentMode`         | `payment_mode_id`        | `paymentMode` | Renders a radio group of payment modes from `shop.payment_modes`. Auto-selects (and hides the input) when only one mode is available. Icons are rendered from the CDN when provided; modes without an icon show their name as the label. |
+| `startAt`             | `start_at`               | `date`        | Start date for annual-ticket personalization. Validates an ISO date (`YYYY-MM-DD`).                                                                                                                                                      |
+| `dateOfBirth`         | `date_of_birth`          | `date`        | Birth date for annual-ticket personalization. Uses `autocomplete="bday"` and an ISO-date (`YYYY-MM-DD`) validator. _(Since `v4.8.0`)_                                                                                                    |
+| `currentPassword`     | `current_password`       | `password`    | Current password for password changes. _(Since `v1.1.0`)_                                                                                                                                                                                |
+| `tel`                 | `tel`                    | `tel`         | Phone number.                                                                                                                                                                                                                            |
+| `customerAddressee`   | `adressat`               | `text`        | Addressee line for the customer-address forms (`addressCreate` / `addressUpdate`). _(Since `v4.19.0`)_                                                                                                                                   |
+| `customerStreet`      | `street`                 | `text`        | Street for the customer-address forms. _(Since `v4.19.0`)_                                                                                                                                                                               |
+| `customerZip`         | `zip`                    | `text`        | Postcode for the customer-address forms. _(Since `v4.19.0`)_                                                                                                                                                                             |
+| `customerCity`        | `city`                   | `text`        | City for the customer-address forms. _(Since `v4.19.0`)_                                                                                                                                                                                 |
+| `customerCountry`     | `country_id`             | `select`      | Country select for the customer-address forms. _(Since `v4.19.0`)_                                                                                                                                                                       |
+| `token`               | `id`                     | `text`        | Coupon code input, used by `<go-coupon-redemption>`. _(Since `v1.35.0`)_                                                                                                                                                                 |
+| `photo`               | `file`                   | `file`        | Photo upload for annual-ticket personalization. Uploaded separately — excluded from the submitted form data. _(Since `v1.57.0`)_                                                                                                         |
+| `withdrawalFirstName` | `first_name`             | `text`        | First name for `<go-withdrawal-form>`. _(Since `v3.3.0`)_                                                                                                                                                                                |
+| `withdrawalLastName`  | `last_name`              | `text`        | Last name for `<go-withdrawal-form>`. _(Since `v3.3.0`)_                                                                                                                                                                                 |
+| `orderNumber`         | `order_id`               | `text`        | Order number for `<go-withdrawal-form>`. _(Since `v3.3.0`)_                                                                                                                                                                              |
+| `withdrawalNote`      | `note`                   | `textarea`    | Free-text note for `<go-withdrawal-form>`. _(Since `v3.3.0`)_                                                                                                                                                                            |
 
 ## Field definition attributes
 
-Use `window.go.defineFields` to register new fields. Each entry follows the `FieldInit` interface:
+Register new fields via `go.config({ fields: { … } })` — an object keyed by the field key you reference from `<go-field key="…">`. Each entry supports:
 
 - `key` (string, required): Identifier referenced by `<go-field key="...">`.
-- `type` (`FieldType`, required): One of `input`, `text`, `email`, `password`, `search`, `tel`, `url`, `number`, `checkbox`, `select`, `radio`, `textarea`, `date`, `paymentMode`.
+- `type` (`FieldType`, required): One of `input`, `text`, `email`, `password`, `search`, `tel`, `url`, `number`, `checkbox`, `select`, `radio`, `textarea`, `date`, `file`, `paymentMode`. `file` values are uploaded separately and excluded from the submitted form data. _(`file` since `v1.57.0`)_
 - `label` (string, required): Human-readable label; sanitized before render.
 - `apiKey` (string): Payload key exposed via `FormDetails.formData`.
 - `placeholder` (string): Placeholder text.
@@ -137,13 +213,14 @@ Any additional attributes placed on `<go-field>` are forwarded to the rendered c
 
 ## Built-in form definitions
 
-`Forms.defineForm` provisions the field set rendered by `<go-form form-id="...">`. The components in this package register a few presets on mount:
+A form definition provisions the field set rendered by `<go-form form-id="...">` (register your own via `go.config({ forms })`). Some components register presets when they mount:
 
-| form id         | fields (required marked with `*`)                                                                        | usage                                          |
-| --------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `checkoutGuest` | `firstName*`, `lastName*`, `email*`, `confirmEmail*`, `acceptTerms*`, `paymentMode*`                     | Default guest checkout (`<go-checkout-form>`). |
-| `signIn`        | `email*`, `password*`                                                                                    | `<go-sign-in>` web component.                  |
-| `signUp`        | `firstName*`, `lastName*`, `email*`, `confirmEmail*`, `newPassword*`, `confirmPassword*`, `acceptTerms*` | `<go-sign-up>` web component.                  |
+| form id         | fields (required marked with `*`)                                                                        | usage                                                         |
+| --------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `checkoutGuest` | `firstName*`, `lastName*`, `email*`, `confirmEmail*`, `acceptTerms*`, `paymentMode*`                     | Default guest checkout (`<go-checkout-form>`).                |
+| `signIn`        | `email*`, `password*`                                                                                    | `<go-sign-in>` web component.                                 |
+| `signUp`        | `firstName*`, `lastName*`, `email*`, `confirmEmail*`, `newPassword*`, `confirmPassword*`, `acceptTerms*` | `<go-sign-up>` web component.                                 |
+| `checkoutUser`  | `acceptTerms*`, `paymentMode*`                                                                           | Signed-in checkout (`<go-checkout-form>`). _(Since `v4.5.0`)_ |
 
 ## Conditional fields with `<go-if>`
 
@@ -192,10 +269,42 @@ For required fields, `common.fieldErrors.required` will be used to display a req
 | `acceptTerms`     | `user.registration.form.accept`                     | —                                                            |
 | `paymentMode`     | `cart.paymentMode.label`                            | -                                                            |
 | `startAt`         | `ticket.annual.personalization.list.startAt.update` | —                                                            |
+| `dateOfBirth`     | `user.registration.form.dateOfBirth`                | —                                                            |
 
 ### General Messages
 
-| Key                  | Description                                                                                                                                                                      |
+| Key                  | Purpose                                                                                                                                                                          |
 | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `forms.errorSummary` | Error summary message shown when form has validation errors. Accepts `{{count}}` parameter for number of errors. Default: `Failed to save because {{count}} fields are invalid.` |
 | `common.choose`      | Default option text for select fields. Default: `Please choose`                                                                                                                  |
+| `form.success`       | Fallback success message for self-submitting forms when neither the definition nor the API provides one. _(Since `v4.19.0`)_                                                     |
+| `form.error`         | Generic error shown when a self-submitting call fails without a usable error body. _(Since `v4.19.0`)_                                                                           |
+
+## Styling
+
+- `go-form.is-submitting` — present while a self-submitting call is in flight
+- `.go-field` — every `<go-field>`; `.go-field.is-invalid` when it has errors
+- `.go-field-errors` — the error list rendered under an invalid field
+- `<go-errors-feedback>` gets `.go-feedback`, `.is-invalid` while errors exist, and a `data-num-errors` attribute with the current error count; API errors render in a `.go-error-feedback-api-errors` list
+- `.go-form-feedback` — wrapper rendered by `<go-form-feedback>`
+- `.go-success-feedback` — the success live region; `.is-successful` while a message is shown
+- `<go-submit>` renders a native `<button type="submit">` (disabled while submitting); pass classes via `button-class`
+
+```css
+.go-field.is-invalid label {
+  color: darkred;
+}
+```
+
+## Nesting
+
+`<go-form>` is standalone — no required parent. All other elements on this page must be placed inside a `<go-form>`.
+
+## Subcomponents
+
+- `<go-field>` — a single form control
+- `<go-all-fields>` — renders every field of the form definition (what a non-`custom` form uses internally)
+- `<go-form-feedback>` — wrapper for the feedback elements
+- `<go-errors-feedback>` — live error summary and API errors
+- `<go-success-feedback>` — live success message
+- `<go-submit>` — the submit button

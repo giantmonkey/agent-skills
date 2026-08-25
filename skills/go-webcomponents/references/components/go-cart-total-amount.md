@@ -6,6 +6,9 @@ The `go-cart` is a **composable** shopping basket. It is a shell that coordinate
 a set of subcomponents, each rendering one slice of the cart (items, coupons,
 totals). Place the subcomponents you need as direct children of `<go-cart>`.
 
+The cart lives in the customer's browser and persists across pages and reloads;
+it expires about 15 minutes after the last change _(Since `v3.4.2`)_.
+
 ## Examples
 
 The minimal HTML markup that produces the layout above:
@@ -106,16 +109,16 @@ The `go-submit` event is covered in _Submitting the cart_ below.
 Each subcomponent renders stable class hooks:
 
 - `.go-cart-item` — one per cart line; `.go-cart-item-price-original` (struck-through pre-discount price) and `.go-cart-item-price-discounted` appear when a line is discounted
-- `.go-cart-item-subtitle` — a ticket's subtitle, rendered beneath the title when the ticket has one (`Since UNRELEASED`)
-- `.go-cart-item-participants` — the participant-count label on a tour line; `.go-cart-item-custom` — one per `key: value` custom-field line (`Since v4.3.0`)
-- `.go-quantity-stepper` — each item's `− qty +` quantity stepper (the default control): `.go-quantity-stepper-button` (both buttons; `.go-quantity-stepper-decrement` / `.go-quantity-stepper-increment` target each) and `.go-quantity-stepper-value` (the editable spinbutton input). Once a line is at its lowest quantity the `−` button becomes a remove control (it renders `✕` and gets `.go-quantity-stepper-remove`); pressing it — or clearing the input — removes the line, so a cart line never sits at `0`. With `go.config({ quantityStepperAtMinimum: 'disable' })` the `−` instead stays a plain button that disables at the line's lowest quantity (`aria-disabled`), a typed `0` clamps back up, and only the standalone ✕ button removes (`Since UNRELEASED`). The standalone ✕ button removes a line too. With `go.config({ quantityStepper: false })` the item renders a `.go-quantity-select` `<select>` instead (`Since v4.0.0`)
+- `.go-cart-item-subtitle` — a ticket's subtitle, rendered beneath the title when the ticket has one _(Since `v4.11.0`)_
+- `.go-cart-item-participants` — the participant-count label on a tour line; `.go-cart-item-custom` — one per `key: value` custom-field line _(Since `v4.3.0`)_
+- `.go-quantity-stepper` — each item's `− qty +` quantity stepper (the default control): `.go-quantity-stepper-button` (both buttons; `.go-quantity-stepper-decrement` / `.go-quantity-stepper-increment` target each) and `.go-quantity-stepper-value` (the editable spinbutton input). Once a line is at its lowest quantity the `−` button becomes a remove control (it renders `✕` and gets `.go-quantity-stepper-remove`); pressing it — or clearing the input — removes the line, so a cart line never sits at `0` _(Since `v4.13.0`)_. With `go.config({ quantityStepperAtMinimum: 'disable' })` the `−` instead stays a plain button that disables at the line's lowest quantity (`aria-disabled`), a typed `0` clamps back up, and only the standalone ✕ button removes _(Since `v4.17.0`)_. The standalone ✕ button removes a line too. With `go.config({ quantityStepper: false })` the item renders a `.go-quantity-select` `<select>` instead _(Since `v4.0.0`)_
 - `.go-cart-remove` — the ✕ button on items and coupons
-- `.go-cart-donation` — one per donation row; `.go-cart-donation-title` wraps the campaign name (`Since UNRELEASED`)
+- `.go-cart-donation` — one per donation row; `.go-cart-donation-title` wraps the campaign name _(Since `v4.16.0`)_
 - `.go-cart-coupon` — one per coupon row
-- `.go-cart-coupon.go-cart-coupon-inactive` — a coupon the backend did not apply (`Since v1.53.0`); style it greyed-out / struck-through
+- `.go-cart-coupon.go-cart-coupon-inactive` — a coupon the backend did not apply _(Since `v1.53.0`)_; style it greyed-out / struck-through
 - `.go-cart-subtotal-amount`, `.go-cart-discounted-amount`, `.go-cart-total-amount` — the three amount spans; `.go-cart-discounted-amount-sign` wraps the leading `−`
 
-Bundle-ticket (Mantelticket) lines render an indented list of sub-ticket rows beneath the line (`Since v4.0.0`):
+Bundle-ticket (Mantelticket) lines render an indented list of sub-ticket rows beneath the line _(Since `v4.0.0`)_:
 
 - `.go-sub-tickets` — the `<ul>` wrapping a bundle line's sub-ticket rows
 - `.go-sub-ticket` — one row per sub-ticket; state classes: `.is-fixed` (quantity is fixed, shown as text), `.is-empty` (quantity is `0`), `.is-preview` (read-only, inside `<go-cart preview>`)
@@ -156,7 +159,7 @@ re-priced cart from it and render nothing on their own. `<go-cart-counter>` and
 | `<go-cart-discounted-amount>` | Saved amount, prefixed with a `−` sign                                                                                                                                                                                                                 |
 | `<go-cart-total-amount>`      | Final amount to pay after coupon and voucher projection, donations included                                                                                                                                                                            |
 | `<go-cart-counter>`           | A live count of the number of items in the cart — text only, no markup                                                                                                                                                                                 |
-| `<go-cart-empty>`             | Shows its own children only while the cart has no items (`Since v1.11.0`)                                                                                                                                                                              |
+| `<go-cart-empty>`             | Shows its own children only while the cart has no items _(Since `v1.11.0`)_                                                                                                                                                                            |
 
 Each subcomponent is independently mountable and renders nothing when its data is
 absent (e.g. `go-cart-coupons` is empty until a coupon is added).
@@ -165,7 +168,7 @@ All prices in the cart — line prices, sums, and the amount subcomponents — a
 formatted in your shop's configured currency, using the `locale` you pass to
 `go.init({ locale })` for the number format (e.g. a Swiss shop with
 `locale: 'de-CH'` renders `CHF 12.34`). Without a configured currency or locale,
-formatting falls back to EUR in German conventions (`12,34 €`) (`Since v4.10.0`).
+formatting falls back to EUR in German conventions (`12,34 €`) _(Since `v4.10.0`)_.
 
 ### Bundle tickets (Mantelticket)
 
@@ -204,9 +207,11 @@ figures.
   class — useful for greyed-out / strikethrough styling.
 
 The `<go-cart-subtotal-amount>`, `<go-cart-discounted-amount>`, and
-`<go-cart-total-amount>` reflect the projected pricing. They render nothing when
-their respective amount is zero, so an empty discount row stays empty rather than
-showing a formatted zero (e.g. `0,00 €`).
+`<go-cart-total-amount>` reflect the projected pricing. `<go-cart-discounted-amount>`
+renders nothing while the discount is zero, so an empty discount row stays empty
+rather than showing a formatted zero (e.g. `0,00 €`). The subtotal and total render
+nothing while the cart holds no ticket lines — a donation alone does not render
+them.
 
 ### Value vouchers (Wertgutschein)
 
@@ -216,6 +221,16 @@ Because it is applied client-side (the backend never echoes it), it always rende
 active in `<go-cart-coupons>` — never with the `go-cart-coupon-inactive` class. Its
 credit is folded into `<go-cart-discounted-amount>` and reflected in
 `<go-cart-total-amount>`.
+
+### Service vouchers (Leistungsgutschein)
+
+Since `v3.8.0`
+
+A **service voucher** redeemed through `<go-coupon-redemption>` adds its
+associated ticket to the cart as a zero-cost line. Its quantity is fixed at `1`
+and renders as plain text — no stepper or select _(Since `v4.6.0`)_. The line and
+its voucher code are one redemption: removing the line with ✕ also removes the
+code from `<go-cart-coupons>`, and removing the code removes the line.
 
 ## Conditional rendering with `<go-if>`
 
@@ -314,6 +329,8 @@ Checkbox Component_) holds itself in the cart and renders as its own row inside
 - **Included in both the subtotal and the total.** A donation's amount is added
   into `<go-cart-subtotal-amount>` as well as `<go-cart-total-amount>`; there is
   no separate donations subtotal.
+- **Never voucher-paid.** Value-voucher (Wertgutschein) credit offsets the
+  ticket lines only — a donation's amount is always payable on top.
 - **No quantity control.** A donation is either in the cart or not, so its row
   renders no stepper or select — the quantity cell stays empty.
 - **Not an item.** A donation does not increment `<go-cart-counter>` and does not
@@ -327,7 +344,7 @@ The `go-cart` component uses the following translation keys for its interface an
 
 ### Cart Table
 
-| Key                           | Default Description                                                    |
+| Key                           | Purpose                                                                |
 | ----------------------------- | ---------------------------------------------------------------------- |
 | `cart.content.table.desc`     | Description/Title column header                                        |
 | `cart.content.table.price`    | Price column header                                                    |
@@ -335,6 +352,9 @@ The `go-cart` component uses the following translation keys for its interface an
 | `cart.content.table.total`    | Total column header                                                    |
 | `cart.content.table.edit`     | Quantity-selector aria-label                                           |
 | `cart.item.participants`      | Participant count on a tour line                                       |
-| `cart.item.remove`            | Item remove-button aria-label                                          |
+| `cart.item.remove`            | Item and donation remove-button text (default `✕`)                     |
+| `cart.item.aria.removeItem`   | Item and donation remove-button `aria-label`                           |
 | `cart.coupons.remove`         | Coupon remove-button aria-label                                        |
 | `cart.donation.title`         | Donation row title fallback, used when the campaign no longer resolves |
+| `quantity.remove`             | Accessible name of the `−` button when it acts as the remove control   |
+| `quantity.remove.label`       | Visible label of that remove control (default `✕`)                     |

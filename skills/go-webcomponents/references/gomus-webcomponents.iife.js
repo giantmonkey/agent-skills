@@ -39703,6 +39703,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		let root = /* @__PURE__ */ state(void 0);
 		const details = calendarClass();
 		user_effect(() => {
+			if (!calendarClass().selected) return;
 			get$2(root)?.dispatchEvent(new CustomEvent("go-date-select", {
 				detail: { selected: calendarClass().selected },
 				bubbles: true
@@ -39934,11 +39935,21 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			ticketsCalendar.details = get$2(ticketSelectionDetails);
 			ticketsCalendar.availabilityOverride = availabilityOverride();
 		});
+		user_effect(() => {
+			const date = get$2(ticketSelectionDetails)?.selectedDate;
+			if (!date) return;
+			untrack(() => {
+				if (!ticketsCalendar.selected || ticketsCalendar.selected.compare(date) !== 0) {
+					ticketsCalendar.selected = date;
+					ticketsCalendar.startAt = date;
+				}
+			});
+		});
 		$$props.$$host.addEventListener("go-date-select", (e) => {
-			if (get$2(ticketSelectionDetails)) {
-				get$2(ticketSelectionDetails).selectedDate = e.detail.selected;
-				get$2(ticketSelectionDetails).selectedTimeslot = void 0;
-			}
+			if (!get$2(ticketSelectionDetails)) return;
+			const previous = get$2(ticketSelectionDetails).selectedDate;
+			get$2(ticketSelectionDetails).selectedDate = e.detail.selected;
+			if (!previous || previous.compare(e.detail.selected) !== 0) get$2(ticketSelectionDetails).selectedTimeslot = void 0;
 		});
 		var $$exports = {
 			details,

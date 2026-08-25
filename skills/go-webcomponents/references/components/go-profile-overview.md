@@ -1,24 +1,62 @@
-# Profile Overview Component
+# `<go-profile-overview>`
 
-The `go-profile-overview` component displays the authenticated user's basic profile information including their full name and email address.
+Since `v1.34.0`
 
-## Example
+The `go-profile-overview` component displays the signed-in customer's full name and email address. When no customer is signed in, it renders a localized sign-in prompt instead.
+
+## Examples
+
+Basic:
 
 ```html
 <go-profile-overview></go-profile-overview>
 ```
 
-## CSS Classes
+On a profile page, together with the editable profile details:
 
-The component uses the following CSS classes for styling:
+```html
+<go-profile-overview></go-profile-overview> <go-profile-details></go-profile-details>
+```
 
-- `go-profile-fullname` - Container for the user's full name
-- `go-profile-email` - Container for the user's email address
+## Attributes
+
+This component takes no attributes.
+
+## Events
+
+This component emits no custom events.
+
+## Styling
+
+- `.go-profile-fullname` — the customer's full name
+- `.go-profile-email` — the customer's email address
+
+```css
+.go-profile-email {
+  color: #666;
+}
+```
+
+## Nesting
+
+Standalone — no required parent.
+
+## Subcomponents
+
+None.
+
+## Conditional rendering with `<go-if>`
+
+Show the profile overview only for signed-in customers:
+
+```html
+<go-if when="data.auth.isLoggedIn">
+  <go-profile-overview></go-profile-overview>
+</go-if>
+```
 
 ## Localization
 
-The component uses the following translation key:
-
-| Key                    | Description                                      |
-| ---------------------- | ------------------------------------------------ |
-| `user.login.desc.text` | Message displayed when user is not authenticated |
+| Key                    | Purpose                                            |
+| ---------------------- | -------------------------------------------------- |
+| `user.login.desc.text` | Sign-in prompt shown when no customer is signed in |

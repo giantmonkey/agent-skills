@@ -1,3 +1,9 @@
 # Integration flows
 
-_No flow MDX files present in `apps/web-components/src/docs/flows/`. Author them with the go-audit-docs skill._
+- [Annual passes](./annual-passes.md)
+- [Cart & checkout](./cart-checkout.md)
+- [Day tickets](./day-tickets.md)
+- [Donations](./donations.md)
+- [Order confirmation](./order-confirmation.md)
+- [Timeslot booking](./timeslot-booking.md)
+- [User account](./user-account.md)

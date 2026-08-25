@@ -5,7 +5,8 @@ Since `v1.10.0`
 The annual-ticket personalization journey. `<go-annual-ticket-personalization>` lists the
 annual tickets in an order and links each one to its personalization page;
 `<go-annual-ticket-personalization-form>` collects the start date and the holder data for every
-personalization on a ticket.
+personalization on a ticket. For the end-to-end journey — offer, checkout, confirmation, then
+personalization — see **Flows / Annual Passes**.
 
 ## Examples
 
@@ -80,7 +81,7 @@ until every required photo is present.
 These components emit no custom events. The form submits when the nested `<go-submit>` button fires
 its built-in submit (see the `<go-form>` component). On success it runs the
 optional `forms.personalization.beforeSubmit(data)` hook, then navigates to the URL returned by
-`urls.annualTicketPersonalizationFormSubmit()` (both set in your shop init options).
+`urls.annualTicketPersonalizationFormSubmit(token)` (both set via `go.config`).
 
 ## Styling
 
@@ -117,9 +118,24 @@ specific child structure instead: a `<go-form form-id="ticketPersonalization">` 
   registered element)
 - `<go-form>`, `<go-field>`, `<go-submit>` — from the forms component
 
+## Conditional rendering with `<go-if>`
+
+Since `v1.46.0`
+
+Inside either element, `<go-if>` reads `data.personalizationDetails` (`order`, `ticketSale`).
+Show content only once the order has loaded:
+
+```html
+<go-annual-ticket-personalization token="YOUR_ORDER_TOKEN">
+  <go-if when="data.personalizationDetails.order">
+    <p>Pick a ticket below to personalize it.</p>
+  </go-if>
+</go-annual-ticket-personalization>
+```
+
 ## Configuration
 
-Set these in your shop init options to wire the journey together:
+Set these with `go.config({ urls: { … }, forms: { … } })` to wire the journey together:
 
 | Option                                       | Purpose                                                                  |
 | -------------------------------------------- | ------------------------------------------------------------------------ |
@@ -129,12 +145,9 @@ Set these in your shop init options to wire the journey together:
 
 ## Localization
 
-| Key                                                   | Description                                     |
-| ----------------------------------------------------- | ----------------------------------------------- |
-| `ticket.annual.personalization.detail.title`          | “Personalization #n” count label (with count)   |
-| `ticket.annual.personalization.list.personalize.add`  | “Personalize” link text in the list             |
-| `ticket.annual.personalization.list.personalize.edit` | Link text once a ticket is already personalized |
-| `ticket.annual.personalization.list.startAt`          | “Valid from `{{startAt}}`” line                 |
-| `ticket.annual.personalization.error.title`           | Error heading shown when finalizing fails       |
-| `ticket.annual.personalization.photo.missing`         | Error when a required photo is not provided     |
-| `ticket.annual.personalization.photo.upload_failed`   | Error when a photo upload fails                 |
+| Key                                                  | Purpose                                       |
+| ---------------------------------------------------- | --------------------------------------------- |
+| `ticket.annual.personalization.detail.title`         | “Personalization #n” count label (with count) |
+| `ticket.annual.personalization.list.personalize.add` | “Personalize” link text in the list           |
+| `ticket.annual.personalization.photo.missing`        | Error when a required photo is not provided   |
+| `ticket.annual.personalization.photo.upload_failed`  | Error when a photo upload fails               |

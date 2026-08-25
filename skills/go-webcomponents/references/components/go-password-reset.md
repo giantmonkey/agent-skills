@@ -7,7 +7,7 @@ The request step of the password-reset flow: a form where the visitor enters the
 The full flow:
 
 1. The visitor submits their e-mail here — the reset e-mail is sent.
-2. The link in the e-mail leads back to the page given by `redirect-url` (or the shop's configured password-reset page), with one-time credentials in the URL query string.
+2. The link in the e-mail leads back to the page given by `redirect-url` (or the shop's configured password-reset page), with one-time credentials in the URL query string: `reset_password=true`, plus `access-token`, `client`, and `uid`.
 3. On that page, `<go-set-password>` uses the credentials to save the new password.
 
 ## Examples
@@ -24,6 +24,13 @@ With the reset e-mail linking back to your own page (recommended — the page sh
 <go-password-reset redirect-url="https://your-shop.example/password-reset"></go-password-reset>
 ```
 
+Hosting both steps on one page — keep `<go-set-password>` hidden until the reset link's query parameters arrive (see the User Account flow guide for the wiring script):
+
+```html
+<go-password-reset redirect-url="https://your-shop.example/password-reset"></go-password-reset>
+<go-set-password id="set-password" hidden></go-set-password>
+```
+
 ## Attributes
 
 | Attribute      | Type   | Default | Description                                                                                                          | Since    |
@@ -38,12 +45,15 @@ Without `redirect-url` the shop's configured password-reset page is used — if 
 | ------------ | ------------------------------------- | -------- | ------- |
 | `go-success` | Fires after the reset e-mail was sent | —        | yes     |
 
+A failed request emits no event; the API errors are shown inline through the form's feedback area.
+
 ## Styling
 
 The form renders through the shared form subcomponents; style their hooks:
 
 - `go-password-reset` — root element
 - `.go-field` / `.go-field.is-invalid` — each field and its invalid state
+- `.go-field-errors` — per-field validation messages
 - `.go-form-feedback` — feedback area
 - `.go-success-feedback` — success message
 - `.go-error-feedback-api-errors` — API error messages
@@ -61,6 +71,16 @@ Standalone — no required parent.
 ## Subcomponents
 
 None.
+
+## Conditional rendering with `<go-if>`
+
+Show the reset form only to signed-out visitors:
+
+```html
+<go-if when="!data.auth.isAuthenticated">
+  <go-password-reset></go-password-reset>
+</go-if>
+```
 
 ## Localization
 
