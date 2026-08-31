@@ -4,6 +4,14 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.22.0
+
+_Released 2026-08-31_
+
+Maintenance release — no integration-facing changes.
+
+---
+
 # v4.21.0
 
 _Released 2026-08-25_
