@@ -208,8 +208,25 @@ Register new fields via `go.config({ fields: { … } })` — an object keyed by 
 - `options` (`() => { value: string | number; label: string }[]`): Required for `select` and `radio` types.
 - `value` (`string | number | boolean`): Initial value; defaults to `''` or `false` for checkboxes.
 - `required` (boolean): Default requirement; per-instance `<go-field required>` overrides it.
+- `passwordToggle` (boolean): For `password`-type fields — renders a show/hide toggle button after the input. Off by default; see below. _(Since `v4.23.0`)_
 
 Any additional attributes placed on `<go-field>` are forwarded to the rendered control, so you can add things like `data-test-id`, `min`, or `max`.
+
+### Password visibility toggle
+
+Since `v4.23.0`
+
+Any `password`-type field (`password`, `newPassword`, `confirmPassword`, `currentPassword`) can opt into a show/hide toggle. Enable it per field — `go.config` merges into the built-in definition, so this is all you need:
+
+```js
+go.config({
+  fields: {
+    password: { passwordToggle: true },
+  },
+})
+```
+
+The toggle renders as an unstyled `<button type="button" class="go-password-toggle">` directly after the input. Clicking it switches the input between hidden and plain text; the entered value is kept. It follows the toggle-button pattern: the label stays `Show password` (the `forms.password.show` key) while `aria-pressed` reports whether the password is currently revealed, and `aria-controls` links the button to its input. Style it via `.go-password-toggle` — for example into an eye icon.
 
 ## Built-in form definitions
 
@@ -273,18 +290,20 @@ For required fields, `common.fieldErrors.required` will be used to display a req
 
 ### General Messages
 
-| Key                  | Purpose                                                                                                                                                                          |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `forms.errorSummary` | Error summary message shown when form has validation errors. Accepts `{{count}}` parameter for number of errors. Default: `Failed to save because {{count}} fields are invalid.` |
-| `common.choose`      | Default option text for select fields. Default: `Please choose`                                                                                                                  |
-| `form.success`       | Fallback success message for self-submitting forms when neither the definition nor the API provides one. _(Since `v4.19.0`)_                                                     |
-| `form.error`         | Generic error shown when a self-submitting call fails without a usable error body. _(Since `v4.19.0`)_                                                                           |
+| Key                   | Purpose                                                                                                                                                                          |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `forms.errorSummary`  | Error summary message shown when form has validation errors. Accepts `{{count}}` parameter for number of errors. Default: `Failed to save because {{count}} fields are invalid.` |
+| `common.choose`       | Default option text for select fields. Default: `Please choose`                                                                                                                  |
+| `form.success`        | Fallback success message for self-submitting forms when neither the definition nor the API provides one. _(Since `v4.19.0`)_                                                     |
+| `form.error`          | Generic error shown when a self-submitting call fails without a usable error body. _(Since `v4.19.0`)_                                                                           |
+| `forms.password.show` | Label of the password show/hide toggle. Default: `Show password`. _(Since `v4.23.0`)_                                                                                         |
 
 ## Styling
 
 - `go-form.is-submitting` — present while a self-submitting call is in flight
 - `.go-field` — every `<go-field>`; `.go-field.is-invalid` when it has errors
 - `.go-field-errors` — the error list rendered under an invalid field
+- `.go-password-toggle` — the show/hide button on password fields that opt in via `passwordToggle`; `aria-pressed="true"` while the password is revealed _(Since `v4.23.0`)_
 - `<go-errors-feedback>` gets `.go-feedback`, `.is-invalid` while errors exist, and a `data-num-errors` attribute with the current error count; API errors render in a `.go-error-feedback-api-errors` list
 - `.go-form-feedback` — wrapper rendered by `<go-form-feedback>`
 - `.go-success-feedback` — the success live region; `.is-successful` while a message is shown

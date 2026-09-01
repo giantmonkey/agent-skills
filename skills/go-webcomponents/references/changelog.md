@@ -4,6 +4,35 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.23.0
+
+_Released 2026-09-01_
+
+Password fields can now render a show/hide visibility toggle, opt-in per field.
+
+## New
+
+- `passwordToggle` field option — opt a password field into a show/hide toggle button rendered
+  after its input:
+
+  ```js
+  window.customOptions = {
+    fields: {
+      password: { passwordToggle: true },
+      newPassword: { passwordToggle: true },
+    },
+  }
+  ```
+
+  The button is unstyled and carries the `.go-password-toggle` class for your CSS (e.g. an eye
+  icon). Clicking it switches the input between masked and plain text without losing the typed
+  value, and it follows the toggle-button accessibility pattern (`aria-pressed` tracks the state,
+  `aria-controls` points at the input). Its label uses the `forms.password.show` translation key,
+  with built-in English and German defaults. Off by default — existing markup is unaffected until
+  a field opts in.
+
+---
+
 # v4.22.0
 
 _Released 2026-08-31_

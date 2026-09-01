@@ -6438,6 +6438,7 @@ createHTML: (html) => {
 			"common.wallet": "Add to wallet",
 			"cart.donation.title": "Donation",
 			"donations.checkbox.label": "Add a {{amount}} donation to {{campaign}}",
+			"forms.password.show": "Show password",
 			"Not signed in": "Not signed in"
 		},
 		de: {
@@ -6448,6 +6449,7 @@ createHTML: (html) => {
 			"common.wallet": "Zum Wallet hinzufügen",
 			"cart.donation.title": "Spende",
 			"donations.checkbox.label": "{{amount}} für {{campaign}} spenden",
+			"forms.password.show": "Passwort anzeigen",
 			"Not signed in": "Nicht angemeldet"
 		}
 	};
@@ -34623,10 +34625,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	]);
 	var root$19 = /* @__PURE__ */ from_html(`<span class="go-field-star" aria-hidden="true">*</span>`);
 	var root_1$8 = /* @__PURE__ */ from_html(` <!>`, 1);
-	var root_2$7 = /* @__PURE__ */ from_html(`<label><!></label> <input/>`, 1);
-	var root_3$7 = /* @__PURE__ */ from_html(`<label><!></label> <textarea></textarea>`, 1);
-	var root_4$3 = /* @__PURE__ */ from_html(`<figure role="status" aria-live="polite"><img class="go-file-preview"/> <figcaption class="go-file-preview-caption"> </figcaption></figure>`);
-	var root_5$2 = /* @__PURE__ */ from_html(`<label><!></label> <input/> <!>`, 1);
+	var root_2$7 = /* @__PURE__ */ from_html(`<button type="button" class="go-password-toggle"> </button>`);
+	var root_3$7 = /* @__PURE__ */ from_html(`<label><!></label> <input/> <!>`, 1);
+	var root_4$3 = /* @__PURE__ */ from_html(`<label><!></label> <textarea></textarea>`, 1);
+	var root_5$2 = /* @__PURE__ */ from_html(`<figure role="status" aria-live="polite"><img class="go-file-preview"/> <figcaption class="go-file-preview-caption"> </figcaption></figure>`);
 	var root_6$1 = /* @__PURE__ */ from_html(`<label><input/> <span class="go-checkbox-label"><!></span></label>`);
 	var root_7$1 = /* @__PURE__ */ from_html(`<img src="" alt=""/> <option> </option>`, 1);
 	var root_8$1 = /* @__PURE__ */ from_html(`<option disabled="" hidden="" selected=""> </option> <!>`, 1);
@@ -34656,7 +34658,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment);
 		};
 		const input = ($$anchor) => {
-			var fragment_1 = root_2$7();
+			var fragment_1 = root_3$7();
 			var label_1 = first_child(fragment_1);
 			var node_1 = child(label_1);
 			labelText(node_1);
@@ -34667,9 +34669,25 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				...restProps,
 				class: inputClass(),
 				placeholder: field().placeholder,
-				type: field().type,
+				type: field().type === "password" && get$2(passwordRevealed) ? "text" : field().type,
 				name: field().key
 			}), void 0, void 0, void 0, void 0, true);
+			var node_2 = sibling(input_1, 2);
+			var consequent_1 = ($$anchor) => {
+				var button = root_2$7();
+				var text_1 = child(button, true);
+				reset(button);
+				template_effect(($0) => {
+					set_attribute(button, "aria-pressed", get$2(passwordRevealed));
+					set_attribute(button, "aria-controls", get$2(inputId));
+					set_text(text_1, $0);
+				}, [() => shop.t("forms.password.show")]);
+				delegated("click", button, () => set(passwordRevealed, !get$2(passwordRevealed)));
+				append($$anchor, button);
+			};
+			if_block(node_2, ($$render) => {
+				if (field().type === "password" && field().passwordToggle) $$render(consequent_1);
+			});
 			template_effect(() => {
 				set_class(label_1, 1, clsx(labelClass()));
 				set_attribute(label_1, "for", get$2(inputId));
@@ -34678,10 +34696,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		const textarea = ($$anchor) => {
-			var fragment_2 = root_3$7();
+			var fragment_2 = root_4$3();
 			var label_2 = first_child(fragment_2);
-			var node_2 = child(label_2);
-			labelText(node_2);
+			var node_3 = child(label_2);
+			labelText(node_3);
 			reset(label_2);
 			var textarea_1 = sibling(label_2, 2);
 			remove_textarea_child(textarea_1);
@@ -34700,10 +34718,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_2);
 		};
 		const file = ($$anchor) => {
-			var fragment_3 = root_5$2();
+			var fragment_3 = root_3$7();
 			var label_3 = first_child(fragment_3);
-			var node_3 = child(label_3);
-			labelText(node_3);
+			var node_4 = child(label_3);
+			labelText(node_4);
 			reset(label_3);
 			var input_2 = sibling(label_3, 2);
 			var event_handler = (e) => {
@@ -34721,24 +34739,24 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				name: field().key,
 				onchange: event_handler
 			}), void 0, void 0, void 0, void 0, true);
-			var node_4 = sibling(input_2, 2);
-			var consequent_1 = ($$anchor) => {
-				var figure = root_4$3();
+			var node_5 = sibling(input_2, 2);
+			var consequent_2 = ($$anchor) => {
+				var figure = root_5$2();
 				var img = child(figure);
 				var figcaption = sibling(img, 2);
-				var text_1 = child(figcaption, true);
+				var text_2 = child(figcaption, true);
 				reset(figcaption);
 				reset(figure);
 				template_effect(($0) => {
 					set_attribute(figure, "data-field-preview", field().key);
 					set_attribute(img, "src", get$2(filePreviewUrl));
 					set_attribute(img, "alt", $0);
-					set_text(text_1, field().value.name);
+					set_text(text_2, field().value.name);
 				}, [() => shop.t("forms.file.preview_alt") || "User uploaded photo"]);
 				append($$anchor, figure);
 			};
-			if_block(node_4, ($$render) => {
-				if (get$2(filePreviewUrl) && field().value instanceof File) $$render(consequent_1);
+			if_block(node_5, ($$render) => {
+				if (get$2(filePreviewUrl) && field().value instanceof File) $$render(consequent_2);
 			});
 			template_effect(() => {
 				set_class(label_3, 1, clsx(labelClass()));
@@ -34757,8 +34775,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				value: "true"
 			}), void 0, void 0, void 0, void 0, true);
 			var span_1 = sibling(input_3, 2);
-			var node_5 = child(span_1);
-			labelText(node_5);
+			var node_6 = child(span_1);
+			labelText(node_6);
 			reset(span_1);
 			reset(label_4);
 			template_effect(() => {
@@ -34775,8 +34793,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const select = ($$anchor) => {
 			var fragment_4 = root_9$1();
 			var label_5 = first_child(fragment_4);
-			var node_6 = child(label_5);
-			labelText(node_6);
+			var node_7 = child(label_5);
+			labelText(node_7);
 			reset(label_5);
 			var select_1 = sibling(label_5, 2);
 			attribute_effect(select_1, () => ({
@@ -34788,30 +34806,30 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			customizable_select(select_1, () => {
 				var anchor = child(select_1);
 				var fragment_5 = select_content();
-				var node_7 = first_child(fragment_5);
-				var consequent_2 = ($$anchor) => {
+				var node_8 = first_child(fragment_5);
+				var consequent_3 = ($$anchor) => {
 					var fragment_6 = root_8$1();
 					var option_1 = first_child(fragment_6);
-					var text_2 = child(option_1, true);
+					var text_3 = child(option_1, true);
 					reset(option_1);
 					option_1.value = option_1.__value = "";
 					each(sibling(option_1, 2), 17, () => field().options(), (option) => option.value, ($$anchor, option) => {
 						var fragment_7 = root_7$1();
 						var option_2 = sibling(first_child(fragment_7), 2);
-						var text_3 = child(option_2, true);
+						var text_4 = child(option_2, true);
 						reset(option_2);
 						var option_2_value = {};
 						template_effect(() => {
-							set_text(text_3, get$2(option).label);
+							set_text(text_4, get$2(option).label);
 							if (option_2_value !== (option_2_value = get$2(option).value)) option_2.value = (option_2.__value = get$2(option).value) ?? "";
 						});
 						append($$anchor, fragment_7);
 					});
-					template_effect(($0) => set_text(text_2, $0), [() => shop.t("common.choose")]);
+					template_effect(($0) => set_text(text_3, $0), [() => shop.t("common.choose")]);
 					append($$anchor, fragment_6);
 				};
-				if_block(node_7, ($$render) => {
-					if (field().options) $$render(consequent_2);
+				if_block(node_8, ($$render) => {
+					if (field().options) $$render(consequent_3);
 				});
 				append(anchor, fragment_5);
 			});
@@ -34845,15 +34863,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const modes = /* @__PURE__ */ user_derived(() => shop.payment_modes ? Object.values(shop.payment_modes) : []);
 			var fieldset = root_14();
 			var legend = child(fieldset);
-			var node_9 = child(legend);
-			labelText(node_9);
+			var node_10 = child(legend);
+			labelText(node_10);
 			reset(legend);
 			each(sibling(legend, 2), 17, () => get$2(modes), (mode) => mode.id, ($$anchor, mode) => {
 				var label_6 = root_13();
 				var input_4 = child(label_6);
 				remove_input_defaults(input_4);
-				var node_11 = sibling(input_4, 2);
-				var consequent_3 = ($$anchor) => {
+				var node_12 = sibling(input_4, 2);
+				var consequent_4 = ($$anchor) => {
 					var span_2 = root_11$1();
 					each(span_2, 20, () => get$2(mode).icons, (icon) => icon, ($$anchor, icon) => {
 						const url = /* @__PURE__ */ user_derived(() => CDN_PATH + icon + ".svg");
@@ -34870,13 +34888,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				};
 				var alternate = ($$anchor) => {
 					var span_3 = root_12();
-					var text_4 = child(span_3, true);
+					var text_5 = child(span_3, true);
 					reset(span_3);
-					template_effect(() => set_text(text_4, get$2(mode).name));
+					template_effect(() => set_text(text_5, get$2(mode).name));
 					append($$anchor, span_3);
 				};
-				if_block(node_11, ($$render) => {
-					if (get$2(mode).icons.length > 0) $$render(consequent_3);
+				if_block(node_12, ($$render) => {
+					if (get$2(mode).icons.length > 0) $$render(consequent_4);
 					else $$render(alternate, -1);
 				});
 				reset(label_6);
@@ -34906,16 +34924,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const radio = ($$anchor) => {
 			var fieldset_1 = root_16();
 			var legend_1 = child(fieldset_1);
-			var node_12 = child(legend_1);
-			labelText(node_12);
+			var node_13 = child(legend_1);
+			labelText(node_13);
 			reset(legend_1);
-			var node_13 = sibling(legend_1, 2);
-			var consequent_4 = ($$anchor) => {
+			var node_14 = sibling(legend_1, 2);
+			var consequent_5 = ($$anchor) => {
 				var fragment_9 = comment();
 				each(first_child(fragment_9), 17, () => field().options(), (option) => option.value, ($$anchor, option) => {
 					var label_7 = root_15();
-					var text_5 = child(label_7);
-					var input_5 = sibling(text_5);
+					var text_6 = child(label_7);
+					var input_5 = sibling(text_6);
 					attribute_effect(input_5, () => ({
 						...get$2(fieldAttributes),
 						...restProps,
@@ -34926,15 +34944,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					template_effect(() => {
 						set_class(label_7, 1, clsx(labelClass()));
 						set_attribute(label_7, "for", get$2(inputId) + get$2(option).value);
-						set_text(text_5, `${get$2(option).label ?? ""} `);
+						set_text(text_6, `${get$2(option).label ?? ""} `);
 					});
 					bind_value(input_5, () => field().value, ($$value) => field(field().value = $$value, true));
 					append($$anchor, label_7);
 				});
 				append($$anchor, fragment_9);
 			};
-			if_block(node_13, ($$render) => {
-				if (field().options) $$render(consequent_4);
+			if_block(node_14, ($$render) => {
+				if (field().options) $$render(consequent_5);
 			});
 			reset(fieldset_1);
 			append($$anchor, fieldset_1);
@@ -34981,6 +34999,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const modes = shop.payment_modes ? Object.values(shop.payment_modes) : [];
 			if (modes.length === 1 && field().value === "") field(field().value = String(modes[0].id), true);
 		});
+		let passwordRevealed = /* @__PURE__ */ state(false);
 		let filePreviewUrl = /* @__PURE__ */ state(null);
 		user_effect(() => {
 			const value = field().value;
@@ -35032,19 +35051,19 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 		};
 		var fragment_10 = comment();
-		var node_15 = first_child(fragment_10);
-		var consequent_5 = ($$anchor) => {
+		var node_16 = first_child(fragment_10);
+		var consequent_6 = ($$anchor) => {
 			var fragment_11 = comment();
 			snippet(first_child(fragment_11), () => get$2(snippet$1));
 			append($$anchor, fragment_11);
 		};
-		if_block(node_15, ($$render) => {
-			if (get$2(snippet$1)) $$render(consequent_5);
+		if_block(node_16, ($$render) => {
+			if (get$2(snippet$1)) $$render(consequent_6);
 		});
 		append($$anchor, fragment_10);
 		return pop($$exports);
 	}
-	delegate(["change"]);
+	delegate(["click", "change"]);
 	create_custom_element(InputAndLabel, {
 		field: {},
 		describedByIds: {},
