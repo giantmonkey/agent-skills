@@ -2706,13 +2706,6 @@
 		return is ? document.createElementNS(namespace, tag, { is }) : document.createElementNS(namespace, tag);
 	}
 	/**
-	* @param {string} data
-	* @returns
-	*/
-	function create_comment(data = "") {
-		return document.createComment(data);
-	}
-	/**
 	* Browsers split text nodes larger than 65536 bytes when parsing.
 	* For hydration to succeed, we need to stitch them back together
 	* @param {Text} text
@@ -5560,50 +5553,6 @@ createHTML: (html) => {
 			proto = get_prototype_of(proto);
 		}
 		return setters;
-	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/customizable-select.js
-	/** @type {boolean | null} */
-	var supported = null;
-	/**
-	* Checks if the browser supports rich HTML content inside `<option>` elements.
-	* Modern browsers preserve HTML elements inside options, while older browsers
-	* strip them during parsing, leaving only text content.
-	* @returns {boolean}
-	*/
-	function is_supported() {
-		if (supported === null) {
-			var select = create_element("select");
-			select.innerHTML = create_trusted_html("<option><span>t</span></option>");
-			supported = select.firstChild?.firstChild?.nodeType === 1;
-		}
-		return supported;
-	}
-	/**
-	* Handles rich HTML content inside `<option>`, `<optgroup>`, or `<select>` elements with browser-specific branching.
-	* Modern browsers preserve HTML inside options, while older browsers strip it to text only.
-	*
-	* @param {HTMLOptionElement | HTMLOptGroupElement | HTMLSelectElement} element The element to process
-	* @param {() => void} rich_fn Function to process rich HTML content (modern browsers)
-	*/
-	function customizable_select(element, rich_fn) {
-		var was_hydrating = hydrating;
-		if (!is_supported()) {
-			set_hydrating(false);
-			element.textContent = "";
-			element.append(create_comment(""));
-		}
-		try {
-			rich_fn();
-		} finally {
-			if (was_hydrating) {
-				if (hydrating) reset(element);
-				else {
-					set_hydrating(true);
-					set_hydrate_node(element);
-				}
-			}
-		}
 	}
 	//#endregion
 	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/bindings/input.js
@@ -34630,9 +34579,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root_4$3 = /* @__PURE__ */ from_html(`<label><!></label> <textarea></textarea>`, 1);
 	var root_5$2 = /* @__PURE__ */ from_html(`<figure role="status" aria-live="polite"><img class="go-file-preview"/> <figcaption class="go-file-preview-caption"> </figcaption></figure>`);
 	var root_6$1 = /* @__PURE__ */ from_html(`<label><input/> <span class="go-checkbox-label"><!></span></label>`);
-	var root_7$1 = /* @__PURE__ */ from_html(`<img src="" alt=""/> <option> </option>`, 1);
+	var root_7$1 = /* @__PURE__ */ from_html(`<option> </option>`);
 	var root_8$1 = /* @__PURE__ */ from_html(`<option disabled="" hidden="" selected=""> </option> <!>`, 1);
-	var select_content = /* @__PURE__ */ from_html(`<!>`, 1);
 	var root_9$1 = /* @__PURE__ */ from_html(`<label><!></label> <select><!></select>`, 1);
 	var root_10$1 = /* @__PURE__ */ from_html(`<img style="width: 60px" aria-hidden="true"/>`);
 	var root_11$1 = /* @__PURE__ */ from_html(`<span class="go-payment-mode-icons"></span>`);
@@ -34803,36 +34751,31 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				name: field().key,
 				class: inputClass()
 			}));
-			customizable_select(select_1, () => {
-				var anchor = child(select_1);
-				var fragment_5 = select_content();
-				var node_8 = first_child(fragment_5);
-				var consequent_3 = ($$anchor) => {
-					var fragment_6 = root_8$1();
-					var option_1 = first_child(fragment_6);
-					var text_3 = child(option_1, true);
-					reset(option_1);
-					option_1.value = option_1.__value = "";
-					each(sibling(option_1, 2), 17, () => field().options(), (option) => option.value, ($$anchor, option) => {
-						var fragment_7 = root_7$1();
-						var option_2 = sibling(first_child(fragment_7), 2);
-						var text_4 = child(option_2, true);
-						reset(option_2);
-						var option_2_value = {};
-						template_effect(() => {
-							set_text(text_4, get$2(option).label);
-							if (option_2_value !== (option_2_value = get$2(option).value)) option_2.value = (option_2.__value = get$2(option).value) ?? "";
-						});
-						append($$anchor, fragment_7);
+			var node_8 = child(select_1);
+			var consequent_3 = ($$anchor) => {
+				var fragment_5 = root_8$1();
+				var option_1 = first_child(fragment_5);
+				var text_3 = child(option_1, true);
+				reset(option_1);
+				option_1.value = option_1.__value = "";
+				each(sibling(option_1, 2), 17, () => field().options(), (option) => option.value, ($$anchor, option) => {
+					var option_2 = root_7$1();
+					var text_4 = child(option_2, true);
+					reset(option_2);
+					var option_2_value = {};
+					template_effect(() => {
+						set_text(text_4, get$2(option).label);
+						if (option_2_value !== (option_2_value = get$2(option).value)) option_2.value = (option_2.__value = get$2(option).value) ?? "";
 					});
-					template_effect(($0) => set_text(text_3, $0), [() => shop.t("common.choose")]);
-					append($$anchor, fragment_6);
-				};
-				if_block(node_8, ($$render) => {
-					if (field().options) $$render(consequent_3);
+					append($$anchor, option_2);
 				});
-				append(anchor, fragment_5);
+				template_effect(($0) => set_text(text_3, $0), [() => shop.t("common.choose")]);
+				append($$anchor, fragment_5);
+			};
+			if_block(node_8, ($$render) => {
+				if (field().options) $$render(consequent_3);
 			});
+			reset(select_1);
 			template_effect(() => {
 				set_class(label_5, 1, clsx(labelClass()));
 				set_attribute(label_5, "for", get$2(inputId));
@@ -34929,8 +34872,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			reset(legend_1);
 			var node_14 = sibling(legend_1, 2);
 			var consequent_5 = ($$anchor) => {
-				var fragment_9 = comment();
-				each(first_child(fragment_9), 17, () => field().options(), (option) => option.value, ($$anchor, option) => {
+				var fragment_7 = comment();
+				each(first_child(fragment_7), 17, () => field().options(), (option) => option.value, ($$anchor, option) => {
 					var label_7 = root_15();
 					var text_6 = child(label_7);
 					var input_5 = sibling(text_6);
@@ -34949,7 +34892,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					bind_value(input_5, () => field().value, ($$value) => field(field().value = $$value, true));
 					append($$anchor, label_7);
 				});
-				append($$anchor, fragment_9);
+				append($$anchor, fragment_7);
 			};
 			if_block(node_14, ($$render) => {
 				if (field().options) $$render(consequent_5);
@@ -35050,17 +34993,17 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var fragment_10 = comment();
-		var node_16 = first_child(fragment_10);
+		var fragment_8 = comment();
+		var node_16 = first_child(fragment_8);
 		var consequent_6 = ($$anchor) => {
-			var fragment_11 = comment();
-			snippet(first_child(fragment_11), () => get$2(snippet$1));
-			append($$anchor, fragment_11);
+			var fragment_9 = comment();
+			snippet(first_child(fragment_9), () => get$2(snippet$1));
+			append($$anchor, fragment_9);
 		};
 		if_block(node_16, ($$render) => {
 			if (get$2(snippet$1)) $$render(consequent_6);
 		});
-		append($$anchor, fragment_10);
+		append($$anchor, fragment_8);
 		return pop($$exports);
 	}
 	delegate(["click", "change"]);
