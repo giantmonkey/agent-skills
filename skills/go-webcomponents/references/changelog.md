@@ -4,6 +4,29 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.25.0
+
+_Released 2026-09-09_
+
+Coupon rows now show their subtitle and description — in the ticket list and in the cart — through
+the same hooks ticket rows already have.
+
+## Changed (behavior)
+
+- In `<go-tickets>` with the `coupon` filter, a coupon row now fills `.go-tickets-item-description`
+  with the coupon's shop description (sanitized HTML) and, when the coupon has a subtitle, renders
+  it inside the title cell as `span.go-tickets-item-subtitle` — exactly like a ticket row.
+  Previously a coupon row's description cell was always empty and it never showed a subtitle.
+- In the cart, a coupon line with a subtitle renders it beneath the title as
+  `.go-cart-item-subtitle`, like a ticket line. A coupon without a subtitle renders no extra
+  element, so existing layouts are unaffected.
+- Both texts come from the coupon's shop content in gomus. When no shop description is set, the
+  backend falls back to the coupon's plain description — so a coupon row that showed no text
+  before may show one after upgrading. Review your coupons' descriptions in gomus if you do not
+  want them displayed.
+
+---
+
 # v4.24.0
 
 _Released 2026-09-09_

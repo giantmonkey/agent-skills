@@ -109,7 +109,7 @@ The `go-submit` event is covered in _Submitting the cart_ below.
 Each subcomponent renders stable class hooks:
 
 - `.go-cart-item` — one per cart line; `.go-cart-item-price-original` (struck-through pre-discount price) and `.go-cart-item-price-discounted` appear when a line is discounted
-- `.go-cart-item-subtitle` — a ticket's subtitle, rendered beneath the title when the ticket has one _(Since `v4.11.0`)_
+- `.go-cart-item-subtitle` — a ticket's subtitle, rendered beneath the title when the ticket has one _(Since `v4.11.0`)_; coupon lines render theirs the same way _(Since `v4.25.0`)_
 - `.go-cart-item-participants` — the participant-count label on a tour line; `.go-cart-item-custom` — one per `key: value` custom-field line _(Since `v4.3.0`)_
 - `.go-quantity-stepper` — each item's `− qty +` quantity stepper (the default control): `.go-quantity-stepper-button` (both buttons; `.go-quantity-stepper-decrement` / `.go-quantity-stepper-increment` target each) and `.go-quantity-stepper-value` (the editable spinbutton input). Once a line is at its lowest quantity the `−` button becomes a remove control (it renders `✕` and gets `.go-quantity-stepper-remove`); pressing it — or clearing the input — removes the line, so a cart line never sits at `0` _(Since `v4.13.0`)_. With `go.config({ quantityStepperAtMinimum: 'disable' })` the `−` instead stays a plain button that disables at the line's lowest quantity (`aria-disabled`), a typed `0` clamps back up, and only the standalone ✕ button removes _(Since `v4.17.0`)_. The standalone ✕ button removes a line too. With `go.config({ quantityStepper: false })` the item renders a `.go-quantity-select` `<select>` instead _(Since `v4.0.0`)_
 - `.go-cart-remove` — the ✕ button on items and coupons

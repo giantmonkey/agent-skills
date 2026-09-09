@@ -12401,18 +12401,22 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	//#endregion
 	//#region src/lib/models/coupon/UICoupon.svelte.ts
+	function isUICoupon(x) {
+		return x?.type === "Coupon";
+	}
 	/**
 	* A purchasable coupon (German "Wertgutschein" = value voucher / gift card).
 	*
 	* Unlike tickets and event prices, a coupon is a fixed-value product: the API
 	* returns predefined coupons and the order payload (`coupon_cart_item`) only
-	* carries `id` + `quantity`. `coupon_index` has no `description`, so we default
-	* it to an empty string to satisfy the shared `BaseProduct` shape.
+	* carries `id` + `quantity`. `coupon_index` carries the shop content (`sub_title`,
+	* `description`) as nullable strings; `description` falls back to an empty string to
+	* satisfy the shared `BaseProduct` shape (and older backends that omit the field).
 	*/
 	function createUICoupon(apiCoupon) {
 		return {
 			...apiCoupon,
-			description: "",
+			description: apiCoupon.description ?? "",
 			tax_included: true,
 			type: "Coupon"
 		};
@@ -14488,7 +14492,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#endregion
 	//#region src/components/annualTicketPersonalization/components/AnnualTicketPersonalization.svelte
 	var root$63 = /* @__PURE__ */ from_html(`<li><a> </a></li>`);
-	var root_1$23 = /* @__PURE__ */ from_html(`<ul class="go-annual-ticket"><li class="go-annual-ticket-title"> </li> <li class="go-annual-ticket-personalization-count"> </li> <!></ul>`);
+	var root_1$24 = /* @__PURE__ */ from_html(`<ul class="go-annual-ticket"><li class="go-annual-ticket-title"> </li> <li class="go-annual-ticket-personalization-count"> </li> <!></ul>`);
 	function AnnualTicketPersonalization($$anchor, $$props) {
 		push($$props, true);
 		let token = prop($$props, "token", 7);
@@ -14513,7 +14517,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var consequent_1 = ($$anchor) => {
 			var fragment_1 = comment();
 			each(first_child(fragment_1), 17, () => get$2(order).ticket_sales, (ticketSale) => ticketSale.id, ($$anchor, ticketSale) => {
-				var ul = root_1$23();
+				var ul = root_1$24();
 				var li = child(ul);
 				var text = child(li, true);
 				reset(li);
@@ -16048,7 +16052,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var getCartDetails = createGetDetails(KEY$3);
 	//#endregion
 	//#region src/components/cart/components/itemTitles/Coupon.svelte
-	var root$59 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span>`);
+	var root$59 = /* @__PURE__ */ from_html(`<span class="go-cart-item-subtitle" data-testid="cart-item-subtitle"> </span>`);
+	var root_1$23 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span> <!>`, 1);
 	function Coupon$1($$anchor, $$props) {
 		push($$props, true);
 		let cartItem = prop($$props, "cartItem", 7);
@@ -16061,11 +16066,24 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var span = root$59();
+		var fragment = root_1$23();
+		var span = first_child(fragment);
 		var text = child(span, true);
 		reset(span);
+		var node = sibling(span, 2);
+		var consequent = ($$anchor) => {
+			var span_1 = root$59();
+			var text_1 = child(span_1, true);
+			reset(span_1);
+			template_effect(() => set_text(text_1, cartItem().product.sub_title));
+			append($$anchor, span_1);
+		};
+		var d = /* @__PURE__ */ user_derived(() => isUICoupon(cartItem().product) && cartItem().product.sub_title);
+		if_block(node, ($$render) => {
+			if (get$2(d)) $$render(consequent);
+		});
 		template_effect(() => set_text(text, cartItem().product.title));
-		append($$anchor, span);
+		append($$anchor, fragment);
 		return pop($$exports);
 	}
 	create_custom_element(Coupon$1, { cartItem: {} }, [], [], { mode: "open" });

@@ -107,7 +107,9 @@ Inside a segment, `go-ticket-segment-body` renders the ticket table with these h
 Since `v4.11.0`
 
 When a ticket carries a subtitle, it renders inside the row's title cell as its own
-`span.go-tickets-item-subtitle`, so you can style it independently of the title:
+`span.go-tickets-item-subtitle`, so you can style it independently of the title. Coupon rows
+(the `coupon` filter) render their subtitle the same way and fill
+`.go-tickets-item-description` with the coupon's description _(Since `v4.25.0`)_:
 
 ```css
 .go-tickets-item-subtitle {
