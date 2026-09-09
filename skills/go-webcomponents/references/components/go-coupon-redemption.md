@@ -31,8 +31,9 @@ This component takes no attributes.
 
 | Event                | Description                                                                                                                                                                                                                                                 | `detail`                                                                       | bubbles | Since        |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------- | ------------ |
-| `go-coupon-redeemed` | Fires after a coupon is redeemed successfully, carrying what was redeemed — an action token's discount is applied, a service voucher's ticket is added, or a Wertgutschein's credit is recorded. Redeeming an already-applied voucher again fires it again. | `{ code, kind }` — `kind` is `actionToken`, `serviceVoucher` or `valueVoucher` | yes     | `v4.21.0` |
+| `go-coupon-redeemed` | Fires after a coupon is redeemed successfully, carrying what was redeemed — an action token's discount is applied, a service voucher's ticket is added, or a Wertgutschein's credit is recorded. Redeeming an already-applied voucher again fires it again. | `{ code, kind }` — `kind` is `actionToken`, `serviceVoucher` or `valueVoucher` | yes     | `v4.21.0`    |
 | `go-success`         | **Deprecated** — fires alongside `go-coupon-redeemed` and will be removed in a future release. New integrations should listen to `go-coupon-redeemed` instead.                                                                                              | none                                                                           | yes     |              |
+| `go-form-failed`     | Fires before API errors render; cancelable, bubbles from the inner `<go-form>` — see "Handling API errors" in the Forms documentation                                                                                                                       | `{ formId, apiAction, errors, fieldErrors }`                                   | yes     | `v4.24.0` |
 
 React to a redemption, e.g. to show a confirmation tailored to the coupon type:
 
@@ -40,6 +41,14 @@ React to a redemption, e.g. to show a confirmation tailored to the coupon type:
 document.querySelector('go-coupon-redemption').addEventListener('go-coupon-redeemed', e => {
   const { code, kind } = e.detail
   console.log(`Redeemed ${code} (${kind})`)
+})
+```
+
+A rejected code fires `go-form-failed` on the inner `<go-form>` before the message renders. For this component `detail.formId` is `couponRedemption`, `detail.apiAction` is `undefined` (the component performs the redemption itself), and the messages are always form-level: `detail.errors` holds the localized `cart.coupon.form.errors.notValid` or `cart.coupon.form.errors.error` text, `detail.fieldErrors` is empty. The event also fires when the cart's `<go-submit>` applies a pending token (see Nesting) — canceling it there suppresses the inline message, but checkout still does not proceed.
+
+```js
+document.querySelector('go-coupon-redemption').addEventListener('go-form-failed', e => {
+  e.detail.errors = ['This code cannot be redeemed. Check the spelling or contact us.']
 })
 ```
 

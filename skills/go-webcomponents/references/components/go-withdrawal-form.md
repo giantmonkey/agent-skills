@@ -36,11 +36,22 @@ Custom layout — pass `custom` and provide your own markup. The component still
 
 ## Events
 
-| Event        | Description                                                                  | `detail` | bubbles |
-| ------------ | ---------------------------------------------------------------------------- | -------- | ------- |
-| `go-success` | The withdrawal request returned a 2xx response (a `201` with an empty body). | none     | yes     |
+| Event            | Description                                                                                                                                                | `detail`                                     | bubbles | Since        |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ------- | ------------ |
+| `go-success`     | The withdrawal request returned a 2xx response (a `201` with an empty body).                                                                               | none                                         | yes     |              |
+| `go-form-failed` | Fires before API errors render; cancelable, bubbles through this element from the inner `<go-form>` — see "Handling API errors" in the Forms documentation | `{ formId, apiAction, errors, fieldErrors }` | yes     | `v4.24.0` |
 
-Non-2xx responses do **not** fire `go-success` — field errors (or a generic fallback message) are surfaced through `<go-errors-feedback>` instead.
+Non-2xx responses do **not** fire `go-success`. When the API rejects the input, its per-field messages render inline on the matching `<go-field>`; when no order matches the given number (or the response carries no field errors), the generic `withdrawal.form.errors.requestFailed` message renders in `<go-errors-feedback>`. In a custom layout, a message for a field you left out also falls back to `<go-errors-feedback>`.
+
+On a rejected request `go-form-failed` carries `formId: 'withdrawal'` and no `apiAction` (it is `undefined` — the component submits on its own). If the API rejected the input, `fieldErrors` is keyed by the field keys below (`withdrawalFirstName`, `email`, `orderNumber`, …) and `errors` is empty; if no order matched the given number, `errors` holds the single generic message and `fieldErrors` is `{}`. Listen on the element itself, e.g. to replace the generic message:
+
+```js
+document.querySelector('go-withdrawal-form').addEventListener('go-form-failed', e => {
+  if (e.detail.errors.length > 0) {
+    e.detail.errors = ['We could not find an order with that number. Check it and try again.']
+  }
+})
+```
 
 ## Fields
 

@@ -42,9 +42,12 @@ The reset link appends these query parameters to your page's URL: `access-token`
 
 ## Events
 
-| Event        | Description                            | `detail` | bubbles |
-| ------------ | -------------------------------------- | -------- | ------- |
-| `go-success` | Fires after the new password was saved | —        | yes     |
+| Event            | Description                                                                                                                           | `detail`                                     | bubbles | Since        |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ------- | ------------ |
+| `go-success`     | Fires after the new password was saved                                                                                                | —                                            | yes     |              |
+| `go-form-failed` | Fires before API errors render; cancelable, bubbles from the inner `<go-form>` — see "Handling API errors" in the Forms documentation | `{ formId, apiAction, errors, fieldErrors }` | yes     | `v4.24.0` |
+
+On `go-form-failed`, `detail.formId` is `setPassword` and `detail.apiAction` is `undefined` — use the `formId` to tell this form apart in a page-level listener, e.g. to offer a fresh reset e-mail when the token is missing or expired.
 
 ```html
 <go-set-password id="set-password"></go-set-password>

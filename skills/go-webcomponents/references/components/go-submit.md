@@ -80,8 +80,8 @@ A form definition can carry a whitelisted write action. `go-form` then calls the
 itself after client-side validation and renders the result — no JavaScript needed:
 
 - success → `successMessage` appears in `<go-success-feedback>` and the host fires `go-success`
-- error → `details.apiErrors` renders form-level errors (`<go-errors-feedback>`) or inline
-  per-field errors, depending on the shape the endpoint returns
+- error → the element fires `go-form-failed`, then renders form-level errors (`<go-errors-feedback>`) or inline
+  per-field errors, depending on the shape the endpoint returns — see "Handling API errors" below
 - while in flight the host has the `is-submitting` class and `<go-submit>` is disabled
 
 These form ids ship pre-registered (overridable via `go.config({ forms })`):
@@ -131,12 +131,72 @@ _clear_ a previously saved optional field — use the JS escape hatch for that.
 
 ## Events
 
-| Event                 | Description                                                                                                                                              | `detail` | bubbles | Since     |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------- | --------- |
-| `go-after-validation` | Fires on every submit attempt, right after validation runs — valid or not                                                                                | —        | yes     | `v1.21.0` |
-| `go-submit`           | Fires when a submit passes validation, before any built-in API call                                                                                      | —        | yes     |           |
-| `submit`              | Fires on the `<go-form>` element when a submit passes validation. Cancelable — `preventDefault()` suppresses the built-in call of a self-submitting form | —        | yes     |           |
-| `go-success`          | Fires on the `<go-form>` element after a self-submitting form's call succeeds                                                                            | —        | yes     |           |
+| Event                 | Description                                                                                                                                                                                                                                                                                                                                                                             | `detail`                                                                            | bubbles | Since        |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------ |
+| `go-after-validation` | Fires on every submit attempt, right after validation runs — valid or not                                                                                                                                                                                                                                                                                                               | —                                                                                   | yes     | `v1.21.0`    |
+| `go-submit`           | Fires when a submit passes validation, before any built-in API call                                                                                                                                                                                                                                                                                                                     | —                                                                                   | yes     |              |
+| `submit`              | Fires on the `<go-form>` element when a submit passes validation. Cancelable — `preventDefault()` suppresses the built-in call of a self-submitting form                                                                                                                                                                                                                                | —                                                                                   | yes     |              |
+| `go-success`          | Fires on the `<go-form>` element after a self-submitting form's call succeeds                                                                                                                                                                                                                                                                                                           | —                                                                                   | yes     |              |
+| `go-form-failed`      | Fires on the `<go-form>` element when a submit does not succeed — the API rejected it, or (self-submitting forms) the request itself failed — **before** the messages render. Cancelable: `preventDefault()` renders nothing. `detail` is live — edit `errors` / `fieldErrors` to change what renders. Bubbles through wrapper elements such as `<go-checkout-form>` and `<go-sign-in>` | `{ formId, apiAction?, errors: string[], fieldErrors: Record<fieldKey, string[]> }` | yes     | `v4.24.0` |
+
+## Handling API errors
+
+Since `v4.24.0`
+
+When a submit does not succeed, the form parses the response into form-level messages
+(rendered by `<go-errors-feedback>`) and field-level messages (rendered inline by the matching
+`<go-field>`), then fires `go-form-failed` on the `<go-form>` element **before** anything renders.
+It fires when the API rejects the submit with error messages; a self-submitting
+`<go-form api-action="…">` also fires it when the request itself fails (offline, DNS) or the
+response carries no body — then `errors` holds the single generic `form.error` message. It never
+fires for client-side validation; those messages render regardless of this event.
+
+`detail.formId` is the registered form id (`checkoutGuest`, `signIn`, `addressCreate`, …);
+`detail.apiAction` is set for self-submitting forms and `undefined` for wrapper components.
+`detail.fieldErrors` is keyed by the `<go-field key="…">` value, not by the backend field name.
+A backend field with no matching `<go-field>` in the form — and any key you add that matches
+none — renders at form level as `key: message`. Rails' record-level `base` bucket (e.g. a
+sold-out cart on checkout) is form level as-is, without a prefix.
+Messages are carried as the backend sent them — field messages may be translation keys that
+`<go-field>` resolves at render; a literal string you write in renders as written.
+
+```js
+// 1. React
+document.addEventListener('go-form-failed', e => {
+  if (e.detail.formId === 'checkoutGuest') analytics.track('checkout_rejected', e.detail)
+})
+
+// 2. Rewrite one message before it renders
+form.addEventListener('go-form-failed', e => {
+  if (e.detail.fieldErrors.email?.includes('has already been taken')) {
+    e.detail.fieldErrors.email = ['This email already has an account. Sign in instead.']
+  }
+})
+
+// 3. Own the rendering
+form.addEventListener('go-form-failed', e => {
+  e.preventDefault()
+  const messages = [...e.detail.errors, ...Object.values(e.detail.fieldErrors).flat()]
+  myErrorBox.replaceChildren(
+    ...messages.map(text => Object.assign(document.createElement('li'), { textContent: text })),
+  )
+})
+```
+
+Two rules when you take over rendering (case 3): you own accessibility — the library's
+`aria-live` regions no longer announce anything, so give your container its own; and the event
+fires once per rejected attempt, so clear your container on `go-after-validation` (fires on every
+submit attempt, mirroring when the library clears its own API errors) or at the start of each
+`go-form-failed` handler. Client-side validation messages are unaffected by `preventDefault()`.
+
+Every submit attempt clears the previous attempt's API errors before validation runs — even when
+client-side validation then fails — so a rejected field never blocks a later submit, and a
+canceled `go-form-failed` still leaves the form clean. For the same reason `details.apiErrors`
+reads as an empty list inside the handler: the form has reset but not yet stored.
+
+Mutating `e.detail` is the supported way to change what renders. Assigning `details.apiErrors`
+from inside a `go-form-failed` listener does not fire a second event: the assigned value replaces
+`e.detail.errors` / `e.detail.fieldErrors` of the event in flight, as if you had mutated them.
 
 # `<go-field>`
 
@@ -296,7 +356,7 @@ For required fields, `common.fieldErrors.required` will be used to display a req
 | `common.choose`       | Default option text for select fields. Default: `Please choose`                                                                                                                  |
 | `form.success`        | Fallback success message for self-submitting forms when neither the definition nor the API provides one. _(Since `v4.19.0`)_                                                     |
 | `form.error`          | Generic error shown when a self-submitting call fails without a usable error body. _(Since `v4.19.0`)_                                                                           |
-| `forms.password.show` | Label of the password show/hide toggle. Default: `Show password`. _(Since `v4.23.0`)_                                                                                         |
+| `forms.password.show` | Label of the password show/hide toggle. Default: `Show password`. _(Since `v4.23.0`)_                                                                                            |
 
 ## Styling
 

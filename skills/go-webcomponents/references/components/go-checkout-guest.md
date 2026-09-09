@@ -84,9 +84,22 @@ The built-in (non-`custom`) fields are:
 
 ## Events
 
-This component emits no custom events. Once the order is created, it routes the
-customer by the checkout outcome, using the `navigateTo` handler (a plain location
-change by default; override it via `go.config({ navigateTo })`):
+| Event            | Description                                                                                                                                                                                                                                                                             | `detail`                                                                                                                         | bubbles | Since        |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------- | ------------ |
+| `go-form-failed` | Fires when the guest signup or the checkout request is rejected, **before** the errors render. Cancelable: `preventDefault()` renders nothing. `detail` is live — edit `errors` / `fieldErrors` to change what renders. Fires on the inner `<go-form>` and bubbles through this element | `{ formId: 'checkoutGuest' \| 'checkoutUser', apiAction: undefined, errors: string[], fieldErrors: Record<fieldKey, string[]> }` | yes     | `v4.24.0` |
+
+Listen on the element itself to react, rewrite a message, or render the error yourself; see
+"Handling API errors" in the Forms documentation for the full payload and the cancel semantics.
+
+```js
+document.querySelector('go-checkout-form').addEventListener('go-form-failed', e => {
+  console.warn('checkout rejected', e.detail.errors, e.detail.fieldErrors)
+})
+```
+
+Once the order is created, the component routes the customer by the checkout outcome, using
+the `navigateTo` handler (a plain location change by default; override it via
+`go.config({ navigateTo })`):
 
 - **Payment via redirect** — `navigateTo` receives the payment provider's URL.
 - **Payment via POST** (some embedded providers) — the component submits a hidden
@@ -111,8 +124,8 @@ go.config({
 })
 ```
 
-If the checkout request itself is rejected, no redirect happens — the errors render
-on the form.
+If the checkout request itself is rejected, no redirect happens — `go-form-failed` fires and
+the errors render on the form unless a listener cancels it.
 
 ## Styling
 

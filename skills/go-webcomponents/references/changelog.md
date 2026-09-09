@@ -4,6 +4,57 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.24.0
+
+_Released 2026-09-09_
+
+Forms now tell you when a submit does not succeed: the new cancelable `go-form-failed` event lets
+you react to, rewrite, or take over rendering of API errors. A submit rejected with a field-level
+error no longer blocks every later attempt.
+
+## New
+
+- `go-form-failed` event — fires on the `<go-form>` element when a submit does not succeed (the
+  API rejected it, or — for a self-submitting `<go-form api-action="…">` — the request itself
+  failed), **before** the messages render. Client-side validation never fires it. `detail` is `{ formId, apiAction, errors, fieldErrors }`:
+  `formId` is the registered form id (`checkoutGuest`, `signIn`, `addressCreate`, …),
+  `apiAction` is set for self-submitting forms and `undefined` for wrapper components, `errors`
+  holds the form-level messages `<go-errors-feedback>` would render, and `fieldErrors` the inline
+  messages keyed by `<go-field key="…">`. It bubbles, so you can listen on wrappers such as
+  `<go-checkout-form>`, `<go-sign-in>`, `<go-sign-up>`, `<go-coupon-redemption>`,
+  `<go-withdrawal-form>` or on `document`. Three ways to use it:
+  - **React** — read `e.detail` (e.g. track a rejected checkout).
+  - **Rewrite** — `e.detail` is live: replace an entry in `e.detail.errors` /
+    `e.detail.fieldErrors` and the rewritten text renders instead.
+  - **Own the rendering** — `e.preventDefault()` renders nothing; you then own the messages and
+    their accessibility (the library's `aria-live` regions stay silent).
+
+  ```js
+  document.querySelector('go-checkout-form').addEventListener('go-form-failed', e => {
+    if (e.detail.fieldErrors.email?.includes('has already been taken')) {
+      e.detail.fieldErrors.email = ['This email already has an account. Sign in instead.']
+    }
+  })
+  ```
+
+  Client-side validation messages are unaffected, and a canceled event still clears the previous
+  attempt's API errors. See "Handling API errors" in the Forms documentation.
+
+## Changed
+
+- API errors sent by Rails as `{ errors: { attribute: [...] } }` — the shape of a rejected
+  checkout (`POST /api/v4/orders`) — now render, and fire `go-form-failed`; before, the response
+  was silently dropped and the visitor saw nothing. Messages under the record-level `base` key
+  render at form level as-is (previously prefixed `base: …`).
+
+## Fixed
+
+- After the API rejected a submit with a field-level error, the form silently ignored every later
+  submit — the stale API error still counted against validity, so no request was sent and no
+  `go-submit` fired. Each submit attempt now starts clean, so re-submitting works.
+
+---
+
 # v4.23.0
 
 _Released 2026-09-01_

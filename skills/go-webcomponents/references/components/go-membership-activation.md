@@ -33,11 +33,12 @@ There is no built-in success message — `<go-success-feedback>` stays empty for
 
 ## Events
 
-| Event        | Description                       | `detail` | bubbles |
-| ------------ | --------------------------------- | -------- | ------- |
-| `go-success` | The activation request succeeded. | none     | yes     |
+| Event            | Description                                                                                                                           | `detail`                                     | bubbles | Since        |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ------- | ------------ |
+| `go-success`     | The activation request succeeded.                                                                                                     | none                                         | yes     |              |
+| `go-form-failed` | Fires before API errors render; cancelable, bubbles from the inner `<go-form>` — see "Handling API errors" in the Forms documentation | `{ formId, apiAction, errors, fieldErrors }` | yes     | `v4.24.0` |
 
-The endpoint answers `204 No Content` on success and `404` (empty body) when no membership matches the email. On success gomus also emails the customer a link to set their shop password and complete the activation. A non-2xx response does **not** fire `go-success` — a generic error message is surfaced through `<go-errors-feedback>` instead.
+The endpoint answers `204 No Content` on success and `404` (empty body) when no membership matches the email. On success gomus also emails the customer a link to set their shop password and complete the activation. A non-2xx response does **not** fire `go-success` — the form fires `go-form-failed` with `formId` `membershipActivation`, no `apiAction`, a single generic message in `errors` and an empty `fieldErrors` (the endpoint returns no per-field errors), then surfaces that message through `<go-errors-feedback>` unless a listener cancels the event.
 
 ## Fields
 

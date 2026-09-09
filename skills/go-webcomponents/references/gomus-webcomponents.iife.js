@@ -15313,6 +15313,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var FormDetails = class {
 		formId;
 		form;
+		host;
 		#apiErrors = /* @__PURE__ */ state(proxy([]));
 		#isValid = /* @__PURE__ */ user_derived(() => errors(this.fields) == 0);
 		get isValid() {
@@ -15328,6 +15329,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		set isSubmitting(value) {
 			set(this.#isSubmitting, value, true);
 		}
+		apiAction = void 0;
 		#successMessage = /* @__PURE__ */ state();
 		get successMessage() {
 			return get$2(this.#successMessage);
@@ -15361,34 +15363,119 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		/**
 		* Sets API errors for the current instance.
 		*
-		* The API returns errors in very different shapes, this method should consume all those shapes
+		* The API returns errors in very different shapes; this setter consumes all of them,
+		* then dispatches a cancelable `go-form-failed` on the <go-form> host BEFORE storing
+		* anything. The event's `detail` is live: whatever it holds after dispatch is what
+		* renders, and preventDefault() renders nothing.
 		*
-		* @param {string[] | Record<string, string[]>} errors - Errors passed as an array or an object where keys are API field keys and values are arrays of error messages. If an array is provided, it assigns the errors directly. If an object is provided, it maps the errors to the respective fields based on their API keys.
+		* Assigning from inside a `go-form-failed` listener does not re-enter: the new value replaces
+		* the live `detail` of the event being dispatched (same as mutating `e.detail`), no second event.
+		*
+		* @param {string[] | Record<string, string[]>} errors - a flat list (form level), or an object
+		*   keyed by API field key — also accepted wrapped as `{ errors: { key: [...] } }`, the Rails
+		*   `render json: { errors: record.errors }` shape. Object keys that match a mounted field become
+		*   field-level errors; `base` (ActiveModel's record-level bucket) is form level as-is; the rest
+		*   are prefixed with their key at form level. `{}` and `[]` clear without an event.
 		*/
 		set apiErrors(errors) {
+			const parsed = this.#parseApiErrors(errors);
+			if (this.#dispatching) {
+				this.#dispatching.errors = parsed.formErrors;
+				this.#dispatching.fieldErrors = parsed.fieldErrors;
+				return;
+			}
 			set(this.#apiErrors, [], true);
-			this.fields.forEach((f) => f.apiErrors = []);
-			if (isArray(errors)) {
-				set(this.#apiErrors, errors, true);
-				return;
+			this.fields.forEach((f) => {
+				f.apiErrors = [];
+			});
+			const { formErrors, fieldErrors } = parsed;
+			if (formErrors.length === 0 && Object.keys(fieldErrors).length === 0) return;
+			const event = new CustomEvent("go-form-failed", {
+				detail: {
+					formId: this.formId,
+					apiAction: this.apiAction,
+					errors: formErrors,
+					fieldErrors
+				},
+				bubbles: true,
+				composed: true,
+				cancelable: true
+			});
+			this.#dispatching = event.detail;
+			let proceed;
+			try {
+				proceed = this.host.dispatchEvent(event);
+			} finally {
+				this.#dispatching = null;
 			}
-			if (errors.errors && isArray(errors.errors)) set(this.#apiErrors, errors.errors, true);
-			if (isString(errors.error)) {
-				set(this.#apiErrors, [errors.error], true);
-				return;
-			}
+			if (!proceed) return;
+			this.#storeApiErrors(event.detail);
+		}
+		/** the live detail of the go-form-failed event currently being dispatched, else null */
+		#dispatching = null;
+		/** Splits a backend error shape into form-level messages and per-field messages keyed by go-field key. */
+		#parseApiErrors(errors) {
+			const formErrors = [];
+			const fieldErrors = {};
+			if (isArray(errors)) return {
+				formErrors: [...errors],
+				fieldErrors
+			};
+			if (errors.errors && isArray(errors.errors)) formErrors.push(...errors.errors);
+			if (isString(errors.error)) return {
+				formErrors: [errors.error],
+				fieldErrors
+			};
+			if (isObject$2(errors.errors)) errors = errors.errors;
+			const fields = this.fields;
 			for (const [key, value] of Object.entries(errors)) {
 				if (key === "full_messages") continue;
 				if (key === "success") continue;
 				if (key === "errors") continue;
-				const field = this.fields.find((f) => f.apiKey === key);
 				const messages = isArray(value) ? value : [value];
-				if (!field) {
-					set(this.#apiErrors, [...get$2(this.#apiErrors), ...messages.map((v) => `${key}: ${v}`)], true);
+				if (key === "base") {
+					formErrors.push(...messages);
 					continue;
 				}
-				field.apiErrors = messages;
+				const field = fields.find((f) => f.apiKey === key);
+				if (!field) {
+					formErrors.push(...messages.map((v) => `${key}: ${v}`));
+					continue;
+				}
+				fieldErrors[field.key] = [...fieldErrors[field.key] ?? [], ...messages];
 			}
+			return {
+				formErrors,
+				fieldErrors
+			};
+		}
+		/**
+		* Normalizes a possibly listener-mutated value into a message list: an array is copied as-is,
+		* a string is wrapped as a single message, anything else (`null`, `undefined`, a number, a
+		* plain object, …) yields no messages — a plain-JS listener writing a bad shape must not throw
+		* or silently spread a string into one-character messages.
+		*/
+		#toMessageList(value) {
+			if (isArray(value)) return [...value];
+			if (isString(value)) return [value];
+			return [];
+		}
+		/** Stores what the (possibly mutated) event detail holds. Unknown field keys fall back to form level. */
+		#storeApiErrors(detail) {
+			const formErrors = this.#toMessageList(detail.errors);
+			const fieldErrors = isObject$2(detail.fieldErrors) ? detail.fieldErrors : {};
+			const fields = this.fields;
+			for (const [key, value] of Object.entries(fieldErrors)) {
+				const messages = this.#toMessageList(value);
+				if (messages.length === 0) continue;
+				const field = fields.find((f) => f.key === key);
+				if (!field) {
+					formErrors.push(...messages.map((v) => `${key}: ${v}`));
+					continue;
+				}
+				field.apiErrors = [...messages];
+			}
+			set(this.#apiErrors, formErrors, true);
 		}
 		validateForm() {
 			this.fields.forEach((f) => this.validateField(f));
@@ -15436,9 +15523,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				f.value = val;
 			});
 		}
-		constructor(formId, form) {
+		constructor(formId, form, host = form) {
 			this.formId = formId;
 			this.form = form;
+			this.host = host;
 		}
 	};
 	var KEY$4 = "go-form-details";
@@ -15467,26 +15555,26 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function Form($$anchor, $$props) {
 		push($$props, true);
 		let formId = prop($$props, "formId", 7), custom = prop($$props, "custom", 7), apiAction = prop($$props, "apiAction", 7), recordId = prop($$props, "recordId", 7);
-		const details = new FormDetails(formId(), $$props.$$host);
+		const details = new FormDetails(formId(), $$props.$$host, $$props.$$host);
 		setDetails$1($$props.$$host, details);
 		async function handleSubmit(event) {
 			event.preventDefault();
 			event.stopPropagation();
 			if (details.isSubmitting) return;
+			details.apiErrors = {};
 			details.validateForm();
 			details?.form?.dispatchEvent(new Event("go-after-validation", event));
 			if (!details.isValid) return;
-			details.apiErrors = {};
 			details.successMessage = void 0;
 			details?.form?.dispatchEvent(new Event("go-submit", event));
-			const proceed = $$props.$$host.dispatchEvent(new Event("submit", {
+			const options = Forms.getFormOptions(formId());
+			const actionName = apiAction() || options?.apiAction;
+			details.apiAction = actionName;
+			if (!$$props.$$host.dispatchEvent(new Event("submit", {
 				bubbles: true,
 				composed: true,
 				cancelable: true
-			}));
-			const options = Forms.getFormOptions(formId());
-			const actionName = apiAction() || options?.apiAction;
-			if (!proceed || !actionName) return;
+			})) || !actionName) return;
 			const action = getApiAction(actionName);
 			if (!action) return;
 			if (action.requiresRecordId && recordId() == null) {

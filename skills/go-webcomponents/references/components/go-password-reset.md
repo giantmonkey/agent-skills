@@ -41,11 +41,12 @@ Without `redirect-url` the shop's configured password-reset page is used — if 
 
 ## Events
 
-| Event        | Description                           | `detail` | bubbles |
-| ------------ | ------------------------------------- | -------- | ------- |
-| `go-success` | Fires after the reset e-mail was sent | —        | yes     |
+| Event            | Description                                                                                                                                                                                                  | `detail`                                     | bubbles | Since        |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- | ------- | ------------ |
+| `go-success`     | Fires after the reset e-mail was sent                                                                                                                                                                        | —                                            | yes     |              |
+| `go-form-failed` | Fires when the API rejects the request, before the errors render inline. Cancelable; bubbles from the inner `<go-form>` through `<go-password-reset>` — see "Handling API errors" in the Forms documentation | `{ formId, apiAction, errors, fieldErrors }` | yes     | `v4.24.0` |
 
-A failed request emits no event; the API errors are shown inline through the form's feedback area.
+For this component `detail.formId` is `passwordReset` and `detail.apiAction` is `undefined`. The reset endpoint reports failures as form-level messages, so expect them in `detail.errors` rather than `detail.fieldErrors`. Use the event to react, rewrite a message, or render the error yourself.
 
 ## Styling
 

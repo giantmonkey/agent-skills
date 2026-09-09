@@ -40,11 +40,20 @@ Custom layout — pass `custom` and provide your own markup. The component still
 
 ## Events
 
-| Event        | Description                                             | `detail` | bubbles |
-| ------------ | ------------------------------------------------------- | -------- | ------- |
-| `go-success` | The registration succeeded and the account was created. | none     | yes     |
+| Event            | Description                                                                                                                                                                                                                                                                                      | `detail`                                                                                                | bubbles | Since        |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- | ------- | ------------ |
+| `go-success`     | The registration succeeded and the account was created.                                                                                                                                                                                                                                          | none                                                                                                    | yes     |              |
+| `go-form-failed` | Fires when the API rejects the registration, **before** the errors render. Cancelable — `preventDefault()` renders nothing; `detail` is live, so edit `errors` / `fieldErrors` to change what renders. Bubbles from the inner `<go-form>` — see "Handling API errors" in the Forms documentation | `{ formId: 'signUp', apiAction: undefined, errors: string[], fieldErrors: Record<fieldKey, string[]> }` | yes     | `v4.24.0` |
 
-A failed registration does **not** fire `go-success` — field errors are surfaced through `<go-errors-feedback>` instead.
+A failed registration does **not** fire `go-success`. Form-level messages render in `<go-errors-feedback>` and field-level messages inline on the matching `<go-field>` — `detail.fieldErrors` is keyed by the `<go-field key="…">` value (e.g. `newPassword`, `confirmEmail`), not by the backend field name. Listen on `<go-sign-up>` to react, rewrite a message, or cancel the event and render the errors yourself:
+
+```js
+document.querySelector('go-sign-up').addEventListener('go-form-failed', e => {
+  if (e.detail.fieldErrors.email?.length) {
+    e.detail.fieldErrors.email = ['This email already has an account — sign in instead.']
+  }
+})
+```
 
 ## Fields
 

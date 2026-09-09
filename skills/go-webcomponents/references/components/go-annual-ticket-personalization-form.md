@@ -78,7 +78,15 @@ until every required photo is present.
 
 ## Events
 
-These components emit no custom events. The form submits when the nested `<go-submit>` button fires
+`<go-annual-ticket-personalization>` emits no custom events.
+
+`<go-annual-ticket-personalization-form>`:
+
+| Event            | Description                                                                                                                                                                                                                                                       | `detail`                                                                                        | bubbles | Since        |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------- | ------------ |
+| `go-form-failed` | Fires when a photo upload or the final submit is rejected, **before** the message renders in `<go-errors-feedback>`. Cancelable; `detail` is live — bubbles from the outer `<go-form>` through this element. See "Handling API errors" in the Forms documentation | `{ formId: 'ticketPersonalization', apiAction: undefined, errors: [message], fieldErrors: {} }` | yes     | `v4.24.0` |
+
+The form submits when the nested `<go-submit>` button fires
 its built-in submit (see the `<go-form>` component). On success it runs the
 optional `forms.personalization.beforeSubmit(data)` hook, then navigates to the URL returned by
 `urls.annualTicketPersonalizationFormSubmit(token)` (both set via `go.config`).

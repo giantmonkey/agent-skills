@@ -24,7 +24,20 @@ This component takes no attributes.
 
 ## Events
 
-This component emits no custom events.
+| Event            | Description                                                                                                                                                                                                                                                      | `detail`                                                                     | bubbles | Since        |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------- | ------------ |
+| `go-form-failed` | Fires when the password change is rejected, **before** the errors render. Cancelable: `preventDefault()` renders nothing; edit `detail.errors` / `detail.fieldErrors` to change what renders. Bubbles from the inner `<go-form>` through `<go-profile-password>` | `{ formId: 'passwordResetForm', apiAction: undefined, errors, fieldErrors }` | yes     | `v4.24.0` |
+
+See "Handling API errors" in the Forms documentation to react, rewrite a message, or render the error yourself.
+
+The event also fires when nobody is signed in — no request is sent, but the "Not signed in" message goes through the same path, so `detail.errors` carries it. In a page-level listener, match this form on `detail.formId === 'passwordResetForm'`; `detail.apiAction` is `undefined` because the component submits on its own.
+
+```js
+document.addEventListener('go-form-failed', e => {
+  if (e.detail.formId !== 'passwordResetForm') return
+  console.log(e.detail.errors, e.detail.fieldErrors)
+})
+```
 
 ## Styling
 
