@@ -4,6 +4,28 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.26.0
+
+_Released 2026-09-10_
+
+Checkbox labels now render HTML, so the AGB consent checkbox can link to your terms page
+straight from the shop translation.
+
+## Changed (behavior)
+
+- `<go-field>` labels of `checkbox` fields now render as sanitized HTML instead of plain text.
+  The built-in `acceptTerms` checkbox (`<go-checkout-form>`, `<go-checkout-guest>`,
+  `<go-checkout-user>`, `<go-sign-up>`) reads the `user.registration.form.accept` translation,
+  so that translation can carry the link to your terms page directly, e.g.
+  `Ich akzeptiere die <a href="https://example.org/agb" target="_blank">AGB</a>.` Only inline
+  text markup and links are kept (`a`, `b`, `strong`, `i`, `em`, `u`, `span`, `br`; attributes
+  `href`, `target`, `rel`, `title`, `class`); scripts, event handlers, and block elements are
+  stripped. A translation without markup renders exactly as before, and a translation that
+  already contained markup no longer shows the tags as literal text. Labels of every other
+  field type are unchanged.
+
+---
+
 # v4.25.0
 
 _Released 2026-09-09_

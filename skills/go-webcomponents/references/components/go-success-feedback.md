@@ -131,12 +131,12 @@ _clear_ a previously saved optional field — use the JS escape hatch for that.
 
 ## Events
 
-| Event                 | Description                                                                                                                                                                                                                                                                                                                                                                             | `detail`                                                                            | bubbles | Since        |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------- | ------------ |
-| `go-after-validation` | Fires on every submit attempt, right after validation runs — valid or not                                                                                                                                                                                                                                                                                                               | —                                                                                   | yes     | `v1.21.0`    |
-| `go-submit`           | Fires when a submit passes validation, before any built-in API call                                                                                                                                                                                                                                                                                                                     | —                                                                                   | yes     |              |
-| `submit`              | Fires on the `<go-form>` element when a submit passes validation. Cancelable — `preventDefault()` suppresses the built-in call of a self-submitting form                                                                                                                                                                                                                                | —                                                                                   | yes     |              |
-| `go-success`          | Fires on the `<go-form>` element after a self-submitting form's call succeeds                                                                                                                                                                                                                                                                                                           | —                                                                                   | yes     |              |
+| Event                 | Description                                                                                                                                                                                                                                                                                                                                                                             | `detail`                                                                            | bubbles | Since     |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------- | --------- |
+| `go-after-validation` | Fires on every submit attempt, right after validation runs — valid or not                                                                                                                                                                                                                                                                                                               | —                                                                                   | yes     | `v1.21.0` |
+| `go-submit`           | Fires when a submit passes validation, before any built-in API call                                                                                                                                                                                                                                                                                                                     | —                                                                                   | yes     |           |
+| `submit`              | Fires on the `<go-form>` element when a submit passes validation. Cancelable — `preventDefault()` suppresses the built-in call of a self-submitting form                                                                                                                                                                                                                                | —                                                                                   | yes     |           |
+| `go-success`          | Fires on the `<go-form>` element after a self-submitting form's call succeeds                                                                                                                                                                                                                                                                                                           | —                                                                                   | yes     |           |
 | `go-form-failed`      | Fires on the `<go-form>` element when a submit does not succeed — the API rejected it, or (self-submitting forms) the request itself failed — **before** the messages render. Cancelable: `preventDefault()` renders nothing. `detail` is live — edit `errors` / `fieldErrors` to change what renders. Bubbles through wrapper elements such as `<go-checkout-form>` and `<go-sign-in>` | `{ formId, apiAction?, errors: string[], fieldErrors: Record<fieldKey, string[]> }` | yes     | `v4.24.0` |
 
 ## Handling API errors
@@ -260,7 +260,7 @@ Register new fields via `go.config({ fields: { … } })` — an object keyed by 
 
 - `key` (string, required): Identifier referenced by `<go-field key="...">`.
 - `type` (`FieldType`, required): One of `input`, `text`, `email`, `password`, `search`, `tel`, `url`, `number`, `checkbox`, `select`, `radio`, `textarea`, `date`, `file`, `paymentMode`. `file` values are uploaded separately and excluded from the submitted form data. _(`file` since `v1.57.0`)_
-- `label` (string, required): Human-readable label; sanitized before render.
+- `label` (string, required): Human-readable label — a translation key, or literal text. Rendered as plain text, except for `checkbox` fields whose label renders as sanitized HTML (see below). _(Checkbox HTML since `v4.26.0`)_
 - `apiKey` (string): Payload key exposed via `FormDetails.formData`.
 - `placeholder` (string): Placeholder text.
 - `description` (string): Helper text shown beneath the input.
@@ -287,6 +287,18 @@ go.config({
 ```
 
 The toggle renders as an unstyled `<button type="button" class="go-password-toggle">` directly after the input. Clicking it switches the input between hidden and plain text; the entered value is kept. It follows the toggle-button pattern: the label stays `Show password` (the `forms.password.show` key) while `aria-pressed` reports whether the password is currently revealed, and `aria-controls` links the button to its input. Style it via `.go-password-toggle` — for example into an eye icon.
+
+### HTML in checkbox labels
+
+Since `v4.26.0`
+
+A `checkbox` label is usually a consent sentence — the built-in `acceptTerms` field renders the `user.registration.form.accept` translation — and such a sentence often needs a link to the terms page inside it. Checkbox labels therefore render their translation as sanitized HTML. Put the markup straight into the translation in gomus (or into a custom field's `label`):
+
+```html
+Ich habe die <a href="https://example.org/agb" target="_blank">AGB</a> gelesen und stimme ihnen zu.
+```
+
+Only inline text markup survives sanitization: `a`, `b`, `strong`, `i`, `em`, `u`, `span`, `br`, with the attributes `href`, `target`, `rel`, `title`, and `class`. Everything else — block elements, images, `<script>`, inline event handlers — is stripped. Labels of every other field type keep rendering markup as literal text.
 
 ## Built-in form definitions
 
