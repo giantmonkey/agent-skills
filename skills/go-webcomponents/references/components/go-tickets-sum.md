@@ -65,17 +65,18 @@ Event prices for a single event date:
 
 `<go-ticket-segment>`:
 
-| Attribute          | Type    | Default   | Description                                                                                  | Since     |
-| ------------------ | ------- | --------- | -------------------------------------------------------------------------------------------- | --------- |
-| `filters`          | string  | inherited | Comma-separated filter list for this segment; falls back to the parent selection's `filters` |           |
-| `date-id`          | number  | —         | Event date to load prices for — required by the `event:price` filter                         | `v1.21.0` |
-| `museum-ids`       | string  | inherited | Comma-separated museum IDs; overrides the parent selection's                                 | `v1.34.0` |
-| `ticket-group-ids` | string  | inherited | Comma-separated ticket-group IDs; overrides the parent selection's                           | `v1.34.0` |
-| `language-ids`     | string  | —         | Comma-separated language IDs (`events:price`)                                                | `v1.34.0` |
-| `catch-word-ids`   | string  | —         | Comma-separated catchword IDs (`events:price`)                                               | `v1.34.0` |
-| `query`            | string  | —         | Only keep tickets whose title contains this text (`events:price`)                            |           |
-| `limit`            | number  | `30`      | Maximum number of event dates fetched (`events:price`)                                       | `v1.34.0` |
-| `with-content`     | boolean | off       | Fetch extra ticket content and render per-ticket info buttons — see below                    | `v3.11.0` |
+| Attribute          | Type    | Default   | Description                                                                                     | Since        |
+| ------------------ | ------- | --------- | ----------------------------------------------------------------------------------------------- | ------------ |
+| `filters`          | string  | inherited | Comma-separated filter list for this segment; falls back to the parent selection's `filters`    |              |
+| `date-id`          | number  | —         | Event date to load prices for — required by the `event:price` filter                            | `v1.21.0`    |
+| `museum-ids`       | string  | inherited | Comma-separated museum IDs; overrides the parent selection's                                    | `v1.34.0`    |
+| `ticket-group-ids` | string  | inherited | Comma-separated ticket-group IDs; overrides the parent selection's                              | `v1.34.0`    |
+| `language-ids`     | string  | —         | Comma-separated language IDs (`events:price`)                                                   | `v1.34.0`    |
+| `catch-word-ids`   | string  | —         | Comma-separated catchword IDs (`events:price`)                                                  | `v1.34.0`    |
+| `query`            | string  | —         | Only keep tickets whose title contains this text (`events:price`)                               |              |
+| `limit`            | number  | `30`      | Maximum number of event dates fetched (`events:price`)                                          | `v1.34.0`    |
+| `with-content`     | boolean | off       | Fetch extra ticket content and render per-ticket info buttons — see below                       | `v3.11.0`    |
+| `order-by`         | string  | —         | Sort products by `title`, `price_cents` or `value_cents`; append `:desc` to reverse — see below | `v4.27.0` |
 
 The segment reloads its tickets automatically whenever one of these attributes — or the parent selection's date or timeslot — changes.
 
@@ -150,6 +151,38 @@ Since `v1.9.0`
 The `go-ticket-segment` component loads one group of tickets, driven by its `filters` (inherited from the parent `go-ticket-selection` when not set). A `go-tickets` can contain multiple `go-ticket-segment` components, each with its own filters. The segment renders nothing by itself — add a `go-ticket-segment-body` child to show the ticket rows.
 
 Which filters exist, what each one loads, and which attributes it needs — on the selection or on the segment — is documented per filter under **Components / Ticket Selection / Filters**. The attributes table above lists every segment-level attribute.
+
+#### `order-by` (sort the product list)
+
+Since `v4.27.0`
+
+Sorts the segment's products once all its filters have loaded. Value: `<field>` or
+`<field>:desc` (ascending by default, case-insensitive). Without `order-by` the list
+keeps the order its filters loaded it in — for `ticket:*` filters that is the
+backoffice shop order, which `order-by` replaces.
+
+| Field         | Sorts by                   | Available with filters |
+| ------------- | -------------------------- | ---------------------- |
+| `title`       | product name, alphabetical | all                    |
+| `price_cents` | price the buyer pays       | all                    |
+| `value_cents` | voucher face value         | `coupon`               |
+
+Products without the field (e.g. `value_cents` in a segment mixing coupons and
+tickets) are listed last. Any other field or direction is ignored with a console
+warning, and the list keeps its default order.
+
+```html
+<go-ticket-selection filters="coupon">
+  <go-tickets>
+    <go-ticket-segment filters="coupon" order-by="price_cents">
+      <go-ticket-segment-body></go-ticket-segment-body>
+    </go-ticket-segment>
+  </go-tickets>
+</go-ticket-selection>
+
+<!-- most expensive first -->
+<go-ticket-segment filters="coupon" order-by="price_cents:desc"></go-ticket-segment>
+```
 
 #### `with-content` (per-ticket info button)
 

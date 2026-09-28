@@ -4,6 +4,36 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.27.0
+
+_Released 2026-09-28_
+
+Ticket segments can now sort the products they load, so a coupon or ticket list comes out in a
+deterministic order you choose instead of the API's.
+
+## New
+
+- `<go-ticket-segment>` gains an `order-by` attribute — sort the segment's loaded products by
+  `title`, `price_cents` or `value_cents` (coupons only), ascending by default or descending
+  with a `:desc` suffix (e.g. `order-by="value_cents:desc"`). The sort runs once after every
+  filter of the segment has resolved, so a multi-filter segment gets a single stable order, and
+  it re-applies whenever the attribute changes. Products missing the field are listed last.
+  Without `order-by` nothing changes — the list keeps the order the filters loaded it in (for
+  `ticket:*` filters that is the backoffice shop order, which `order-by` overrides). Any other
+  field or direction is ignored with a console warning.
+
+  ```html
+  <go-ticket-selection filters="coupon">
+    <go-tickets>
+      <go-ticket-segment filters="coupon" order-by="price_cents">
+        <go-ticket-segment-body></go-ticket-segment-body>
+      </go-ticket-segment>
+    </go-tickets>
+  </go-ticket-selection>
+  ```
+
+---
+
 # v4.26.0
 
 _Released 2026-09-10_

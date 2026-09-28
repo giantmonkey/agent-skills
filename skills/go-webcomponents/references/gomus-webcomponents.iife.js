@@ -36982,6 +36982,33 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}));
 		loadPickerQuotas(tsd, quotas);
 	}
+	/**
+	* Sort a segment's preCart items in place — the engine behind `<go-ticket-segment order-by="field[:desc]">`.
+	* Only `title`, `price_cents` and `value_cents` are sortable (the public contract; see the segment docs).
+	* Numbers compare numerically, `title` locale-aware; products missing the field go last.
+	* An unsupported field or direction leaves the list untouched and logs a console warning.
+	*/
+	function sortCartItems(items, orderBy) {
+		if (!orderBy) return;
+		const sortable = [
+			"title",
+			"price_cents",
+			"value_cents"
+		];
+		const [field, direction = "asc"] = orderBy.split(":").map((s) => s.trim().toLowerCase());
+		if (!sortable.includes(field) || direction !== "asc" && direction !== "desc") {
+			console.warn(`(go-ticket-segment order-by) unsupported '${orderBy}' — use ${sortable.join(", ")}, optionally with ':desc'`);
+			return;
+		}
+		const sign = direction === "desc" ? -1 : 1;
+		const valueOf = (item) => item.product[field];
+		items.sort((a, b) => {
+			const x = valueOf(a);
+			const y = valueOf(b);
+			if (x == null || y == null) return x == null ? y == null ? 0 : 1 : -1;
+			return sign * (typeof x === "number" && typeof y === "number" ? x - y : String(x).localeCompare(String(y)));
+		});
+	}
 	//#endregion
 	//#region src/components/ticketSelection/filters/ticket/timeslot.ts
 	async function loadTimeslotTickets(filters, selectedTime) {
@@ -39051,6 +39078,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		set query(value) {
 			set(this.#query, value, true);
 		}
+		#orderBy = /* @__PURE__ */ state();
+		get orderBy() {
+			return get$2(this.#orderBy);
+		}
+		set orderBy(value) {
+			set(this.#orderBy, value, true);
+		}
 		#ticketGroupIds = /* @__PURE__ */ state(proxy([]));
 		get ticketGroupIds() {
 			return get$2(this.#ticketGroupIds);
@@ -39107,6 +39141,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			this.preCart = createCart();
 			const filters = this.effectiveFilters.filter((f) => f !== "custom");
 			await Promise.all(filters.map((f) => getFilter(f).loadProducts(this)));
+			sortCartItems(this.preCart.items, this.orderBy);
 		}
 	};
 	var KEY = "go-ticket-segment";
@@ -39116,7 +39151,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#region src/components/ticketSelection/subcomponents/tickets/subcomponents/segment/TicketSegment.svelte
 	function TicketSegment($$anchor, $$props) {
 		push($$props, true);
-		const filters = prop($$props, "filters", 7), dateId = prop($$props, "dateId", 7), query = prop($$props, "query", 7), limit = prop($$props, "limit", 7), ticketGroupIds = prop($$props, "ticketGroupIds", 7), languageIds = prop($$props, "languageIds", 7), catchWordIds = prop($$props, "catchWordIds", 7), museumIds = prop($$props, "museumIds", 7), withContent = prop($$props, "withContent", 7);
+		const filters = prop($$props, "filters", 7), dateId = prop($$props, "dateId", 7), query = prop($$props, "query", 7), limit = prop($$props, "limit", 7), ticketGroupIds = prop($$props, "ticketGroupIds", 7), languageIds = prop($$props, "languageIds", 7), catchWordIds = prop($$props, "catchWordIds", 7), museumIds = prop($$props, "museumIds", 7), orderBy = prop($$props, "orderBy", 7), withContent = prop($$props, "withContent", 7);
 		function parseFilters(value) {
 			if (!value) return void 0;
 			const out = value.split(",").map((s) => s.trim()).filter(Boolean);
@@ -39135,6 +39170,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			details.languageIds = parseIds(languageIds());
 			details.catchWordIds = parseIds(catchWordIds());
 			details.museumIds = parseIds(museumIds());
+			details.orderBy = orderBy() || void 0;
 			details.withContent = Boolean(withContent());
 		});
 		user_effect(() => {
@@ -39146,6 +39182,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			details.catchWordIds;
 			details.query;
 			details.limit;
+			details.orderBy;
 			details.withContent;
 			tsd?.filters;
 			tsd?.selectedTimeslot;
@@ -39222,6 +39259,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				museumIds($$value);
 				flushSync();
 			},
+			get orderBy() {
+				return orderBy();
+			},
+			set orderBy($$value) {
+				orderBy($$value);
+				flushSync();
+			},
 			get withContent() {
 				return withContent();
 			},
@@ -39269,6 +39313,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		},
 		museumIds: {
 			attribute: "museum-ids",
+			reflect: true,
+			type: "String"
+		},
+		orderBy: {
+			attribute: "order-by",
 			reflect: true,
 			type: "String"
 		},
