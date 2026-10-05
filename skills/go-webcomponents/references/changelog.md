@@ -4,6 +4,23 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.27.1
+
+_Released 2026-10-05_
+
+Day tickets that cannot be booked on the selected date are no longer offered, so checkout no
+longer fails on them.
+
+## Fixed
+
+- With the `ticket:day` or `event:admission:day` filter, a day ticket that has no slot on the
+  selected date is now hidden. Before, it was still listed, most often after you switched from
+  a date where it did have a slot. If a visitor added it, the cart line had no time and
+  checkout failed. `events:admission:day` is not affected: there such a ticket still uses the
+  event date's start time.
+
+---
+
 # v4.27.0
 
 _Released 2026-09-28_

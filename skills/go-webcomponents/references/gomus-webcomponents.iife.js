@@ -11880,12 +11880,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	* Day tickets (TC-04): each day quota keys its capacity at its OWN first-entry time, so
 	* capacity keys differ across quotas. The day 'time' must be derived per ticket — the
 	* first positive key of the ticket's own total_capacities — never from one global quota
-	* key. A ticket with capacity keys that are all zero is sold out and dropped; a ticket
-	* with no keys at all (no quota) is kept and gets `fallbackTime`.
+	* key. A ticket with capacity keys that are all zero is sold out and dropped. A ticket
+	* with no keys at all (no quota) is kept only when `fallbackTime` is given
+	* (events:admission:day, which uses the date's start time); otherwise it has no slot
+	* that date and is dropped (#179).
 	*/
 	function initUIDayTickets(tickets, fallbackTime) {
 		const ownDayTime = (t) => Object.keys(t.total_capacities ?? {}).find((key) => (t.total_capacities?.[key] ?? 0) > 0);
-		return sort(Object.values(tickets).filter((t) => ownDayTime(t) || Object.keys(t.total_capacities ?? {}).length === 0).map((t) => createUITicket(t, { selectedTime: ownDayTime(t) ?? fallbackTime })), (f) => f.shop_order);
+		return sort(Object.values(tickets).filter((t) => ownDayTime(t) || fallbackTime && Object.keys(t.total_capacities ?? {}).length === 0).map((t) => createUITicket(t, { selectedTime: ownDayTime(t) ?? fallbackTime })), (f) => f.shop_order);
 	}
 	function filterAvailabletickets(tickets, selectedTime = "") {
 		let available = Object.entries(tickets);
