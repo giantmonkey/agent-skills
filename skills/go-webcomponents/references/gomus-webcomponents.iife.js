@@ -12088,11 +12088,32 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	};
 	//#endregion
 	//#region src/lib/models/capacity/calculators/unlimited.ts
+	/** The cart line an item belongs to: a display row points at its base line, a real line is its own. */
+	var lineUuid = (item) => item.display?.reference_uuid ?? item.uuid;
+	/**
+	* Quantity the cart already holds on the line `item` lands on. `max_persons` caps one order item,
+	* and `cart.addItem` merges an add into the existing line with the same uuid — so a repeated add
+	* must be sized against what that line already carries. Skips `item` itself (the same identity
+	* self-exclusion as `feedQuotaPrecart`), so a line sized from its own cart — the cart stepper —
+	* never counts against itself, while coupon-split display rows of one base line count each
+	* other's share.
+	*/
+	function quantityOnLine(cart, item) {
+		const uuid = lineUuid(item);
+		return sum(cart.items.filter((i) => i !== item && lineUuid(i) === uuid), (i) => i.quantity ?? 0);
+	}
 	var maxQuantity_Unlimited = function(manager, cart, item, preCart) {
 		if (manager.capacityPolicy(item) !== "unlimited") throw new Error("(getMaxQuantityUnlimited) impossible");
+		const product = item.product;
+		if (!isUITicket(product)) return {
+			max: 100,
+			min: 0,
+			unavailable: false,
+			bookedOut: false
+		};
 		return {
-			max: item.product.max_persons ?? 100,
-			min: item.product.min_persons ?? 0,
+			max: Math.max(0, (product.max_persons ?? 100) - quantityOnLine(cart, item)),
+			min: product.min_persons ?? 0,
 			unavailable: false,
 			bookedOut: false
 		};

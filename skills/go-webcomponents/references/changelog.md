@@ -4,6 +4,24 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.28.1
+
+_Released 2026-10-08_
+
+Annual and flex ticket quantities now count what the cart already holds of that ticket.
+
+## Changed (behavior)
+
+- `ticket:annual` and `ticket:flex`: the quantity stepper in `<go-ticket-segment>` now offers
+  only the ticket's maximum persons minus what the cart already holds of that ticket, and
+  `go.cart.addItem()` with either filter rejects (`only N left`) a quantity that would take the
+  cart line above the maximum. Before, each selection or call was checked on its own, so repeated
+  adds merged into one cart line above the maximum and gomus refused the order at checkout. The
+  quantity stepper in `<go-cart>` still goes up to the maximum, and bundle tickets (Mantelticket)
+  are not affected: each add becomes its own cart line.
+
+---
+
 # v4.28.0
 
 _Released 2026-10-08_
@@ -44,6 +62,7 @@ offering them.
   ```html
   <!-- before: flex tickets showed up in the day list as dated day tickets -->
   <go-ticket-selection filters="ticket:day">
+    <go-calendar></go-calendar>
     <go-tickets>
       <go-ticket-segment filters="ticket:day"><go-ticket-segment-body></go-ticket-segment-body></go-ticket-segment>
     </go-tickets>
@@ -51,6 +70,7 @@ offering them.
 
   <!-- after: sell them in their own segment -->
   <go-ticket-selection filters="ticket:day,ticket:flex">
+    <go-calendar></go-calendar>
     <go-tickets>
       <go-ticket-segment filters="ticket:day"><go-ticket-segment-body></go-ticket-segment-body></go-ticket-segment>
       <go-ticket-segment filters="ticket:flex"><go-ticket-segment-body></go-ticket-segment-body></go-ticket-segment>

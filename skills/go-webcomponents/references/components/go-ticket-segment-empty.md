@@ -129,6 +129,14 @@ minimum party size, and `−` at that minimum returns to `0`. Set
 `go.config({ quantityStepper: false })` to render the legacy
 `.go-quantity-select` `<select>` instead. _(Since `v4.0.0`)_
 
+`+` is disabled once the ticket's remaining availability is reached.
+
+For `ticket:annual` and `ticket:flex` that limit is the ticket's maximum persons minus what the
+cart already holds of that ticket, because repeated adds merge into one cart line. It updates as
+soon as the cart changes. Bundle tickets (Mantelticket), annual or flex, are the exception: each
+add becomes its own cart line, so they always offer the full maximum. The line's own stepper in
+`<go-cart>` isn't reduced either: it goes up to the full maximum. _(Since `v4.28.1`)_
+
 ## Nesting
 
 All components on this page must be placed inside `<go-ticket-selection>`. `<go-ticket-segment-body>`, `<go-ticket-segment-sum>` and `<go-ticket-segment-empty>` additionally belong inside a `<go-ticket-segment>`.

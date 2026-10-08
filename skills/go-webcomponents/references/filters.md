@@ -129,6 +129,8 @@ Sell annual tickets — no date or time picker, tickets are shown directly.
 
 **Renders:** `<go-tickets>`.
 
+The quantity is bounded only by the ticket's minimum and maximum persons — no quota or timeslot capacity applies. The maximum covers the whole cart line for that ticket, so the quantity stepper in `<go-ticket-segment>` offers only what's left after the quantity already in the cart. In `<go-cart>`, the line's own stepper still goes up to the full maximum. Bundle tickets (Mantelticket) are the exception: each add becomes its own cart line, so they always offer the full maximum.
+
 ## Example
 
 ```html
@@ -146,7 +148,7 @@ Sell annual tickets — no date or time picker, tickets are shown directly.
 
 Since `v4.14.0`
 
-Add an annual ticket straight to the cart — no date or time needed. Unknown or non-bookable ticket IDs and non-positive quantities reject:
+Add an annual ticket straight to the cart — no date or time needed. Unknown or non-bookable ticket IDs and non-positive quantities reject. Repeated calls for the same ticket merge into one cart line, and that line can't go above the ticket's maximum persons: a call whose quantity would push it past the maximum rejects with `only N left`, and the cart line stays as it was. A bundle ticket (Mantelticket) never merges — each call adds its own line, checked against the full maximum:
 
 ```js
 const uuid = await go.cart.addItem({
