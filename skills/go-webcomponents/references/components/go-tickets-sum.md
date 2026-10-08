@@ -65,17 +65,17 @@ Event prices for a single event date:
 
 `<go-ticket-segment>`:
 
-| Attribute          | Type    | Default   | Description                                                                                     | Since        |
-| ------------------ | ------- | --------- | ----------------------------------------------------------------------------------------------- | ------------ |
-| `filters`          | string  | inherited | Comma-separated filter list for this segment; falls back to the parent selection's `filters`    |              |
-| `date-id`          | number  | —         | Event date to load prices for — required by the `event:price` filter                            | `v1.21.0`    |
-| `museum-ids`       | string  | inherited | Comma-separated museum IDs; overrides the parent selection's                                    | `v1.34.0`    |
-| `ticket-group-ids` | string  | inherited | Comma-separated ticket-group IDs; overrides the parent selection's                              | `v1.34.0`    |
-| `language-ids`     | string  | —         | Comma-separated language IDs (`events:price`)                                                   | `v1.34.0`    |
-| `catch-word-ids`   | string  | —         | Comma-separated catchword IDs (`events:price`)                                                  | `v1.34.0`    |
-| `query`            | string  | —         | Only keep tickets whose title contains this text (`events:price`)                               |              |
-| `limit`            | number  | `30`      | Maximum number of event dates fetched (`events:price`)                                          | `v1.34.0`    |
-| `with-content`     | boolean | off       | Fetch extra ticket content and render per-ticket info buttons — see below                       | `v3.11.0`    |
+| Attribute          | Type    | Default   | Description                                                                                     | Since     |
+| ------------------ | ------- | --------- | ----------------------------------------------------------------------------------------------- | --------- |
+| `filters`          | string  | inherited | Comma-separated filter list for this segment; falls back to the parent selection's `filters`    |           |
+| `date-id`          | number  | —         | Event date to load prices for — required by the `event:price` filter                            | `v1.21.0` |
+| `museum-ids`       | string  | inherited | Comma-separated museum IDs; overrides the parent selection's                                    | `v1.34.0` |
+| `ticket-group-ids` | string  | inherited | Comma-separated ticket-group IDs; overrides the parent selection's                              | `v1.34.0` |
+| `language-ids`     | string  | —         | Comma-separated language IDs (`events:price`)                                                   | `v1.34.0` |
+| `catch-word-ids`   | string  | —         | Comma-separated catchword IDs (`events:price`)                                                  | `v1.34.0` |
+| `query`            | string  | —         | Only keep tickets whose title contains this text (`events:price`)                               |           |
+| `limit`            | number  | `30`      | Maximum number of event dates fetched (`events:price`)                                          | `v1.34.0` |
+| `with-content`     | boolean | off       | Fetch extra ticket content and render per-ticket info buttons — see below                       | `v3.11.0` |
 | `order-by`         | string  | —         | Sort products by `title`, `price_cents` or `value_cents`; append `:desc` to reverse — see below | `v4.27.0` |
 
 The segment reloads its tickets automatically whenever one of these attributes — or the parent selection's date or timeslot — changes.
@@ -196,7 +196,7 @@ a panel showing the **translated** reduction reason — the value is an i18n key
 resolved in your active locale, never shown raw.
 
 Works for any segment whose filter loads standard tickets — the `ticket:*` filters
-(`ticket:timeslot`, `ticket:day`, `ticket:annual`) and the event-admission filters
+(`ticket:timeslot`, `ticket:day`, `ticket:annual`, and `ticket:flex` _(Since `v4.28.0`)_) and the event-admission filters
 (`event:admission`, `event:admission:day`, `event:admission:timeslot`, and their
 `events:` multi-date variants). Not supported for `event:price` / `events:price`:
 those are priced event tickets and carry no content.

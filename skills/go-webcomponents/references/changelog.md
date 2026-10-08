@@ -4,6 +4,67 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.28.0
+
+_Released 2026-10-08_
+
+You can now sell flex tickets (tickets with _Flex Ticket_ enabled in gomus, booked without a
+date or entry time) with the new `ticket:flex` filter. The dated day-ticket filters stop
+offering them.
+
+## New
+
+- `ticket:flex` filter for `<go-ticket-selection>` / `<go-ticket-segment>` sells flex tickets
+  directly, with no `<go-calendar>` and no timeslots. The quantity is limited only by the
+  ticket's minimum and maximum persons. No quota or timeslot capacity applies.
+
+  ```html
+  <go-ticket-selection filters="ticket:flex">
+    <go-tickets>
+      <go-ticket-segment filters="ticket:flex">
+        <go-ticket-segment-body></go-ticket-segment-body>
+      </go-ticket-segment>
+    </go-tickets>
+    <go-add-to-cart-button></go-add-to-cart-button>
+  </go-ticket-selection>
+  ```
+
+- `go.cart.addItem({ filter: 'ticket:flex', id, quantity })` adds a flex ticket from a script,
+  with no `date` or `time`. It rejects unknown or non-bookable ticket IDs, and quantities above
+  the ticket's maximum persons.
+
+## Changed (behavior)
+
+- `ticket:day`, `event:admission`, `event:admission:day`, `events:admission` and
+  `events:admission:day` no longer list flex tickets, and flex tickets no longer make a date
+  look available in the day-ticket `<go-calendar>`. `go.cart.addItem({ filter: 'ticket:day', … })`
+  now rejects a flex ticket ID. Before, a flex ticket was offered and sold as a dated day ticket.
+  Use `ticket:flex` to sell these tickets:
+
+  ```html
+  <!-- before: flex tickets showed up in the day list as dated day tickets -->
+  <go-ticket-selection filters="ticket:day">
+    <go-tickets>
+      <go-ticket-segment filters="ticket:day"><go-ticket-segment-body></go-ticket-segment-body></go-ticket-segment>
+    </go-tickets>
+  </go-ticket-selection>
+
+  <!-- after: sell them in their own segment -->
+  <go-ticket-selection filters="ticket:day,ticket:flex">
+    <go-tickets>
+      <go-ticket-segment filters="ticket:day"><go-ticket-segment-body></go-ticket-segment-body></go-ticket-segment>
+      <go-ticket-segment filters="ticket:flex"><go-ticket-segment-body></go-ticket-segment-body></go-ticket-segment>
+    </go-tickets>
+  </go-ticket-selection>
+  ```
+
+## Fixed
+
+- `<go-order>` no longer fails on a flex ticket sale, which has no start time. Before, it tried
+  to format the missing date. The row now shows no date and no iCal link.
+
+---
+
 # v4.27.1
 
 _Released 2026-10-05_

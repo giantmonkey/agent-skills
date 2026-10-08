@@ -11864,7 +11864,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			...apiTicket,
 			selectedTime: options?.selectedTime ?? "",
 			type: "Ticket",
-			subtype: {
+			subtype: apiTicket.ticket_type === "normal" && apiTicket.free_timing ? "flex" : {
 				time_slot: "timeslot",
 				normal: "day",
 				annual: "annual"
@@ -12757,7 +12757,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 							case "timeslot":
 							case "event:ticket":
 							case "day": return isMantleTicket(product1) ? "mantle" : "quotas";
-							case "annual": return "unlimited";
+							case "annual":
+							case "flex": return "unlimited";
 							default: throw new Error(`(getMaxAvailability) Unhandled case: ${subtype1}`);
 						}
 					case "Event":
@@ -36892,6 +36893,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"ticket:timeslot",
 		"ticket:day",
 		"ticket:annual",
+		"ticket:flex",
 		"event:admission",
 		"event:admission:day",
 		"event:admission:timeslot",
@@ -37022,7 +37024,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		shop.capacityManager.addQuotas(quotas);
 		return initUITimeslotTickets(filterAvailabletickets(tickets, selectedTime), selectedTime);
 	}
-	var filter$12 = {
+	var filter$13 = {
 		name: "ticket:timeslot",
 		calendarEndpoint: "tickets",
 		apiToken: "time_slot",
@@ -37081,13 +37083,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	async function loadDayTickets(filters) {
 		const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
 			by_bookable: true,
+			by_free_timing: false,
 			"by_ticket_types[]": ["normal"],
 			...filters
 		}));
 		shop.capacityManager.addQuotas(quotas);
 		return initUIDayTickets(tickets);
 	}
-	var filter$11 = {
+	var filter$12 = {
 		name: "ticket:day",
 		calendarEndpoint: "tickets",
 		apiToken: "normal",
@@ -37135,7 +37138,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}));
 		return Object.values(tickets).map((t) => createUITicket(t));
 	}
-	var filter$10 = {
+	var filter$11 = {
 		name: "ticket:annual",
 		calendarEndpoint: null,
 		apiToken: "annual",
@@ -37156,6 +37159,46 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const tsd = segment.ticketSelectionDetails;
 			if (!tsd) return;
 			const uiTickets = await loadAnnualTickets({
+				"by_ticket_ids[]": tsd.ticketIds,
+				"by_ticket_group_ids[]": segment.ticketGroupIds ?? tsd.ticketGroupIds
+			});
+			await enrichTicketsWithContent(segment, uiTickets);
+			for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket));
+		}
+	};
+	//#endregion
+	//#region src/components/ticketSelection/filters/ticket/flex.ts
+	async function loadFlexTickets(filters) {
+		const tickets = await shop.asyncFetch(() => shop.tickets({
+			by_bookable: true,
+			by_free_timing: true,
+			"by_ticket_types[]": ["normal"],
+			...filters
+		}));
+		return Object.values(tickets).map((t) => createUITicket(t));
+	}
+	var filter$10 = {
+		name: "ticket:flex",
+		calendarEndpoint: null,
+		requires: [],
+		isCalendarVisible: () => false,
+		isTimeslotsVisible: () => false,
+		isTicketsVisible: () => true,
+		async loadTimeslots() {},
+		async addToCart(options) {
+			const { id, quantity } = options;
+			const ticket = (await loadFlexTickets({ "by_ticket_ids[]": [id] }))[0];
+			return addResolvedTicketToCart(ticket, {
+				id,
+				quantity
+			});
+		},
+		async loadProducts(segment) {
+			const tsd = segment.ticketSelectionDetails;
+			if (!tsd) return;
+			const uiTickets = await loadFlexTickets({
+				"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
+				"by_exhibition_ids[]": tsd.exhibitionIds,
 				"by_ticket_ids[]": tsd.ticketIds,
 				"by_ticket_group_ids[]": segment.ticketGroupIds ?? tsd.ticketGroupIds
 			});
@@ -37185,6 +37228,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const { quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
 				"by_ticket_ids[]": event.tickets,
 				by_bookable: true,
+				by_free_timing: false,
 				valid_at: tsd.selectedDate.toString()
 			}));
 			loadPickerQuotas(tsd, quotas);
@@ -37197,6 +37241,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
 				"by_ticket_ids[]": event.tickets,
 				by_bookable: true,
+				by_free_timing: false,
 				valid_at: tsd.selectedDate.toString()
 			}));
 			shop.capacityManager.addQuotas(quotas);
@@ -37229,6 +37274,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
 				"by_ticket_ids[]": event.tickets,
 				"by_ticket_types[]": ["normal"],
+				by_free_timing: false,
 				by_bookable: true,
 				valid_at: tsd.selectedDate.toString()
 			}));
@@ -37353,6 +37399,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
 					"by_ticket_ids[]": event.tickets,
 					by_bookable: true,
+					by_free_timing: false,
 					valid_at: date.start_time.slice(0, 10)
 				}));
 				shop.capacityManager.addQuotas(quotas);
@@ -37398,6 +37445,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
 					"by_ticket_ids[]": event.tickets,
 					"by_ticket_types[]": ["normal"],
+					by_free_timing: false,
 					by_bookable: true,
 					valid_at: date.start_time.slice(0, 10)
 				}));
@@ -37529,9 +37577,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#endregion
 	//#region src/components/ticketSelection/filters/registry.ts
 	var REGISTRY = {
-		"ticket:timeslot": filter$12,
-		"ticket:day": filter$11,
-		"ticket:annual": filter$10,
+		"ticket:timeslot": filter$13,
+		"ticket:day": filter$12,
+		"ticket:annual": filter$11,
+		"ticket:flex": filter$10,
 		"event:admission": filter$9,
 		"event:admission:day": filter$8,
 		"event:admission:timeslot": filter$7,
@@ -38358,7 +38407,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					};
 					if_block(node_5, ($$render) => {
 						if (item().attributes.ticket_type === "time_slot") $$render(consequent_1);
-						else if (item().attributes.ticket_type === "normal") $$render(consequent_2, 1);
+						else if (item().attributes.ticket_type === "normal" && item().attributes.start_time) $$render(consequent_2, 1);
 					});
 					var a = sibling(node_5, 4);
 					var text_6 = child(a, true);
@@ -38417,7 +38466,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					append($$anchor, a_3);
 				};
 				if_block(node_7, ($$render) => {
-					if (item().attributes.ical_url) $$render(consequent_5);
+					if (item().attributes.ical_url && item().attributes.start_time) $$render(consequent_5);
 				});
 				reset(li_5);
 				reset(ul);
@@ -39854,6 +39903,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return {
 				by_bookable: true,
 				"by_ticket_types[]": this.apiFilters,
+				...this.apiFilters?.includes("normal") && { by_free_timing: false },
 				"by_ticket_ids[]": this.details.ticketIds,
 				"by_ticket_group_ids[]": this.details.ticketGroupIds,
 				"by_museum_ids[]": this.details.museumIds,

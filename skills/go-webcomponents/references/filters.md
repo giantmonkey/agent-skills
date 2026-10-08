@@ -9,6 +9,7 @@ Filters drive what `<go-ticket-selection>` renders. Pass them via the `filters` 
 | `ticket:timeslot` | always | conditional | conditional | a selected date, a selected timeslot |
 | `ticket:day` | always | conditional | conditional | a selected date |
 | `ticket:annual` | conditional | conditional | always | — |
+| `ticket:flex` | conditional | conditional | always | — |
 | `event:admission` | always | conditional | conditional | the `event-ids` attribute, a selected date |
 | `event:admission:day` | always | conditional | conditional | the `event-ids` attribute, a selected date |
 | `event:admission:timeslot` | always | conditional | conditional | the `event-ids` attribute, a selected date, a selected timeslot |
@@ -151,6 +152,81 @@ Add an annual ticket straight to the cart — no date or time needed. Unknown or
 const uuid = await go.cart.addItem({
   filter: 'ticket:annual',
   id: 351,
+  quantity: 2,
+})
+```
+
+### `ticket:flex`
+
+# `ticket:flex`
+
+Since `v4.28.0`
+
+Sell flex tickets — tickets booked without a date or entry time. No calendar, no timeslots; tickets are shown directly.
+
+**Use when:** your shop sells flex tickets (tickets with _Flex Ticket_ enabled in gomus).
+
+**Renders:** `<go-tickets>`.
+
+In a selection whose only filter is `ticket:flex`, `<go-calendar>` and `<go-timeslots>` render nothing. For `<go-if>`, `data.ticketSelection.isCalendarVisible` and `isTimeslotsVisible` stay `false`, and `isTicketsVisible` is `true` from the start, so a page template built for the dated filters works unchanged.
+
+In the cart and in the order breakdown (`<go-order-breakdown>` inside `<go-order>`), a flex line shows its title with no date or time, and the order breakdown offers no iCal link for it.
+
+Only `ticket:flex` offers flex tickets. `ticket:day` and all event-admission filters (`event:admission`, `events:admission` and their `:day` / `:timeslot` variants) leave them out. They also don't count towards a date's availability in the `ticket:day` calendar, so flex tickets alone never make a date look bookable.
+
+## Example
+
+```html
+<go-ticket-selection filters="ticket:flex">
+  <go-tickets>
+    <go-ticket-segment filters="ticket:flex">
+      <go-ticket-segment-body></go-ticket-segment-body>
+    </go-ticket-segment>
+  </go-tickets>
+  <go-add-to-cart-button></go-add-to-cart-button>
+</go-ticket-selection>
+```
+
+Narrowed to one museum's flex tickets, with per-ticket info buttons. `ticket:flex` honors `museum-ids`, `exhibition-ids`, `ticket-ids` and `ticket-group-ids` on `<go-ticket-selection>`, and `museum-ids` / `ticket-group-ids` on `<go-ticket-segment>` override the selection's:
+
+```html
+<go-ticket-selection filters="ticket:flex" museum-ids="11">
+  <go-tickets>
+    <go-ticket-segment filters="ticket:flex" with-content>
+      <go-ticket-segment-body></go-ticket-segment-body>
+    </go-ticket-segment>
+  </go-tickets>
+  <go-add-to-cart-button></go-add-to-cart-button>
+</go-ticket-selection>
+```
+
+Alongside day tickets, in a second segment. The calendar serves `ticket:day`. Flex tickets show right away, day tickets once a date is picked, and one `<go-add-to-cart-button>` adds both:
+
+```html
+<go-ticket-selection filters="ticket:day,ticket:flex">
+  <go-calendar></go-calendar>
+  <go-tickets>
+    <go-ticket-segment filters="ticket:day">
+      <go-ticket-segment-body></go-ticket-segment-body>
+    </go-ticket-segment>
+    <go-ticket-segment filters="ticket:flex">
+      <go-ticket-segment-body></go-ticket-segment-body>
+    </go-ticket-segment>
+  </go-tickets>
+  <go-add-to-cart-button></go-add-to-cart-button>
+</go-ticket-selection>
+```
+
+Picking or changing the date reloads every segment of the selection, so flex quantities the visitor chose before that reset to `0`. To keep them, give `ticket:flex` its own `<go-ticket-selection>` and `<go-add-to-cart-button>`.
+
+## Scripted add to cart
+
+Add a flex ticket straight to the cart — no date or time. The call rejects with `not available` when the ID is unknown, not bookable, or not a flex ticket (add dated tickets with `ticket:day` or `ticket:timeslot`):
+
+```js
+const uuid = await go.cart.addItem({
+  filter: 'ticket:flex',
+  id: 475,
   quantity: 2,
 })
 ```

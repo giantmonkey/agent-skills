@@ -179,7 +179,11 @@ Each day also carries classes, which `availability-override` drives:
 ## Nesting
 
 Must be placed inside `<go-ticket-selection>`. The calendar renders only while one of the active
-`filters` uses a calendar (e.g. `ticket:timeslot`, `ticket:day`, `event:admission`).
+`filters` uses a calendar (e.g. `ticket:timeslot`, `ticket:day`, `event:admission`). `ticket:flex`
+doesn't — flex tickets are sold without a date _(Since `v4.28.0`)_.
+
+With `ticket:day`, flex tickets don't count towards a date's availability. A date is offered only
+when a dated day ticket is on sale for it. _(Since `v4.28.0`)_
 
 If the surrounding `<go-ticket-selection>` carries a `selected-date` attribute, the calendar opens
 at that date's month with the day preselected, and follows later changes to the attribute. The

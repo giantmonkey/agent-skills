@@ -70,7 +70,8 @@ Available filter names:
 | --------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------- |
 | `ticket:timeslot`           | tickets         | Timeslot tickets (timed entry). Calendar + timeslots required, then tickets shown.                          |
 | `ticket:day`                | tickets         | Day tickets — valid all day. Calendar required, no timeslots.                                               |
-| `ticket:annual`             | tickets         | Annual tickets. No calendar, tickets shown directly.                                                        |
+| `ticket:annual`             | —               | Annual tickets. No calendar, tickets shown directly.                                                        |
+| `ticket:flex`               | —               | Flex tickets — no date or entry time. No calendar, tickets shown directly. _(Since `v4.28.0`)_           |
 | `event:admission`           | events          | Single event admission tickets, all types combined. Requires `event-ids`.                                   |
 | `event:admission:day`       | events          | Single event, day admission tickets only (valid all day). Calendar, no timeslot.                            |
 | `event:admission:timeslot`  | events          | Single event, timed-entry admission tickets only. Calendar + timeslot.                                      |
