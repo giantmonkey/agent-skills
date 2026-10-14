@@ -34424,6 +34424,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		push($$props, true);
 		let dateString = prop($$props, "dateString", 15), labelClass = prop($$props, "labelClass", 7), inputClass = prop($$props, "inputClass", 7), labelText = prop($$props, "labelText", 7);
 		let date = /* @__PURE__ */ state(proxy($ad063034c8620db8$export$d0bdf45af03a6ea3($ad063034c8620db8$export$aa8b41735afcabd2())));
+		let content = /* @__PURE__ */ state(null);
+		function focusDayWithoutScrolling(event) {
+			const day = get$2(content)?.querySelector("[data-bits-day][data-focused]");
+			if (!day) return;
+			event.preventDefault();
+			day.focus({ preventScroll: true });
+		}
 		const uniqueId = "go-" + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 		user_effect(() => {
 			dateString(get$2(date).toString());
@@ -34550,6 +34557,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						}
 						component(sibling(node_4, 2), () => Date_picker_content, ($$anchor, DatePicker_Content) => {
 							DatePicker_Content($$anchor, {
+								onOpenAutoFocus: focusDayWithoutScrolling,
+								get ref() {
+									return get$2(content);
+								},
+								set ref($$value) {
+									set(content, $$value, true);
+								},
 								children: ($$anchor, $$slotProps) => {
 									var fragment_7 = comment();
 									var node_9 = first_child(fragment_7);

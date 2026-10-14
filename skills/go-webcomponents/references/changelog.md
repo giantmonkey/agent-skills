@@ -4,6 +4,22 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.28.2
+
+_Released 2026-10-14_
+
+Opening the calendar on a date field no longer scrolls the page away from the form.
+
+## Fixed
+
+- `<go-field>` date fields (`startAt`, `dateOfBirth`, or any custom field with
+  `type: 'date'`): clicking the `.go-calendar-button` trigger scrolled the page to the top
+  before the calendar was positioned next to the input, so the visitor lost their place in the
+  form and did not see the calendar they had just opened. The calendar now opens in place,
+  with today's day cell focused, and the page keeps its scroll position.
+
+---
+
 # v4.28.1
 
 _Released 2026-10-08_
