@@ -238,8 +238,8 @@ The keys listed below ship with the default configuration. The `apiKey` column s
 | `language`            | `language_id`            | `select`      | Options come from the shop's available locales.                                                                                                                                                                                          |
 | `acceptTerms`         | `terms`                  | `checkbox`    | Typically required for agreements.                                                                                                                                                                                                       |
 | `paymentMode`         | `payment_mode_id`        | `paymentMode` | Renders a radio group of payment modes from `shop.payment_modes`. Auto-selects (and hides the input) when only one mode is available. Icons are rendered from the CDN when provided; modes without an icon show their name as the label. |
-| `startAt`             | `start_at`               | `date`        | Start date for annual-ticket personalization. Validates an ISO date (`YYYY-MM-DD`).                                                                                                                                                      |
-| `dateOfBirth`         | `date_of_birth`          | `date`        | Birth date for annual-ticket personalization. Uses `autocomplete="bday"` and an ISO-date (`YYYY-MM-DD`) validator. _(Since `v4.8.0`)_                                                                                                    |
+| `startAt`             | `start_at`               | `date`        | Start date for annual-ticket personalization. Validates an ISO date (`YYYY-MM-DD`). Starts on today with past dates disabled; past dates typed in directly also fail validation. _(Past-date validation since `v4.29.0`)_             |
+| `dateOfBirth`         | `date_of_birth`          | `date`        | Birth date for annual-ticket personalization. Uses `autocomplete="bday"` and an ISO-date (`YYYY-MM-DD`) validator. _(Since `v4.8.0`)_ Starts empty; future dates are disabled and fail validation. _(Since `v4.29.0`)_                |
 | `currentPassword`     | `current_password`       | `password`    | Current password for password changes. _(Since `v1.1.0`)_                                                                                                                                                                                |
 | `tel`                 | `tel`                    | `tel`         | Phone number.                                                                                                                                                                                                                            |
 | `customerAddressee`   | `adressat`               | `text`        | Addressee line for the customer-address forms (`addressCreate` / `addressUpdate`). _(Since `v4.19.0`)_                                                                                                                                   |
@@ -269,6 +269,7 @@ Register new fields via `go.config({ fields: { … } })` — an object keyed by 
 - `value` (`string | number | boolean`): Initial value; defaults to `''` or `false` for checkboxes.
 - `required` (boolean): Default requirement; per-instance `<go-field required>` overrides it.
 - `passwordToggle` (boolean): For `password`-type fields — renders a show/hide toggle button after the input. Off by default; see below. _(Since `v4.23.0`)_
+- `selectableDates` (`'past' | 'future'`): For `date`-type fields — which side of today the calendar lets the visitor pick, today included. `'future'` (the default) disables past days and starts the field on today; `'past'` disables future days and starts the field empty. The calendar can't page to a month on the disabled side. With `'past'`, the calendar header shows a month select and a year select reaching back 100 years instead of the month heading, so a date decades back is a few clicks away. _(Since `v4.29.0`)_
 
 Any additional attributes placed on `<go-field>` are forwarded to the rendered control, so you can add things like `data-test-id`, `min`, or `max`.
 
@@ -357,18 +358,22 @@ For required fields, `common.fieldErrors.required` will be used to display a req
 | `language`        | `user.registration.form.language`                   | —                                                            |
 | `acceptTerms`     | `user.registration.form.accept`                     | —                                                            |
 | `paymentMode`     | `cart.paymentMode.label`                            | -                                                            |
-| `startAt`         | `ticket.annual.personalization.list.startAt.update` | —                                                            |
-| `dateOfBirth`     | `user.registration.form.dateOfBirth`                | —                                                            |
+| `startAt`         | `ticket.annual.personalization.list.startAt.update` | `user.fieldErrors.startAtPast`                               |
+| `dateOfBirth`     | `user.registration.form.dateOfBirth`                | `user.fieldErrors.dateOfBirthFuture`                         |
+
+The `dateOfBirth` label (`user.registration.form.dateOfBirth`) and the `startAt` / `dateOfBirth` error keys ship built-in English and German defaults; a translation from the shop's backend overrides them. _(Since `v4.29.0`)_
 
 ### General Messages
 
-| Key                   | Purpose                                                                                                                                                                          |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `forms.errorSummary`  | Error summary message shown when form has validation errors. Accepts `{{count}}` parameter for number of errors. Default: `Failed to save because {{count}} fields are invalid.` |
-| `common.choose`       | Default option text for select fields. Default: `Please choose`                                                                                                                  |
-| `form.success`        | Fallback success message for self-submitting forms when neither the definition nor the API provides one. _(Since `v4.19.0`)_                                                     |
-| `form.error`          | Generic error shown when a self-submitting call fails without a usable error body. _(Since `v4.19.0`)_                                                                           |
-| `forms.password.show` | Label of the password show/hide toggle. Default: `Show password`. _(Since `v4.23.0`)_                                                                                            |
+| Key                      | Purpose                                                                                                                                                                          |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `forms.errorSummary`     | Error summary message shown when form has validation errors. Accepts `{{count}}` parameter for number of errors. Default: `Failed to save because {{count}} fields are invalid.` |
+| `common.choose`          | Default option text for select fields. Default: `Please choose`                                                                                                                  |
+| `form.success`           | Fallback success message for self-submitting forms when neither the definition nor the API provides one. _(Since `v4.19.0`)_                                                     |
+| `form.error`             | Generic error shown when a self-submitting call fails without a usable error body. _(Since `v4.19.0`)_                                                                           |
+| `forms.password.show`    | Label of the password show/hide toggle. Default: `Show password`. _(Since `v4.23.0`)_                                                                                            |
+| `forms.datePicker.month` | Accessible name of the month select in a `'past'` date field's calendar. Default: `Month`. _(Since `v4.29.0`)_                                                                |
+| `forms.datePicker.year`  | Accessible name of the year select in a `'past'` date field's calendar. Default: `Year`. _(Since `v4.29.0`)_                                                                  |
 
 ## Styling
 
@@ -376,6 +381,7 @@ For required fields, `common.fieldErrors.required` will be used to display a req
 - `.go-field` — every `<go-field>`; `.go-field.is-invalid` when it has errors
 - `.go-field-errors` — the error list rendered under an invalid field
 - `.go-password-toggle` — the show/hide button on password fields that opt in via `passwordToggle`; `aria-pressed="true"` while the password is revealed _(Since `v4.23.0`)_
+- `.go-datepicker-month-select`, `.go-datepicker-year-select` — the native `<select>`s in the calendar header of a `date` field with `selectableDates: 'past'`, in place of the `.go-datepicker-selected-month` heading _(Since `v4.29.0`)_
 - `<go-errors-feedback>` gets `.go-feedback`, `.is-invalid` while errors exist, and a `data-num-errors` attribute with the current error count; API errors render in a `.go-error-feedback-api-errors` list
 - `.go-form-feedback` — wrapper rendered by `<go-form-feedback>`
 - `.go-success-feedback` — the success live region; `.is-successful` while a message is shown

@@ -4,6 +4,47 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.29.0
+
+_Released 2026-10-16_
+
+Visitors can now enter a real birth date in the `dateOfBirth` field. You can also choose, per custom date field, whether the calendar offers past or future days.
+
+## New
+
+- Custom `date` fields registered via `go.config({ fields: { … } })` accept a
+  `selectableDates: 'past' | 'future'` option. It sets which side of today the calendar
+  lets the visitor pick, today included. `'future'` is the default and keeps the existing
+  behavior: past days are disabled and the field starts on today. `'past'` disables future
+  days and starts the field empty. Either way the calendar can't page to a month on the
+  disabled side.
+- A date field with `selectableDates: 'past'` (such as `dateOfBirth`) shows a month select and
+  a year select in the calendar header instead of the month heading, so a date decades back
+  is a few clicks away. Style them via `.go-datepicker-month-select` and
+  `.go-datepicker-year-select`; their accessible names come from the new
+  `forms.datePicker.month` / `forms.datePicker.year` keys (built-in English and German text).
+
+## Fixed
+
+- `<go-field key="dateOfBirth">`: the calendar disabled every day before today, so a
+  visitor could not pick a birth date at all. Now past days are selectable and future days
+  are disabled. The field starts empty instead of on today's date, so a `required`
+  `dateOfBirth` is no longer satisfied before the visitor enters anything; left empty, it
+  shows `common.fieldErrors.required`. A future date typed straight into the input fails
+  validation with `user.fieldErrors.dateOfBirthFuture`.
+- `date` fields: the date segments now carry `aria-required`, and once the field fails
+  validation `aria-invalid` plus an `aria-describedby` pointing at the inline error list, so
+  screen readers announce that the field is required and why it is invalid.
+- `<go-field key="startAt">`: a past date typed straight into the input was accepted,
+  even though the calendar disables past days. It now fails validation with
+  `user.fieldErrors.startAtPast`.
+- The `dateOfBirth` label (`user.registration.form.dateOfBirth`) and the new
+  `user.fieldErrors.dateOfBirthFuture` / `user.fieldErrors.startAtPast` messages now come
+  with built-in English and German text. If the shop's backend has no translation for
+  them, they no longer render as raw keys. A backend translation still overrides them.
+
+---
+
 # v4.28.2
 
 _Released 2026-10-14_
