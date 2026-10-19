@@ -4,6 +4,21 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.29.1
+
+_Released 2026-10-19_
+
+A `<go-if>` placed inside another `<go-if>` now keeps the content it is hiding when the outer one hides it and shows it again.
+
+## Fixed
+
+- Nested `<go-if>`: say an inner `<go-if>` was hiding its content (for example a postcode
+  `<go-field>` that only shows for one country). If an outer `<go-if>` then hid the inner one
+  and showed it again, that hidden content was lost. It never came back, even after the inner
+  condition became true again. Now the content returns as soon as the inner condition is true.
+
+---
+
 # v4.29.0
 
 _Released 2026-10-16_

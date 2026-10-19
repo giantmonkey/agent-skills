@@ -38451,6 +38451,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var getTicketSelectionDetails = createGetDetails(KEY$2);
 	//#endregion
 	//#region src/components/if/If.svelte
+	var hiddenContent = /* @__PURE__ */ new WeakMap();
 	function If($$anchor, $$props) {
 		push($$props, true);
 		let when = prop($$props, "when", 7), then = prop($$props, "then", 7, "show");
@@ -38482,17 +38483,18 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return get$2(data);
 		};
 		let evaluatedWhen = /* @__PURE__ */ user_derived(() => evaluateExpression(when(), get$2(data)));
-		let content = null;
 		user_effect(() => {
 			const host = $$props.$$host;
+			const content = hiddenContent.get(host);
 			if (get$2(evaluatedWhen) && then() === "show") {
 				if (content) {
 					host.appendChild(content);
-					content = null;
+					hiddenContent.delete(host);
 				}
 			} else if (!content && host.childNodes.length > 0) {
-				content = document.createDocumentFragment();
-				while (host.firstChild) content.appendChild(host.firstChild);
+				const fragment = document.createDocumentFragment();
+				while (host.firstChild) fragment.appendChild(host.firstChild);
+				hiddenContent.set(host, fragment);
 			}
 		});
 		return pop({
