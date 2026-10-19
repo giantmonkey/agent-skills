@@ -316,12 +316,12 @@ The `go-tickets-empty` component displays your own markup while no tickets are a
 
 ## Localization
 
-| Key                             | Purpose                                       |
-| ------------------------------- | --------------------------------------------- |
-| `product.detail.table.title`    | Header — title column                         |
-| `product.detail.table.desc`     | Header — description column                   |
-| `product.detail.table.price`    | Header — price column                         |
-| `product.detail.table.quantity` | Header — quantity column                      |
-| `quantity.decrease`             | Accessible name of the stepper's `−` button   |
-| `quantity.increase`             | Accessible name of the stepper's `+` button   |
-| `ticket.list.additionalInfo`    | Accessible name of the per-ticket info button |
+| Key                             | Purpose                                                                                                                                    |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `product.detail.table.title`    | Header — title column. Default: `Ticket`. _(Shipped default since `v4.30.1`; before that a shop without the key rendered the raw key.)_ |
+| `product.detail.table.desc`     | Header — description column                                                                                                                |
+| `product.detail.table.price`    | Header — price column                                                                                                                      |
+| `product.detail.table.quantity` | Header — quantity column                                                                                                                   |
+| `quantity.decrease`             | Accessible name of the stepper's `−` button                                                                                                |
+| `quantity.increase`             | Accessible name of the stepper's `+` button                                                                                                |
+| `ticket.list.additionalInfo`    | Accessible name of the per-ticket info button                                                                                              |

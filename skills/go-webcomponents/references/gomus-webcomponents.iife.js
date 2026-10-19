@@ -6454,7 +6454,9 @@ createHTML: (html) => {
 			"Not signed in": "Not signed in",
 			"user.registration.form.dateOfBirth": "Date of birth",
 			"user.fieldErrors.dateOfBirthFuture": "The date of birth cannot be in the future",
-			"user.fieldErrors.startAtPast": "The start date cannot be in the past"
+			"user.fieldErrors.startAtPast": "The start date cannot be in the past",
+			"forms.errorSummary": "Failed to save because {{count}} fields are invalid.",
+			"product.detail.table.title": "Ticket"
 		},
 		de: {
 			"quantity.remove": "Artikel entfernen",
@@ -6470,7 +6472,9 @@ createHTML: (html) => {
 			"Not signed in": "Nicht angemeldet",
 			"user.registration.form.dateOfBirth": "Geburtsdatum",
 			"user.fieldErrors.dateOfBirthFuture": "Das Geburtsdatum darf nicht in der Zukunft liegen",
-			"user.fieldErrors.startAtPast": "Das Startdatum darf nicht in der Vergangenheit liegen"
+			"user.fieldErrors.startAtPast": "Das Startdatum darf nicht in der Vergangenheit liegen",
+			"forms.errorSummary": "Speichern fehlgeschlagen, da {{count}} Felder ungültig sind.",
+			"product.detail.table.title": "Ticket"
 		}
 	};
 	//#endregion

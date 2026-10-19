@@ -4,6 +4,32 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.30.1
+
+_Released 2026-10-19_
+
+Two translation keys the backend never ships now have built-in English and German defaults,
+so shops that never translated them no longer render the raw key in the form error summary or
+the ticket table header.
+
+## Fixed
+
+- `<go-errors-feedback>` ships a built-in English and German default for the
+  `forms.errorSummary` message (`Failed to save because {{count}} fields are invalid.`).
+  Before, a shop whose translations lacked that key rendered the literal text
+  `forms.errorSummary` as the error summary and announced it to screen readers on every
+  failed submit.
+- `<go-tickets>` ships a built-in default for the `product.detail.table.title` column header
+  (`Ticket` in English and German). Before, a shop whose translations lacked that key rendered
+  the literal text `product.detail.table.title` as the title column header
+  (`.go-tickets-header-title` / `data-go-tickets-title`) — unlike the description, price and
+  quantity headers, which the backend already provides.
+
+Shops that already provide their own translation for either key are unaffected — your
+translation still takes precedence over the shipped default.
+
+---
+
 # v4.30.0
 
 _Released 2026-10-19_
