@@ -27,6 +27,23 @@ go.init({ shop: 'myshop', api: 'api.gomus.de', locale: 'de' })
 - `shop` is the shop identifier gomus gave you. A wrong value makes the very first shop request fail — inspect it in the Network tab.
 - The declarative alternative follows the same rules: `<go-init api-domain="api.gomus.de" shop-domain="…" locale="de"></go-init>`.
 
+## Data loaded once, then a request failed
+
+Since `v4.30.0`
+
+**Symptom:** the console shows `(shop) GET /api/v4/… failed with HTTP 500` (or `failed` with a network error) and a component keeps showing what it had before.
+
+A failed read never replaces data the shop already holds — a stale list is better than an empty one — and it is not cached as a result. The voucher-code lookup is the exception: a code can be used up between two lookups, so a failed lookup answers "not valid" and the next try asks the server again right away. A request that fails at the network level or with a server error (5xx) is tried again right away, up to 3 times; a 4xx answer (e.g. 429 too many requests) is not. Only when every try failed does it report the error; the next read after 10 seconds starts a new round of tries. When a try of that endpoint works again, `shop.lastFetchError` is cleared. To react on the page (banner, retry button), listen for the `go-fetch-error` event on `document`:
+
+```js
+document.addEventListener('go-fetch-error', e => {
+  // e.detail = { endpoint: '/api/v4/events', status: 500, at: 1767268800000 }
+  showBanner('The shop is temporarily unavailable, please try again shortly.')
+})
+```
+
+`status` is the HTTP status, or `undefined` when the request never reached the server (offline, DNS, CORS). Two answers are regular outcomes, not errors, and do not fire the event: a `401` on the customer endpoints (the signed-out state) and a `404` on the voucher-code and order-token lookups (an unknown code or a stale link — the component shows its own "not valid" / empty state).
+
 ## `go.api` / `go.cart` scripting errors
 
 **Symptom:** `TypeError` — `go.api` is `undefined`.

@@ -57,9 +57,9 @@ Custom layout — supply your own markup instead of the default fields:
 
 ## Events
 
-| Event            | Description                                                                                                                                                                      | `detail`                                     | bubbles | Since        |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ------- | ------------ |
-| `go-success`     | Fires once the visitor has been successfully signed in.                                                                                                                          | —                                            | yes     |              |
+| Event            | Description                                                                                                                                                                      | `detail`                                     | bubbles | Since     |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ------- | --------- |
+| `go-success`     | Fires once the visitor has been successfully signed in.                                                                                                                          | —                                            | yes     |           |
 | `go-form-failed` | Fires when the shop rejects the sign-in, before the message renders. Cancelable — `preventDefault()` renders nothing; `detail` is live, so rewriting `errors` changes what shows | `{ formId, apiAction, errors, fieldErrors }` | yes     | `v4.24.0` |
 
 `go-form-failed` fires on the inner `<go-form>` and bubbles through `<go-sign-in>`, so you can listen on either. For this component `formId` is `signIn` and `apiAction` is `undefined`. Wrong credentials come back as a single form-level message in `errors`, rendered by `<go-errors-feedback>`; `fieldErrors` stays empty because the sign-in endpoint reports no per-field errors. See "Handling API errors" in the Forms documentation for the full payload and cancel semantics.

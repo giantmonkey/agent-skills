@@ -65,6 +65,8 @@ The `<go-form>` element exposes an `onsubmit` property — assign a callback to 
 </script>
 ```
 
+A submit runs to the end before the next one can start _(Since `v4.30.0`)_. As soon as a submit starts, the `<go-form>` gets the `is-submitting` class and `<go-submit>` is disabled until the submit finishes, including any [form services](#form-services) you add. Any submit attempt made while the previous one is still running is ignored: no events fire and nothing is sent. The form does not wait for your event listeners, so async work inside an `onsubmit` / `submit` listener is not covered. Put that work in a form service instead.
+
 ## Attributes
 
 | Attribute    | Type    | Default | Description                                                                                   | Since     |
@@ -125,6 +127,11 @@ document.querySelector('go-form').addEventListener('submit', async e => {
   else details.apiErrors = res.error.errors
 })
 ```
+
+When a `submit` listener calls `preventDefault()`, the form unlocks as soon as your listener
+returns, also if your listener set `details.isSubmitting` itself, so your async call is not
+protected against a second click. Do slow work in a [form service](#form-services) instead:
+the form waits for it and stays locked until it is done.
 
 Known limitation: empty inputs are omitted from the payload, so an update form cannot
 _clear_ a previously saved optional field — use the JS escape hatch for that.
@@ -197,6 +204,67 @@ reads as an empty list inside the handler: the form has reset but not yet stored
 Mutating `e.detail` is the supported way to change what renders. Assigning `details.apiErrors`
 from inside a `go-form-failed` listener does not fire a second event: the assigned value replaces
 `e.detail.errors` / `e.detail.fieldErrors` of the event in flight, as if you had mutated them.
+
+## Form services
+
+Since `v4.30.0`
+
+You can add your own steps to a form's submit. Write a class that extends `go.FormSubmitService`, override only the steps you need, and list the class under the form's `services` in `go.config`:
+
+```js
+class ConfirmSave extends go.FormSubmitService {
+  beforeSubmit(run) {
+    if (!window.confirm('Save this address?')) return { status: 'stop', outcome: 'cancelled by the user' }
+    return { status: 'ok', outcome: 'confirmed' }
+  }
+}
+
+go.config({ forms: { addressCreate: { services: [ConfirmSave] } } })
+```
+
+A step can be async. The form waits for it, and a second click in the meantime is ignored:
+
+```js
+class OnlyStaffEmails extends go.FormSubmitService {
+  async afterValidation(run) {
+    const res = await fetch(`/my-check?email=${encodeURIComponent(run.details.formData.email)}`)
+    if (!res.ok) {
+      run.details.apiErrors = ['Please use your staff e-mail address.']
+      return { status: 'stop', outcome: 'e-mail not allowed' }
+    }
+    return { status: 'ok', outcome: 'e-mail allowed' }
+  }
+}
+
+go.config({ forms: { signIn: { services: [OnlyStaffEmails] } } })
+```
+
+`go.FormSubmitService` only exists after the library has loaded (`go.loaded` is `true`). The snippet stub on the page before that does not have it, so define your classes in a script that runs after the bundle.
+
+**Steps**, in order: `beforeValidation`, `validation`, `afterValidation`, `beforeSubmit`, `submit`, `afterSubmit`, `finally`. Each step returns `{ status: 'ok' | 'stop', outcome }`, either directly or as a Promise. `outcome` is a short free-text note. A step you don't override returns `ok`.
+
+**The `run` argument:**
+
+| Property        | What it is                                                                                                 |
+| --------------- | ---------------------------------------------------------------------------------------------------------- |
+| `run.details`   | The form's details, the same object as the element's `details` (`formData`, `apiErrors`, `successMessage`) |
+| `run.host`      | The `<go-form>` element                                                                                    |
+| `run.formId`    | The form id                                                                                                |
+| `run.apiAction` | The `api-action` attribute value, if set                                                                   |
+| `run.recordId`  | The `record-id` attribute value, if set                                                                    |
+| `run.event`     | The native submit event                                                                                    |
+| `run.result`    | The API response of a self-submitting form, available from `afterSubmit` on                                |
+
+**How the steps run:**
+
+- At every step, your services run after the form's own work for that step and before the form sends anything. `afterValidation` only reaches your service when every field is valid. The form is locked from the first step on. By `beforeSubmit`, `go-submit` and `submit` have fired. The built-in API call runs after your `submit` step. Your `afterSubmit` sees `run.result` before the result renders. On the checkout tags, the order is sent after your `submit` step, and your `afterSubmit` runs once the order exists, before the redirect to payment.
+- `stop` ends the submit at that step. `finally` always runs: after a stop, and also when a service throws. It goes to every service the submit reached. A click the form ignores as busy is stopped at the very first step, before your services, so they get no `finally` for it. A thrown error is logged to the console and the generic `form.error` message shows on the form _(Since `v4.30.0`)_. The form unlocks, except a checkout whose order already exists: it stays locked until the customer leaves the page. Back to the page from the browser's cache frees it again.
+- If a `submit` listener calls `preventDefault()`, your steps from `beforeSubmit` on are skipped. Only `finally` runs. On the checkout tags this also stops the checkout.
+- Forms you handle with `onsubmit`, and the forms inside `<go-sign-in>`, `<go-sign-up>` and the other wrapper components, send on the `submit` event, which fires at the start of `beforeSubmit`. To stop them, return `stop` from `beforeValidation`, `validation` or `afterValidation`. Your `submit` and `afterSubmit` steps still run, but the request is then already on its way and `run.result` stays empty.
+- Some forms have services of their own (the checkout tags send the order with one). The services you configure are added to those, never replace them, and yours run first.
+- Each `<go-form>` creates its own instance of each class on its first submit and reuses it for later submits. The config is read on every submit, so services you configure after the form is on the page still apply.
+
+The older `beforeSubmit` form option is deprecated. It still works, but logs a console warning when used. Use a form service for new code. On the checkout tags, its place is a service's `afterSubmit`: it runs after the order exists and before the redirect to payment.
 
 # `<go-field>`
 
@@ -377,7 +445,7 @@ The `dateOfBirth` label (`user.registration.form.dateOfBirth`) and the `startAt`
 
 ## Styling
 
-- `go-form.is-submitting` — present while a self-submitting call is in flight
+- `go-form.is-submitting` — present while a submit is running, from its start until it finishes. Applies to every form, not only self-submitting ones
 - `.go-field` — every `<go-field>`; `.go-field.is-invalid` when it has errors
 - `.go-field-errors` — the error list rendered under an invalid field
 - `.go-password-toggle` — the show/hide button on password fields that opt in via `passwordToggle`; `aria-pressed="true"` while the password is revealed _(Since `v4.23.0`)_

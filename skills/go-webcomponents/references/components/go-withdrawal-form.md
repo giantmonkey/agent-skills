@@ -36,9 +36,9 @@ Custom layout — pass `custom` and provide your own markup. The component still
 
 ## Events
 
-| Event            | Description                                                                                                                                                | `detail`                                     | bubbles | Since        |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ------- | ------------ |
-| `go-success`     | The withdrawal request returned a 2xx response (a `201` with an empty body).                                                                               | none                                         | yes     |              |
+| Event            | Description                                                                                                                                                | `detail`                                     | bubbles | Since     |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ------- | --------- |
+| `go-success`     | The withdrawal request returned a 2xx response (a `201` with an empty body).                                                                               | none                                         | yes     |           |
 | `go-form-failed` | Fires before API errors render; cancelable, bubbles through this element from the inner `<go-form>` — see "Handling API errors" in the Forms documentation | `{ formId, apiAction, errors, fieldErrors }` | yes     | `v4.24.0` |
 
 Non-2xx responses do **not** fire `go-success`. When the API rejects the input, its per-field messages render inline on the matching `<go-field>`; when no order matches the given number (or the response carries no field errors), the generic `withdrawal.form.errors.requestFailed` message renders in `<go-errors-feedback>`. In a custom layout, a message for a field you left out also falls back to `<go-errors-feedback>`.

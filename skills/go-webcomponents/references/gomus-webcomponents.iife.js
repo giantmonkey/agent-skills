@@ -12944,7 +12944,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	/**
 	* Checks if a value is empty (null, undefined, empty string, or whitespace-only string)
 	*/
-	function isEmpty(value) {
+	function isEmpty$1(value) {
 		return value === null || value === void 0 || typeof value === "string" && value.trim() === "";
 	}
 	/**
@@ -12954,7 +12954,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function validateRequiredFields(body, requiredFields) {
 		const errors = {};
 		if (!requiredFields || requiredFields.length === 0) return errors;
-		for (const field of requiredFields) if (!(field in body) || isEmpty(body[field])) errors[field] = [`Field '${field}' is required and cannot be empty`];
+		for (const field of requiredFields) if (!(field in body) || isEmpty$1(body[field])) errors[field] = [`Field '${field}' is required and cannot be empty`];
 		return errors;
 	}
 	/**
@@ -13858,6 +13858,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		success: false,
 		errors: ["Not signed in"]
 	} };
+	var FAILED_RETRY_MS = 1e4;
+	var NOT_FOUND = 404;
 	var defaultTranslations = defaultTranslations_default;
 	var Shop = class {
 		type;
@@ -13867,6 +13869,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			locales: []
 		}));
 		#fetchStatus = {};
+		#lastFetchError = /* @__PURE__ */ state();
+		get lastFetchError() {
+			return get$2(this.#lastFetchError);
+		}
+		set lastFetchError(value) {
+			set(this.#lastFetchError, value, true);
+		}
 		#invalidationGens = {};
 		#collectReads = null;
 		constructor(apiUrl, shopDomain, locale, type = "angular") {
@@ -13882,6 +13891,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			get$2(this.#data).locale = locale || "de";
 			warnOnInvalidLocale(get$2(this.#data).locale);
 			this.#fetchStatus = {};
+			this.lastFetchError = void 0;
 			get$2(this.#data).client = client(apiUrl, shopDomain);
 			get$2(this.#data).capacityManager = createCapacityManager();
 			get$2(this.#data).cart = createMainCart();
@@ -13971,22 +13981,32 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		getCustomer() {
 			if (!this.auth.data.accessToken) return NOT_SIGNED_IN;
-			return this.fetchAndCache(VALIDATE_TOKEN_ENDPOINT, `getCustomer`, "", { cache: 5 });
+			return this.fetchAndCache(VALIDATE_TOKEN_ENDPOINT, `getCustomer`, "", {
+				cache: 5,
+				acceptStatuses: [401]
+			});
 		}
 		getOrders(params = {}) {
 			if (!this.auth.data.accessToken) return NOT_SIGNED_IN;
 			return this.fetchAndCache(ORDERS_ENDPOINT, `orders-${JSON.stringify(params)}`, "", {
 				cache: 5,
-				query: params
+				query: params,
+				acceptStatuses: [401]
 			});
 		}
 		getCustomerAddresses() {
 			if (!this.auth.data.accessToken) return NOT_SIGNED_IN;
-			return this.fetchAndCache(CUSTOMER_ADDRESSES_ENDPOINT, "customerAddresses", "", { cache: 5 });
+			return this.fetchAndCache(CUSTOMER_ADDRESSES_ENDPOINT, "customerAddresses", "", {
+				cache: 5,
+				acceptStatuses: [401]
+			});
 		}
 		getCustomerMemberships() {
 			if (!this.auth.data.accessToken) return NOT_SIGNED_IN;
-			return this.fetchAndCache(CUSTOMER_MEMBERSHIPS_ENDPOINT, "customerMemberships", "", { cache: 5 });
+			return this.fetchAndCache(CUSTOMER_MEMBERSHIPS_ENDPOINT, "customerMemberships", "", {
+				cache: 5,
+				acceptStatuses: [401]
+			});
 		}
 		/**
 		* Shared skeleton of every customer write: the no-local-token guard (a write
@@ -14192,10 +14212,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return result;
 		}
 		order(token) {
-			return this.fetchAndCache("/api/v4/orders/{id}", `order-${token}`, "order", { path: { id: token } });
+			return this.fetchAndCache("/api/v4/orders/{id}", `order-${token}`, "order", {
+				path: { id: token },
+				acceptStatuses: [NOT_FOUND]
+			});
 		}
 		annualOrder(token) {
-			return this.fetchAndCache("/api/v4/annual/order", `annual-order-${token}`, "order", { query: { token } });
+			return this.fetchAndCache("/api/v4/annual/order", `annual-order-${token}`, "order", {
+				query: { token },
+				acceptStatuses: [NOT_FOUND]
+			});
 		}
 		finalizePersonalizations(token, params) {
 			return this.apiPost("/api/v4/annual/personalization/finalize", {
@@ -14252,6 +14278,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			options.query ??= {};
 			options.cache ??= 1e3;
 			options.path ??= {};
+			options.acceptStatuses ??= [];
 			if (!this.#canFetch()) {
 				console.warn("(fetchAndCache) Couldn't fetch, Shop not loaded!");
 				return get$2(this.#data)[dataKey];
@@ -14259,11 +14286,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const query = options.query;
 			const fetchId = this.#fetchId(endpoint, query, options.path);
 			this.#collectReads?.(fetchId);
-			const isNotFetchedYet = !this.#fetchStatus[fetchId];
-			const isCacheExpired = this.#fetchStatus[fetchId]?.fetchedAt < Date.now() - options.cache * 1e3;
-			if (isNotFetchedYet || isCacheExpired) this.apiGet(endpoint, query, options.path).then((ret) => {
+			const slot = this.#fetchStatus[fetchId];
+			const isNotFetchedYet = !slot;
+			let cacheMs = options.cache * 1e3;
+			if (slot?.status === "failed" && options.cache > 0) cacheMs = FAILED_RETRY_MS;
+			const isCacheExpired = slot?.fetchedAt < Date.now() - cacheMs;
+			if (isNotFetchedYet || isCacheExpired) this.apiGet(endpoint, query, options.path, { acceptStatuses: options.acceptStatuses }).then((ret) => {
 				if (ret) get$2(this.#data)[dataKey] = responseKey === "" ? ret : ret[responseKey];
-			});
+				else if (options.cache === 0) get$2(this.#data)[dataKey] = void 0;
+			}).catch((e) => console.error(`(fetchAndCache) ${endpoint}`, e));
 			return get$2(this.#data)[dataKey];
 		}
 		get museums() {
@@ -14285,7 +14316,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			});
 		}
 		getCouponSaleByBarcode(token) {
-			return this.fetchAndCache(`/api/v4/coupon_sales/barcode/${token}`, `coupon_sale_barcode_${token}`, "coupon_sale", { cache: 0 });
+			return this.fetchAndCache("/api/v4/coupon_sales/barcode/{id}", `coupon_sale_barcode_${token}`, "coupon_sale", {
+				path: { id: token },
+				cache: 0,
+				acceptStatuses: [NOT_FOUND]
+			});
 		}
 		getCoupons() {
 			return this.fetchAndCache("/api/v4/coupons", "coupons", "coupons", { query: {
@@ -14410,7 +14445,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		async waitForAllFetches(...variables) {
 			while (Object.values(this.#fetchStatus).filter((f) => f.status === "fetching").length) await wait(10);
 		}
-		async apiGet(path, query = {}, pathOptions) {
+		async apiGet(path, query = {}, pathOptions, { acceptStatuses = [] } = {}) {
 			this.#ensureApi();
 			const fetchId = this.#fetchId(path, query, pathOptions);
 			this.#fetchStatus[fetchId] = {
@@ -14420,13 +14455,71 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			let params = this.#defaultApiParams;
 			if (query) params = assign(params, { params: { query } });
 			if (path) params = assign(params, { params: { path: pathOptions } });
-			const ret = await this.client.GET(path, params);
+			const worthRetry = (status) => status === void 0 || status >= 500;
+			let answer = await this.#getOnce({
+				path,
+				params,
+				acceptStatuses
+			});
+			let retries = 0;
+			while (!answer.ok && worthRetry(answer.status) && retries < 3) {
+				retries++;
+				answer = await this.#getOnce({
+					path,
+					params,
+					acceptStatuses
+				});
+			}
+			if (!answer.ok) return this.#fetchFailed({
+				fetchId,
+				endpoint: path,
+				status: answer.status,
+				error: answer.error
+			});
 			if (this.#fetchStatus[fetchId]?.invalidated) delete this.#fetchStatus[fetchId];
 			else this.#fetchStatus[fetchId] = {
 				status: "completed",
 				fetchedAt: Date.now()
 			};
-			return ret.data || ret;
+			if (this.lastFetchError?.endpoint === path) this.lastFetchError = void 0;
+			return answer.value;
+		}
+		async #getOnce({ path, params, acceptStatuses }) {
+			let ret;
+			try {
+				ret = await this.client.GET(path, params);
+			} catch (e) {
+				return {
+					ok: false,
+					error: e
+				};
+			}
+			const status = ret.response?.status;
+			const failed = ret.error !== void 0 || status !== void 0 && (status < 200 || status >= 300);
+			if (failed && !(status !== void 0 && acceptStatuses.includes(status))) return {
+				ok: false,
+				status,
+				error: ret.error
+			};
+			return {
+				ok: true,
+				value: failed ? ret : ret.data
+			};
+		}
+		#fetchFailed({ fetchId, endpoint, status, error }) {
+			if (this.#fetchStatus[fetchId]?.invalidated) delete this.#fetchStatus[fetchId];
+			else this.#fetchStatus[fetchId] = {
+				status: "failed",
+				fetchedAt: Date.now()
+			};
+			const detail = {
+				endpoint,
+				status,
+				at: Date.now()
+			};
+			this.lastFetchError = detail;
+			console.error(`(shop) GET ${endpoint} failed${status === void 0 ? "" : ` with HTTP ${status}`}`, error);
+			if (typeof document !== "undefined") document.dispatchEvent(new CustomEvent("go-fetch-error", { detail }));
 		}
 		#canFetch = () => {
 			return this.apiUrl !== void 0 && this.shopDomain !== void 0 && this.locale !== void 0 && this.client !== void 0;
@@ -14526,10 +14619,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				...this.defaultConfig.forms,
 				...this.override.forms
 			}).reduce((acc, key) => {
+				const defaults = this.defaultConfig.forms[key];
+				const override = this.override.forms[key];
 				acc[key] = {
-					...this.defaultConfig.forms[key],
-					...this.override.forms[key]
+					...defaults,
+					...override
 				};
+				if (override?.services || defaults?.services) acc[key].services = combineServices({
+					shop: override?.services ?? [],
+					form: defaults?.services ?? []
+				});
 				return acc;
 			}, {});
 			this.options = merged;
@@ -14548,6 +14647,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return this;
 		}
 	};
+	function combineServices({ shop, form }) {
+		const combined = [...shop];
+		for (const service of form) if (!combined.includes(service)) combined.push(service);
+		return combined;
+	}
 	var configStore = new ConfigStoreSvelte();
 	//#endregion
 	//#region src/components/annualTicketPersonalization/lib/PersonalizationDetails.svelte.ts
@@ -15044,7 +15148,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				fields: options.fields,
 				submitLabel: options.submitLabel,
 				apiAction: options.apiAction,
-				successMessage: options.successMessage
+				successMessage: options.successMessage,
+				services: options.services
 			} } });
 		}
 		static defineFields(fields) {
@@ -15298,7 +15403,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				return;
 			}
 			const beforeSubmit = configStore.config.forms.personalization?.beforeSubmit;
-			if (beforeSubmit) beforeSubmit(body);
+			if (beforeSubmit) {
+				console.warn("(go-form) config \"beforeSubmit\" is deprecated — use a form service instead");
+				beforeSubmit(body);
+			}
 			const submitUrl = configStore.config.urls.annualTicketPersonalizationFormSubmit?.(token());
 			if (submitUrl) configStore.config.navigateTo(submitUrl);
 		}
@@ -15385,36 +15493,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			type: "Number"
 		}
 	}, [], ["details"]));
-	//#endregion
-	//#region src/components/forms/lib/apiActions.ts
-	var apiActions = {
-		createCustomerAddress: {
-			requiresRecordId: false,
-			call: (p) => shop.createCustomerAddress(p)
-		},
-		updateCustomerAddress: {
-			requiresRecordId: true,
-			call: (p, id) => shop.updateCustomerAddress(id, p)
-		},
-		updateCustomer: {
-			requiresRecordId: false,
-			call: (p) => shop.updateCustomer(p)
-		},
-		updatePassword: {
-			requiresRecordId: false,
-			call: (p) => shop.updatePassword(p)
-		},
-		requestPasswordReset: {
-			requiresRecordId: false,
-			call: (p) => shop.passwordReset(p)
-		}
-	};
-	function getApiAction(name) {
-		if (!name) return void 0;
-		const action = apiActions[name];
-		if (!action) console.error(`(apiActions) Unknown api action "${name}"`);
-		return action;
-	}
 	//#endregion
 	//#region src/components/forms/ui/generic/FormDetails.svelte.ts
 	var FormDetails = class {
@@ -15640,6 +15718,325 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var setDetails$1 = createSetDetails(KEY$4);
 	var getDetails$1 = createGetDetails(KEY$4);
 	//#endregion
+	//#region src/components/forms/lib/formLifecycle.ts
+	var NOTHING = {
+		status: "ok",
+		outcome: "nothing to do"
+	};
+	var FormSubmitService = class {
+		beforeValidation(_run) {
+			return NOTHING;
+		}
+		validation(_run) {
+			return NOTHING;
+		}
+		afterValidation(_run) {
+			return NOTHING;
+		}
+		beforeSubmit(_run) {
+			return NOTHING;
+		}
+		submit(_run) {
+			return NOTHING;
+		}
+		afterSubmit(_run) {
+			return NOTHING;
+		}
+		finally(_run) {
+			return NOTHING;
+		}
+	};
+	async function runLifecycle({ services, ...input }) {
+		const run = {
+			...input,
+			trail: []
+		};
+		const tookPart = /* @__PURE__ */ new Set();
+		async function askServices(point) {
+			for (const service of services) {
+				tookPart.add(service);
+				const step = await service[point](run) ?? NOTHING;
+				run.trail.push({
+					point,
+					...step
+				});
+				if (step.status === "stop") return step;
+			}
+			return {
+				status: "ok",
+				outcome: "all services said ok"
+			};
+		}
+		async function runSteps() {
+			if ((await askServices("beforeValidation")).status === "stop") return;
+			if ((await askServices("validation")).status === "stop") return;
+			if ((await askServices("afterValidation")).status === "stop") return;
+			if ((await askServices("beforeSubmit")).status === "stop") return;
+			if ((await askServices("submit")).status === "stop") return;
+			await askServices("afterSubmit");
+		}
+		async function runFinally() {
+			let firstError;
+			for (const service of services) {
+				if (!tookPart.has(service)) continue;
+				try {
+					const step = await service.finally(run) ?? NOTHING;
+					run.trail.push({
+						point: "finally",
+						...step
+					});
+				} catch (error) {
+					if (firstError === void 0) firstError = error;
+				}
+			}
+			return firstError;
+		}
+		let stepError;
+		try {
+			await runSteps();
+		} catch (error) {
+			stepError = error;
+		}
+		const finallyError = await runFinally();
+		if (stepError !== void 0) throw stepError;
+		if (finallyError !== void 0) throw finallyError;
+		return run.trail;
+	}
+	//#endregion
+	//#region src/components/forms/services/SubmitGuard.ts
+	var SubmitGuard = class extends FormSubmitService {
+		current;
+		beforeValidation(run) {
+			if (this.current || run.details.isSubmitting) return {
+				status: "stop",
+				outcome: "busy, a submit is already running"
+			};
+			this.current = run;
+			run.details.isSubmitting = true;
+			run.host.classList.add("is-submitting");
+			return {
+				status: "ok",
+				outcome: "form locked"
+			};
+		}
+		finally(run) {
+			if (run !== this.current) return {
+				status: "ok",
+				outcome: "not our submit, nothing to clean up"
+			};
+			this.current = void 0;
+			const { details, host } = run;
+			if (run.keepLocked) {
+				this.unlockOnBack({
+					details,
+					host
+				});
+				return {
+					status: "ok",
+					outcome: "kept locked, a service asked for it"
+				};
+			}
+			this.unlock({
+				details,
+				host
+			});
+			return {
+				status: "ok",
+				outcome: "form unlocked"
+			};
+		}
+		unlockOnBack({ details, host }) {
+			const onPageShow = (event) => {
+				if (!event.persisted) return;
+				window.removeEventListener("pageshow", onPageShow);
+				this.unlock({
+					details,
+					host
+				});
+			};
+			window.addEventListener("pageshow", onPageShow);
+		}
+		unlock({ details, host }) {
+			details.isSubmitting = false;
+			host.classList.remove("is-submitting");
+			if (host.classList.length === 0) host.removeAttribute("class");
+		}
+	};
+	//#endregion
+	//#region src/components/forms/services/FormEvents.ts
+	var FormEvents = class extends FormSubmitService {
+		afterValidation({ details }) {
+			details.form.dispatchEvent(new Event("go-after-validation", {
+				bubbles: true,
+				cancelable: true
+			}));
+			return {
+				status: "ok",
+				outcome: "go-after-validation sent"
+			};
+		}
+		beforeSubmit({ details, host }) {
+			details.form.dispatchEvent(new Event("go-submit", {
+				bubbles: true,
+				cancelable: true
+			}));
+			if (!host.dispatchEvent(new Event("submit", {
+				bubbles: true,
+				composed: true,
+				cancelable: true
+			}))) return {
+				status: "stop",
+				outcome: "a submit listener called preventDefault, it sends the form itself"
+			};
+			return {
+				status: "ok",
+				outcome: "go-submit and submit sent"
+			};
+		}
+	};
+	//#endregion
+	//#region src/components/forms/services/Validation.ts
+	var Validation = class extends FormSubmitService {
+		beforeValidation({ details }) {
+			details.apiErrors = {};
+			return {
+				status: "ok",
+				outcome: "old api errors cleared"
+			};
+		}
+		validation({ details }) {
+			details.validateForm();
+			return {
+				status: "ok",
+				outcome: "fields checked"
+			};
+		}
+		afterValidation({ details }) {
+			if (!details.isValid) return {
+				status: "stop",
+				outcome: "a field is wrong"
+			};
+			details.successMessage = void 0;
+			return {
+				status: "ok",
+				outcome: "all fields are fine"
+			};
+		}
+	};
+	//#endregion
+	//#region src/components/forms/lib/apiActions.ts
+	var apiActions = {
+		createCustomerAddress: {
+			requiresRecordId: false,
+			call: (p) => shop.createCustomerAddress(p)
+		},
+		updateCustomerAddress: {
+			requiresRecordId: true,
+			call: (p, id) => shop.updateCustomerAddress(id, p)
+		},
+		updateCustomer: {
+			requiresRecordId: false,
+			call: (p) => shop.updateCustomer(p)
+		},
+		updatePassword: {
+			requiresRecordId: false,
+			call: (p) => shop.updatePassword(p)
+		},
+		requestPasswordReset: {
+			requiresRecordId: false,
+			call: (p) => shop.passwordReset(p)
+		}
+	};
+	function getApiAction(name) {
+		if (!name) return void 0;
+		const action = apiActions[name];
+		if (!action) console.error(`(apiActions) Unknown api action "${name}"`);
+		return action;
+	}
+	//#endregion
+	//#region src/components/forms/services/ApiAction.ts
+	var ApiAction = class extends FormSubmitService {
+		action;
+		afterValidation({ details, formId, apiAction }) {
+			details.apiAction = apiAction || Forms.getFormOptions(formId)?.apiAction;
+			return {
+				status: "ok",
+				outcome: `api action: ${details.apiAction ?? "none"}`
+			};
+		}
+		beforeSubmit({ details, recordId }) {
+			this.action = getApiAction(details.apiAction);
+			if (!this.action) return {
+				status: "stop",
+				outcome: "no api action"
+			};
+			if (this.action.requiresRecordId && recordId == null) {
+				console.error(`(go-form) api action "${details.apiAction}" needs a record-id attribute`);
+				return {
+					status: "stop",
+					outcome: "missing record-id"
+				};
+			}
+			return {
+				status: "ok",
+				outcome: "api action ready"
+			};
+		}
+		async submit(run) {
+			try {
+				run.result = await this.action.call(run.details.formData, run.recordId);
+				return {
+					status: "ok",
+					outcome: "api called"
+				};
+			} catch (e) {
+				console.error(`(go-form) api action "${run.details.apiAction}" failed`, e);
+				return {
+					status: "ok",
+					outcome: "network error"
+				};
+			}
+		}
+		afterSubmit(run) {
+			const result = run.result;
+			if (result?.data) {
+				this.showSuccess({
+					run,
+					message: result.data.message
+				});
+				return {
+					status: "ok",
+					outcome: "success shown"
+				};
+			}
+			this.showErrors({
+				run,
+				errors: result?.error?.errors
+			});
+			return {
+				status: "ok",
+				outcome: "errors shown"
+			};
+		}
+		showSuccess({ run, message }) {
+			const { details, host, formId } = run;
+			details.apiErrors = [];
+			details.successMessage = shop.t(Forms.getFormOptions(formId)?.successMessage ?? message ?? "form.success");
+			host.dispatchEvent(new Event("go-success", {
+				bubbles: true,
+				composed: true
+			}));
+		}
+		showErrors({ run, errors }) {
+			if (!errors || isEmpty(errors)) run.details.apiErrors = [shop.t("form.error")];
+			else run.details.apiErrors = errors;
+		}
+	};
+	function isEmpty(errors) {
+		if (isArray(errors)) return errors.length === 0;
+		return Object.keys(errors).length === 0;
+	}
+	//#endregion
 	//#region src/lib/helpers/wrapInElement.ts
 	function wrapInElement(host, tag, props) {
 		const first = host.firstElementChild || void 0;
@@ -15664,54 +16061,42 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		let formId = prop($$props, "formId", 7), custom = prop($$props, "custom", 7), apiAction = prop($$props, "apiAction", 7), recordId = prop($$props, "recordId", 7);
 		const details = new FormDetails(formId(), $$props.$$host, $$props.$$host);
 		setDetails$1($$props.$$host, details);
-		async function handleSubmit(event) {
+		const ownServices = [
+			new FormEvents(),
+			new SubmitGuard(),
+			new Validation()
+		];
+		const made = /* @__PURE__ */ new Map();
+		function madeOnce(ServiceClass) {
+			if (!made.has(ServiceClass)) made.set(ServiceClass, new ServiceClass());
+			return made.get(ServiceClass);
+		}
+		function configServices() {
+			return (Forms.getFormOptions(formId())?.services ?? []).map(madeOnce);
+		}
+		function apiActionService() {
+			if (!Boolean(apiAction() || Forms.getFormOptions(formId())?.apiAction)) return [];
+			return [madeOnce(ApiAction)];
+		}
+		function handleSubmit(event) {
 			event.preventDefault();
 			event.stopPropagation();
-			if (details.isSubmitting) return;
-			details.apiErrors = {};
-			details.validateForm();
-			details?.form?.dispatchEvent(new Event("go-after-validation", event));
-			if (!details.isValid) return;
-			details.successMessage = void 0;
-			details?.form?.dispatchEvent(new Event("go-submit", event));
-			const options = Forms.getFormOptions(formId());
-			const actionName = apiAction() || options?.apiAction;
-			details.apiAction = actionName;
-			if (!$$props.$$host.dispatchEvent(new Event("submit", {
-				bubbles: true,
-				composed: true,
-				cancelable: true
-			})) || !actionName) return;
-			const action = getApiAction(actionName);
-			if (!action) return;
-			if (action.requiresRecordId && recordId() == null) {
-				console.error(`(go-form) api action "${actionName}" needs a record-id attribute`);
-				return;
-			}
-			details.isSubmitting = true;
-			$$props.$$host.classList.add("is-submitting");
-			try {
-				const result = await action.call(details.formData, recordId());
-				if (result && "data" in result && result.data) {
-					details.apiErrors = [];
-					const apiMessage = result.data?.message;
-					details.successMessage = shop.t(options?.successMessage ?? apiMessage ?? "form.success");
-					$$props.$$host.dispatchEvent(new Event("go-success", {
-						bubbles: true,
-						composed: true
-					}));
-				} else {
-					const apiErrors = result?.error?.errors;
-					const isEmpty = !apiErrors || (isArray(apiErrors) ? apiErrors.length === 0 : Object.keys(apiErrors).length === 0);
-					details.apiErrors = isEmpty ? [shop.t("form.error")] : apiErrors;
-				}
-			} catch (e) {
-				console.error(`(go-form) api action "${actionName}" failed`, e);
+			runLifecycle({
+				services: [
+					...ownServices,
+					...configServices(),
+					...apiActionService()
+				],
+				event,
+				details,
+				host: $$props.$$host,
+				formId: formId(),
+				apiAction: apiAction(),
+				recordId: recordId()
+			}).catch((error) => {
+				console.error("(go-form) a form service failed", error);
 				details.apiErrors = [shop.t("form.error")];
-			} finally {
-				details.isSubmitting = false;
-				$$props.$$host.classList.remove("is-submitting");
-			}
+			});
 		}
 		onMount(() => {
 			const form = wrapInElement($$props.$$host, "form", { novalidate: true });
@@ -19944,7 +20329,75 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	customElements.define("go-cart-counter", create_custom_element(CartCounter, {}, [], []));
 	//#endregion
-	//#region src/components/checkoutForm/lib.ts
+	//#region src/components/checkoutForm/services/UserCheckout.ts
+	var UserCheckout = class extends FormSubmitService {
+		beforeSubmit() {
+			if (!shop.cart) return {
+				status: "stop",
+				outcome: "no cart"
+			};
+			return {
+				status: "ok",
+				outcome: "cart ready"
+			};
+		}
+		submit(run) {
+			return this.sendOrder(run);
+		}
+		async sendOrder(run) {
+			const { details } = run;
+			const cart = shop.cart;
+			const paymentMode = details.fieldValue("paymentMode");
+			cart.paymentModeId = paymentMode == null ? void 0 : String(paymentMode);
+			const checkout = await shop.checkout(cart.orderData());
+			if (checkout.error) {
+				details.apiErrors = checkout.error;
+				return {
+					status: "stop",
+					outcome: "order failed"
+				};
+			}
+			if (!checkout.response?.ok || !checkout.data?.meta) {
+				details.apiErrors = [shop.t("form.error")];
+				return {
+					status: "stop",
+					outcome: "no order in the answer"
+				};
+			}
+			run.result = checkout;
+			run.keepLocked = true;
+			return {
+				status: "ok",
+				outcome: "order created"
+			};
+		}
+		async afterSubmit(run) {
+			await runDeprecatedBeforeSubmit(run);
+			redirect(run.result);
+			return {
+				status: "ok",
+				outcome: "customer sent on"
+			};
+		}
+	};
+	async function runDeprecatedBeforeSubmit({ formId, details }) {
+		const beforeSubmit = configStore.config.forms[formId]?.beforeSubmit;
+		if (!beforeSubmit) return;
+		console.warn("(go-form) config \"beforeSubmit\" is deprecated — use a form service instead");
+		await beforeSubmit(details.formData);
+	}
+	function redirect(checkout) {
+		const { meta, order } = checkout.data;
+		const navigateTo = configStore.config.navigateTo;
+		const checkoutFailure = configStore.config.urls.checkoutFailure ?? shop.urls.checkoutFailure;
+		if (meta.status === "success") {
+			const checkoutSuccess = configStore.config.urls.checkoutSuccess ?? shop.urls.checkoutSuccess;
+			navigateTo?.(checkoutSuccess(order.token));
+		} else if (meta.status === "fail") navigateTo?.(checkoutFailure(""));
+		else if (meta.payment_url) navigateTo?.(meta.payment_url);
+		else if (meta.payment_data) postToPaymentProvider(meta.payment_data);
+		else navigateTo?.(checkoutFailure(""));
+	}
 	function postToPaymentProvider(paymentData) {
 		const form = document.createElement("form");
 		form.method = "post";
@@ -19959,29 +20412,23 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		document.body.appendChild(form);
 		form.submit();
 	}
-	async function finalizeCheckout(form, formId) {
-		const cart = shop.cart;
-		if (!cart) return;
-		const paymentMode = form.details.fieldValue("paymentMode");
-		cart.paymentModeId = paymentMode == null ? void 0 : String(paymentMode);
-		const checkout = await shop.checkout(cart.orderData());
-		if (checkout.error) {
-			form.details.apiErrors = checkout.error;
-			return;
+	//#endregion
+	//#region src/components/checkoutForm/services/GuestCheckout.ts
+	var GuestCheckout = class extends UserCheckout {
+		async sendOrder(run) {
+			const auth = await shop.signUp(run.details.formData, true);
+			if (auth.error) {
+				run.details.apiErrors = auth.error.errors;
+				return {
+					status: "stop",
+					outcome: "guest sign-up failed"
+				};
+			}
+			return super.sendOrder(run);
 		}
-		const beforeSubmit = configStore.config.forms[formId]?.beforeSubmit;
-		if (beforeSubmit) await beforeSubmit(form.details.formData);
-		const meta = checkout.data.meta;
-		const navigateTo = configStore.config.navigateTo;
-		const checkoutFailure = configStore.config.urls.checkoutFailure ?? shop.urls.checkoutFailure;
-		if (meta.status === "success") {
-			const checkoutSuccess = configStore.config.urls.checkoutSuccess ?? shop.urls.checkoutSuccess;
-			navigateTo?.(checkoutSuccess(checkout.data.order.token));
-		} else if (meta.status === "fail") navigateTo?.(checkoutFailure(""));
-		else if (meta.payment_url) navigateTo?.(meta.payment_url);
-		else if (meta.payment_data) postToPaymentProvider(meta.payment_data);
-		else navigateTo?.(checkoutFailure(""));
-	}
+	};
+	//#endregion
+	//#region src/components/checkoutForm/lib.ts
 	function setupGuestCheckout(host, custom) {
 		Forms.defineForm({
 			id: "checkoutGuest",
@@ -20011,21 +20458,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					key: "paymentMode",
 					required: true
 				}
-			]
+			],
+			services: [GuestCheckout]
 		});
 		wrapInElement(host, "go-form", {
 			"form-id": "checkoutGuest",
 			custom
-		});
-		host.addEventListener("submit", async (e) => {
-			const form = e.target;
-			if (!shop.cart) return;
-			const auth = await shop.signUp(form.details.formData, true);
-			if (auth.error) {
-				form.details.apiErrors = auth.error.errors;
-				return;
-			}
-			await finalizeCheckout(form, "checkoutGuest");
 		});
 	}
 	function setupUserCheckout(host, custom) {
@@ -20038,15 +20476,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}, {
 				key: "paymentMode",
 				required: true
-			}]
+			}],
+			services: [UserCheckout]
 		});
 		wrapInElement(host, "go-form", {
 			"form-id": "checkoutUser",
 			custom
-		});
-		host.addEventListener("submit", async (e) => {
-			const form = e.target;
-			await finalizeCheckout(form, "checkoutUser");
 		});
 	}
 	//#endregion
@@ -41100,6 +41535,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	var go = {
 		loaded: true,
+		FormSubmitService,
 		config: (options) => {
 			configStore.define(options);
 		},

@@ -84,9 +84,9 @@ The built-in (non-`custom`) fields are:
 
 ## Events
 
-| Event            | Description                                                                                                                                                                                                                                                                             | `detail`                                                                                                                         | bubbles | Since        |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------- | ------------ |
-| `go-form-failed` | Fires when the guest signup or the checkout request is rejected, **before** the errors render. Cancelable: `preventDefault()` renders nothing. `detail` is live — edit `errors` / `fieldErrors` to change what renders. Fires on the inner `<go-form>` and bubbles through this element | `{ formId: 'checkoutGuest' \| 'checkoutUser', apiAction: undefined, errors: string[], fieldErrors: Record<fieldKey, string[]> }` | yes     | `v4.24.0` |
+| Event            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `detail`                                                                                                                         | bubbles | Since     |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ------- | --------- |
+| `go-form-failed` | Fires when the guest signup or the checkout request is rejected, **before** the errors render. Also fires with the generic `form.error` message in `errors` when the request cannot complete (offline, DNS, CORS) or your `beforeSubmit` / `navigateTo` throws after the order exists _(Since `v4.30.0`)_. Cancelable: `preventDefault()` renders nothing. `detail` is live — edit `errors` / `fieldErrors` to change what renders. Fires on the inner `<go-form>` and bubbles through this element | `{ formId: 'checkoutGuest' \| 'checkoutUser', apiAction: undefined, errors: string[], fieldErrors: Record<fieldKey, string[]> }` | yes     | `v4.24.0` |
 
 Listen on the element itself to react, rewrite a message, or render the error yourself; see
 "Handling API errors" in the Forms documentation for the full payload and the cancel semantics.
@@ -124,14 +124,38 @@ go.config({
 })
 ```
 
-If the checkout request itself is rejected, no redirect happens — `go-form-failed` fires and
+If the checkout request is rejected by the API, no redirect happens — `go-form-failed` fires and
 the errors render on the form unless a listener cancels it.
+
+While a submit is in flight — for `<go-checkout-guest>` / `<go-checkout-form>` the whole
+guest-signup + checkout chain — further submits (clicks or Enter) are ignored and
+`<go-submit>` is disabled, so a double-click can never create two orders. Once the order
+is created the form **stays locked**, through the redirect and until the page unloads:
+unlocking while the browser is still navigating would let a click create a second
+order. If the customer comes back with the browser's Back button (e.g. from the payment
+provider) and the browser shows the page from its cache, the form is usable again _(Since `v4.30.0`)_. This also holds if your `beforeSubmit`, your `navigateTo` or one of your form services
+throws after the order exists — the error renders, but the customer cannot resubmit. If the checkout request
+itself cannot complete (offline, DNS, CORS) or the API rejects it, no order exists, so
+the generic `form.error` message (or the API's errors) renders and the button unlocks
+for a retry.
+_(Since `v4.30.0`)_
 
 ## Styling
 
-No style hooks beyond the root element (`go-checkout-guest`, `go-checkout-user`,
-`go-checkout-form`). Fields render through `<go-form>` — style them with the Forms hooks
-(`.go-field`, `.go-submit`, …). See the Forms documentation.
+- `go-checkout-guest`, `go-checkout-user`, `go-checkout-form` — the root element
+- `go-form.is-submitting` — the `<go-form>` rendered inside the root, present from the
+  submit (guest signup + checkout for the guest flow) until the page unloads after a
+  successful checkout, or until the failed attempt unlocks the form; `<go-submit>` is
+  disabled for the same window _(Since `v4.30.0`)_
+
+Fields render through `<go-form>` — style them with the Forms hooks (`.go-field`,
+`.go-submit`, …). See the Forms documentation.
+
+```css
+go-checkout-guest go-form.is-submitting {
+  opacity: 0.6;
+}
+```
 
 ## Nesting
 
@@ -166,7 +190,29 @@ fresh guest account on submit.
 ## Callbacks
 
 `beforeSubmit` runs after a successful checkout request, right before the payment
-redirect. Configure it per form id so the guest and signed-in flows can differ:
+redirect. Configure it per form id so the guest and signed-in flows can differ.
+
+**Deprecated** _(Since `v4.30.0`)_ — `beforeSubmit` still runs exactly as described,
+but each run logs a deprecation warning in the browser console. Use a form service's
+`afterSubmit` instead: it runs at the same point, after the order exists and before the
+redirect. `run.result` holds the checkout response. See Form services in the Forms
+documentation.
+
+Return `ok` from that `afterSubmit`. A `stop` there skips checkout's own `afterSubmit`, so
+the customer is not sent to payment, and the form stays locked because the order exists.
+
+```js
+class TrackOrder extends go.FormSubmitService {
+  afterSubmit(run) {
+    // the order exists, the payment redirect has not happened yet
+    return { status: 'ok', outcome: 'tracked' }
+  }
+}
+
+go.config({ forms: { checkoutGuest: { services: [TrackOrder] }, checkoutUser: { services: [TrackOrder] } } })
+```
+
+The old way, still working:
 
 ```js
 go.config({
@@ -187,6 +233,7 @@ go.config({
 
 ## Localization
 
-| Key                            | Purpose                     |
-| ------------------------------ | --------------------------- |
-| `cart.detail.actions.checkout` | Label for the submit button |
+| Key                            | Purpose                                                                                                             |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `cart.detail.actions.checkout` | Label for the submit button                                                                                         |
+| `form.error`                   | Generic error shown when the signup or checkout request cannot complete (offline, DNS, CORS) _(Since `v4.30.0`)_ |

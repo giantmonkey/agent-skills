@@ -82,13 +82,13 @@ until every required photo is present.
 
 `<go-annual-ticket-personalization-form>`:
 
-| Event            | Description                                                                                                                                                                                                                                                       | `detail`                                                                                        | bubbles | Since        |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------- | ------------ |
+| Event            | Description                                                                                                                                                                                                                                                       | `detail`                                                                                        | bubbles | Since     |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------- | --------- |
 | `go-form-failed` | Fires when a photo upload or the final submit is rejected, **before** the message renders in `<go-errors-feedback>`. Cancelable; `detail` is live — bubbles from the outer `<go-form>` through this element. See "Handling API errors" in the Forms documentation | `{ formId: 'ticketPersonalization', apiAction: undefined, errors: [message], fieldErrors: {} }` | yes     | `v4.24.0` |
 
 The form submits when the nested `<go-submit>` button fires
 its built-in submit (see the `<go-form>` component). On success it runs the
-optional `forms.personalization.beforeSubmit(data)` hook, then navigates to the URL returned by
+optional, deprecated `forms.personalization.beforeSubmit(data)` hook (see Configuration), then navigates to the URL returned by
 `urls.annualTicketPersonalizationFormSubmit(token)` (both set via `go.config`).
 
 ## Styling
@@ -145,11 +145,11 @@ Show content only once the order has loaded:
 
 Set these with `go.config({ urls: { … }, forms: { … } })` to wire the journey together:
 
-| Option                                       | Purpose                                                                  |
-| -------------------------------------------- | ------------------------------------------------------------------------ |
-| `urls.annualTicketPersonalizationForm`       | `(token, ticketSaleId) => url` — target of the list’s “Personalize” link |
-| `urls.annualTicketPersonalizationFormSubmit` | `(token) => url` — where the form navigates after a successful submit    |
-| `forms.personalization.beforeSubmit`         | `(data) => void` — optional hook run after a successful finalize         |
+| Option                                       | Purpose                                                                                                                                                                                                    |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `urls.annualTicketPersonalizationForm`       | `(token, ticketSaleId) => url` — target of the list’s “Personalize” link                                                                                                                                   |
+| `urls.annualTicketPersonalizationFormSubmit` | `(token) => url` — where the form navigates after a successful submit                                                                                                                                      |
+| `forms.personalization.beforeSubmit`         | `(data) => void` — optional hook run after a successful finalize. **Deprecated:** it still runs as before, but logs a deprecation warning to the browser console every time it runs _(Since `v4.30.0`)_ |
 
 ## Localization
 

@@ -4,6 +4,101 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.30.0
+
+_Released 2026-10-19_
+
+A checkout can no longer be submitted twice. A failed backend request no longer empties the
+shop or leaves it hanging, and a new `go-fetch-error` event lets you show your own error
+state. You can also add your own steps to the submit of any `<go-form>`.
+
+## New
+
+- `go-fetch-error` document event — fires on `document` when a data request the
+  components make fails, either with an HTTP error status or at the network level
+  (offline, DNS, CORS). `event.detail` carries `{ endpoint, status, at }`. `status` is
+  the HTTP status and is missing for network-level failures. `at` is a millisecond
+  timestamp. Answers that are normal outcomes do not fire it: a signed-out customer
+  (401), an unknown voucher code in `<go-coupon-redemption>`, or an old order token on
+  the order and personalization pages (404). Those still resolve to "signed out" or
+  "nothing found", as before. Use the event to show your own error or retry hint:
+
+  ```js
+  document.addEventListener('go-fetch-error', e => {
+    console.warn('gomus request failed', e.detail.endpoint, e.detail.status)
+  })
+  ```
+
+- Form services — add your own steps to the submit of a `<go-form>`. Extend
+  `go.FormSubmitService` and register the class under the form's `form-id` with
+  `go.config({ forms: { <form-id>: { services: [...] } } })`. Each `<go-form>` creates
+  its own instance. Override only the steps you need: `beforeValidation`, `validation`,
+  `afterValidation`, `beforeSubmit`, `submit`, `afterSubmit`, `finally`. Each step
+  returns `{ status: 'ok' | 'stop', outcome: '…' }`, or a Promise of it, and
+  `<go-form>` waits for it. A `'stop'` ends the submit. Your services run after the
+  form's own validation and before an `api-action` form sends its data. The form is
+  locked from the first step on (`is-submitting`, `<go-submit>` disabled), so a
+  second submit is ignored the whole time.
+  The `submit` event goes out at the start of `beforeSubmit`, so to stop a form whose
+  `submit` event a listener handles (e.g. `<go-sign-in>`), return `'stop'` in
+  `afterValidation` or earlier. On the checkout tags, your `afterSubmit` runs once the
+  order exists, before the redirect to payment. If a service throws, the generic
+  `form.error` message shows on the form.
+
+  ```js
+  class BlockWhenClosed extends go.FormSubmitService {
+    beforeSubmit() {
+      return window.shopIsClosed ? { status: 'stop', outcome: 'shop closed' } : { status: 'ok', outcome: 'shop open' }
+    }
+  }
+
+  go.config({ forms: { myForm: { services: [BlockWhenClosed] } } })
+  ```
+
+## Fixed
+
+- `<go-checkout-guest>`, `<go-checkout-user>`, and `<go-checkout-form>` now block a
+  second submit while the checkout request is running, so a double-click or a repeated
+  Enter no longer creates two orders. As with every other `<go-form>`, the wrapping
+  `<go-form>` gets the `is-submitting` class and `<go-submit>` is disabled. Unlike other
+  forms, the checkout stays locked once the order exists, through the redirect to
+  payment, because the page can still be clicked until the browser has actually left
+  it. When the customer comes back with the browser's Back button (e.g. from the payment
+  provider), the form is usable again.
+- When a checkout request fails at the network level, the generic `form.error` message
+  now shows on the form and the customer can retry. Before, it failed silently with no
+  feedback.
+- A failed data request (HTTP 4xx/5xx or a network failure) no longer wipes data that
+  was already loaded, and no longer shows the error response as if it were data.
+  Components keep showing what they last loaded. Before, a short error could leave, for
+  example, the ticket selection empty for the length of the cache window (up to ~16
+  minutes), with nothing saying what went wrong.
+- A data request that fails at the network level or with a server error (5xx) is tried
+  again right away, up to three times. A 4xx answer is not tried again. If every try
+  fails, the next read after 10 seconds tries again. When the backend is back, the shop
+  picks it up without a page reload.
+- A network failure during a data request no longer leaves the shop waiting forever.
+  Components and `go.api.get*()` calls waiting on that request now finish instead of
+  hanging until reload. The `go.api` getters resolve to `undefined`, as documented.
+
+## Changed
+
+- The checkout tags now send the order through the `<go-form>` submit steps. If a
+  `submit` listener on a checkout tag calls `preventDefault()`, the checkout no longer
+  happens. Before, the checkout ignored it.
+
+## Deprecated
+
+- The `beforeSubmit` callback in `go.config({ forms: { … } })`, used by the checkout
+  tags and the annual-ticket personalization form, still works the same way. It now
+  logs a deprecation warning in the browser console and will be removed in a future
+  major. On the checkout tags, use a form service (`go.FormSubmitService`, see above)
+  instead: its `afterSubmit` runs at the same point as `beforeSubmit`, after the order
+  exists and before the redirect to payment. The personalization form has no matching
+  service step yet, so keep `beforeSubmit` there for now.
+
+---
+
 # v4.29.1
 
 _Released 2026-10-19_

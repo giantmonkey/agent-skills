@@ -24,8 +24,8 @@ This component takes no attributes.
 
 ## Events
 
-| Event            | Description                                                                                                                                                                                                                                                      | `detail`                                                                     | bubbles | Since        |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------- | ------------ |
+| Event            | Description                                                                                                                                                                                                                                                      | `detail`                                                                     | bubbles | Since     |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------- | --------- |
 | `go-form-failed` | Fires when the password change is rejected, **before** the errors render. Cancelable: `preventDefault()` renders nothing; edit `detail.errors` / `detail.fieldErrors` to change what renders. Bubbles from the inner `<go-form>` through `<go-profile-password>` | `{ formId: 'passwordResetForm', apiAction: undefined, errors, fieldErrors }` | yes     | `v4.24.0` |
 
 See "Handling API errors" in the Forms documentation to react, rewrite a message, or render the error yourself.
