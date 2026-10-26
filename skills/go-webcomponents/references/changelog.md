@@ -4,6 +4,29 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.30.3
+
+_Released 2026-10-26_
+
+A ticket in the cart stays adjustable after a ticket for a different date is added, and each date gets
+its own free places.
+
+## Fixed
+
+- When the cart held a ticket for one date and a ticket for another date was added, and both
+  dates share the same capacity limit, the first ticket's `+` button in `<go-cart>` and
+  `<go-tickets>` got disabled even though places were still free. Free places are now kept for
+  every loaded date, also across page reloads, and a new load for the same date and time still
+  updates them. No markup or attribute changes are needed.
+- Tickets in the cart for one date no longer use up the free places of another date. With 8 tickets
+  on one day and 2 on the next, both limited to 10 per time slot, each day can now go up to 10 in
+  `<go-cart>`, `<go-tickets>` and the `<go-timeslots>` picker, instead of the two days sharing one 10.
+- Tickets that share one capacity limit but are loaded separately (two `<go-ticket-segment>`s with
+  different ticket groups, or `go.cart.addItem()` for a single ticket) now count against each
+  other's free places, and loading one of them no longer shows the others as sold out.
+
+---
+
 # v4.30.2
 
 _Released 2026-10-26_

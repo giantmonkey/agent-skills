@@ -6854,13 +6854,19 @@ createHTML: (html) => {
 		const qty = item.quantity ?? 0;
 		return isMantleTicket(item.product) ? qty * compositionSum(item) : qty;
 	}
+	/** The quota slot a cart line draws from — its booked time; a day line draws from its whole date. */
+	var precartSlot = (item) => ({
+		time: item.time || (isUITicket(item.product) ? item.product.selectedTime ?? "" : ""),
+		wholeDay: isUITicket(item.product) && item.product.subtype === "day"
+	});
 	/**
 	* Feed cart + preCart into the quota precart as *needed capacity*, so every item sharing a quota is
-	* netted out before sizing `item`. `addPrecartItemQuantity` SUMS draws per id, so two lines of the
-	* same ticket id (e.g. two mantle lines with different mixes) both count instead of the last
-	* overwriting the rest. Returns the draw of the line being sized — captured by reference — so the
-	* caller credits back only its OWN draw via `ticketCapacity(..., ownDraw)`, never a sibling
-	* same-id line's (which must keep consuming, or the two oversell).
+	* netted out before sizing `item` — each at the slot it is booked on (`precartSlot`), so a line on
+	* another date or time never eats into the sized slot. `addPrecartItemQuantity` SUMS draws per
+	* id, so two lines of the same ticket id (e.g. two mantle lines with different mixes) both count
+	* instead of the last overwriting the rest. Returns the draw of the line being sized — captured
+	* by reference — so the caller credits back only its OWN draw via `ticketCapacity(..., ownDraw)`,
+	* never a sibling same-id line's (which must keep consuming, or the two oversell).
 	*/
 	function feedQuotaPrecart(quotaManager, cart, preCart, item) {
 		quotaManager.clearPrecart();
@@ -6869,7 +6875,7 @@ createHTML: (html) => {
 			if (!isUITicket(i.product)) continue;
 			const draw = neededCapacity(i);
 			if (i === item) ownDraw = draw;
-			quotaManager.addPrecartItemQuantity(i.product.id, draw);
+			quotaManager.addPrecartItemQuantity(i.product.id, draw, precartSlot(i));
 		}
 		return ownDraw;
 	}
@@ -7064,49 +7070,97 @@ createHTML: (html) => {
 	};
 	//#endregion
 	//#region src/lib/models/capacity/calculators/quotaManager/QuotaManager.ts
+	var quotaIdOf = (key) => key.split(":")[0];
+	var dayOf = (slot) => slot.slice(0, 10);
+	var withoutDays = (slots, days) => Object.fromEntries(Object.entries(slots).filter(([slot]) => !days.includes(dayOf(slot))));
+	/**
+	* Merges freshly loaded quotas into the known ones. For each ticket of a fresh quota, the slots of the
+	* answered date are replaced and other dates are kept. The backend leaves out slots that have passed,
+	* so a slot missing from the answer is dropped. `date` is the answered date; without it the date is
+	* read from the answer's slots, so an answer without slots then changes nothing.
+	*/
+	function mergeQuotas({ known, fresh, date }) {
+		const merged = { ...known };
+		for (const [key, quota] of Object.entries(fresh)) {
+			const days = date ? [date] : Object.keys(quota.capacities).map(dayOf);
+			for (const ticketId of quota.ticket_ids) {
+				const entryKey = `${quotaIdOf(key)}:${ticketId}`;
+				const old = merged[entryKey];
+				merged[entryKey] = {
+					ticket_ids: [ticketId],
+					capacities: {
+						...withoutDays(old?.capacities ?? {}, days),
+						...quota.capacities
+					},
+					total_capacities: {
+						...withoutDays(old?.total_capacities ?? {}, days),
+						...quota.total_capacities
+					}
+				};
+			}
+		}
+		return merged;
+	}
+	var drawsFrom = (draw, timeSlot) => !draw.time || draw.time === timeSlot || !!draw.wholeDay && draw.time.slice(0, 10) === timeSlot.slice(0, 10);
 	function createQuotaManager(quotas) {
 		return {
 			apiData: quotas,
 			_timeslots: [],
-			addQuotas(data) {
+			addQuotas(data, date) {
 				this._timeslots = [];
-				this.apiData = {
-					...this.apiData,
-					...data
-				};
+				this.apiData = mergeQuotas({
+					known: this.apiData,
+					fresh: data,
+					date
+				});
 			},
-			precart: {},
+			precart: [],
 			clearPrecart() {
-				this.precart = {};
+				this.precart = [];
 				this._timeslots = [];
 			},
-			setPrecartItemQuantity(ticketId, quantity) {
-				this.precart[ticketId] = quantity;
+			setPrecartItemQuantity(ticketId, quantity, slot = { time: "" }) {
+				this.precart = this.precart.filter((d) => d.ticketId !== ticketId);
+				this.addPrecartItemQuantity(ticketId, quantity, slot);
+			},
+			addPrecartItemQuantity(ticketId, quantity, slot = { time: "" }) {
+				this.precart.push({
+					ticketId,
+					quantity,
+					...slot
+				});
 				this._timeslots = [];
 			},
-			addPrecartItemQuantity(ticketId, quantity) {
-				this.precart[ticketId] = (this.precart[ticketId] ?? 0) + quantity;
-				this._timeslots = [];
-			},
-			getPrecartItemQuantity(ticketId) {
-				return this.precart[ticketId] ?? 0;
+			getPrecartItemQuantity(ticketId, timeSlot) {
+				return sum(this.precart.filter((d) => d.ticketId === ticketId && (!timeSlot || drawsFrom(d, timeSlot))), (d) => d.quantity);
 			},
 			/**
 			* a flat list of all timeslots and their capacities, respecting preCart.
 			*/
 			timeslots() {
-				if (this._timeslots.length === 0) this._timeslots = Object.entries(this.apiData).flatMap(([quota, cap]) => {
-					return Object.keys(cap.capacities).map((timeSlot) => {
-						const sumPreCart = sum(cap.ticket_ids.map((ticket) => this.getPrecartItemQuantity(ticket)));
-						return {
-							timeSlot,
-							quota,
-							capacity: cap.capacities[timeSlot] - sumPreCart,
-							tickets: cap.ticket_ids,
-							totalCapacity: cap.total_capacities[timeSlot]
-						};
+				if (this._timeslots.length === 0) {
+					const ticketsOnQuota = {};
+					for (const [key, cap] of Object.entries(this.apiData)) {
+						const id = quotaIdOf(key);
+						ticketsOnQuota[id] = unique([...ticketsOnQuota[id] ?? [], ...cap.ticket_ids]);
+					}
+					const drawnAt = {};
+					this._timeslots = Object.entries(this.apiData).flatMap(([key, cap]) => {
+						const quota = quotaIdOf(key);
+						const drawers = ticketsOnQuota[quota];
+						return Object.keys(cap.capacities).map((timeSlot) => {
+							const quotaSlot = `${quota}|${timeSlot}`;
+							drawnAt[quotaSlot] ??= sum(drawers.map((ticket) => this.getPrecartItemQuantity(ticket, timeSlot)));
+							return {
+								timeSlot,
+								quota,
+								capacity: cap.capacities[timeSlot] - drawnAt[quotaSlot],
+								tickets: cap.ticket_ids,
+								totalCapacity: cap.total_capacities[timeSlot]
+							};
+						});
 					});
-				});
+				}
 				return this._timeslots;
 			},
 			/**
@@ -7127,7 +7181,8 @@ createHTML: (html) => {
 					totalCapacity: x.totalCapacity
 				})));
 			},
-			ticketCapacity(ticketId, timeslot, ownQuantity = this.getPrecartItemQuantity(ticketId)) {
+			ticketCapacity(ticketId, timeslot, ownQuantity) {
+				ownQuantity ??= this.getPrecartItemQuantity(ticketId, timeslot);
 				const minCap = min$2(this.filterBy({
 					timeslot,
 					ticketId
@@ -8795,12 +8850,13 @@ createHTML: (html) => {
 			allSeats: {},
 			allQuotas: {},
 			quotaManager: createQuotaManager({}),
-			addQuotas(quotas, saveToLocalStorage = true) {
-				this.allQuotas = {
-					...this.allQuotas,
-					...quotas
-				};
-				this.quotaManager.addQuotas(quotas);
+			addQuotas(quotas, saveToLocalStorage = true, date) {
+				this.allQuotas = mergeQuotas({
+					known: this.allQuotas,
+					fresh: quotas,
+					date
+				});
+				this.quotaManager.addQuotas(quotas, date);
 				if (saveToLocalStorage) saveCapacityToLocalStorage(this.allSeats, this.allQuotas);
 			},
 			addSeats(dateId, seats, saveToLocalStorage = true) {
@@ -36700,7 +36756,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	* filters accumulate within one render pass (<go-timeslots> resets the list first).
 	*/
 	function loadPickerQuotas(tsd, quotas) {
-		shop.capacityManager.addQuotas(quotas);
+		shop.capacityManager.addQuotas(quotas, true, tsd.selectedDate?.toString());
 		tsd.timeslotTicketIds = [...tsd.timeslotTicketIds, ...Object.values(quotas).flatMap((q) => q.ticket_ids)];
 	}
 	function filterDatesInWindow(dates, selectedDate, selectedTime) {
@@ -39436,10 +39492,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 			const quotaManager = shop.capacityManager.quotaManager;
 			quotaManager.clearPrecart();
-			for (const item of shop.cart?.items ?? []) {
-				const product = item.product;
-				if (isUITicket(product)) quotaManager.setPrecartItemQuantity(product.id, item.quantity ?? 0);
-			}
+			for (const item of shop.cart?.items ?? []) if (isUITicket(item.product)) quotaManager.addPrecartItemQuantity(item.product.id, neededCapacity(item), precartSlot(item));
 			this.timeslots = quotaManager.timeslotsOn(date, this.tsd?.timeslotTicketIds).map((x) => ({
 				...x,
 				startAt: x.timeSlot,
