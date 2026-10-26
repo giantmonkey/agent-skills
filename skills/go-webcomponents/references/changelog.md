@@ -4,6 +4,23 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.30.2
+
+_Released 2026-10-26_
+
+Keyboard users can reach the calendar's days by Tab again, even when today is closed.
+
+## Fixed
+
+- `<go-calendar>` lets you Tab into the day grid when today, or the day you land on after
+  Next / Previous, is closed (a past day, or one marked `'unavailable'`). Before, Tab skipped
+  the whole grid, so keyboard users could not pick a date. Now Tab lands on the first open day
+  of the shown month. When the day you land on is open, Tab stays on it, as before. This also
+  works when the open days load after the calendar is already showing, and when an
+  `availability-override` closes the day.
+
+---
+
 # v4.30.1
 
 _Released 2026-10-19_
