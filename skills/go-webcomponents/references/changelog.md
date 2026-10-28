@@ -4,6 +4,31 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.31.0
+
+_Released 2026-10-28_
+
+A new experimental setting lets signed-in customers see the tickets reserved for their own customer category in ticket selection.
+
+## New
+
+- `experimental.includeCustomerCategoryTickets` config option (experimental) — by default the
+  admission ticket lists leave out every ticket assigned to a customer category. Turn this on to
+  show a signed-in customer the tickets for their own category next to the general ones:
+
+  ```js
+  go.config({ experimental: { includeCustomerCategoryTickets: true } })
+  // or, before the bundle loads:
+  window.customOptions = { experimental: { includeCustomerCategoryTickets: true } }
+  ```
+
+  It affects the ticket lists that `<go-ticket-selection>` loads for the `ticket:*` filters and
+  the `event:admission*` / `events:admission*` filters, and to tickets added with `go.cart.addItem`.
+  Tickets for other customer categories stay hidden. Off by default, so existing shops see no change. This setting is experimental, so its
+  name or behavior can change, or it can be removed, in any release.
+
+---
+
 # v4.30.3
 
 _Released 2026-10-26_

@@ -9503,6 +9503,72 @@ createHTML: (html) => {
 	var CUSTOMER_MEMBERSHIPS_ENDPOINT = "/api/v4/customer/memberships";
 	var CUSTOMER_ADDRESS_ENDPOINT = "/api/v4/customer/customer_addresses/{id}";
 	//#endregion
+	//#region src/config/configStore.svelte.ts
+	var defaultConfig = {
+		urls: {},
+		navigateTo: (url) => {
+			window.location.assign(url);
+		},
+		forms: {},
+		fields: {},
+		quantityStepper: true,
+		quantityStepperAtMinimum: "remove",
+		experimental: { includeCustomerCategoryTickets: false }
+	};
+	var ConfigStoreSvelte = class {
+		defaultConfig = assign(defaultConfig, globalThis.window?.customOptions ?? {});
+		override = this.defaultConfig;
+		#options = /* @__PURE__ */ state(proxy(this.defaultConfig));
+		get options() {
+			return get$2(this.#options);
+		}
+		set options(value) {
+			set(this.#options, value, true);
+		}
+		constructor() {
+			this.update();
+		}
+		update() {
+			const merged = assign(this.defaultConfig, this.override);
+			merged.forms = Object.keys({
+				...this.defaultConfig.forms,
+				...this.override.forms
+			}).reduce((acc, key) => {
+				const defaults = this.defaultConfig.forms[key];
+				const override = this.override.forms[key];
+				acc[key] = {
+					...defaults,
+					...override
+				};
+				if (override?.services || defaults?.services) acc[key].services = combineServices({
+					shop: override?.services ?? [],
+					form: defaults?.services ?? []
+				});
+				return acc;
+			}, {});
+			this.options = merged;
+		}
+		get config() {
+			return this.options;
+		}
+		define(options) {
+			this.override = assign(this.override, options);
+			this.update();
+			return this;
+		}
+		default(options) {
+			this.defaultConfig = assign(this.defaultConfig, options);
+			this.update();
+			return this;
+		}
+	};
+	function combineServices({ shop, form }) {
+		const combined = [...shop];
+		for (const service of form) if (!combined.includes(service)) combined.push(service);
+		return combined;
+	}
+	var configStore = new ConfigStoreSvelte();
+	//#endregion
 	//#region src/lib/stores/shop.svelte.ts
 	var NOT_SIGNED_IN = { error: {
 		success: false,
@@ -9531,6 +9597,7 @@ createHTML: (html) => {
 			set(this.#lastFetchError, value, true);
 		}
 		#invalidationGens = {};
+		#ticketsCustomer;
 		#collectReads = null;
 		constructor(apiUrl, shopDomain, locale, type = "angular") {
 			this.type = type;
@@ -9737,16 +9804,30 @@ createHTML: (html) => {
 				query: params
 			});
 		}
+		#withTicketsExperiments(query) {
+			if (!configStore.config.experimental.includeCustomerCategoryTickets) return query;
+			const customer = this.auth.data.uid;
+			if (customer !== this.#ticketsCustomer) {
+				this.invalidate(TICKETS_ENDPOINT);
+				this.#ticketsCustomer = customer;
+			}
+			return {
+				...query,
+				...CUSTOMER_CATEGORY_TICKETS
+			};
+		}
 		ticketsAndQuotas(params) {
-			return this.fetchAndCache(TICKET_AND_QUOTAS_ENDPOINT, `ticketsAndQuotas-${JSON.stringify(params)}`, "", {
+			const query = this.#withTicketsExperiments(params ?? {});
+			return this.fetchAndCache(TICKET_AND_QUOTAS_ENDPOINT, `ticketsAndQuotas-${JSON.stringify(query)}`, "", {
 				cache: 60,
-				query: assign({ per_page: 100 }, params ?? {})
+				query: assign({ per_page: 100 }, query)
 			});
 		}
 		tickets(params) {
-			return this.fetchAndCache(TICKETS_ENDPOINT, `tickets-${JSON.stringify(params)}`, "tickets", {
+			const query = this.#withTicketsExperiments(params ?? {});
+			return this.fetchAndCache(TICKETS_ENDPOINT, `tickets-${JSON.stringify(query)}`, "tickets", {
 				cache: 60,
-				query: assign({ per_page: 100 }, params ?? {})
+				query: assign({ per_page: 100 }, query)
 			});
 		}
 		getTicket(id) {
@@ -10186,6 +10267,7 @@ createHTML: (html) => {
 			if (!this.#canFetch()) throw new Error("Fetch is not possible.");
 		};
 	};
+	var CUSTOMER_CATEGORY_TICKETS = { by_not_vip: false };
 	var shop = new Shop();
 	//#endregion
 	//#region src/lib/helpers/context.svelte.ts
@@ -10242,71 +10324,6 @@ createHTML: (html) => {
 			} else throw new Error("(createGetDetails) Host is undefined, You are probably trying to use this in a non-web-component context.");
 		};
 	}
-	//#endregion
-	//#region src/config/configStore.svelte.ts
-	var defaultConfig = {
-		urls: {},
-		navigateTo: (url) => {
-			window.location.assign(url);
-		},
-		forms: {},
-		fields: {},
-		quantityStepper: true,
-		quantityStepperAtMinimum: "remove"
-	};
-	var ConfigStoreSvelte = class {
-		defaultConfig = assign(defaultConfig, window.customOptions ?? {});
-		override = this.defaultConfig;
-		#options = /* @__PURE__ */ state(proxy(this.defaultConfig));
-		get options() {
-			return get$2(this.#options);
-		}
-		set options(value) {
-			set(this.#options, value, true);
-		}
-		constructor() {
-			this.update();
-		}
-		update() {
-			const merged = assign(this.defaultConfig, this.override);
-			merged.forms = Object.keys({
-				...this.defaultConfig.forms,
-				...this.override.forms
-			}).reduce((acc, key) => {
-				const defaults = this.defaultConfig.forms[key];
-				const override = this.override.forms[key];
-				acc[key] = {
-					...defaults,
-					...override
-				};
-				if (override?.services || defaults?.services) acc[key].services = combineServices({
-					shop: override?.services ?? [],
-					form: defaults?.services ?? []
-				});
-				return acc;
-			}, {});
-			this.options = merged;
-		}
-		get config() {
-			return this.options;
-		}
-		define(options) {
-			this.override = assign(this.override, options);
-			this.update();
-			return this;
-		}
-		default(options) {
-			this.defaultConfig = assign(this.defaultConfig, options);
-			this.update();
-			return this;
-		}
-	};
-	function combineServices({ shop, form }) {
-		const combined = [...shop];
-		for (const service of form) if (!combined.includes(service)) combined.push(service);
-		return combined;
-	}
-	var configStore = new ConfigStoreSvelte();
 	//#endregion
 	//#region src/components/annualTicketPersonalization/lib/PersonalizationDetails.svelte.ts
 	var PersonalizationDetails = class {
