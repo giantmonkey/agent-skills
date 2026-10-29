@@ -4,6 +4,23 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.31.3
+
+_Released 2026-10-29_
+
+Screen readers now tell a sold-out day in the calendar apart from a day that cannot be booked.
+
+## Fixed
+
+- In `<go-calendar>` a screen reader read a sold-out day and a blocked day the same way, by the
+  date alone. A sold-out day now adds the shop translation `ticket.timeSlot.noAvailable` after the
+  date. In Dutch it reads "donderdag 5 november 2026, Uitverkocht". A shop without that text gets
+  "Ausverkauft" in German and "Sold out" in any other language. A blocked day keeps the plain
+  date. This also holds for a day an `availability-override` callback marks `'sold_out'`. The
+  visible calendar and the `is-unavailable` / `is-disabled` classes stay as they were.
+
+---
+
 # v4.31.2
 
 _Released 2026-10-29_

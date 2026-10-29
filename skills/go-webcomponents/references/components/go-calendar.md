@@ -222,10 +222,13 @@ window.isBoxOfficeDate = function (data) {
 
 Since `v4.31.1`
 
-The keys ship with gomus in every shop language. A shop can override them in its translations.
+The keys ship with gomus in every shop language. A shop can override them in its translations. A
+shop without the sold-out text gets the built-in "Ausverkauft" in German and "Sold out" in any other
+language.
 
-| Key                             | Purpose                                                                       |
-| ------------------------------- | ----------------------------------------------------------------------------- |
-| `datepicker.aria.previousMonth` | Screen-reader name of the previous-month button (`.go-calendar-prev-button`). |
-| `datepicker.aria.nextMonth`     | Screen-reader name of the next-month button (`.go-calendar-next-button`).     |
-| `datepicker.aria.select`        | Screen-reader name of the calendar, followed by the shown month.              |
+| Key                             | Purpose                                                                                                                                                              |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `datepicker.aria.previousMonth` | Screen-reader name of the previous-month button (`.go-calendar-prev-button`).                                                                                        |
+| `datepicker.aria.nextMonth`     | Screen-reader name of the next-month button (`.go-calendar-next-button`).                                                                                            |
+| `datepicker.aria.select`        | Screen-reader name of the calendar, followed by the shown month.                                                                                                     |
+| `ticket.timeSlot.noAvailable`   | Added to a sold-out day's screen-reader name after the date, e.g. "donderdag 5 november 2026, Uitverkocht". Blocked days keep the plain date. _(Since `v4.31.3`)_ |
