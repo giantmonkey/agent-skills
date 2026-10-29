@@ -4,6 +4,24 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.31.1
+
+_Released 2026-10-29_
+
+Screen readers now read the calendar's month buttons and the calendar's name in the shop's language.
+
+## Fixed
+
+- `<go-calendar>` and the calendar of a `date` field in `<go-form>` name their month buttons
+  from the shop translations `datepicker.aria.previousMonth` and `datepicker.aria.nextMonth`.
+  Before, a screen reader read "Previous" and "Next" in every language. In Dutch it now reads
+  "vorige maand" and "volgende maand". The visible "Prev" / "Next" text of `<go-calendar>`
+  stays as it was.
+- The same calendars are named from `datepicker.aria.select` plus the shown month, for example
+  "Kies een dag oktober 2026". Before, a screen reader read "Event oktober 2026".
+
+---
+
 # v4.31.0
 
 _Released 2026-10-28_

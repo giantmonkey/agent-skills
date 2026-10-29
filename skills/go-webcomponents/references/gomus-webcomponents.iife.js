@@ -15295,7 +15295,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#region src/components/cart/components/itemTitles/Ticket.svelte
 	var root$59 = /* @__PURE__ */ from_html(`<span class="go-cart-item-subtitle" data-testid="cart-item-subtitle"> </span>`);
 	var root_1$23 = /* @__PURE__ */ from_html(`<span class="go-cart-item-time" data-testid="cart-item-time"> </span>`);
-	var root_2$15 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <!>`, 1);
+	var root_2$16 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <!>`, 1);
 	var root_3$10 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span> <!> <!>`, 1);
 	function Ticket($$anchor, $$props) {
 		push($$props, true);
@@ -15327,7 +15327,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		});
 		var node_1 = sibling(node, 2);
 		var consequent_2 = ($$anchor) => {
-			var fragment_1 = root_2$15();
+			var fragment_1 = root_2$16();
 			var span_2 = first_child(fragment_1);
 			var text_2 = child(span_2, true);
 			reset(span_2);
@@ -15357,7 +15357,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#region src/components/cart/components/itemTitles/Tour.svelte
 	var root$58 = /* @__PURE__ */ from_html(`<span class="go-cart-item-time" data-testid="cart-item-time"> </span>`);
 	var root_1$22 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <!>`, 1);
-	var root_2$14 = /* @__PURE__ */ from_html(`<span class="go-cart-item-custom" data-testid="cart-item-custom"> </span>`);
+	var root_2$15 = /* @__PURE__ */ from_html(`<span class="go-cart-item-custom" data-testid="cart-item-custom"> </span>`);
 	var root_3$9 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span> <span class="go-cart-item-participants" data-testid="cart-item-participants"> </span> <!> <!>`, 1);
 	function Tour$1($$anchor, $$props) {
 		push($$props, true);
@@ -15422,7 +15422,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var $$array = /* @__PURE__ */ user_derived(() => to_array(get$2($$item), 2));
 			let key = () => get$2($$array)[0];
 			let value = () => get$2($$array)[1];
-			var span_4 = root_2$14();
+			var span_4 = root_2$15();
 			var text_4 = child(span_4);
 			reset(span_4);
 			template_effect(($0) => set_text(text_4, `${key() ?? ""}: ${$0 ?? ""}`), [() => displayCustom(value())]);
@@ -18250,7 +18250,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#region src/components/cart/components/SubRow.svelte
 	var root$55 = /* @__PURE__ */ from_html(`<span class="go-sub-ticket-description"></span>`);
 	var root_1$20 = /* @__PURE__ */ from_html(`<span class="go-sub-ticket-quantity"> </span>`);
-	var root_2$13 = /* @__PURE__ */ from_html(`<li><span class="go-sub-ticket-title"> </span> <!> <!></li>`);
+	var root_2$14 = /* @__PURE__ */ from_html(`<li><span class="go-sub-ticket-title"> </span> <!> <!></li>`);
 	function SubRow($$anchor, $$props) {
 		push($$props, true);
 		/** Capacity-aware ceiling from CapacityManager.subTicketMaxes; the combination max when absent. */
@@ -18293,7 +18293,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var li = root_2$13();
+		var li = root_2$14();
 		var span = child(li);
 		var text = child(span, true);
 		reset(span);
@@ -18388,11 +18388,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#region src/components/cart/components/Item.svelte
 	var root$54 = /* @__PURE__ */ from_html(`<s class="go-cart-item-price-original"> </s> <span class="go-cart-item-price-discounted"> </span>`, 1);
 	var root_1$19 = /* @__PURE__ */ from_html(`<span class="go-cart-item-price-discounted"> </span>`);
-	var root_2$12 = /* @__PURE__ */ from_html(`<span data-testid="cart-item-participant-count"> </span>`);
+	var root_2$13 = /* @__PURE__ */ from_html(`<span data-testid="cart-item-participant-count"> </span>`);
 	var root_3$8 = /* @__PURE__ */ from_html(`<span data-testid="cart-item-voucher-quantity"> </span>`);
 	var root_4$4 = /* @__PURE__ */ from_html(`<span> </span>`);
-	var root_5$3 = /* @__PURE__ */ from_html(`<li class="go-cart-item-remove"><button class="go-cart-remove"> </button></li>`);
-	var root_6$2 = /* @__PURE__ */ from_html(`<ul class="go-sub-tickets" role="list"></ul>`);
+	var root_5$4 = /* @__PURE__ */ from_html(`<li class="go-cart-item-remove"><button class="go-cart-remove"> </button></li>`);
+	var root_6$3 = /* @__PURE__ */ from_html(`<ul class="go-sub-tickets" role="list"></ul>`);
 	var root_7$2 = /* @__PURE__ */ from_html(`<article class="go-cart-item-content"><ul><li class="go-cart-item-title-container"><!></li> <li class="go-cart-item-price"><!></li> <li class="go-cart-item-count"><!></li> <!> <li class="go-cart-item-sum"> </li></ul></article> <!>`, 1);
 	function Item$1($$anchor, $$props) {
 		push($$props, true);
@@ -18522,7 +18522,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var li_2 = sibling(li_1, 2);
 			var node_3 = child(li_2);
 			var consequent_5 = ($$anchor) => {
-				var span_2 = root_2$12();
+				var span_2 = root_2$13();
 				var text_3 = child(span_2, true);
 				reset(span_2);
 				template_effect(() => set_text(text_3, displayItem().product.participants));
@@ -18574,7 +18574,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			reset(li_2);
 			var node_4 = sibling(li_2, 2);
 			var consequent_8 = ($$anchor) => {
-				var li_3 = root_5$3();
+				var li_3 = root_5$4();
 				var button = child(li_3);
 				var text_6 = child(button, true);
 				reset(button);
@@ -18596,7 +18596,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			reset(article);
 			var node_5 = sibling(article, 2);
 			var consequent_9 = ($$anchor) => {
-				var ul_1 = root_6$2();
+				var ul_1 = root_6$3();
 				each(ul_1, 21, () => subTicketDefs(get$2(mantleProduct)), (sub) => sub.id, ($$anchor, sub) => {
 					{
 						let $0 = /* @__PURE__ */ user_derived(() => displayItem().mantle?.composition?.[get$2(sub).id] ?? 0);
@@ -18711,7 +18711,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#region src/components/cart/components/CartItems.svelte
 	var root$52 = /* @__PURE__ */ from_html(`<li class="go-cart-header-remove"></li>`);
 	var root_1$17 = /* @__PURE__ */ from_html(`<li class="go-cart-item"><!></li>`);
-	var root_2$11 = /* @__PURE__ */ from_html(`<ol data-testid="cart-items"><li class="go-cart-header"><ul><li class="go-cart-header-title"> </li> <li class="go-cart-header-price"> </li> <li class="go-cart-header-count"> </li> <!> <li class="go-cart-header-sum"> </li></ul></li> <!> <!></ol>`);
+	var root_2$12 = /* @__PURE__ */ from_html(`<ol data-testid="cart-items"><li class="go-cart-header"><ul><li class="go-cart-header-title"> </li> <li class="go-cart-header-price"> </li> <li class="go-cart-header-count"> </li> <!> <li class="go-cart-header-sum"> </li></ul></li> <!> <!></ol>`);
 	function CartItems($$anchor, $$props) {
 		push($$props, true);
 		const _details = getCartDetails($$props.$$host);
@@ -18719,7 +18719,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent_1 = ($$anchor) => {
-			var ol = root_2$11();
+			var ol = root_2$12();
 			var li = child(ol);
 			var ul = child(li);
 			var li_1 = child(ul);
@@ -18798,7 +18798,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#region src/components/cart/components/CartCoupons.svelte
 	var root$51 = /* @__PURE__ */ from_html(`<li class="go-cart-coupon-remove-cell"><button class="go-cart-remove go-cart-coupon-remove">⨉</button></li>`);
 	var root_1$16 = /* @__PURE__ */ from_html(`<li><article class="go-cart-coupon-content"><ul><li class="go-cart-coupon-code"> </li> <!></ul></article></li>`);
-	var root_2$10 = /* @__PURE__ */ from_html(`<ol data-testid="cart-coupons"></ol>`);
+	var root_2$11 = /* @__PURE__ */ from_html(`<ol data-testid="cart-coupons"></ol>`);
 	function CartCoupons($$anchor, $$props) {
 		push($$props, true);
 		const _details = getCartDetails($$props.$$host);
@@ -18806,7 +18806,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent_1 = ($$anchor) => {
-			var ol = root_2$10();
+			var ol = root_2$11();
 			each(ol, 21, () => get$2(details).displayCart.coupons, (coupon) => coupon.code, ($$anchor, coupon) => {
 				var li = root_1$16();
 				let classes;
@@ -19329,7 +19329,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#region src/components/donations/components/DonationCheckbox.svelte
 	var root$46 = /* @__PURE__ */ from_html(`<span class="go-donation-checkbox-label"></span>`);
 	var root_1$15 = /* @__PURE__ */ from_html(`<span class="go-donation-checkbox-label"> </span>`);
-	var root_2$9 = /* @__PURE__ */ from_html(`<label class="go-donation-checkbox"><input type="checkbox" data-testid="donation-checkbox"/> <!></label>`);
+	var root_2$10 = /* @__PURE__ */ from_html(`<label class="go-donation-checkbox"><input type="checkbox" data-testid="donation-checkbox"/> <!></label>`);
 	function DonationCheckbox($$anchor, $$props) {
 		push($$props, true);
 		let campaignId = prop($$props, "campaignId", 7), amountCents = prop($$props, "amountCents", 7), describedby = prop($$props, "describedby", 7);
@@ -19383,7 +19383,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node_1 = first_child(fragment);
 		var consequent_1 = ($$anchor) => {
-			var label = root_2$9();
+			var label = root_2$10();
 			var input = child(label);
 			remove_input_defaults(input);
 			var node_2 = sibling(input, 2);
@@ -19539,7 +19539,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#region src/components/donations/components/DonationSelector.svelte
 	var root$44 = /* @__PURE__ */ from_html(`<button> </button>`);
 	var root_1$13 = /* @__PURE__ */ from_html(`<form id="donationForm" action="" novalidate=""><div class="donation-custom form-group"><label for="donation-custom-amount"> </label> <input class="form-control" id="donation-custom-amount" type="number" min="1"/></div></form>`);
-	var root_2$8 = /* @__PURE__ */ from_html(`<div class="donation-selection"><h3> </h3> <div class="donation-options"></div> <!></div>`);
+	var root_2$9 = /* @__PURE__ */ from_html(`<div class="donation-selection"><h3> </h3> <div class="donation-options"></div> <!></div>`);
 	function DonationSelector($$anchor, $$props) {
 		push($$props, true);
 		const guestMaxLimit = goDonation.campaign?.guest_limit ? goDonation.campaign.guest_limit / 100 : void 0;
@@ -19556,7 +19556,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				form.reportValidity();
 			}
 		}
-		var div = root_2$8();
+		var div = root_2$9();
 		var h3 = child(div);
 		var text = child(h3, true);
 		reset(h3);
@@ -34101,7 +34101,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	//#endregion
 	//#region src/components/forms/ui/generic/DatePicker.svelte
 	var root$20 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
-	var root_1$9 = /* @__PURE__ */ from_html(`<!> <!> <!>`, 1);
+	var root_1$9 = /* @__PURE__ */ from_html(`<button></button>`);
+	var root_2$8 = /* @__PURE__ */ from_html(`<!> <!> <!>`, 1);
 	function DatePicker_1($$anchor, $$props) {
 		push($$props, true);
 		let dateString = prop($$props, "dateString", 15), selectableDates = prop($$props, "selectableDates", 7, "future"), describedBy = prop($$props, "describedBy", 7), required = prop($$props, "required", 7, false), invalid = prop($$props, "invalid", 7, false), labelClass = prop($$props, "labelClass", 7), inputClass = prop($$props, "inputClass", 7), labelText = prop($$props, "labelText", 7);
@@ -34186,6 +34187,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var node = first_child(fragment);
 		{
 			let $0 = /* @__PURE__ */ user_derived(() => shop.locale || "de");
+			let $1 = /* @__PURE__ */ user_derived(() => shop.t("datepicker.aria.select"));
 			component(node, () => Date_picker, ($$anchor, DatePicker_Root) => {
 				DatePicker_Root($$anchor, {
 					get locale() {
@@ -34198,6 +34200,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					get maxValue() {
 						return get$2(maxValue);
 					},
+					get calendarLabel() {
+						return get$2($1);
+					},
 					get value() {
 						return get$2(date);
 					},
@@ -34205,7 +34210,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						set(date, $$value, true);
 					},
 					children: ($$anchor, $$slotProps) => {
-						var fragment_1 = root_1$9();
+						var fragment_1 = root_2$8();
 						var node_1 = first_child(fragment_1);
 						component(node_1, () => Date_field_label, ($$anchor, DatePicker_Label) => {
 							DatePicker_Label($$anchor, {
@@ -34297,11 +34302,26 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 											component(node_10, () => Calendar_header, ($$anchor, DatePicker_Header) => {
 												DatePicker_Header($$anchor, {
 													children: ($$anchor, $$slotProps) => {
-														var fragment_9 = root_1$9();
+														var fragment_9 = root_2$8();
 														var node_11 = first_child(fragment_9);
-														component(node_11, () => Calendar_prev_button, ($$anchor, DatePicker_PrevButton) => {
-															DatePicker_PrevButton($$anchor, { class: "go-datepicker-previous" });
-														});
+														{
+															const child = ($$anchor, $$arg0) => {
+																let props = () => ($$arg0?.()).props;
+																var button = root_1$9();
+																attribute_effect(button, ($0) => ({
+																	...props(),
+																	"aria-label": $0
+																}), [() => shop.t("datepicker.aria.previousMonth")]);
+																append($$anchor, button);
+															};
+															component(node_11, () => Calendar_prev_button, ($$anchor, DatePicker_PrevButton) => {
+																DatePicker_PrevButton($$anchor, {
+																	class: "go-datepicker-previous",
+																	child,
+																	$$slots: { child: true }
+																});
+															});
+														}
 														var node_12 = sibling(node_11, 2);
 														var consequent_1 = ($$anchor) => {
 															var fragment_10 = root$20();
@@ -34342,9 +34362,25 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 															if (selectableDates() === "past") $$render(consequent_1);
 															else $$render(alternate, -1);
 														});
-														component(sibling(node_12, 2), () => Calendar_next_button, ($$anchor, DatePicker_NextButton) => {
-															DatePicker_NextButton($$anchor, { class: "go-datepicker-next" });
-														});
+														var node_16 = sibling(node_12, 2);
+														{
+															const child = ($$anchor, $$arg0) => {
+																let props = () => ($$arg0?.()).props;
+																var button_1 = root_1$9();
+																attribute_effect(button_1, ($0) => ({
+																	...props(),
+																	"aria-label": $0
+																}), [() => shop.t("datepicker.aria.nextMonth")]);
+																append($$anchor, button_1);
+															};
+															component(node_16, () => Calendar_next_button, ($$anchor, DatePicker_NextButton) => {
+																DatePicker_NextButton($$anchor, {
+																	class: "go-datepicker-next",
+																	child,
+																	$$slots: { child: true }
+																});
+															});
+														}
 														append($$anchor, fragment_9);
 													},
 													$$slots: { default: true }
@@ -34492,8 +34528,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root_2$7 = /* @__PURE__ */ from_html(`<button type="button" class="go-password-toggle"> </button>`);
 	var root_3$7 = /* @__PURE__ */ from_html(`<label><!></label> <input/> <!>`, 1);
 	var root_4$3 = /* @__PURE__ */ from_html(`<label><!></label> <textarea></textarea>`, 1);
-	var root_5$2 = /* @__PURE__ */ from_html(`<figure role="status" aria-live="polite"><img class="go-file-preview"/> <figcaption class="go-file-preview-caption"> </figcaption></figure>`);
-	var root_6$1 = /* @__PURE__ */ from_html(`<label><input/> <span class="go-checkbox-label"><!></span></label>`);
+	var root_5$3 = /* @__PURE__ */ from_html(`<figure role="status" aria-live="polite"><img class="go-file-preview"/> <figcaption class="go-file-preview-caption"> </figcaption></figure>`);
+	var root_6$2 = /* @__PURE__ */ from_html(`<label><input/> <span class="go-checkbox-label"><!></span></label>`);
 	var root_7$1 = /* @__PURE__ */ from_html(`<option> </option>`);
 	var root_8$1 = /* @__PURE__ */ from_html(`<option disabled="" hidden="" selected=""> </option> <!>`, 1);
 	var root_9$1 = /* @__PURE__ */ from_html(`<label><!></label> <select><!></select>`, 1);
@@ -34617,7 +34653,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}), void 0, void 0, void 0, void 0, true);
 			var node_7 = sibling(input_2, 2);
 			var consequent_3 = ($$anchor) => {
-				var figure = root_5$2();
+				var figure = root_5$3();
 				var img = child(figure);
 				var figcaption = sibling(img, 2);
 				var text_2 = child(figcaption, true);
@@ -34641,7 +34677,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_5);
 		};
 		const checkbox = ($$anchor) => {
-			var label_4 = root_6$1();
+			var label_4 = root_6$2();
 			var input_3 = child(label_4);
 			attribute_effect(input_3, () => ({
 				...get$2(fieldAttributes),
@@ -38131,8 +38167,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root_2$3 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date"> </span> <span class="go-cart-item-time"> </span>`, 1);
 	var root_3$3 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date"> </span>`);
 	var root_4$2 = /* @__PURE__ */ from_html(`<!> <br/> <a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a>`, 1);
-	var root_5$1 = /* @__PURE__ */ from_html(`<br/> <a class="go-ticket-personalization"> </a>`, 1);
-	var root_6 = /* @__PURE__ */ from_html(`<a class="go-ticket-passbook"> </a>`);
+	var root_5$2 = /* @__PURE__ */ from_html(`<br/> <a class="go-ticket-personalization"> </a>`, 1);
+	var root_6$1 = /* @__PURE__ */ from_html(`<a class="go-ticket-passbook"> </a>`);
 	var root_7 = /* @__PURE__ */ from_html(`<a aria-label="iCal link"> </a>`);
 	var root_8 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count"></li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span> <!> <!> <!></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"><!></li> <li class="go-order-breakdown-ical"><!></li></ul></article></li>`);
 	var root_9 = /* @__PURE__ */ from_html(`<a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a>`);
@@ -38232,7 +38268,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					append($$anchor, fragment_3);
 				};
 				var alternate = ($$anchor) => {
-					var fragment_5 = root_5$1();
+					var fragment_5 = root_5$2();
 					var a_1 = sibling(first_child(fragment_5), 2);
 					var text_7 = child(a_1, true);
 					reset(a_1);
@@ -38253,7 +38289,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				var li_4 = sibling(li_3, 2);
 				var node_6 = child(li_4);
 				var consequent_4 = ($$anchor) => {
-					var a_2 = root_6();
+					var a_2 = root_6$1();
 					var text_9 = child(a_2, true);
 					reset(a_2);
 					template_effect(($0) => {
@@ -39214,7 +39250,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root_2$1 = /* @__PURE__ */ from_html(`<li class="go-tickets-item-info"><button type="button" data-testid="ticket-info-toggle"></button></li>`);
 	var root_3$1 = /* @__PURE__ */ from_html(`<li class="go-ticket-additional-info" data-testid="ticket-additional-info"> </li>`);
 	var root_4$1 = /* @__PURE__ */ from_html(`<ul class="go-sub-tickets" role="list"></ul>`);
-	var root_5 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-tickets-item-title"><!> <!></li> <!> <li class="go-tickets-item-description" data-go-tickets-description=""></li> <!> <li class="go-tickets-item-price" data-go-tickets-price=""> </li> <li class="go-tickets-item-quality" data-go-tickets-quality=""><!></li></ul></article> <!></li>`);
+	var root_5$1 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-tickets-item-title"><!> <!></li> <!> <li class="go-tickets-item-description" data-go-tickets-description=""></li> <!> <li class="go-tickets-item-price" data-go-tickets-price=""> </li> <li class="go-tickets-item-quality" data-go-tickets-quality=""><!></li></ul></article> <!></li>`);
 	function Item($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
@@ -39279,7 +39315,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment_2 = comment();
 		var node = first_child(fragment_2);
 		var consequent_4 = ($$anchor) => {
-			var li = root_5();
+			var li = root_5$1();
 			var article = child(li);
 			var ul = child(article);
 			var li_1 = child(ul);
@@ -39755,10 +39791,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	};
 	//#endregion
 	//#region src/components/ticketSelection/subcomponents/calendar/components/CalendarUI.svelte
-	var root_1 = /* @__PURE__ */ from_html(`<!> <!> <!>`, 1);
-	var root_2 = /* @__PURE__ */ from_html(`<div> </div>`);
-	var root_3 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
-	var root_4 = /* @__PURE__ */ from_html(`<div data-calendar-wrapper=""><!></div>`);
+	var root_1 = /* @__PURE__ */ from_html(`<button>Prev</button>`);
+	var root_2 = /* @__PURE__ */ from_html(`<button>Next</button>`);
+	var root_3 = /* @__PURE__ */ from_html(`<!> <!> <!>`, 1);
+	var root_4 = /* @__PURE__ */ from_html(`<div> </div>`);
+	var root_5 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
+	var root_6 = /* @__PURE__ */ from_html(`<div data-calendar-wrapper=""><!></div>`);
 	function CalendarUI($$anchor, $$props) {
 		push($$props, true);
 		let calendarClass = prop($$props, "calendarClass", 7);
@@ -39781,7 +39819,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var div = root_4();
+		var div = root_6();
 		var node = child(div);
 		var bind_get = () => calendarClass().focusDay;
 		var bind_set = (day) => calendarClass().startAt = day;
@@ -39789,37 +39827,54 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const children = ($$anchor, $$arg0) => {
 				let months = () => ($$arg0?.()).months;
 				let weekdays = () => ($$arg0?.()).weekdays;
-				var fragment = root_3();
+				var fragment = root_5();
 				var node_1 = first_child(fragment);
 				component(node_1, () => Calendar_header, ($$anchor, Calendar_Header) => {
 					Calendar_Header($$anchor, {
 						children: ($$anchor, $$slotProps) => {
-							var fragment_1 = root_1();
+							var fragment_1 = root_3();
 							var node_2 = first_child(fragment_1);
-							component(node_2, () => Calendar_prev_button, ($$anchor, Calendar_PrevButton) => {
-								Calendar_PrevButton($$anchor, {
-									class: "go-calendar-prev-button",
-									children: ($$anchor, $$slotProps) => {
-										next();
-										append($$anchor, text$1("Prev"));
-									},
-									$$slots: { default: true }
+							{
+								const child = ($$anchor, $$arg0) => {
+									let props = () => ($$arg0?.()).props;
+									var button = root_1();
+									attribute_effect(button, ($0) => ({
+										...props(),
+										"aria-label": $0
+									}), [() => shop.t("datepicker.aria.previousMonth")]);
+									append($$anchor, button);
+								};
+								component(node_2, () => Calendar_prev_button, ($$anchor, Calendar_PrevButton) => {
+									Calendar_PrevButton($$anchor, {
+										class: "go-calendar-prev-button",
+										child,
+										$$slots: { child: true }
+									});
 								});
-							});
+							}
 							var node_3 = sibling(node_2, 2);
 							component(node_3, () => Calendar_heading, ($$anchor, Calendar_Heading) => {
 								Calendar_Heading($$anchor, { class: "go-calendar-heading" });
 							});
-							component(sibling(node_3, 2), () => Calendar_next_button, ($$anchor, Calendar_NextButton) => {
-								Calendar_NextButton($$anchor, {
-									class: "go-calendar-next-button",
-									children: ($$anchor, $$slotProps) => {
-										next();
-										append($$anchor, text$1("Next"));
-									},
-									$$slots: { default: true }
+							var node_4 = sibling(node_3, 2);
+							{
+								const child = ($$anchor, $$arg0) => {
+									let props = () => ($$arg0?.()).props;
+									var button_1 = root_2();
+									attribute_effect(button_1, ($0) => ({
+										...props(),
+										"aria-label": $0
+									}), [() => shop.t("datepicker.aria.nextMonth")]);
+									append($$anchor, button_1);
+								};
+								component(node_4, () => Calendar_next_button, ($$anchor, Calendar_NextButton) => {
+									Calendar_NextButton($$anchor, {
+										class: "go-calendar-next-button",
+										child,
+										$$slots: { child: true }
+									});
 								});
-							});
+							}
 							append($$anchor, fragment_1);
 						},
 						$$slots: { default: true }
@@ -39831,7 +39886,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						Calendar_Grid($$anchor, {
 							class: "go-calendar-grid",
 							children: ($$anchor, $$slotProps) => {
-								var fragment_3 = root_3();
+								var fragment_3 = root_5();
 								var node_7 = first_child(fragment_3);
 								component(node_7, () => Calendar_grid_head, ($$anchor, Calendar_GridHead) => {
 									Calendar_GridHead($$anchor, {
@@ -39848,10 +39903,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 															component(first_child(fragment_6), () => Calendar_head_cell, ($$anchor, Calendar_HeadCell) => {
 																Calendar_HeadCell($$anchor, {
 																	children: ($$anchor, $$slotProps) => {
-																		var div_1 = root_2();
-																		var text_2 = child(div_1, true);
+																		var div_1 = root_4();
+																		var text = child(div_1, true);
 																		reset(div_1);
-																		template_effect(($0) => set_text(text_2, $0), [() => get$2(day).slice(0, 2)]);
+																		template_effect(($0) => set_text(text, $0), [() => get$2(day).slice(0, 2)]);
 																		append($$anchor, div_1);
 																	},
 																	$$slots: { default: true }
@@ -39909,9 +39964,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 																						},
 																						children: ($$anchor, $$slotProps) => {
 																							next();
-																							var text_3 = text$1();
-																							template_effect(() => set_text(text_3, get$2(date).day));
-																							append($$anchor, text_3);
+																							var text_1 = text$1();
+																							template_effect(() => set_text(text_1, get$2(date).day));
+																							append($$anchor, text_1);
 																						},
 																						$$slots: { default: true }
 																					});
@@ -39945,6 +40000,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				});
 				append($$anchor, fragment);
 			};
+			let $0 = /* @__PURE__ */ user_derived(() => shop.t("datepicker.aria.select"));
 			component(node, () => Calendar$1, ($$anchor, Calendar_Root) => {
 				Calendar_Root($$anchor, {
 					weekdayFormat: "long",
@@ -39963,6 +40019,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					isDateDisabled: (date) => calendarClass().isDateDisabled(date),
 					isDateUnavailable: (date) => calendarClass().isDateUnavailable(date),
 					disableDaysOutsideMonth: false,
+					get calendarLabel() {
+						return get$2($0);
+					},
 					class: "go-calendar-root",
 					get value() {
 						return calendarClass().selected;

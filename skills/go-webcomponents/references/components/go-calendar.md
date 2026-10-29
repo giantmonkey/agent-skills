@@ -217,3 +217,15 @@ window.isBoxOfficeDate = function (data) {
   return !!selected && window.boxOfficeOnly.indexOf(String(selected)) !== -1
 }
 ```
+
+## Localization
+
+Since `v4.31.1`
+
+The keys ship with gomus in every shop language. A shop can override them in its translations.
+
+| Key                             | Purpose                                                                       |
+| ------------------------------- | ----------------------------------------------------------------------------- |
+| `datepicker.aria.previousMonth` | Screen-reader name of the previous-month button (`.go-calendar-prev-button`). |
+| `datepicker.aria.nextMonth`     | Screen-reader name of the next-month button (`.go-calendar-next-button`).     |
+| `datepicker.aria.select`        | Screen-reader name of the calendar, followed by the shown month.              |
