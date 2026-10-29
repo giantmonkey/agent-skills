@@ -33,9 +33,9 @@ date selected in `<go-calendar>`.
 
 ## Events
 
-| Event                | Description                                                                                      | `detail`                                                                                                 | bubbles |
-| -------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- | ------- |
-| `go-timeslot-select` | A timeslot becomes selected — by a click, or auto-selected when the date's only slot is bookable | `{ selected }` — the chosen slot's start time as an ISO 8601 string (e.g. `"2026-07-01T14:00:00+02:00"`) | yes     |
+| Event                | Description                                                                                                                          | `detail`                                                                                                 | bubbles |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- | ------- |
+| `go-timeslot-select` | A timeslot becomes selected — by a click or the keyboard (Space, arrow keys), or auto-selected when the date's only slot is bookable | `{ selected }` — the chosen slot's start time as an ISO 8601 string (e.g. `"2026-07-01T14:00:00+02:00"`) | yes     |
 
 The event bubbles, so listen on the enclosing `<go-ticket-selection>`:
 

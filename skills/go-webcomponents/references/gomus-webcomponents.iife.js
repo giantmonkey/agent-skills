@@ -39604,11 +39604,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
 			var ul = root_1$1();
-			each(ul, 20, () => details.timeslots, (timeslot) => timeslot, ($$anchor, timeslot) => {
-				const unavailable = /* @__PURE__ */ user_derived(() => timeslot.totalCapacity === 0);
-				const soldOut = /* @__PURE__ */ user_derived(() => !get$2(unavailable) && timeslot.capacity === 0);
-				const disabled = /* @__PURE__ */ user_derived(() => get$2(unavailable) || get$2(soldOut) || !timeslot.available);
-				const selected = /* @__PURE__ */ user_derived(() => details.tsd?.selectedTimeslot === timeslot.startAt);
+			each(ul, 21, () => details.timeslots, (timeslot) => timeslot.startAt, ($$anchor, timeslot) => {
+				const unavailable = /* @__PURE__ */ user_derived(() => get$2(timeslot).totalCapacity === 0);
+				const soldOut = /* @__PURE__ */ user_derived(() => !get$2(unavailable) && get$2(timeslot).capacity === 0);
+				const disabled = /* @__PURE__ */ user_derived(() => get$2(unavailable) || get$2(soldOut) || !get$2(timeslot).available);
+				const selected = /* @__PURE__ */ user_derived(() => details.tsd?.selectedTimeslot === get$2(timeslot).startAt);
 				var li = root$1();
 				var label = child(li);
 				var text = child(label);
@@ -39625,14 +39625,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						"is-disabled": get$2(disabled),
 						"is-selected": get$2(selected)
 					}));
-					set_text(text, `${timeslot.timeFormatted ?? ""} `);
+					set_text(text, `${get$2(timeslot).timeFormatted ?? ""} `);
 					input.disabled = get$2(disabled);
 					set_attribute(input, "aria-disabled", get$2(disabled));
-					if (input_value !== (input_value = timeslot.startAt)) input.value = (input.__value = timeslot.startAt) ?? "";
+					if (input_value !== (input_value = get$2(timeslot).startAt)) input.value = (input.__value = get$2(timeslot).startAt) ?? "";
 				});
 				delegated("change", input, change);
 				bind_group(binding_group, [], input, () => {
-					timeslot.startAt;
+					get$2(timeslot).startAt;
 					return details.tsd.selectedTimeslot;
 				}, ($$value) => details.tsd.selectedTimeslot = $$value);
 				append($$anchor, li);

@@ -4,6 +4,21 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.31.2
+
+_Released 2026-10-29_
+
+Choosing a time slot with the keyboard keeps the focus on the chosen slot.
+
+## Fixed
+
+- In `<go-timeslots>`, choosing a time slot with Space or an arrow key moved the keyboard focus
+  to the top of the page, so keyboard and screen reader users lost their place (WCAG 2.4.3).
+  The focus now stays on the chosen slot, and the arrow keys keep moving between slots. You do not
+  need to change any markup or attributes.
+
+---
+
 # v4.31.1
 
 _Released 2026-10-29_
