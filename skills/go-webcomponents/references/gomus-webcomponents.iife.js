@@ -7685,9 +7685,6 @@ createHTML: (html) => {
 	function $ad063034c8620db8$export$dbc69fd56b53d5e(a, b) {
 		return a.isEqual?.(b) ?? b.isEqual?.(a) ?? a.identifier === b.identifier;
 	}
-	function $ad063034c8620db8$export$629b0a497aa65267(date, timeZone) {
-		return $ad063034c8620db8$export$ea39ec197993aef0(date, $ad063034c8620db8$export$d0bdf45af03a6ea3(timeZone));
-	}
 	var $ad063034c8620db8$var$DAY_MAP = {
 		sun: 0,
 		mon: 1,
@@ -20881,14 +20878,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		});
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/after-sleep.js
-	/**
-	* A utility function that executes a callback after a specified number of milliseconds.
-	*/
-	function afterSleep(ms, cb) {
-		return setTimeout(cb, ms);
-	}
-	//#endregion
 	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/after-tick.js
 	function afterTick(fn) {
 		tick().then(fn);
@@ -21040,7 +21029,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		} };
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/attrs.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/attrs.js
 	function boolToStr(condition) {
 		return condition ? "true" : "false";
 	}
@@ -21086,7 +21075,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/kbd-constants.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/kbd-constants.js
 	var ARROW_DOWN = "ArrowDown";
 	var ARROW_LEFT = "ArrowLeft";
 	var ARROW_RIGHT = "ArrowRight";
@@ -21094,7 +21083,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var BACKSPACE = "Backspace";
 	var ENTER = "Enter";
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/is.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/is.js
 	var isBrowser = typeof document !== "undefined";
 	var isIOS = getIsIOS();
 	function getIsIOS() {
@@ -21122,7 +21111,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return value !== null;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/animations-complete.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/animations-complete.js
 	var AnimationsComplete = class {
 		#opts;
 		#currentFrame = null;
@@ -21143,12 +21132,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		run(fn) {
 			this.#cleanup();
-			const node = this.#opts.ref.current;
-			if (!node) return;
-			if (typeof node.getAnimations !== "function") {
-				this.#executeCallback(fn);
-				return;
-			}
 			const runId = this.#runId;
 			const executeIfCurrent = () => {
 				if (runId !== this.#runId) return;
@@ -21156,6 +21139,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			};
 			const waitForAnimations = () => {
 				if (runId !== this.#runId) return;
+				const node = this.#opts.ref.current;
+				if (!node) return;
+				if (typeof node.getAnimations !== "function") {
+					this.#executeCallback(fn);
+					return;
+				}
 				const animations = node.getAnimations();
 				if (animations.length === 0) {
 					executeIfCurrent();
@@ -21185,6 +21174,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			this.#currentFrame = window.requestAnimationFrame(() => {
 				this.#currentFrame = null;
 				const startingStyleAttr = "data-starting-style";
+				const node = this.#opts.ref.current;
+				if (!node) return;
 				if (!node.hasAttribute(startingStyleAttr)) {
 					requestWaitForAnimations();
 					return;
@@ -21203,15 +21194,17 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			});
 		}
 		#executeCallback(fn) {
+			const runId = this.#runId;
 			const execute = () => {
+				if (runId !== this.#runId) return;
 				fn();
 			};
-			if (this.#opts.afterTick) afterTick(execute);
+			if (this.#opts.afterTick.current) afterTick(execute);
 			else execute();
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/presence-manager.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/presence-manager.svelte.js
 	var PresenceManager = class {
 		#opts;
 		#enabled;
@@ -21275,19 +21268,19 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/noop.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/noop.js
 	/**
 	* A no operation function (does nothing)
 	*/
 	function noop() {}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/create-id.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/create-id.js
 	function createId(prefixOrUid, uid) {
 		if (uid === void 0) return `bits-${prefixOrUid}`;
 		return `bits-${prefixOrUid}-${uid}`;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/config/bits-config.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/config/bits-config.js
 	var BitsConfigContext = new Context("BitsConfig");
 	/**
 	* Gets the current Bits UI configuration state from the context.
@@ -21354,7 +21347,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/config/prop-resolvers.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/config/prop-resolvers.js
 	/**
 	* Creates a generic prop resolver that follows a standard priority chain:
 	* 1. The getter's prop value (if defined)
@@ -21380,61 +21373,33 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	*/
 	var resolveLocaleProp = createPropResolver((config) => config.defaultLocale, "en");
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/events.js
-	/**
-	* Creates a typed event dispatcher and listener pair for custom events
-	* @template T - The type of data that will be passed in the event detail
-	* @param eventName - The name of the custom event
-	* @param options - CustomEvent options (bubbles, cancelable, etc.)
-	*/
-	var CustomEventDispatcher = class {
-		eventName;
-		options;
-		constructor(eventName, options = {
-			bubbles: true,
-			cancelable: true
-		}) {
-			this.eventName = eventName;
-			this.options = options;
-		}
-		createEvent(detail) {
-			return new CustomEvent(this.eventName, {
-				...this.options,
-				detail
-			});
-		}
-		dispatch(element, detail) {
-			const event = this.createEvent(detail);
-			element.dispatchEvent(event);
-			return event;
-		}
-		listen(element, callback, options) {
-			const handler = (event) => {
-				callback(event);
-			};
-			return on(element, this.eventName, handler, options);
-		}
-	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/debounce.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/debounce.js
 	function debounce(fn, wait = 500) {
 		let timeout = null;
+		let pendingArgs = null;
 		const debounced = (...args) => {
-			if (timeout !== null) clearTimeout(timeout);
-			timeout = setTimeout(() => {
-				fn(...args);
-			}, wait);
+			debounced.destroy();
+			pendingArgs = args;
+			timeout = setTimeout(debounced.flush, wait);
+		};
+		/** Runs the pending call now, if there is one. */
+		debounced.flush = () => {
+			if (pendingArgs === null) return;
+			const args = pendingArgs;
+			debounced.destroy();
+			fn(...args);
 		};
 		debounced.destroy = () => {
 			if (timeout !== null) {
 				clearTimeout(timeout);
 				timeout = null;
 			}
+			pendingArgs = null;
 		};
 		return debounced;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/elements.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/elements.js
 	function isOrContainsTarget(node, target) {
 		return node === target || node.contains(target);
 	}
@@ -21442,7 +21407,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return el?.ownerDocument ?? document;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/dom.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/dom.js
 	/**
 	* Determines if the click event truly occurred outside the content node.
 	* This was added to handle password managers and other elements that may be injected
@@ -21453,6 +21418,472 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const rect = contentNode.getBoundingClientRect();
 		return clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom;
 	}
+	//#endregion
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/menu/context-menu-attributes.js
+	var CONTEXT_MENU_TRIGGER_ATTR = "data-context-menu-trigger";
+	var CONTEXT_MENU_CONTENT_ATTR = "data-context-menu-content";
+	//#endregion
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/dismissible-layer/use-dismissable-layer.svelte.js
+	globalThis.bitsDismissableLayers ??= /* @__PURE__ */ new Map();
+	var DismissibleLayerState = class DismissibleLayerState {
+		static create(opts) {
+			return new DismissibleLayerState(opts);
+		}
+		opts;
+		#interactOutsideProp;
+		#behaviorType;
+		#interceptedEvents = { pointerdown: false };
+		#isResponsibleLayer = false;
+		#capturedPointerDown = null;
+		#isFocusInsideDOMTree = false;
+		#documentObj = void 0;
+		#onFocusOutside;
+		#unsubClickListener = noop;
+		/**
+		* Set once the layer is torn down. Deferred work scheduled before teardown can
+		* still run afterwards, so every such callback must short-circuit on this
+		* before reading `this.opts.ref.current` — reading a destroyed `$derived`
+		* triggers Svelte's `derived_inert` warning. A class field rather than a
+		* constructor local so the class-field handlers below can see it too.
+		*/
+		#destroyed = false;
+		constructor(opts) {
+			this.opts = opts;
+			this.#behaviorType = opts.interactOutsideBehavior;
+			this.#interactOutsideProp = opts.onInteractOutside;
+			this.#onFocusOutside = opts.onFocusOutside;
+			let unsubEvents = noop;
+			let registeredNode = null;
+			const cleanup = () => {
+				registeredNode = null;
+				this.#resetState();
+				globalThis.bitsDismissableLayers.delete(this);
+				this.#handleInteractOutside.destroy();
+				this.#unsubClickListener();
+				unsubEvents();
+			};
+			watch([() => this.opts.enabled.current, () => this.opts.ref.current], ([enabled, node]) => {
+				const nextNode = enabled ? node : null;
+				if (registeredNode === nextNode) return;
+				cleanup();
+				if (!nextNode) return;
+				registeredNode = nextNode;
+				this.#documentObj = getOwnerDocument(nextNode);
+				globalThis.bitsDismissableLayers.set(this, this.#behaviorType);
+				unsubEvents = this.#addEventListeners();
+			});
+			onDestroyEffect(() => {
+				this.#destroyed = true;
+				cleanup();
+			});
+		}
+		#handleFocus = (event) => {
+			if (event.defaultPrevented) return;
+			if (this.#destroyed || !this.opts.ref.current) return;
+			afterTick(() => {
+				if (this.#destroyed) return;
+				if (!this.opts.ref.current || this.#isTargetWithinLayer(event.target)) return;
+				if (event.target && !this.#isFocusInsideDOMTree) this.#onFocusOutside.current?.(event);
+			});
+		};
+		#addEventListeners() {
+			const document = this.#documentObj;
+			const onPointerDownCapture = (event) => {
+				untrack(() => {
+					this.#handleInteractOutside.flush();
+					this.#markInterceptedEvent(event);
+					this.#markResponsibleLayer(event);
+				});
+			};
+			const onPointerDown = (event) => {
+				if (event.cancelBubble || event !== this.#capturedPointerDown) return;
+				this.#markNonInterceptedEvent(event);
+				if (event.pointerType === "touch") {
+					this.#handleInteractOutside.destroy();
+					this.#interactOutside(event);
+				} else this.#handleInteractOutside(event);
+			};
+			document.addEventListener("pointerdown", onPointerDownCapture, true);
+			document.addEventListener("pointerdown", onPointerDown);
+			return executeCallbacks(() => document.removeEventListener("pointerdown", onPointerDownCapture, true), () => document.removeEventListener("pointerdown", onPointerDown), on(document, "focusin", this.#handleFocus));
+		}
+		#handleDismiss = (e) => {
+			let event = e;
+			if (event.defaultPrevented) event = createWrappedEvent(e);
+			this.#interactOutsideProp.current(e);
+		};
+		#interactOutside = (e) => {
+			if (!this.opts.ref.current) {
+				this.#unsubClickListener();
+				return;
+			}
+			const isEventValid = this.opts.isValidEvent.current(e, this.opts.ref.current) || isValidEvent(e, this.opts.ref.current);
+			if (!this.#isResponsibleLayer || this.#isAnyEventIntercepted() || !isEventValid) {
+				this.#unsubClickListener();
+				return;
+			}
+			let event = e;
+			if (event.defaultPrevented) event = createWrappedEvent(event);
+			if (this.#behaviorType.current !== "close" && this.#behaviorType.current !== "defer-otherwise-close") {
+				this.#unsubClickListener();
+				return;
+			}
+			if (e.pointerType === "touch") {
+				this.#unsubClickListener();
+				let backup = null;
+				let unsubClick = noop;
+				const dismiss = (event) => {
+					unsubClick();
+					this.#handleDismiss(event);
+				};
+				unsubClick = executeCallbacks(on(this.#documentObj, "click", dismiss, { once: true }), on(this.#documentObj, "click", (event) => {
+					backup = setTimeout(() => dismiss(event), 0);
+				}, {
+					once: true,
+					capture: true
+				}), () => {
+					if (backup !== null) clearTimeout(backup);
+					backup = null;
+				});
+				this.#unsubClickListener = unsubClick;
+			} else this.#interactOutsideProp.current(event);
+		};
+		#handleInteractOutside = debounce(this.#interactOutside, 10);
+		#markInterceptedEvent = (e) => {
+			this.#interceptedEvents[e.type] = true;
+		};
+		#markNonInterceptedEvent = (e) => {
+			this.#interceptedEvents[e.type] = false;
+		};
+		#markResponsibleLayer = (event) => {
+			this.#capturedPointerDown = event;
+			if (!this.opts.ref.current) return;
+			this.#isResponsibleLayer = isResponsibleLayer(this.opts.ref.current);
+		};
+		#isTargetWithinLayer = (target) => {
+			if (!this.opts.ref.current) return false;
+			return isOrContainsTarget(this.opts.ref.current, target);
+		};
+		/**
+		* Resets the per-interaction state. Must stay synchronous.
+		*
+		* This was a `debounce(..., 20)` from when it was also wired to a capture-phase
+		* interaction-end listener and had to land after the 10ms `#handleInteractOutside`
+		* debounce. That listener is gone, but the debounce stayed on the `cleanup()` path —
+		* and because `watch` runs `cleanup()` once per open (`ref` goes null -> node), every
+		* layer scheduled a reset 20ms into its own lifetime. An outside `pointerdown` landing
+		* 10-20ms after that cleanup would have its `#isResponsibleLayer` flag cleared by the
+		* stale reset in the gap before the debounced `#handleInteractOutside` ran, which then
+		* bailed and left the layer open. `cleanup()` destroys `#handleInteractOutside` anyway,
+		* so nothing is left in flight that needs to observe the pre-reset state.
+		*/
+		#resetState = () => {
+			for (const eventType in this.#interceptedEvents) this.#interceptedEvents[eventType] = false;
+			this.#isResponsibleLayer = false;
+			this.#capturedPointerDown = null;
+		};
+		#isAnyEventIntercepted() {
+			return Object.values(this.#interceptedEvents).some(Boolean);
+		}
+		#onfocuscapture = () => {
+			this.#isFocusInsideDOMTree = true;
+		};
+		#onblurcapture = () => {
+			this.#isFocusInsideDOMTree = false;
+		};
+		props = {
+			onfocuscapture: this.#onfocuscapture,
+			onblurcapture: this.#onblurcapture
+		};
+	};
+	function getTopMostDismissableLayer(layersArr = [...globalThis.bitsDismissableLayers]) {
+		return layersArr.findLast(([_, { current: behaviorType }]) => behaviorType === "close" || behaviorType === "ignore");
+	}
+	function isResponsibleLayer(node) {
+		const layersArr = [...globalThis.bitsDismissableLayers];
+		/**
+		* We first check if we can find a top layer with `close` or `ignore`.
+		* If that top layer was found and matches the provided node, then the node is
+		* responsible for the outside interaction. Otherwise, we know that all layers defer so
+		* the first layer is the responsible one.
+		*/
+		const topMostLayer = getTopMostDismissableLayer(layersArr);
+		if (topMostLayer) return topMostLayer[0].opts.ref.current === node;
+		const [firstLayerNode] = layersArr[0];
+		return firstLayerNode.opts.ref.current === node;
+	}
+	function isValidEvent(e, node) {
+		const target = e.target;
+		if (!isElementOrSVGElement(target)) return false;
+		const targetIsContextMenuTrigger = Boolean(target.closest(`[${CONTEXT_MENU_TRIGGER_ATTR}]`));
+		const nodeIsContextMenu = Boolean(node.closest(`[${CONTEXT_MENU_CONTENT_ATTR}]`));
+		if ("button" in e && e.button > 0 && !targetIsContextMenuTrigger) return false;
+		if ("button" in e && e.button === 0 && targetIsContextMenuTrigger && nodeIsContextMenu) return true;
+		if (targetIsContextMenuTrigger && nodeIsContextMenu) return false;
+		return getOwnerDocument(target).documentElement.contains(target) && !isOrContainsTarget(node, target) && isClickTrulyOutside(e, node);
+	}
+	function createWrappedEvent(e) {
+		const capturedCurrentTarget = e.currentTarget;
+		const capturedTarget = e.target;
+		let newEvent;
+		if (e instanceof PointerEvent) newEvent = new PointerEvent(e.type, e);
+		else newEvent = new PointerEvent("pointerdown", e);
+		let isPrevented = false;
+		return new Proxy(newEvent, { get: (target, prop) => {
+			if (prop === "currentTarget") return capturedCurrentTarget;
+			if (prop === "target") return capturedTarget;
+			if (prop === "preventDefault") return () => {
+				isPrevented = true;
+				if (typeof target.preventDefault === "function") target.preventDefault();
+			};
+			if (prop === "defaultPrevented") return isPrevented;
+			if (prop in target) return target[prop];
+			return e[prop];
+		} });
+	}
+	//#endregion
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/dismissible-layer/dismissible-layer.svelte
+	function Dismissible_layer($$anchor, $$props) {
+		push($$props, true);
+		let interactOutsideBehavior = prop($$props, "interactOutsideBehavior", 7, "close"), onInteractOutside = prop($$props, "onInteractOutside", 7, noop), onFocusOutside = prop($$props, "onFocusOutside", 7, noop), id = prop($$props, "id", 7), children = prop($$props, "children", 7), enabled = prop($$props, "enabled", 7), isValidEvent = prop($$props, "isValidEvent", 7, () => false), ref = prop($$props, "ref", 7);
+		const dismissibleLayerState = DismissibleLayerState.create({
+			id: boxWith(() => id()),
+			interactOutsideBehavior: boxWith(() => interactOutsideBehavior()),
+			onInteractOutside: boxWith(() => onInteractOutside()),
+			enabled: boxWith(() => enabled()),
+			onFocusOutside: boxWith(() => onFocusOutside()),
+			isValidEvent: boxWith(() => isValidEvent()),
+			ref: untrack(() => ref())
+		});
+		var $$exports = {
+			get interactOutsideBehavior() {
+				return interactOutsideBehavior();
+			},
+			set interactOutsideBehavior($$value = "close") {
+				interactOutsideBehavior($$value);
+				flushSync();
+			},
+			get onInteractOutside() {
+				return onInteractOutside();
+			},
+			set onInteractOutside($$value = noop) {
+				onInteractOutside($$value);
+				flushSync();
+			},
+			get onFocusOutside() {
+				return onFocusOutside();
+			},
+			set onFocusOutside($$value = noop) {
+				onFocusOutside($$value);
+				flushSync();
+			},
+			get id() {
+				return id();
+			},
+			set id($$value) {
+				id($$value);
+				flushSync();
+			},
+			get children() {
+				return children();
+			},
+			set children($$value) {
+				children($$value);
+				flushSync();
+			},
+			get enabled() {
+				return enabled();
+			},
+			set enabled($$value) {
+				enabled($$value);
+				flushSync();
+			},
+			get isValidEvent() {
+				return isValidEvent();
+			},
+			set isValidEvent($$value = () => false) {
+				isValidEvent($$value);
+				flushSync();
+			},
+			get ref() {
+				return ref();
+			},
+			set ref($$value) {
+				ref($$value);
+				flushSync();
+			}
+		};
+		var fragment = comment();
+		snippet(first_child(fragment), () => children() ?? noop$1, () => ({ props: dismissibleLayerState.props }));
+		append($$anchor, fragment);
+		return pop($$exports);
+	}
+	create_custom_element(Dismissible_layer, {
+		interactOutsideBehavior: {},
+		onInteractOutside: {},
+		onFocusOutside: {},
+		id: {},
+		children: {},
+		enabled: {},
+		isValidEvent: {},
+		ref: {}
+	}, [], [], { mode: "open" });
+	//#endregion
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/escape-layer/use-escape-layer.svelte.js
+	globalThis.bitsEscapeLayers ??= /* @__PURE__ */ new Map();
+	var EscapeLayerState = class EscapeLayerState {
+		static create(opts) {
+			return new EscapeLayerState(opts);
+		}
+		opts;
+		domContext;
+		constructor(opts) {
+			this.opts = opts;
+			this.domContext = new DOMContext(this.opts.ref);
+			let unsubEvents = noop;
+			watch(() => opts.enabled.current, (enabled) => {
+				if (enabled) {
+					globalThis.bitsEscapeLayers.set(this, opts.escapeKeydownBehavior);
+					unsubEvents = this.#addEventListener();
+				}
+				return () => {
+					unsubEvents();
+					globalThis.bitsEscapeLayers.delete(this);
+				};
+			});
+		}
+		#addEventListener = () => {
+			return on(this.domContext.getDocument(), "keydown", this.#onkeydown, { passive: false });
+		};
+		#onkeydown = (e) => {
+			if (e.key !== "Escape" || !isResponsibleEscapeLayer(this)) return;
+			const clonedEvent = new KeyboardEvent(e.type, e);
+			e.preventDefault();
+			const behaviorType = this.opts.escapeKeydownBehavior.current;
+			if (behaviorType !== "close" && behaviorType !== "defer-otherwise-close") return;
+			this.opts.onEscapeKeydown.current(clonedEvent);
+		};
+	};
+	function isResponsibleEscapeLayer(instance) {
+		const layersArr = [...globalThis.bitsEscapeLayers];
+		/**
+		* We first check if we can find a top layer with `close` or `ignore`.
+		* If that top layer was found and matches the provided node, then the node is
+		* responsible for the escape. Otherwise, we know that all layers defer so
+		* the first layer is the responsible one.
+		*/
+		const topMostLayer = layersArr.findLast(([_, { current: behaviorType }]) => behaviorType === "close" || behaviorType === "ignore");
+		if (topMostLayer) return topMostLayer[0] === instance;
+		const [firstLayerNode] = layersArr[0];
+		return firstLayerNode === instance;
+	}
+	//#endregion
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/escape-layer/escape-layer.svelte
+	function Escape_layer($$anchor, $$props) {
+		push($$props, true);
+		let escapeKeydownBehavior = prop($$props, "escapeKeydownBehavior", 7, "close"), onEscapeKeydown = prop($$props, "onEscapeKeydown", 7, noop), children = prop($$props, "children", 7), enabled = prop($$props, "enabled", 7), ref = prop($$props, "ref", 7);
+		EscapeLayerState.create({
+			escapeKeydownBehavior: boxWith(() => escapeKeydownBehavior()),
+			onEscapeKeydown: boxWith(() => onEscapeKeydown()),
+			enabled: boxWith(() => enabled()),
+			ref: untrack(() => ref())
+		});
+		var $$exports = {
+			get escapeKeydownBehavior() {
+				return escapeKeydownBehavior();
+			},
+			set escapeKeydownBehavior($$value = "close") {
+				escapeKeydownBehavior($$value);
+				flushSync();
+			},
+			get onEscapeKeydown() {
+				return onEscapeKeydown();
+			},
+			set onEscapeKeydown($$value = noop) {
+				onEscapeKeydown($$value);
+				flushSync();
+			},
+			get children() {
+				return children();
+			},
+			set children($$value) {
+				children($$value);
+				flushSync();
+			},
+			get enabled() {
+				return enabled();
+			},
+			set enabled($$value) {
+				enabled($$value);
+				flushSync();
+			},
+			get ref() {
+				return ref();
+			},
+			set ref($$value) {
+				ref($$value);
+				flushSync();
+			}
+		};
+		var fragment = comment();
+		snippet(first_child(fragment), () => children() ?? noop$1);
+		append($$anchor, fragment);
+		return pop($$exports);
+	}
+	create_custom_element(Escape_layer, {
+		escapeKeydownBehavior: {},
+		onEscapeKeydown: {},
+		children: {},
+		enabled: {},
+		ref: {}
+	}, [], [], { mode: "open" });
+	//#endregion
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope-manager.js
+	var FocusScopeManager = class FocusScopeManager {
+		static instance;
+		#scopeStack = simpleBox([]);
+		#focusHistory = /* @__PURE__ */ new WeakMap();
+		#preFocusHistory = /* @__PURE__ */ new WeakMap();
+		static getInstance() {
+			if (!this.instance) this.instance = new FocusScopeManager();
+			return this.instance;
+		}
+		register(scope) {
+			const current = this.getActive();
+			if (current && current !== scope) current.pause();
+			const activeElement = getActiveElement(document);
+			if (activeElement && activeElement !== document.body) this.#preFocusHistory.set(scope, activeElement);
+			this.#scopeStack.current = this.#scopeStack.current.filter((s) => s !== scope);
+			this.#scopeStack.current.unshift(scope);
+			scope.resume();
+		}
+		unregister(scope) {
+			this.#scopeStack.current = this.#scopeStack.current.filter((s) => s !== scope);
+			const next = this.getActive();
+			if (next) next.resume();
+		}
+		getActive() {
+			return this.#scopeStack.current[0];
+		}
+		setFocusMemory(scope, element) {
+			this.#focusHistory.set(scope, element);
+		}
+		getFocusMemory(scope) {
+			return this.#focusHistory.get(scope);
+		}
+		isActiveScope(scope) {
+			return this.getActive() === scope;
+		}
+		setPreFocusMemory(scope, element) {
+			this.#preFocusHistory.set(scope, element);
+		}
+		getPreFocusMemory(scope) {
+			return this.#preFocusHistory.get(scope);
+		}
+		clearPreFocusMemory(scope) {
+			this.#preFocusHistory.delete(scope);
+		}
+	};
 	//#endregion
 	//#region ../../node_modules/.pnpm/tabbable@6.5.0/node_modules/tabbable/dist/index.esm.js
 	/*!
@@ -21800,491 +22231,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return isNodeMatchingSelectorFocusable(options, node);
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/arrays.js
-	/**
-	* Splits an array into chunks of a given size.
-	* @param arr The array to split.
-	* @param size The size of each chunk.
-	* @returns An array of arrays, where each sub-array has `size` elements from the original array.
-	* @example ```ts
-	* const arr = [1, 2, 3, 4, 5, 6, 7, 8];
-	* const chunks = chunk(arr, 3);
-	* // chunks = [[1, 2, 3], [4, 5, 6], [7, 8]]
-	* ```
-	*/
-	function chunk(arr, size) {
-		if (size <= 0) return [];
-		const result = [];
-		for (let i = 0; i < arr.length; i += size) result.push(arr.slice(i, i + size));
-		return result;
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope.svelte.js
+	function retargetToScopeTree(node, container) {
+		const scopeRoot = container.getRootNode();
+		while (node) {
+			const root = node.getRootNode();
+			if (root === scopeRoot) return node;
+			node = root !== node && "host" in root ? root.host : null;
+		}
+		return null;
 	}
-	/**
-	* Checks if the given index is valid for the given array.
-	*
-	* @param index - The index to check
-	* @param arr - The array to check
-	*/
-	function isValidIndex(index, arr) {
-		return index >= 0 && index < arr.length;
-	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/menu/menu.svelte.js
-	var CONTEXT_MENU_TRIGGER_ATTR = "data-context-menu-trigger";
-	var CONTEXT_MENU_CONTENT_ATTR = "data-context-menu-content";
-	new Context("Menu.Root");
-	new Context("Menu.Root | Menu.Sub");
-	new Context("Menu.Content");
-	new Context("Menu.Group | Menu.RadioGroup");
-	new Context("Menu.RadioGroup");
-	new Context("Menu.CheckboxGroup");
-	new CustomEventDispatcher("bitsmenuopen", {
-		bubbles: false,
-		cancelable: true
-	});
-	createBitsAttrs({
-		component: "menu",
-		parts: [
-			"trigger",
-			"content",
-			"sub-trigger",
-			"item",
-			"group",
-			"group-heading",
-			"checkbox-group",
-			"checkbox-item",
-			"radio-group",
-			"radio-item",
-			"separator",
-			"sub-content",
-			"arrow"
-		]
-	});
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/dismissible-layer/use-dismissable-layer.svelte.js
-	globalThis.bitsDismissableLayers ??= /* @__PURE__ */ new Map();
-	var DismissibleLayerState = class DismissibleLayerState {
-		static create(opts) {
-			return new DismissibleLayerState(opts);
-		}
-		opts;
-		#interactOutsideProp;
-		#behaviorType;
-		#interceptedEvents = { pointerdown: false };
-		#isResponsibleLayer = false;
-		#isFocusInsideDOMTree = false;
-		#documentObj = void 0;
-		#onFocusOutside;
-		#unsubClickListener = noop;
-		constructor(opts) {
-			this.opts = opts;
-			this.#behaviorType = opts.interactOutsideBehavior;
-			this.#interactOutsideProp = opts.onInteractOutside;
-			this.#onFocusOutside = opts.onFocusOutside;
-			user_effect(() => {
-				this.#documentObj = getOwnerDocument(this.opts.ref.current);
-			});
-			let unsubEvents = noop;
-			const cleanup = () => {
-				this.#resetState();
-				globalThis.bitsDismissableLayers.delete(this);
-				this.#handleInteractOutside.destroy();
-				unsubEvents();
-			};
-			watch([() => this.opts.enabled.current, () => this.opts.ref.current], () => {
-				if (!this.opts.enabled.current || !this.opts.ref.current) return;
-				afterSleep(1, () => {
-					if (!this.opts.ref.current) return;
-					globalThis.bitsDismissableLayers.set(this, this.#behaviorType);
-					unsubEvents();
-					unsubEvents = this.#addEventListeners();
-				});
-				return cleanup;
-			});
-			onDestroyEffect(() => {
-				this.#resetState.destroy();
-				globalThis.bitsDismissableLayers.delete(this);
-				this.#handleInteractOutside.destroy();
-				this.#unsubClickListener();
-				unsubEvents();
-			});
-		}
-		#handleFocus = (event) => {
-			if (event.defaultPrevented) return;
-			if (!this.opts.ref.current) return;
-			afterTick(() => {
-				if (!this.opts.ref.current || this.#isTargetWithinLayer(event.target)) return;
-				if (event.target && !this.#isFocusInsideDOMTree) this.#onFocusOutside.current?.(event);
-			});
-		};
-		#addEventListeners() {
-			return executeCallbacks(
-				/**
-				* CAPTURE INTERACTION START
-				* mark interaction-start event as intercepted.
-				* mark responsible layer during interaction start
-				* to avoid checking if is responsible layer during interaction end
-				* when a new floating element may have been opened.
-				*/
-				on(this.#documentObj, "pointerdown", executeCallbacks(this.#markInterceptedEvent, this.#markResponsibleLayer), { capture: true }),
-				/**
-				* BUBBLE INTERACTION START
-				* Mark interaction-start event as non-intercepted. Debounce `onInteractOutsideStart`
-				* to avoid prematurely checking if other events were intercepted.
-				*/
-				on(this.#documentObj, "pointerdown", executeCallbacks(this.#markNonInterceptedEvent, this.#handleInteractOutside)),
-				/**
-				* HANDLE FOCUS OUTSIDE
-				*/
-				on(this.#documentObj, "focusin", this.#handleFocus)
-			);
-		}
-		#handleDismiss = (e) => {
-			let event = e;
-			if (event.defaultPrevented) event = createWrappedEvent(e);
-			this.#interactOutsideProp.current(e);
-		};
-		#handleInteractOutside = debounce((e) => {
-			if (!this.opts.ref.current) {
-				this.#unsubClickListener();
-				return;
-			}
-			const isEventValid = this.opts.isValidEvent.current(e, this.opts.ref.current) || isValidEvent(e, this.opts.ref.current);
-			if (!this.#isResponsibleLayer || this.#isAnyEventIntercepted() || !isEventValid) {
-				this.#unsubClickListener();
-				return;
-			}
-			let event = e;
-			if (event.defaultPrevented) event = createWrappedEvent(event);
-			if (this.#behaviorType.current !== "close" && this.#behaviorType.current !== "defer-otherwise-close") {
-				this.#unsubClickListener();
-				return;
-			}
-			if (e.pointerType === "touch") {
-				this.#unsubClickListener();
-				this.#unsubClickListener = on(this.#documentObj, "click", this.#handleDismiss, { once: true });
-			} else this.#interactOutsideProp.current(event);
-		}, 10);
-		#markInterceptedEvent = (e) => {
-			this.#interceptedEvents[e.type] = true;
-		};
-		#markNonInterceptedEvent = (e) => {
-			this.#interceptedEvents[e.type] = false;
-		};
-		#markResponsibleLayer = () => {
-			if (!this.opts.ref.current) return;
-			this.#isResponsibleLayer = isResponsibleLayer(this.opts.ref.current);
-		};
-		#isTargetWithinLayer = (target) => {
-			if (!this.opts.ref.current) return false;
-			return isOrContainsTarget(this.opts.ref.current, target);
-		};
-		#resetState = debounce(() => {
-			for (const eventType in this.#interceptedEvents) this.#interceptedEvents[eventType] = false;
-			this.#isResponsibleLayer = false;
-		}, 20);
-		#isAnyEventIntercepted() {
-			return Object.values(this.#interceptedEvents).some(Boolean);
-		}
-		#onfocuscapture = () => {
-			this.#isFocusInsideDOMTree = true;
-		};
-		#onblurcapture = () => {
-			this.#isFocusInsideDOMTree = false;
-		};
-		props = {
-			onfocuscapture: this.#onfocuscapture,
-			onblurcapture: this.#onblurcapture
-		};
-	};
-	function getTopMostDismissableLayer(layersArr = [...globalThis.bitsDismissableLayers]) {
-		return layersArr.findLast(([_, { current: behaviorType }]) => behaviorType === "close" || behaviorType === "ignore");
-	}
-	function isResponsibleLayer(node) {
-		const layersArr = [...globalThis.bitsDismissableLayers];
-		/**
-		* We first check if we can find a top layer with `close` or `ignore`.
-		* If that top layer was found and matches the provided node, then the node is
-		* responsible for the outside interaction. Otherwise, we know that all layers defer so
-		* the first layer is the responsible one.
-		*/
-		const topMostLayer = getTopMostDismissableLayer(layersArr);
-		if (topMostLayer) return topMostLayer[0].opts.ref.current === node;
-		const [firstLayerNode] = layersArr[0];
-		return firstLayerNode.opts.ref.current === node;
-	}
-	function isValidEvent(e, node) {
-		const target = e.target;
-		if (!isElementOrSVGElement(target)) return false;
-		const targetIsContextMenuTrigger = Boolean(target.closest(`[${CONTEXT_MENU_TRIGGER_ATTR}]`));
-		const nodeIsContextMenu = Boolean(node.closest(`[${CONTEXT_MENU_CONTENT_ATTR}]`));
-		if ("button" in e && e.button > 0 && !targetIsContextMenuTrigger) return false;
-		if ("button" in e && e.button === 0 && targetIsContextMenuTrigger && nodeIsContextMenu) return true;
-		if (targetIsContextMenuTrigger && nodeIsContextMenu) return false;
-		return getOwnerDocument(target).documentElement.contains(target) && !isOrContainsTarget(node, target) && isClickTrulyOutside(e, node);
-	}
-	function createWrappedEvent(e) {
-		const capturedCurrentTarget = e.currentTarget;
-		const capturedTarget = e.target;
-		let newEvent;
-		if (e instanceof PointerEvent) newEvent = new PointerEvent(e.type, e);
-		else newEvent = new PointerEvent("pointerdown", e);
-		let isPrevented = false;
-		return new Proxy(newEvent, { get: (target, prop) => {
-			if (prop === "currentTarget") return capturedCurrentTarget;
-			if (prop === "target") return capturedTarget;
-			if (prop === "preventDefault") return () => {
-				isPrevented = true;
-				if (typeof target.preventDefault === "function") target.preventDefault();
-			};
-			if (prop === "defaultPrevented") return isPrevented;
-			if (prop in target) return target[prop];
-			return e[prop];
-		} });
-	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/dismissible-layer/dismissible-layer.svelte
-	function Dismissible_layer($$anchor, $$props) {
-		push($$props, true);
-		let interactOutsideBehavior = prop($$props, "interactOutsideBehavior", 7, "close"), onInteractOutside = prop($$props, "onInteractOutside", 7, noop), onFocusOutside = prop($$props, "onFocusOutside", 7, noop), id = prop($$props, "id", 7), children = prop($$props, "children", 7), enabled = prop($$props, "enabled", 7), isValidEvent = prop($$props, "isValidEvent", 7, () => false), ref = prop($$props, "ref", 7);
-		const dismissibleLayerState = DismissibleLayerState.create({
-			id: boxWith(() => id()),
-			interactOutsideBehavior: boxWith(() => interactOutsideBehavior()),
-			onInteractOutside: boxWith(() => onInteractOutside()),
-			enabled: boxWith(() => enabled()),
-			onFocusOutside: boxWith(() => onFocusOutside()),
-			isValidEvent: boxWith(() => isValidEvent()),
-			ref: ref()
-		});
-		var $$exports = {
-			get interactOutsideBehavior() {
-				return interactOutsideBehavior();
-			},
-			set interactOutsideBehavior($$value = "close") {
-				interactOutsideBehavior($$value);
-				flushSync();
-			},
-			get onInteractOutside() {
-				return onInteractOutside();
-			},
-			set onInteractOutside($$value = noop) {
-				onInteractOutside($$value);
-				flushSync();
-			},
-			get onFocusOutside() {
-				return onFocusOutside();
-			},
-			set onFocusOutside($$value = noop) {
-				onFocusOutside($$value);
-				flushSync();
-			},
-			get id() {
-				return id();
-			},
-			set id($$value) {
-				id($$value);
-				flushSync();
-			},
-			get children() {
-				return children();
-			},
-			set children($$value) {
-				children($$value);
-				flushSync();
-			},
-			get enabled() {
-				return enabled();
-			},
-			set enabled($$value) {
-				enabled($$value);
-				flushSync();
-			},
-			get isValidEvent() {
-				return isValidEvent();
-			},
-			set isValidEvent($$value = () => false) {
-				isValidEvent($$value);
-				flushSync();
-			},
-			get ref() {
-				return ref();
-			},
-			set ref($$value) {
-				ref($$value);
-				flushSync();
-			}
-		};
-		var fragment = comment();
-		snippet(first_child(fragment), () => children() ?? noop$1, () => ({ props: dismissibleLayerState.props }));
-		append($$anchor, fragment);
-		return pop($$exports);
-	}
-	create_custom_element(Dismissible_layer, {
-		interactOutsideBehavior: {},
-		onInteractOutside: {},
-		onFocusOutside: {},
-		id: {},
-		children: {},
-		enabled: {},
-		isValidEvent: {},
-		ref: {}
-	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/escape-layer/use-escape-layer.svelte.js
-	globalThis.bitsEscapeLayers ??= /* @__PURE__ */ new Map();
-	var EscapeLayerState = class EscapeLayerState {
-		static create(opts) {
-			return new EscapeLayerState(opts);
-		}
-		opts;
-		domContext;
-		constructor(opts) {
-			this.opts = opts;
-			this.domContext = new DOMContext(this.opts.ref);
-			let unsubEvents = noop;
-			watch(() => opts.enabled.current, (enabled) => {
-				if (enabled) {
-					globalThis.bitsEscapeLayers.set(this, opts.escapeKeydownBehavior);
-					unsubEvents = this.#addEventListener();
-				}
-				return () => {
-					unsubEvents();
-					globalThis.bitsEscapeLayers.delete(this);
-				};
-			});
-		}
-		#addEventListener = () => {
-			return on(this.domContext.getDocument(), "keydown", this.#onkeydown, { passive: false });
-		};
-		#onkeydown = (e) => {
-			if (e.key !== "Escape" || !isResponsibleEscapeLayer(this)) return;
-			const clonedEvent = new KeyboardEvent(e.type, e);
-			e.preventDefault();
-			const behaviorType = this.opts.escapeKeydownBehavior.current;
-			if (behaviorType !== "close" && behaviorType !== "defer-otherwise-close") return;
-			this.opts.onEscapeKeydown.current(clonedEvent);
-		};
-	};
-	function isResponsibleEscapeLayer(instance) {
-		const layersArr = [...globalThis.bitsEscapeLayers];
-		/**
-		* We first check if we can find a top layer with `close` or `ignore`.
-		* If that top layer was found and matches the provided node, then the node is
-		* responsible for the escape. Otherwise, we know that all layers defer so
-		* the first layer is the responsible one.
-		*/
-		const topMostLayer = layersArr.findLast(([_, { current: behaviorType }]) => behaviorType === "close" || behaviorType === "ignore");
-		if (topMostLayer) return topMostLayer[0] === instance;
-		const [firstLayerNode] = layersArr[0];
-		return firstLayerNode === instance;
-	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/escape-layer/escape-layer.svelte
-	function Escape_layer($$anchor, $$props) {
-		push($$props, true);
-		let escapeKeydownBehavior = prop($$props, "escapeKeydownBehavior", 7, "close"), onEscapeKeydown = prop($$props, "onEscapeKeydown", 7, noop), children = prop($$props, "children", 7), enabled = prop($$props, "enabled", 7), ref = prop($$props, "ref", 7);
-		EscapeLayerState.create({
-			escapeKeydownBehavior: boxWith(() => escapeKeydownBehavior()),
-			onEscapeKeydown: boxWith(() => onEscapeKeydown()),
-			enabled: boxWith(() => enabled()),
-			ref: ref()
-		});
-		var $$exports = {
-			get escapeKeydownBehavior() {
-				return escapeKeydownBehavior();
-			},
-			set escapeKeydownBehavior($$value = "close") {
-				escapeKeydownBehavior($$value);
-				flushSync();
-			},
-			get onEscapeKeydown() {
-				return onEscapeKeydown();
-			},
-			set onEscapeKeydown($$value = noop) {
-				onEscapeKeydown($$value);
-				flushSync();
-			},
-			get children() {
-				return children();
-			},
-			set children($$value) {
-				children($$value);
-				flushSync();
-			},
-			get enabled() {
-				return enabled();
-			},
-			set enabled($$value) {
-				enabled($$value);
-				flushSync();
-			},
-			get ref() {
-				return ref();
-			},
-			set ref($$value) {
-				ref($$value);
-				flushSync();
-			}
-		};
-		var fragment = comment();
-		snippet(first_child(fragment), () => children() ?? noop$1);
-		append($$anchor, fragment);
-		return pop($$exports);
-	}
-	create_custom_element(Escape_layer, {
-		escapeKeydownBehavior: {},
-		onEscapeKeydown: {},
-		children: {},
-		enabled: {},
-		ref: {}
-	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope-manager.js
-	var FocusScopeManager = class FocusScopeManager {
-		static instance;
-		#scopeStack = simpleBox([]);
-		#focusHistory = /* @__PURE__ */ new WeakMap();
-		#preFocusHistory = /* @__PURE__ */ new WeakMap();
-		static getInstance() {
-			if (!this.instance) this.instance = new FocusScopeManager();
-			return this.instance;
-		}
-		register(scope) {
-			const current = this.getActive();
-			if (current && current !== scope) current.pause();
-			const activeElement = document.activeElement;
-			if (activeElement && activeElement !== document.body) this.#preFocusHistory.set(scope, activeElement);
-			this.#scopeStack.current = this.#scopeStack.current.filter((s) => s !== scope);
-			this.#scopeStack.current.unshift(scope);
-		}
-		unregister(scope) {
-			this.#scopeStack.current = this.#scopeStack.current.filter((s) => s !== scope);
-			const next = this.getActive();
-			if (next) next.resume();
-		}
-		getActive() {
-			return this.#scopeStack.current[0];
-		}
-		setFocusMemory(scope, element) {
-			this.#focusHistory.set(scope, element);
-		}
-		getFocusMemory(scope) {
-			return this.#focusHistory.get(scope);
-		}
-		isActiveScope(scope) {
-			return this.getActive() === scope;
-		}
-		setPreFocusMemory(scope, element) {
-			this.#preFocusHistory.set(scope, element);
-		}
-		getPreFocusMemory(scope) {
-			return this.#preFocusHistory.get(scope);
-		}
-		clearPreFocusMemory(scope) {
-			this.#preFocusHistory.delete(scope);
-		}
-	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope.svelte.js
 	var FocusScope = class FocusScope {
 		#paused = false;
 		#container = null;
@@ -22330,12 +22286,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			});
 			this.#opts.onOpenAutoFocus.current(event);
 			if (!event.defaultPrevented) requestAnimationFrame(() => {
-				if (!this.#container) return;
+				if (!this.#container || this.#paused || !this.#manager.isActiveScope(this) || this.#container.contains(retargetToScopeTree(getActiveElement(this.#container.ownerDocument), this.#container))) return;
 				const firstTabbable = this.#getFirstTabbable();
 				if (firstTabbable) {
-					firstTabbable.focus();
+					firstTabbable.focus({ preventScroll: true });
 					this.#manager.setFocusMemory(this, firstTabbable);
-				} else this.#container.focus();
+				} else this.#container.focus({ preventScroll: true });
 			});
 		}
 		#handleCloseAutoFocus() {
@@ -22346,8 +22302,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			this.#opts.onCloseAutoFocus.current?.(event);
 			if (!event.defaultPrevented) {
 				const preFocusedElement = this.#manager.getPreFocusMemory(this);
-				if (preFocusedElement && document.contains(preFocusedElement)) try {
-					preFocusedElement.focus();
+				if (preFocusedElement && preFocusedElement.isConnected) try {
+					preFocusedElement.focus({ preventScroll: true });
 				} catch {
 					document.body.focus();
 				}
@@ -22359,18 +22315,17 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const doc = container.ownerDocument;
 			const handleFocus = (e) => {
 				if (this.#paused || !this.#manager.isActiveScope(this)) return;
-				const target = e.target;
-				if (!target) return;
-				if (container.contains(target)) this.#manager.setFocusMemory(this, target);
+				const target = retargetToScopeTree(e.composedPath()[0], container);
+				if (target !== null && container.contains(target)) this.#manager.setFocusMemory(this, target);
 				else {
 					const lastFocused = this.#manager.getFocusMemory(this);
 					if (lastFocused && container.contains(lastFocused) && isFocusable(lastFocused)) {
 						e.preventDefault();
-						lastFocused.focus();
+						lastFocused.focus({ preventScroll: true });
 					} else {
 						const firstTabbable = this.#getFirstTabbable();
 						const firstFocusable = this.#getAllFocusables()[0];
-						(firstTabbable || firstFocusable || container).focus();
+						(firstTabbable || firstFocusable || container).focus({ preventScroll: true });
 					}
 				}
 			};
@@ -22381,10 +22336,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				if (tabbables.length === 0) return;
 				const first = tabbables[0];
 				const last = tabbables[tabbables.length - 1];
-				if (!e.shiftKey && doc.activeElement === last) {
+				if (!e.shiftKey && getActiveElement(doc) === last) {
 					e.preventDefault();
 					first.focus();
-				} else if (e.shiftKey && doc.activeElement === first) {
+				} else if (e.shiftKey && getActiveElement(doc) === first) {
 					e.preventDefault();
 					last.focus();
 				}
@@ -22397,9 +22352,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					const firstFocusable = this.#getAllFocusables()[0];
 					const elementToFocus = firstTabbable || firstFocusable;
 					if (elementToFocus) {
-						elementToFocus.focus();
+						elementToFocus.focus({ preventScroll: true });
 						this.#manager.setFocusMemory(this, elementToFocus);
-					} else container.focus();
+					} else container.focus({ preventScroll: true });
 				}
 			});
 			observer.observe(container, {
@@ -22445,17 +22400,17 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope.svelte
 	function Focus_scope($$anchor, $$props) {
 		push($$props, true);
 		let enabled = prop($$props, "enabled", 7, false), trapFocus = prop($$props, "trapFocus", 7, false), loop = prop($$props, "loop", 7, false), onCloseAutoFocus = prop($$props, "onCloseAutoFocus", 7, noop), onOpenAutoFocus = prop($$props, "onOpenAutoFocus", 7, noop), focusScope = prop($$props, "focusScope", 7), ref = prop($$props, "ref", 7);
 		const focusScopeState = FocusScope.use({
 			enabled: boxWith(() => enabled()),
 			trap: boxWith(() => trapFocus()),
-			loop: loop(),
+			loop: untrack(() => loop()),
 			onCloseAutoFocus: boxWith(() => onCloseAutoFocus()),
 			onOpenAutoFocus: boxWith(() => onOpenAutoFocus()),
-			ref: ref()
+			ref: untrack(() => ref())
 		});
 		var $$exports = {
 			get enabled() {
@@ -22523,7 +22478,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/text-selection-layer/use-text-selection-layer.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/text-selection-layer/use-text-selection-layer.svelte.js
 	var noopPointer = () => {};
 	globalThis.bitsTextSelectionLayers ??= /* @__PURE__ */ new Map();
 	var TextSelectionLayerState = class TextSelectionLayerState {
@@ -22562,15 +22517,19 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			});
 		}
 		#addEventListeners() {
-			return executeCallbacks(on(this.domContext.getDocument(), "pointerdown", this.#pointerdown), on(this.domContext.getDocument(), "pointerup", composeHandlers(this.#resetSelectionLock, this.#pointerupUserHandler)));
+			return executeCallbacks(on(this.domContext.getDocument(), "pointerdown", this.#pointerdown), on(this.domContext.getDocument(), "pointerup", this.#pointerup));
 		}
-		#pointerupUserHandler = (e) => {
+		#pointerup = (e) => {
+			this.#resetSelectionLock();
+			if (e.defaultPrevented) return;
 			this.#onPointerUpSnapshot(e);
 		};
 		#pointerdown = (e) => {
+			if (!this.#enabledSnapshot) return;
+			this.#resetSelectionLock();
 			const node = this.opts.ref.current;
 			const target = e.target;
-			if (!isHTMLElement$1(node) || !isHTMLElement$1(target) || !this.#enabledSnapshot) return;
+			if (!isHTMLElement$1(node) || !isHTMLElement$1(target)) return;
 			/**
 			* We only lock user-selection overflow if layer is the top most layer and
 			* pointerdown occurred inside the node. You are still allowed to select text
@@ -22609,7 +22568,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return highestLayer[0] === instance;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/text-selection-layer/text-selection-layer.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/text-selection-layer/text-selection-layer.svelte
 	function Text_selection_layer($$anchor, $$props) {
 		push($$props, true);
 		let preventOverflowTextSelection = prop($$props, "preventOverflowTextSelection", 7, true), onPointerDown = prop($$props, "onPointerDown", 7, noop), onPointerUp = prop($$props, "onPointerUp", 7, noop), id = prop($$props, "id", 7), children = prop($$props, "children", 7), enabled = prop($$props, "enabled", 7), ref = prop($$props, "ref", 7);
@@ -22618,7 +22577,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			onPointerDown: boxWith(() => onPointerDown()),
 			onPointerUp: boxWith(() => onPointerUp()),
 			enabled: boxWith(() => enabled() && preventOverflowTextSelection()),
-			ref: ref()
+			ref: untrack(() => ref())
 		});
 		var $$exports = {
 			get preventOverflowTextSelection() {
@@ -22686,7 +22645,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/use-id.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/use-id.js
 	globalThis.bitsIdCounter ??= { current: 0 };
 	/**
 	* Generates a unique ID based on a global counter.
@@ -22696,7 +22655,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return `${prefix}-${globalThis.bitsIdCounter.current}`;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/shared-state.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/shared-state.svelte.js
 	var SharedState = class {
 		#factory;
 		#subscribers = 0;
@@ -22727,12 +22686,31 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/body-scroll-lock.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/body-scroll-lock.svelte.js
 	var lockMap = new SvelteMap();
-	var initialBodyStyle = /* @__PURE__ */ state(null);
+	var MANAGED_PROPERTIES = [
+		"padding-right",
+		"margin-right",
+		"overflow",
+		"overflow-x",
+		"overflow-y",
+		"pointer-events",
+		"--scrollbar-width"
+	];
+	var initialProperties = null;
+	var hadInitialStyleAttribute = false;
+	var modifiedProperties = /* @__PURE__ */ new Set();
 	var stopTouchMoveListener = null;
 	var cleanupTimeoutId = null;
 	var isInCleanupTransition = false;
+	function setManagedProperty(style, property, value) {
+		style.setProperty(property, value);
+		modifiedProperties.add(property);
+		if (property === "overflow") {
+			modifiedProperties.add("overflow-x");
+			modifiedProperties.add("overflow-y");
+		}
+	}
 	var anyLocked = boxWith(() => {
 		for (const value of lockMap.values()) if (value) return true;
 		return false;
@@ -22746,11 +22724,31 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	*/
 	var cleanupScheduledAt = null;
 	var bodyLockStackCount = new SharedState(() => {
-		function resetBodyStyle() {
-			document.body.setAttribute("style", get$2(initialBodyStyle) ?? "");
-			document.body.style.removeProperty("--scrollbar-width");
+		function restoreProperty(documentObj, prop) {
+			const initial = initialProperties?.get(prop);
+			if (initial?.value) documentObj.body.style.setProperty(prop, initial.value, initial.priority);
+			else documentObj.body.style.removeProperty(prop);
+		}
+		function resetBodyStyle(documentObj) {
+			for (const prop of MANAGED_PROPERTIES) {
+				if (!modifiedProperties.has(prop)) continue;
+				restoreProperty(documentObj, prop);
+			}
+			if (!hadInitialStyleAttribute && documentObj.body.style.length === 0) documentObj.body.removeAttribute("style");
+			initialProperties = null;
+			modifiedProperties.clear();
 			isIOS && stopTouchMoveListener?.();
-			set(initialBodyStyle, null);
+		}
+		/**
+		* Unlike overflow/padding, pointer-events has no handover flicker to avoid, so it's
+		* restored as soon as the last lock goes. A lock that arrives during the cleanup delay
+		* sets it again in `afterTick`.
+		*
+		* reference: https://github.com/huntabyte/bits-ui/issues/2202
+		*/
+		function restorePointerEvents(documentObj) {
+			if (!modifiedProperties.delete("pointer-events")) return;
+			restoreProperty(documentObj, "pointer-events");
 		}
 		function cancelPendingCleanup() {
 			if (cleanupTimeoutId === null) return;
@@ -22784,7 +22782,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			cleanupTimeoutId = window.setTimeout(cleanupFn, actualDelay);
 		}
 		function ensureInitialStyleCaptured() {
-			if (get$2(initialBodyStyle) === null && lockMap.size === 0 && !isInCleanupTransition) set(initialBodyStyle, document.body.getAttribute("style"), true);
+			if (initialProperties === null && lockMap.size === 0 && !isInCleanupTransition) {
+				hadInitialStyleAttribute = document.body.hasAttribute("style");
+				initialProperties = /* @__PURE__ */ new Map();
+				for (const prop of MANAGED_PROPERTIES) initialProperties.set(prop, {
+					value: document.body.style.getPropertyValue(prop),
+					priority: document.body.style.getPropertyPriority(prop)
+				});
+			}
 		}
 		watch(() => anyLocked.current, () => {
 			if (!anyLocked.current) return;
@@ -22799,11 +22804,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				margin: Number.parseInt(bodyStyle.marginRight ?? "0", 10)
 			};
 			if (verticalScrollbarWidth > 0 && !hasStableGutter) {
-				document.body.style.paddingRight = `${config.padding}px`;
-				document.body.style.marginRight = `${config.margin}px`;
-				document.body.style.setProperty("--scrollbar-width", `${verticalScrollbarWidth}px`);
+				setManagedProperty(document.body.style, "padding-right", `${config.padding}px`);
+				setManagedProperty(document.body.style, "margin-right", `${config.margin}px`);
+				setManagedProperty(document.body.style, "--scrollbar-width", `${verticalScrollbarWidth}px`);
 			}
-			document.body.style.overflow = "hidden";
+			setManagedProperty(document.body.style, "overflow", "hidden");
 			if (isIOS) stopTouchMoveListener = on(document, "touchmove", (e) => {
 				if (e.target !== document.documentElement) return;
 				if (e.touches.length > 1) return;
@@ -22818,8 +22823,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			* focus/interaction.
 			*/
 			afterTick(() => {
-				document.body.style.pointerEvents = "none";
-				document.body.style.overflow = "hidden";
+				setManagedProperty(document.body.style, "pointer-events", "none");
+				setManagedProperty(document.body.style, "overflow", "hidden");
 			});
 		});
 		onDestroyEffect(() => {
@@ -22832,6 +22837,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				return lockMap;
 			},
 			resetBodyStyle,
+			restorePointerEvents,
 			scheduleCleanupIfNoNewLocks,
 			cancelPendingCleanup,
 			ensureInitialStyleCaptured
@@ -22863,6 +22869,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				this.#countState.lockMap.delete(this.#id);
 				if (isAnyLocked(this.#countState.lockMap)) return;
 				const restoreScrollDelay = this.#restoreScrollDelay();
+				const documentObj = document;
+				this.#countState.restorePointerEvents(documentObj);
 				/**
 				* We schedule the cleanup to run after a delay to handle same-tick
 				* destroy/create scenarios.
@@ -22870,7 +22878,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				* reference: https://github.com/huntabyte/bits-ui/issues/1639
 				*/
 				this.#countState.scheduleCleanupIfNoNewLocks(restoreScrollDelay, () => {
-					this.#countState.resetBodyStyle();
+					this.#countState.resetBodyStyle(documentObj);
 				});
 			});
 		}
@@ -22880,11 +22888,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return false;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/scroll-lock/scroll-lock.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/scroll-lock/scroll-lock.svelte
 	function Scroll_lock($$anchor, $$props) {
 		push($$props, true);
 		let preventScroll = prop($$props, "preventScroll", 7, true), restoreScrollDelay = prop($$props, "restoreScrollDelay", 7, null);
-		if (preventScroll()) new BodyScrollLock(preventScroll(), () => restoreScrollDelay());
+		untrack(() => {
+			if (preventScroll()) new BodyScrollLock(preventScroll(), () => restoreScrollDelay());
+		});
 		return pop({
 			get preventScroll() {
 				return preventScroll();
@@ -22907,7 +22917,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		restoreScrollDelay: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/date-time/announcer.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/date-time/announcer.js
 	/**
 	* Creates or gets an announcer element which is used to announce messages to screen readers.
 	* Within the date components, we use this to announce when the values of the individual segments
@@ -22971,7 +22981,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return { announce };
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/date-time/utils.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/date-time/utils.js
 	var defaultDateDefaults = {
 		defaultValue: void 0,
 		granularity: "day"
@@ -23103,7 +23113,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return date.add({ days: lastDayOfWeek - day });
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/date-time/field/parts.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/date-time/field/parts.js
 	var DATE_SEGMENT_PARTS = [
 		"day",
 		"month",
@@ -23122,7 +23132,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	ALL_SEGMENT_PARTS.filter((part) => part !== "literal");
 	ALL_TIME_SEGMENT_PARTS.filter((part) => part !== "literal");
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/date-time/placeholders.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/date-time/placeholders.js
 	var supportedLocales = [
 		"ach",
 		"af",
@@ -23612,7 +23622,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return locale.split("-")[0];
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/date-time/field/helpers.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/date-time/field/helpers.js
 	function initializeSegmentValues(granularity) {
 		const calendarDateTimeGranularities = [
 			"hour",
@@ -23641,13 +23651,17 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return obj;
 		}, {});
 		function getPartContent(part) {
+			if (part === "day" && isNull(segmentValues.month) && !isNull(segmentValues.day)) {
+				const intValue = Number.parseInt(segmentValues.day);
+				if (intValue >= 1 && intValue <= 31) return segmentValues.day.startsWith("0") && `${intValue}`.length === 1 ? `0${intValue}` : `${intValue}`;
+			}
 			if ("hour" in segmentValues) {
 				const value = segmentValues[part];
 				const leadingZero = typeof value === "string" && value?.startsWith("0");
 				const intValue = value !== null ? Number.parseInt(value) : null;
 				if (value === "0" && part !== "year") return "0";
 				else if (!isNull(value) && !isNull(intValue)) {
-					const formatted = formatter.part(dateRef.set({ [part]: value }), part, { hourCycle: props.hourCycle === 24 ? "h23" : void 0 });
+					const formatted = formatter.part(getDateRefForPart(part, dateRef, segmentValues).set({ [part]: value }), part, { hourCycle: props.hourCycle === 24 ? "h23" : void 0 });
 					/**
 					* If we're operating in a 12 hour clock and the part is an hour, we handle
 					* the conversion to 12 hour format with 2 digit hours and leading zeros here.
@@ -23687,7 +23701,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					const leadingZero = typeof value === "string" && value?.startsWith("0");
 					if (value === "0") return "0";
 					else if (!isNull(value)) {
-						const formatted = formatter.part(dateRef.set({ [part]: value }), part);
+						const formatted = formatter.part(getDateRefForPart(part, dateRef, segmentValues).set({ [part]: value }), part);
 						if (part === "year") return `${value}`;
 						if (leadingZero && formatted.length === 1) return `0${formatted}`;
 						return formatted;
@@ -23783,9 +23797,31 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return EDITABLE_SEGMENT_PARTS.includes(part);
 		});
 	}
+	/**
+	* The order the segments are applied in when building a date from them.
+	*
+	* Setting a part on a `DateValue` constrains the result immediately, so the day
+	* has to be applied after the year and month it belongs to. Applying it in the
+	* order the segments are displayed clamps the day to the number of days in the
+	* `dateRef`'s month in day-first locales (e.g. `31/08` entered in `en-GB` with a
+	* `dateRef` in November would resolve to the 30th).
+	*/
+	var SEGMENT_APPLY_ORDER = [
+		"year",
+		"month",
+		"day",
+		"hour",
+		"minute",
+		"second",
+		"dayPeriod"
+	];
+	function getSegmentApplyOrder(part) {
+		const index = SEGMENT_APPLY_ORDER.indexOf(part);
+		return index === -1 ? SEGMENT_APPLY_ORDER.length : index;
+	}
 	function getValueFromSegments(props) {
 		const { segmentObj, fieldNode, dateRef } = props;
-		const usedSegments = getUsedSegments(fieldNode);
+		const usedSegments = getUsedSegments(fieldNode).sort((a, b) => getSegmentApplyOrder(a) - getSegmentApplyOrder(b));
 		let date = dateRef;
 		for (const part of usedSegments) if ("hour" in segmentObj) {
 			const value = segmentObj[part];
@@ -23891,11 +23927,56 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (!el) return;
 		doc.body.removeChild(el);
 	}
+	/**
+	* Returns the maximum value for the day segment.
+	*
+	* The day is only constrained by the month when the month segment actually has a value.
+	* While the user is still typing, the month segment is empty, and falling back to the
+	* placeholder's month silently rejects days that are valid for the month being entered —
+	* typing `31102026` in November is rejected at `31` because November only has 30 days,
+	* which also pushes the remaining digits into the wrong segments.
+	*/
+	function getDaySegmentMaxValue(segmentMonthValue, placeholder) {
+		if (!segmentMonthValue) return 31;
+		return getDaysInMonth(placeholder.set({ month: Number.parseInt(segmentMonthValue) }));
+	}
+	/**
+	* The reference date used to render a single segment's value.
+	*
+	* `dateRef.set({ day })` constrains the day to the number of days in `dateRef`'s
+	* month. While the month segment is still empty, `dateRef` falls back to the
+	* placeholder, so typing `31` in en-GB would render the placeholder month's clamped
+	* `30` even though the typed value is kept in `segmentValues` — the user sees the
+	* value being swallowed.
+	*
+	* Apply the already-typed year and month first, so the day is constrained by the
+	* month the user is entering rather than by the placeholder.
+	*/
+	function getDateRefForPart(part, dateRef, segmentValues) {
+		if (part !== "day") return dateRef;
+		let next = dateRef;
+		if (!isNull(segmentValues.year)) next = next.set({ year: Number.parseInt(segmentValues.year) });
+		if (!isNull(segmentValues.month)) next = next.set({ month: Number.parseInt(segmentValues.month) });
+		return next;
+	}
 	function getDefaultHourCycle(locale) {
 		return new Intl.DateTimeFormat(locale, { hour: "numeric" }).formatToParts(/* @__PURE__ */ new Date("2023-01-01T13:00:00")).find((part) => part.type === "hour")?.value === "1" ? 12 : 24;
 	}
+	function get24HourValueFromTypedHour(hour, dayPeriod) {
+		const parsedHour = Number.parseInt(hour);
+		if (Number.isNaN(parsedHour)) return hour;
+		if (dayPeriod === "AM") return parsedHour === 12 ? "0" : `${parsedHour}`;
+		return parsedHour < 12 ? `${parsedHour + 12}` : `${parsedHour}`;
+	}
+	function getTypedHourFrom24HourValue(hour) {
+		if (hour === null) return hour;
+		const parsedHour = Number.parseInt(hour);
+		if (Number.isNaN(parsedHour)) return hour;
+		if (parsedHour === 0) return "12";
+		return parsedHour > 12 ? `${parsedHour - 12}` : hour;
+	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/date-time/field/segments.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/date-time/field/segments.js
 	/**
 	* Handles segment navigation based on the provided keyboard event and field ID.
 	*
@@ -24000,7 +24081,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return getSegments(fieldNode)[0];
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/date-time/formatter.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/date-time/formatter.js
 	var defaultPartOptions = {
 		year: "numeric",
 		month: "numeric",
@@ -24088,7 +24169,35 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/date-time/calendar-helpers.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/arrays.js
+	/**
+	* Splits an array into chunks of a given size.
+	* @param arr The array to split.
+	* @param size The size of each chunk.
+	* @returns An array of arrays, where each sub-array has `size` elements from the original array.
+	* @example ```ts
+	* const arr = [1, 2, 3, 4, 5, 6, 7, 8];
+	* const chunks = chunk(arr, 3);
+	* // chunks = [[1, 2, 3], [4, 5, 6], [7, 8]]
+	* ```
+	*/
+	function chunk(arr, size) {
+		if (size <= 0) return [];
+		const result = [];
+		for (let i = 0; i < arr.length; i += size) result.push(arr.slice(i, i + size));
+		return result;
+	}
+	/**
+	* Checks if the given index is valid for the given array.
+	*
+	* @param index - The index to check
+	* @param arr - The array to check
+	*/
+	function isValidIndex(index, arr) {
+		return index >= 0 && index < arr.length;
+	}
+	//#endregion
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/date-time/calendar-helpers.svelte.js
 	function isCalendarDayNode(node) {
 		if (!isHTMLElement$1(node)) return false;
 		if (!node.hasAttribute("data-bits-day")) return false;
@@ -24199,9 +24308,23 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	* Shared logic for shifting focus between cells in the
 	* calendar and range calendar.
 	*/
-	function shiftCalendarFocus({ node, add, placeholder, calendarNode, isPrevButtonDisabled, isNextButtonDisabled, months, numberOfMonths }) {
+	function shiftCalendarFocus({ node, add, useCalendarDayOffset = false, placeholder, calendarNode, isPrevButtonDisabled, isNextButtonDisabled, months, numberOfMonths }) {
 		const candidateCells = getSelectableCells(calendarNode);
 		if (!candidateCells.length) return;
+		if (useCalendarDayOffset) {
+			const currentValue = node.getAttribute("data-value");
+			if (!currentValue) return;
+			let targetDate = parseStringToDateValue(currentValue, placeholder.current).add({ days: add });
+			const renderedDates = Array.from(calendarNode?.querySelectorAll("[data-bits-day]:not([data-outside-visible-months])") ?? []).map((cell) => cell.getAttribute("data-value")).filter((value) => value !== null);
+			while (renderedDates.includes(targetDate.toString())) {
+				const nextCell = candidateCells.find((cell) => cell.getAttribute("data-value") === targetDate.toString());
+				if (nextCell) {
+					setPlaceholderToNodeValue(nextCell, placeholder);
+					return nextCell.focus();
+				}
+				targetDate = targetDate.add({ days: add });
+			}
+		}
 		const nextIndex = candidateCells.indexOf(node) + add;
 		/**
 		* If the next cell is within the bounds of the displayed cells,
@@ -24337,7 +24460,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (!months.length) return [];
 		const firstWeek = months[0].weeks[0];
 		if (!firstWeek) return [];
-		return firstWeek.map((date) => formatter.dayOfWeek(toDate(date), weekdayFormat));
+		return firstWeek.map((date) => formatter.dayOfWeek(toDate($d07e34cce18680fd$export$93522d1a439f3617(date)), weekdayFormat));
 	}
 	/**
 	* Updates the displayed months based on changes in the options values,
@@ -24435,11 +24558,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (!months.length) return "";
 		if (locale !== formatter.getLocale()) formatter.setLocale(locale);
 		if (months.length === 1) {
-			const month = toDate(months[0].value);
+			const month = toDate($d07e34cce18680fd$export$93522d1a439f3617(months[0].value));
 			return `${formatter.fullMonthAndYear(month)}`;
 		}
-		const startMonth = toDate(months[0].value);
-		const endMonth = toDate(months[months.length - 1].value);
+		const startMonth = toDate($d07e34cce18680fd$export$93522d1a439f3617(months[0].value));
+		const endMonth = toDate($d07e34cce18680fd$export$93522d1a439f3617(months[months.length - 1].value));
 		const startMonthName = formatter.fullMonth(startMonth);
 		const endMonthName = formatter.fullMonth(endMonth);
 		const startMonthYear = formatter.fullYear(startMonth);
@@ -24457,6 +24580,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	}
 	function pickerOpenFocus(e) {
+		if (e.defaultPrevented) return;
 		const nodeToFocus = getDocument(e.target).querySelector("[data-bits-day][data-focused]");
 		if (nodeToFocus) {
 			e.preventDefault();
@@ -24472,6 +24596,18 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const type = element?.getAttribute("data-type");
 		if (!value || !type) return;
 		return parseAnyDateValue(value, type);
+	}
+	/**
+	* The day that should get `tabindex="0"`: the placeholder, or the first enabled day
+	* in view when the placeholder is disabled, so the calendar stays reachable by Tab.
+	*/
+	function getTabbableDate(placeholder, months, isDisabled) {
+		if (!placeholder || !isDisabled(placeholder)) return placeholder;
+		for (const month of months) {
+			const date = month.dates.find((d) => $ad063034c8620db8$export$a18c89cbd24170ff(d, month.value) && !isDisabled(d));
+			if (date) return date;
+		}
+		return placeholder;
 	}
 	/**
 	* Ensures the placeholder is not set to a disabled date,
@@ -24548,7 +24684,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return Array.from({ length: totalYears }, (_, i) => minYear + i);
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/calendar.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/calendar.svelte.js
 	var CalendarRootContext = new Context("Calendar.Root | RangeCalender.Root");
 	var CalendarRootState = class CalendarRootState {
 		static create(opts) {
@@ -24562,6 +24698,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		set visibleMonths(value) {
 			set(this.#visibleMonths, value);
 		}
+		#todayDate = /* @__PURE__ */ user_derived(() => {
+			this.months;
+			return $ad063034c8620db8$export$d0bdf45af03a6ea3($ad063034c8620db8$export$aa8b41735afcabd2());
+		});
+		get todayDate() {
+			return get$2(this.#todayDate);
+		}
+		set todayDate(value) {
+			set(this.#todayDate, value);
+		}
 		formatter;
 		accessibleHeadingId = useId();
 		domContext;
@@ -24572,6 +24718,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		set months(value) {
 			set(this.#months, value, true);
+		}
+		#tabbableDate = /* @__PURE__ */ user_derived(() => getTabbableDate(this.opts.placeholder.current, this.months, (date) => this.isDateDisabled(date)));
+		get tabbableDate() {
+			return get$2(this.#tabbableDate);
+		}
+		set tabbableDate(value) {
+			set(this.#tabbableDate, value);
 		}
 		announcer;
 		constructor(opts) {
@@ -24870,6 +25023,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return shiftCalendarFocus({
 				node,
 				add,
+				useCalendarDayOffset: Math.abs(add) === 7,
 				placeholder: this.opts.placeholder,
 				calendarNode: this.opts.ref.current,
 				isPrevButtonDisabled: this.isPrevButtonDisabled,
@@ -25003,7 +25157,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		opts;
 		root;
-		#cellDate = /* @__PURE__ */ user_derived(() => toDate(this.opts.date.current));
+		#cellDate = /* @__PURE__ */ user_derived(() => toDate($d07e34cce18680fd$export$93522d1a439f3617(this.opts.date.current)));
 		get cellDate() {
 			return get$2(this.#cellDate);
 		}
@@ -25017,7 +25171,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		set isUnavailable(value) {
 			set(this.#isUnavailable, value);
 		}
-		#isDateToday = /* @__PURE__ */ user_derived(() => $ad063034c8620db8$export$629b0a497aa65267(this.opts.date.current, $ad063034c8620db8$export$aa8b41735afcabd2()));
+		#isDateToday = /* @__PURE__ */ user_derived(() => $ad063034c8620db8$export$ea39ec197993aef0(this.opts.date.current, this.root.todayDate));
 		get isDateToday() {
 			return get$2(this.#isDateToday);
 		}
@@ -25144,7 +25298,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			this.onclick = this.onclick.bind(this);
 			this.attachment = attachRef(this.opts.ref);
 		}
-		#tabindex = /* @__PURE__ */ user_derived(() => this.cell.isOutsideMonth && this.cell.root.opts.disableDaysOutsideMonth.current || this.cell.isDisabled ? void 0 : this.cell.isFocusedDate ? 0 : -1);
+		#tabindex = /* @__PURE__ */ user_derived(() => this.cell.isOutsideMonth && this.cell.root.opts.disableDaysOutsideMonth.current || this.cell.isDisabled ? void 0 : this.cell.root.tabbableDate && $ad063034c8620db8$export$ea39ec197993aef0(this.cell.opts.date.current, this.cell.root.tabbableDate) ? 0 : -1);
 		onclick(e) {
 			if (this.cell.isDisabled) return;
 			this.cell.root.handleCellClick(e, this.cell.opts.date.current);
@@ -25448,7 +25602,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				const date = this.root.opts.placeholder.current.set({ month });
 				let label;
 				if (typeof monthFormat === "function") label = monthFormat(month);
-				else label = this.root.formatter.custom(toDate(date), { month: monthFormat });
+				else label = this.root.formatter.custom(toDate($d07e34cce18680fd$export$93522d1a439f3617(date)), { month: monthFormat });
 				months.push({
 					value: month,
 					label
@@ -25541,7 +25695,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				const date = this.root.opts.placeholder.current.set({ year });
 				let label;
 				if (typeof yearFormat === "function") label = yearFormat(year);
-				else label = this.root.formatter.custom(toDate(date), { year: yearFormat });
+				else label = this.root.formatter.custom(toDate($d07e34cce18680fd$export$93522d1a439f3617(date)), { year: yearFormat });
 				localYears.push({
 					value: year,
 					label
@@ -25604,7 +25758,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar.svelte
 	var rest_excludes$27 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -25643,11 +25797,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function Calendar$1($$anchor, $$props) {
 		push($$props, true);
 		let child$21 = prop($$props, "child", 7), children = prop($$props, "children", 7), id = prop($$props, "id", 23, useId), ref = prop($$props, "ref", 15, null), value = prop($$props, "value", 15), onValueChange = prop($$props, "onValueChange", 7, noop), placeholder = prop($$props, "placeholder", 15), onPlaceholderChange = prop($$props, "onPlaceholderChange", 7, noop), weekdayFormat = prop($$props, "weekdayFormat", 7, "narrow"), weekStartsOn = prop($$props, "weekStartsOn", 7), pagedNavigation = prop($$props, "pagedNavigation", 7, false), isDateDisabled = prop($$props, "isDateDisabled", 7, () => false), isDateUnavailable = prop($$props, "isDateUnavailable", 7, () => false), fixedWeeks = prop($$props, "fixedWeeks", 7, false), numberOfMonths = prop($$props, "numberOfMonths", 7, 1), locale = prop($$props, "locale", 7), calendarLabel = prop($$props, "calendarLabel", 7, "Event"), disabled = prop($$props, "disabled", 7, false), readonly = prop($$props, "readonly", 7, false), minValue = prop($$props, "minValue", 7, void 0), maxValue = prop($$props, "maxValue", 7, void 0), preventDeselect = prop($$props, "preventDeselect", 7, false), type = prop($$props, "type", 7), disableDaysOutsideMonth = prop($$props, "disableDaysOutsideMonth", 7, true), initialFocus = prop($$props, "initialFocus", 7, false), maxDays = prop($$props, "maxDays", 7), monthFormat = prop($$props, "monthFormat", 7, "long"), yearFormat = prop($$props, "yearFormat", 7, "numeric"), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$27);
-		const defaultPlaceholder = getDefaultDate({
+		const defaultPlaceholder = untrack(() => getDefaultDate({
 			defaultValue: value(),
 			minValue: minValue(),
 			maxValue: maxValue()
-		});
+		}));
 		function handleDefaultPlaceholder() {
 			if (placeholder() !== void 0) return;
 			placeholder(defaultPlaceholder);
@@ -25683,7 +25837,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			disableDaysOutsideMonth: boxWith(() => disableDaysOutsideMonth()),
 			initialFocus: boxWith(() => initialFocus()),
 			maxDays: boxWith(() => maxDays()),
-			placeholder: boxWith(() => placeholder(), (v) => {
+			placeholder: boxWith(() => placeholder() ?? defaultPlaceholder, (v) => {
 				placeholder(v);
 				onPlaceholderChange()(v);
 			}),
@@ -25955,7 +26109,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		yearFormat: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-day.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-day.svelte
 	var rest_excludes$26 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -26055,7 +26209,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		id: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid.svelte
 	var rest_excludes$25 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -26134,7 +26288,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		id: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-body.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-body.svelte
 	var rest_excludes$24 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -26213,7 +26367,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		id: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-cell.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-cell.svelte
 	var rest_excludes$23 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -26319,7 +26473,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		month: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-head.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-head.svelte
 	var rest_excludes$22 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -26398,7 +26552,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		id: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-head-cell.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-head-cell.svelte
 	var rest_excludes$21 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -26477,7 +26631,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		id: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-row.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-row.svelte
 	var rest_excludes$20 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -26556,7 +26710,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		id: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-header.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-header.svelte
 	var rest_excludes$19 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -26635,7 +26789,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		id: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-heading.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-heading.svelte
 	var rest_excludes$18 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -26731,7 +26885,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		id: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-month-select.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-month-select.svelte
 	var rest_excludes$17 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -26913,7 +27067,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"aria-label": {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-next-button.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-next-button.svelte
 	var rest_excludes$16 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -27001,7 +27155,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		tabindex: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-prev-button.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-prev-button.svelte
 	var rest_excludes$15 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -27089,7 +27243,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		tabindex: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/calendar/components/calendar-year-select.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-year-select.svelte
 	var rest_excludes$14 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -27245,7 +27399,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"aria-label": {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/hidden-input.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/hidden-input.svelte
 	var rest_excludes$13 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -27282,14 +27436,20 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var input = root$28();
 			attribute_effect(input, () => ({
 				...get$2(mergedProps),
-				value: value()
-			}), void 0, void 0, void 0, void 0, true);
+				value: value(),
+				defaultChecked: get$2(mergedProps).checked
+			}));
 			append($$anchor, input);
 		};
 		var alternate = ($$anchor) => {
 			var input_1 = root$28();
-			attribute_effect(input_1, () => ({ ...get$2(mergedProps) }), void 0, void 0, void 0, void 0, true);
-			bind_value(input_1, value);
+			var event_handler = (e) => value(e.currentTarget.value);
+			attribute_effect(input_1, () => ({
+				...get$2(mergedProps),
+				value: value(),
+				defaultValue: value() ?? "",
+				oninput: event_handler
+			}));
 			append($$anchor, input_1);
 		};
 		if_block(node, ($$render) => {
@@ -27300,6 +27460,151 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return pop($$exports);
 	}
 	create_custom_element(Hidden_input, { value: {} }, [], [], { mode: "open" });
+	//#endregion
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/floating-layer/floating-root.svelte.js
+	var FloatingRootContext = new Context("Floating.Root");
+	var FloatingTooltipRootContext = new Context("Floating.Root");
+	var FloatingRootState = class FloatingRootState {
+		static create(tooltip = false) {
+			return tooltip ? FloatingTooltipRootContext.set(new FloatingRootState()) : FloatingRootContext.set(new FloatingRootState());
+		}
+		anchorNode = simpleBox(null);
+		customAnchorNode = simpleBox(null);
+		triggerNode = simpleBox(null);
+		constructor() {
+			user_effect(() => {
+				if (this.customAnchorNode.current) {
+					if (typeof this.customAnchorNode.current === "string") this.anchorNode.current = document.querySelector(this.customAnchorNode.current);
+					else this.anchorNode.current = this.customAnchorNode.current;
+				} else this.anchorNode.current = this.triggerNode.current;
+			});
+		}
+	};
+	var FloatingAnchorState = class FloatingAnchorState {
+		static create(opts, tooltip = false) {
+			return tooltip ? new FloatingAnchorState(opts, FloatingTooltipRootContext.get()) : new FloatingAnchorState(opts, FloatingRootContext.get());
+		}
+		opts;
+		root;
+		constructor(opts, root) {
+			this.opts = opts;
+			this.root = root;
+			if (opts.virtualEl && opts.virtualEl.current) root.triggerNode = boxFrom(opts.virtualEl.current);
+			else root.triggerNode = opts.ref;
+		}
+	};
+	//#endregion
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer.svelte
+	function Floating_layer($$anchor, $$props) {
+		push($$props, true);
+		let children = prop($$props, "children", 7), tooltip = prop($$props, "tooltip", 7, false);
+		FloatingRootState.create(untrack(() => tooltip()));
+		var $$exports = {
+			get children() {
+				return children();
+			},
+			set children($$value) {
+				children($$value);
+				flushSync();
+			},
+			get tooltip() {
+				return tooltip();
+			},
+			set tooltip($$value = false) {
+				tooltip($$value);
+				flushSync();
+			}
+		};
+		var fragment = comment();
+		snippet(first_child(fragment), () => children() ?? noop$1);
+		append($$anchor, fragment);
+		return pop($$exports);
+	}
+	create_custom_element(Floating_layer, {
+		children: {},
+		tooltip: {}
+	}, [], [], { mode: "open" });
+	//#endregion
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/floating-svelte/floating-utils.svelte.js
+	function get(valueOrGetValue) {
+		return typeof valueOrGetValue === "function" ? valueOrGetValue() : valueOrGetValue;
+	}
+	function getDPR(element) {
+		if (typeof window === "undefined") return 1;
+		return (element.ownerDocument.defaultView || window).devicePixelRatio || 1;
+	}
+	function roundByDPR(element, value) {
+		const dpr = getDPR(element);
+		return Math.round(value * dpr) / dpr;
+	}
+	function getFloatingContentCSSVars(name) {
+		return {
+			[`--bits-${name}-content-transform-origin`]: `var(--bits-floating-transform-origin)`,
+			[`--bits-${name}-content-available-width`]: `var(--bits-floating-available-width)`,
+			[`--bits-${name}-content-available-height`]: `var(--bits-floating-available-height)`,
+			[`--bits-${name}-anchor-width`]: `var(--bits-floating-anchor-width)`,
+			[`--bits-${name}-anchor-height`]: `var(--bits-floating-anchor-height)`
+		};
+	}
+	//#endregion
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-anchor.svelte
+	function Floating_layer_anchor($$anchor, $$props) {
+		push($$props, true);
+		let id = prop($$props, "id", 7), children = prop($$props, "children", 7), virtualEl = prop($$props, "virtualEl", 7), ref = prop($$props, "ref", 7), tooltip = prop($$props, "tooltip", 7, false);
+		FloatingAnchorState.create({
+			id: boxWith(() => id()),
+			virtualEl: boxWith(() => virtualEl()),
+			ref: untrack(() => ref())
+		}, untrack(() => tooltip()));
+		var $$exports = {
+			get id() {
+				return id();
+			},
+			set id($$value) {
+				id($$value);
+				flushSync();
+			},
+			get children() {
+				return children();
+			},
+			set children($$value) {
+				children($$value);
+				flushSync();
+			},
+			get virtualEl() {
+				return virtualEl();
+			},
+			set virtualEl($$value) {
+				virtualEl($$value);
+				flushSync();
+			},
+			get ref() {
+				return ref();
+			},
+			set ref($$value) {
+				ref($$value);
+				flushSync();
+			},
+			get tooltip() {
+				return tooltip();
+			},
+			set tooltip($$value = false) {
+				tooltip($$value);
+				flushSync();
+			}
+		};
+		var fragment = comment();
+		snippet(first_child(fragment), () => children() ?? noop$1);
+		append($$anchor, fragment);
+		return pop($$exports);
+	}
+	create_custom_element(Floating_layer_anchor, {
+		id: {},
+		children: {},
+		virtualEl: {},
+		ref: {},
+		tooltip: {}
+	}, [], [], { mode: "open" });
 	//#endregion
 	//#region ../../node_modules/.pnpm/@floating-ui+utils@0.2.12/node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs
 	/**
@@ -28618,29 +28923,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		});
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/floating-svelte/floating-utils.svelte.js
-	function get(valueOrGetValue) {
-		return typeof valueOrGetValue === "function" ? valueOrGetValue() : valueOrGetValue;
-	}
-	function getDPR(element) {
-		if (typeof window === "undefined") return 1;
-		return (element.ownerDocument.defaultView || window).devicePixelRatio || 1;
-	}
-	function roundByDPR(element, value) {
-		const dpr = getDPR(element);
-		return Math.round(value * dpr) / dpr;
-	}
-	function getFloatingContentCSSVars(name) {
-		return {
-			[`--bits-${name}-content-transform-origin`]: `var(--bits-floating-transform-origin)`,
-			[`--bits-${name}-content-available-width`]: `var(--bits-floating-available-width)`,
-			[`--bits-${name}-content-available-height`]: `var(--bits-floating-available-height)`,
-			[`--bits-${name}-anchor-width`]: `var(--bits-floating-anchor-width)`,
-			[`--bits-${name}-anchor-height`]: `var(--bits-floating-anchor-height)`
-		};
-	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/floating-svelte/use-floating.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/floating-svelte/use-floating.svelte.js
 	function useFloating(options) {
 		/** Options */
 		const whileElementsMountedOption = options.whileElementsMounted;
@@ -28662,6 +28945,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		let isPositioned = /* @__PURE__ */ state(false);
 		let hasWhileMountedPosition = false;
 		let updateRequestId = 0;
+		let destroyed = false;
 		const floatingStyles = /* @__PURE__ */ user_derived(() => {
 			const xVal = floating.current ? roundByDPR(floating.current, get$2(x)) : get$2(x);
 			const yVal = floating.current ? roundByDPR(floating.current, get$2(y)) : get$2(y);
@@ -28681,6 +28965,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		/** Effects */
 		let whileElementsMountedCleanup;
 		function update() {
+			if (destroyed) return;
 			if (reference.current === null || floating.current === null) return;
 			const referenceNode = reference.current;
 			const floatingNode = floating.current;
@@ -28768,7 +29053,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			update();
 		});
 		user_effect(reset);
-		user_effect(() => cleanup);
+		user_effect(() => () => {
+			destroyed = true;
+			cleanup();
+		});
 		return {
 			floating,
 			reference,
@@ -28799,32 +29087,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return node.getClientRects().length === 0;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/floating-layer/use-floating-layer.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/floating-layer/use-floating-layer.svelte.js
 	var OPPOSITE_SIDE = {
 		top: "bottom",
 		right: "left",
 		bottom: "top",
 		left: "right"
 	};
-	var FloatingRootContext = new Context("Floating.Root");
 	var FloatingContentContext = new Context("Floating.Content");
-	var FloatingTooltipRootContext = new Context("Floating.Root");
-	var FloatingRootState = class FloatingRootState {
-		static create(tooltip = false) {
-			return tooltip ? FloatingTooltipRootContext.set(new FloatingRootState()) : FloatingRootContext.set(new FloatingRootState());
-		}
-		anchorNode = simpleBox(null);
-		customAnchorNode = simpleBox(null);
-		triggerNode = simpleBox(null);
-		constructor() {
-			user_effect(() => {
-				if (this.customAnchorNode.current) {
-					if (typeof this.customAnchorNode.current === "string") this.anchorNode.current = document.querySelector(this.customAnchorNode.current);
-					else this.anchorNode.current = this.customAnchorNode.current;
-				} else this.anchorNode.current = this.triggerNode.current;
-			});
-		}
-	};
 	var FloatingContentState = class FloatingContentState {
 		static create(opts, tooltip = false) {
 			return tooltip ? FloatingContentContext.set(new FloatingContentState(opts, FloatingTooltipRootContext.get())) : FloatingContentContext.set(new FloatingContentState(opts, FloatingRootContext.get()));
@@ -28947,7 +29217,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		set cannotCenterArrow(value) {
 			set(this.#cannotCenterArrow, value);
 		}
-		#contentZIndex = /* @__PURE__ */ state();
+		#contentZIndex = /* @__PURE__ */ state("auto");
 		get contentZIndex() {
 			return get$2(this.#contentZIndex);
 		}
@@ -29050,8 +29320,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				if (!this.floating.isPositioned) return;
 				this.opts.onPlaced?.current();
 			});
-			watch(() => this.contentRef.current, (contentNode) => {
-				if (!contentNode || !this.opts.enabled.current) return;
+			watch([() => this.contentRef.current, () => this.opts.enabled.current], ([contentNode, enabled]) => {
+				if (!contentNode || !enabled) return;
 				const win = getWindow$1(contentNode);
 				const rafId = win.requestAnimationFrame(() => {
 					if (this.contentRef.current !== contentNode || !this.opts.enabled.current) return;
@@ -29065,19 +29335,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			user_effect(() => {
 				this.floating.floating.current = this.wrapperRef.current;
 			});
-		}
-	};
-	var FloatingAnchorState = class FloatingAnchorState {
-		static create(opts, tooltip = false) {
-			return tooltip ? new FloatingAnchorState(opts, FloatingTooltipRootContext.get()) : new FloatingAnchorState(opts, FloatingRootContext.get());
-		}
-		opts;
-		root;
-		constructor(opts, root) {
-			this.opts = opts;
-			this.root = root;
-			if (opts.virtualEl && opts.virtualEl.current) root.triggerNode = boxFrom(opts.virtualEl.current);
-			else root.triggerNode = opts.ref;
 		}
 	};
 	function transformOrigin(options) {
@@ -29130,97 +29387,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return getSideAndAlignFromPlacement(placement)[1];
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer.svelte
-	function Floating_layer($$anchor, $$props) {
-		push($$props, true);
-		let children = prop($$props, "children", 7), tooltip = prop($$props, "tooltip", 7, false);
-		FloatingRootState.create(tooltip());
-		var $$exports = {
-			get children() {
-				return children();
-			},
-			set children($$value) {
-				children($$value);
-				flushSync();
-			},
-			get tooltip() {
-				return tooltip();
-			},
-			set tooltip($$value = false) {
-				tooltip($$value);
-				flushSync();
-			}
-		};
-		var fragment = comment();
-		snippet(first_child(fragment), () => children() ?? noop$1);
-		append($$anchor, fragment);
-		return pop($$exports);
-	}
-	create_custom_element(Floating_layer, {
-		children: {},
-		tooltip: {}
-	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-anchor.svelte
-	function Floating_layer_anchor($$anchor, $$props) {
-		push($$props, true);
-		let id = prop($$props, "id", 7), children = prop($$props, "children", 7), virtualEl = prop($$props, "virtualEl", 7), ref = prop($$props, "ref", 7), tooltip = prop($$props, "tooltip", 7, false);
-		FloatingAnchorState.create({
-			id: boxWith(() => id()),
-			virtualEl: boxWith(() => virtualEl()),
-			ref: ref()
-		}, tooltip());
-		var $$exports = {
-			get id() {
-				return id();
-			},
-			set id($$value) {
-				id($$value);
-				flushSync();
-			},
-			get children() {
-				return children();
-			},
-			set children($$value) {
-				children($$value);
-				flushSync();
-			},
-			get virtualEl() {
-				return virtualEl();
-			},
-			set virtualEl($$value) {
-				virtualEl($$value);
-				flushSync();
-			},
-			get ref() {
-				return ref();
-			},
-			set ref($$value) {
-				ref($$value);
-				flushSync();
-			},
-			get tooltip() {
-				return tooltip();
-			},
-			set tooltip($$value = false) {
-				tooltip($$value);
-				flushSync();
-			}
-		};
-		var fragment = comment();
-		snippet(first_child(fragment), () => children() ?? noop$1);
-		append($$anchor, fragment);
-		return pop($$exports);
-	}
-	create_custom_element(Floating_layer_anchor, {
-		id: {},
-		children: {},
-		virtualEl: {},
-		ref: {},
-		tooltip: {}
-	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-content.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-content.svelte
 	function Floating_layer_content($$anchor, $$props) {
 		push($$props, true);
 		let content = prop($$props, "content", 7), side = prop($$props, "side", 7, "bottom"), sideOffset = prop($$props, "sideOffset", 7, 0), align = prop($$props, "align", 7, "center"), alignOffset = prop($$props, "alignOffset", 7, 0), id = prop($$props, "id", 7), arrowPadding = prop($$props, "arrowPadding", 7, 0), avoidCollisions = prop($$props, "avoidCollisions", 7, true), collisionBoundary = prop($$props, "collisionBoundary", 23, () => []), collisionPadding = prop($$props, "collisionPadding", 7, 0), hideWhenDetached = prop($$props, "hideWhenDetached", 7, false), onPlaced = prop($$props, "onPlaced", 7, () => {}), sticky = prop($$props, "sticky", 7, "partial"), updatePositionStrategy = prop($$props, "updatePositionStrategy", 7, "optimized"), strategy = prop($$props, "strategy", 7, "fixed"), dir = prop($$props, "dir", 7, "ltr"), style = prop($$props, "style", 23, () => ({})), wrapperId = prop($$props, "wrapperId", 23, useId), customAnchor = prop($$props, "customAnchor", 7, null), enabled = prop($$props, "enabled", 7), tooltip = prop($$props, "tooltip", 7, false);
@@ -29244,7 +29411,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			enabled: boxWith(() => enabled()),
 			wrapperId: boxWith(() => wrapperId()),
 			customAnchor: boxWith(() => customAnchor())
-		}, tooltip());
+		}, untrack(() => tooltip()));
 		const mergedProps = /* @__PURE__ */ user_derived(() => mergeProps(contentState.wrapperProps, { style: { pointerEvents: "auto" } }));
 		var $$exports = {
 			get content() {
@@ -29427,7 +29594,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		tooltip: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-content-static.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-content-static.svelte
 	function Floating_layer_content_static($$anchor, $$props) {
 		push($$props, true);
 		let content = prop($$props, "content", 7), onPlaced = prop($$props, "onPlaced", 7);
@@ -29463,7 +29630,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		onPlaced: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-content.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-content.svelte
 	var rest_excludes$12 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -29534,7 +29701,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		onPlaced: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer-inner.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer-inner.svelte
 	var rest_excludes$11 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -29575,6 +29742,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"customAnchor",
 		"isStatic",
 		"enabled",
+		"forceMount",
 		"ref",
 		"tooltip",
 		"contentPointerEvents"
@@ -29582,7 +29750,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root$27 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
 	function Popper_layer_inner($$anchor, $$props) {
 		push($$props, true);
-		let popper = prop($$props, "popper", 7), onEscapeKeydown = prop($$props, "onEscapeKeydown", 7), escapeKeydownBehavior = prop($$props, "escapeKeydownBehavior", 7), preventOverflowTextSelection = prop($$props, "preventOverflowTextSelection", 7), id = prop($$props, "id", 7), onPointerDown = prop($$props, "onPointerDown", 7), onPointerUp = prop($$props, "onPointerUp", 7), side = prop($$props, "side", 7), sideOffset = prop($$props, "sideOffset", 7), align = prop($$props, "align", 7), alignOffset = prop($$props, "alignOffset", 7), arrowPadding = prop($$props, "arrowPadding", 7), avoidCollisions = prop($$props, "avoidCollisions", 7), collisionBoundary = prop($$props, "collisionBoundary", 7), collisionPadding = prop($$props, "collisionPadding", 7), sticky = prop($$props, "sticky", 7), hideWhenDetached = prop($$props, "hideWhenDetached", 7), updatePositionStrategy = prop($$props, "updatePositionStrategy", 7), strategy = prop($$props, "strategy", 7), dir = prop($$props, "dir", 7), preventScroll = prop($$props, "preventScroll", 7), wrapperId = prop($$props, "wrapperId", 7), style = prop($$props, "style", 7), onPlaced = prop($$props, "onPlaced", 7), onInteractOutside = prop($$props, "onInteractOutside", 7), onCloseAutoFocus = prop($$props, "onCloseAutoFocus", 7), onOpenAutoFocus = prop($$props, "onOpenAutoFocus", 7), onFocusOutside = prop($$props, "onFocusOutside", 7), interactOutsideBehavior = prop($$props, "interactOutsideBehavior", 7, "close"), loop = prop($$props, "loop", 7), trapFocus = prop($$props, "trapFocus", 7, true), isValidEvent = prop($$props, "isValidEvent", 7, () => false), customAnchor = prop($$props, "customAnchor", 7, null), isStatic = prop($$props, "isStatic", 7, false), enabled = prop($$props, "enabled", 7), ref = prop($$props, "ref", 7), tooltip = prop($$props, "tooltip", 7, false), contentPointerEvents = prop($$props, "contentPointerEvents", 7, "auto"), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$11);
+		let popper = prop($$props, "popper", 7), onEscapeKeydown = prop($$props, "onEscapeKeydown", 7), escapeKeydownBehavior = prop($$props, "escapeKeydownBehavior", 7), preventOverflowTextSelection = prop($$props, "preventOverflowTextSelection", 7), id = prop($$props, "id", 7), onPointerDown = prop($$props, "onPointerDown", 7), onPointerUp = prop($$props, "onPointerUp", 7), side = prop($$props, "side", 7), sideOffset = prop($$props, "sideOffset", 7), align = prop($$props, "align", 7), alignOffset = prop($$props, "alignOffset", 7), arrowPadding = prop($$props, "arrowPadding", 7), avoidCollisions = prop($$props, "avoidCollisions", 7), collisionBoundary = prop($$props, "collisionBoundary", 7), collisionPadding = prop($$props, "collisionPadding", 7), sticky = prop($$props, "sticky", 7), hideWhenDetached = prop($$props, "hideWhenDetached", 7), updatePositionStrategy = prop($$props, "updatePositionStrategy", 7), strategy = prop($$props, "strategy", 7), dir = prop($$props, "dir", 7), preventScroll = prop($$props, "preventScroll", 7), wrapperId = prop($$props, "wrapperId", 7), style = prop($$props, "style", 7), onPlaced = prop($$props, "onPlaced", 7), onInteractOutside = prop($$props, "onInteractOutside", 7), onCloseAutoFocus = prop($$props, "onCloseAutoFocus", 7), onOpenAutoFocus = prop($$props, "onOpenAutoFocus", 7), onFocusOutside = prop($$props, "onFocusOutside", 7), interactOutsideBehavior = prop($$props, "interactOutsideBehavior", 7, "close"), loop = prop($$props, "loop", 7), trapFocus = prop($$props, "trapFocus", 7, true), isValidEvent = prop($$props, "isValidEvent", 7, () => false), customAnchor = prop($$props, "customAnchor", 7, null), isStatic = prop($$props, "isStatic", 7, false), enabled = prop($$props, "enabled", 7), forceMount = prop($$props, "forceMount", 7), ref = prop($$props, "ref", 7), tooltip = prop($$props, "tooltip", 7, false), contentPointerEvents = prop($$props, "contentPointerEvents", 7, "auto"), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$11);
 		const resolvedPreventScroll = /* @__PURE__ */ user_derived(() => preventScroll() ?? true);
 		const effectiveStrategy = /* @__PURE__ */ user_derived(() => strategy() ?? (get$2(resolvedPreventScroll) ? "fixed" : "absolute"));
 		var $$exports = {
@@ -29831,6 +29999,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				enabled($$value);
 				flushSync();
 			},
+			get forceMount() {
+				return forceMount();
+			},
+			set forceMount($$value) {
+				forceMount($$value);
+				flushSync();
+			},
 			get ref() {
 				return ref();
 			},
@@ -29870,8 +30045,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					} });
 				};
 				if_block(node, ($$render) => {
-					if ($$props.forceMount && enabled()) $$render(consequent);
-					else if (!$$props.forceMount) $$render(consequent_1, 1);
+					if (forceMount() && enabled()) $$render(consequent);
+					else if (!forceMount()) $$render(consequent_1, 1);
 				});
 				var node_1 = sibling(node, 2);
 				{
@@ -29918,7 +30093,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 												var node_2 = first_child(fragment_7);
 												{
 													let $0 = /* @__PURE__ */ user_derived(() => ({
-														props: mergeProps(restProps, floatingProps(), dismissibleProps(), focusScopeProps(), { style: { pointerEvents: contentPointerEvents() } }),
+														props: mergeProps(restProps, floatingProps(), dismissibleProps(), focusScopeProps(), {
+															id: id(),
+															style: { pointerEvents: contentPointerEvents() }
+														}),
 														wrapperProps: wrapperProps()
 													}));
 													snippet(node_2, () => popper() ?? noop$1, () => get$2($0));
@@ -29975,7 +30153,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 							return trapFocus();
 						},
 						get forceMount() {
-							return $$props.forceMount;
+							return forceMount();
 						},
 						get ref() {
 							return ref();
@@ -30092,12 +30270,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		customAnchor: {},
 		isStatic: {},
 		enabled: {},
+		forceMount: {},
 		ref: {},
 		tooltip: {},
 		contentPointerEvents: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer.svelte
 	var rest_excludes$10 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -30566,7 +30745,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		shouldRender: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer-force-mount.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer-force-mount.svelte
 	var rest_excludes$9 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -31005,7 +31184,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		enabled: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-field/date-field.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-field/date-field.svelte.js
 	var dateFieldAttrs = createBitsAttrs({
 		component: "date-field",
 		parts: [
@@ -31018,9 +31197,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		day: {
 			min: 1,
 			max: (root) => {
-				const segmentMonthValue = root.segmentValues.month;
 				const placeholder = root.value.current ?? root.placeholder.current;
-				return segmentMonthValue ? getDaysInMonth(placeholder.set({ month: Number.parseInt(segmentMonthValue) })) : getDaysInMonth(placeholder);
+				return getDaySegmentMaxValue(root.segmentValues.month, placeholder);
 			},
 			cycle: 1,
 			padZero: true
@@ -31124,6 +31302,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			set(this.#validationNode, value, true);
 		}
 		states = initSegmentStates();
+		#segmentClearedValue = false;
 		#dayPeriodNode = /* @__PURE__ */ state(null);
 		get dayPeriodNode() {
 			return get$2(this.#dayPeriodNode);
@@ -31131,6 +31310,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		set dayPeriodNode(value) {
 			set(this.#dayPeriodNode, value, true);
 		}
+		hourInputDayPeriodHint = null;
 		rangeRoot = void 0;
 		#name = /* @__PURE__ */ state("");
 		get name() {
@@ -31188,7 +31368,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				removeDescriptionElement(this.descriptionId, this.domContext.getDocument());
 			});
 			user_effect(() => {
-				if (rangeRoot) return;
 				if (this.formatter.getLocale() === this.locale.current) return;
 				this.formatter.setLocale(this.locale.current);
 			});
@@ -31212,7 +31391,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				this.#clearUpdating();
 			});
 			user_effect(() => {
-				if (this.value.current === void 0) this.segmentValues = initializeSegmentValues(this.inferredGranularity);
+				if (this.value.current === void 0) {
+					if (this.#segmentClearedValue) {
+						this.#segmentClearedValue = false;
+						return;
+					}
+					this.segmentValues = initializeSegmentValues(this.inferredGranularity);
+				}
 			});
 			watch(() => this.validationStatus, () => {
 				if (this.validationStatus !== false) this.onInvalid.current?.(this.validationStatus.reason, this.validationStatus.message);
@@ -31447,11 +31632,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						[part]: next
 					};
 				} else if (part === "hour") {
-					const next = castCb(pVal);
+					const dayPeriodHint = this.hourInputDayPeriodHint;
+					const typed = castCb(dayPeriodHint !== null ? getTypedHourFrom24HourValue(prev.hour) : pVal);
+					const next = typed !== null && dayPeriodHint !== null ? get24HourValueFromTypedHour(typed, dayPeriodHint) : typed;
 					this.states.hour.updating = next;
 					if (next !== null && prev.dayPeriod !== null) {
-						const dayPeriod = this.formatter.dayPeriod(toDate(dateRef.set({ hour: Number.parseInt(next) })), this.hourCycle.current);
-						if (dayPeriod === "AM" || dayPeriod === "PM") prev.dayPeriod = dayPeriod;
+						if (dayPeriodHint !== null) prev.dayPeriod = dayPeriodHint;
+						else {
+							const dayPeriod = this.formatter.dayPeriod(toDate(dateRef.set({ hour: Number.parseInt(next) })), this.hourCycle.current);
+							if (dayPeriod === "AM" || dayPeriod === "PM") prev.dayPeriod = dayPeriod;
+						}
 					}
 					newSegmentValues = {
 						...prev,
@@ -31530,6 +31720,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				dateRef: this.placeholder.current
 			}));
 			else {
+				if (this.value.current !== void 0) this.#segmentClearedValue = true;
 				this.setValue(void 0);
 				this.segmentValues = newSegmentValues;
 			}
@@ -31850,9 +32041,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const segmentValues = this.root.segmentValues;
 			const placeholder = this.root.placeholder.current;
 			const isEmpty = segmentValues[this.part] === null;
-			let date = placeholder;
-			if (segmentValues[this.part]) date = placeholder.set({ [this.part]: Number.parseInt(segmentValues[this.part]) });
-			const valueNow = date[this.part];
+			let date = isDateSegmentPart(this.part) ? getDateRefForPart(this.part, placeholder, segmentValues) : placeholder;
+			if (segmentValues[this.part]) date = date.set({ [this.part]: Number.parseInt(segmentValues[this.part]) });
+			let valueNow = date[this.part];
+			if (this.part === "day" && !isNull(segmentValues.day) && isNull(segmentValues.month)) {
+				const intValue = Number.parseInt(segmentValues.day);
+				if (intValue >= 1 && intValue <= 31) valueNow = intValue;
+			}
 			const valueMin = this.#getMin();
 			const valueMax = this.#getMax();
 			let valueText = isEmpty ? "Empty" : `${valueNow}`;
@@ -31931,13 +32126,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				}
 				if (prev === null) {
 					this.announcer.announce(num);
-					return `000${num}`;
+					return `${num}`;
 				}
 				const str = prev.toString() + num.toString();
 				const mergedInt = Number.parseInt(str);
 				if (String(mergedInt).length < 4) {
 					if (this.#backspaceCount > 0 && this.#pressedKeys.length <= this.#backspaceCount && str.length <= 4) {
 						this.announcer.announce(mergedInt);
+						if (str.length === 4) moveToNext = true;
 						return str;
 					}
 					this.announcer.announce(mergedInt);
@@ -31949,7 +32145,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				if (mergedIntStr.length > 4) return mergedIntStr.slice(0, 4);
 				return mergedIntStr;
 			});
-			if (this.#pressedKeys.length === 4 || this.#pressedKeys.length === this.#backspaceCount) moveToNext = true;
+			if (this.#pressedKeys.length === 4) moveToNext = true;
 			if (moveToNext) moveToNextSegment(e, this.root.getFieldNode());
 		}
 		#handleYearBackspace(e) {
@@ -31969,8 +32165,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					return null;
 				}
 				const next = str.slice(0, -1);
-				this.announcer.announce(next);
-				return `${next}`;
+				this.announcer.announce(Number.parseInt(next));
+				return next;
 			});
 			if (moveToPrev) moveToPrevSegment(e, this.root.getFieldNode());
 		}
@@ -31999,18 +32195,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			super(opts, root, "hour", SEGMENT_CONFIGS.hour);
 		}
 		onkeydown(e) {
-			if (isNumberString(e.key)) {
-				const oldUpdateSegment = this.root.updateSegment.bind(this.root);
-				this.root.updateSegment = (part, cb) => {
-					const result = oldUpdateSegment(part, cb);
-					if (part === "hour" && "hour" in this.root.segmentValues) {
-						if (this.root.segmentValues.hour === "0" && this.root.dayPeriodNode && this.root.hourCycle.current !== 24) this.root.segmentValues.hour = "12";
-					}
-					return result;
-				};
-			}
+			const segmentValues = this.root.segmentValues;
+			if ((isNumberString(e.key) || isBackspace(e.key)) && this.root.dayPeriodNode && isDateAndTimeSegmentObj(segmentValues)) this.root.hourInputDayPeriodHint = segmentValues.dayPeriod;
 			super.onkeydown(e);
-			this.root.updateSegment = this.root.updateSegment.bind(this.root);
+			this.root.hourInputDayPeriodHint = null;
 		}
 	};
 	var DateFieldMinuteSegmentState = class extends BaseNumericSegmentState {
@@ -32192,7 +32380,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return `${"0".repeat(diff)}${year}`;
 	}
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-field/components/date-field-hidden-input.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-field/components/date-field-hidden-input.svelte
 	function Date_field_hidden_input($$anchor, $$props) {
 		push($$props, false);
 		const hiddenInputState = DateFieldHiddenInputState.create();
@@ -32210,7 +32398,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	create_custom_element(Date_field_hidden_input, {}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-field/components/date-field-input.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-field/components/date-field-input.svelte
 	var rest_excludes$8 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -32304,7 +32492,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		child: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-field/components/date-field-label.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-field/components/date-field-label.svelte
 	var rest_excludes$7 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -32383,7 +32571,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		child: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-field/components/date-field-segment.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-field/components/date-field-segment.svelte
 	var rest_excludes$6 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -32400,7 +32588,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const uid = props_id();
 		push($$props, true);
 		let id = prop($$props, "id", 23, () => createId(uid)), ref = prop($$props, "ref", 15, null), children = prop($$props, "children", 7), child$5 = prop($$props, "child", 7), part = prop($$props, "part", 7), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$6);
-		const segmentState = DateFieldSegmentState.create(part(), {
+		const segmentState = DateFieldSegmentState.create(untrack(() => part()), {
 			id: boxWith(() => id()),
 			ref: boxWith(() => ref(), (v) => ref(v))
 		});
@@ -32471,7 +32659,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		part: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-picker/date-picker.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-picker/date-picker.svelte.js
 	var DatePickerRootContext = new Context("DatePicker.Root");
 	var DatePickerRootState = class DatePickerRootState {
 		static create(opts) {
@@ -32483,7 +32671,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/internal/safe-polygon.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/safe-polygon.svelte.js
 	function isPointInPolygon(point, polygon) {
 		const [x, y] = point;
 		let isInside = false;
@@ -32729,7 +32917,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/popover/popover.svelte.js
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/popover/popover.svelte.js
 	var popoverAttrs = createBitsAttrs({
 		component: "popover",
 		parts: [
@@ -33075,16 +33263,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	};
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-picker/components/date-picker.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-picker/components/date-picker.svelte
 	function Date_picker($$anchor, $$props) {
 		push($$props, true);
 		let open = prop($$props, "open", 15, false), onOpenChange = prop($$props, "onOpenChange", 7, noop), onOpenChangeComplete = prop($$props, "onOpenChangeComplete", 7, noop), value = prop($$props, "value", 15), onValueChange = prop($$props, "onValueChange", 7, noop), placeholder = prop($$props, "placeholder", 15), onPlaceholderChange = prop($$props, "onPlaceholderChange", 7, noop), isDateUnavailable = prop($$props, "isDateUnavailable", 7, () => false), validate = prop($$props, "validate", 7, noop), onInvalid = prop($$props, "onInvalid", 7, noop), minValue = prop($$props, "minValue", 7), maxValue = prop($$props, "maxValue", 7), disabled = prop($$props, "disabled", 7, false), readonly = prop($$props, "readonly", 7, false), granularity = prop($$props, "granularity", 7), readonlySegments = prop($$props, "readonlySegments", 23, () => []), hourCycle = prop($$props, "hourCycle", 7), locale = prop($$props, "locale", 7), hideTimeZone = prop($$props, "hideTimeZone", 7, false), required = prop($$props, "required", 7, false), calendarLabel = prop($$props, "calendarLabel", 7, "Event"), disableDaysOutsideMonth = prop($$props, "disableDaysOutsideMonth", 7, true), preventDeselect = prop($$props, "preventDeselect", 7, false), pagedNavigation = prop($$props, "pagedNavigation", 7, false), weekStartsOn = prop($$props, "weekStartsOn", 7), weekdayFormat = prop($$props, "weekdayFormat", 7, "narrow"), isDateDisabled = prop($$props, "isDateDisabled", 7, () => false), fixedWeeks = prop($$props, "fixedWeeks", 7, false), numberOfMonths = prop($$props, "numberOfMonths", 7, 1), closeOnDateSelect = prop($$props, "closeOnDateSelect", 7, true), initialFocus = prop($$props, "initialFocus", 7, false), errorMessageId = prop($$props, "errorMessageId", 7), children = prop($$props, "children", 7), monthFormat = prop($$props, "monthFormat", 7, "long"), yearFormat = prop($$props, "yearFormat", 7, "numeric");
-		const defaultPlaceholder = getDefaultDate({
+		const defaultPlaceholder = untrack(() => getDefaultDate({
 			granularity: granularity(),
 			defaultValue: value(),
 			minValue: minValue(),
 			maxValue: maxValue()
-		});
+		}));
 		function handleDefaultPlaceholder() {
 			if (placeholder() !== void 0) return;
 			placeholder(defaultPlaceholder);
@@ -33110,7 +33298,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				value(v);
 				onValueChange()(v);
 			}),
-			placeholder: boxWith(() => placeholder(), (v) => {
+			placeholder: boxWith(() => placeholder() ?? defaultPlaceholder, (v) => {
 				placeholder(v);
 				onPlaceholderChange()(v);
 			}),
@@ -33461,7 +33649,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		yearFormat: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-calendar.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-calendar.svelte
 	var rest_excludes$5 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -33572,7 +33760,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/popover/components/popover-content.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/popover/components/popover-content.svelte
 	var rest_excludes$4 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -33868,7 +34056,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		style: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-content.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-content.svelte
 	var rest_excludes$3 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -33912,7 +34100,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		onOpenAutoFocus: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/popover/components/popover-trigger.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/popover/components/popover-trigger.svelte
 	var rest_excludes$2 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -34051,7 +34239,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		closeDelay: {}
 	}, [], [], { mode: "open" });
 	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.18.1_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_6cde05827d131a7b61ee6c3fd17fcfaf/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-trigger.svelte
+	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-trigger.svelte
 	var rest_excludes$1 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -39741,16 +39929,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		isDateDisabled(date) {
 			return date.compare($ad063034c8620db8$export$d0bdf45af03a6ea3($ad063034c8620db8$export$aa8b41735afcabd2())) < 0 || this.availability(date) === "unavailable";
 		}
-		/**
-		* The day Tab lands on in the grid. It is the shown day if that day is open, else the first
-		* open day of the month. bits-ui lets Tab reach only this one day, so a closed one would lock
-		* keyboard users out of the grid (#166).
-		*/
-		get focusDay() {
-			if (!this.isDateDisabled(this.startAt)) return this.startAt;
-			for (let day = this.startAt.set({ day: 1 }); day.month === this.startAt.month; day = day.add({ days: 1 })) if (!this.isDateDisabled(day)) return day;
-			return this.startAt;
-		}
 		isDateUnavailable(date) {
 			return this.availability(date) === "sold_out";
 		}
@@ -39824,8 +40002,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		var div = root_6();
 		var node = child(div);
-		var bind_get = () => calendarClass().focusDay;
-		var bind_set = (day) => calendarClass().startAt = day;
 		{
 			const children = ($$anchor, $$arg0) => {
 				let months = () => ($$arg0?.()).months;
@@ -40017,12 +40193,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					fixedWeeks: true,
 					preventDeselect: true,
 					type: "single",
-					get placeholder() {
-						return bind_get();
-					},
-					set placeholder($$value) {
-						bind_set($$value);
-					},
 					get locale() {
 						return shop.locale;
 					},
@@ -40038,6 +40208,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					},
 					set value($$value) {
 						calendarClass().selected = $$value;
+					},
+					get placeholder() {
+						return calendarClass().startAt;
+					},
+					set placeholder($$value) {
+						calendarClass().startAt = $$value;
 					},
 					children,
 					$$slots: { default: true }

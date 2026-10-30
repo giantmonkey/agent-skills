@@ -4,6 +4,23 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.31.5
+
+_Released 2026-10-30_
+
+Arrow Up and Arrow Down in the calendar keep the weekday within the shown month.
+
+## Fixed
+
+- In `<go-calendar>`, Arrow Down and Arrow Up now move to the same weekday one week later or
+  earlier, also when a closed day lies in between. Before, they counted only open days. With
+  Mondays closed, Arrow Down from Tuesday 13 October landed on Wednesday 21 October. Across the
+  month edge they still count only open days. Arrow Down from Tuesday 27 October lands on
+  Wednesday 4 November. This waits for a bits-ui fix
+  ([bits-ui#2246](https://github.com/huntabyte/bits-ui/issues/2246)).
+
+---
+
 # v4.31.4
 
 _Released 2026-10-30_
