@@ -4,6 +4,23 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.31.4
+
+_Released 2026-10-30_
+
+`<go-profile-details>` now fills the account form with the signed-in customer's saved data, salutation included.
+
+## Fixed
+
+- `<go-profile-details>`: the form could try to fill itself before its salutation and
+  language options had loaded. When that happened, the customer's saved `salutation` was
+  rejected and the fields after it stayed empty. A customer who had never saved a salutation
+  had the same problem every time. The form now waits for both option lists, then shows the
+  saved salutation and language along with the name and email fields. A customer who never
+  saved a salutation now gets a filled form, with the `salutation` select left empty.
+
+---
+
 # v4.31.3
 
 _Released 2026-10-29_

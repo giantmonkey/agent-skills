@@ -14364,6 +14364,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					console.warn(`(FormDetails.fill) Field with API key ${key} not found.`);
 					return;
 				}
+				if (val === null || val === void 0) return;
 				if (f.type === "select") {
 					if (!f.options?.().find((o) => o.value === val)) throw new Error(`(FormDetails.fill) Field ${key} has invalid value: ${val}`);
 				}
@@ -38698,9 +38699,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const user = /* @__PURE__ */ user_derived(() => shop.getCustomer());
 		const userData = /* @__PURE__ */ user_derived(() => get$2(user) && "data" in get$2(user) ? get$2(user).data : void 0);
 		onMount(async () => {
-			await shop.waitForAllFetches();
 			await pollUntilTruthy(() => get$2(form).details);
 			await pollUntilTruthy(() => get$2(userData));
+			await shop.asyncFetch(() => [shop.customerSalutations, shop.locales]);
 			get$2(form).details.fill(get$2(userData));
 		});
 		var go_form = root$5();
