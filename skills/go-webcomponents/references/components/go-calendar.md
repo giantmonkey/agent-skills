@@ -222,13 +222,18 @@ window.isBoxOfficeDate = function (data) {
 
 Since `v4.31.1`
 
-The keys ship with gomus in every shop language. A shop can override them in its translations. A
-shop without the sold-out text gets the built-in "Ausverkauft" in German and "Sold out" in any other
-language.
+`datepicker.aria.select` and `ticket.timeSlot.noAvailable` ship with gomus in every shop language.
+A shop can override any key below in its translations. A shop without the sold-out text gets the
+built-in "Ausverkauft" in German and "Sold out" in any other language.
 
-| Key                             | Purpose                                                                                                                                                              |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `datepicker.aria.previousMonth` | Screen-reader name of the previous-month button (`.go-calendar-prev-button`).                                                                                        |
-| `datepicker.aria.nextMonth`     | Screen-reader name of the next-month button (`.go-calendar-next-button`).                                                                                            |
-| `datepicker.aria.select`        | Screen-reader name of the calendar, followed by the shown month.                                                                                                     |
-| `ticket.timeSlot.noAvailable`   | Added to a sold-out day's screen-reader name after the date, e.g. "donderdag 5 november 2026, Uitverkocht". Blocked days keep the plain date. _(Since `v4.31.3`)_ |
+The month buttons show the name of the month they go to, e.g. "Oktober" and "Dezember" under
+"November 2026", in the shop language. Their screen-reader name is the month name followed by
+what the button does, e.g. "Oktober, vorheriger Monat". A shop without those texts gets built-in
+ones in de, en, fr, it, nl and lb, and English in any other language. _(Since `v4.31.6`)_
+
+| Key                           | Purpose                                                                                                                                                                                                                      |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `calendar.previousMonth`      | Screen-reader name of the previous-month button (`.go-calendar-prev-button`). `{{month}}` is the month the button shows. Keep it at the start, so the name begins with the visible text (WCAG 2.5.3). _(Since `v4.31.6`)_ |
+| `calendar.nextMonth`          | Screen-reader name of the next-month button (`.go-calendar-next-button`). `{{month}}` is the month the button shows. Keep it at the start. _(Since `v4.31.6`)_                                                            |
+| `datepicker.aria.select`      | Screen-reader name of the calendar, followed by the shown month.                                                                                                                                                             |
+| `ticket.timeSlot.noAvailable` | Added to a sold-out day's screen-reader name after the date, e.g. "donderdag 5 november 2026, Uitverkocht". Blocked days keep the plain date. _(Since `v4.31.3`)_                                                            |

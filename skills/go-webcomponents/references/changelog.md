@@ -4,6 +4,36 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.31.6
+
+_Released 2026-11-03_
+
+The month buttons in `<go-calendar>` now show the month they go to, in the shop language. Their screen-reader name starts with that same text.
+
+## New
+
+- Translation keys `calendar.previousMonth` and `calendar.nextMonth`: the screen-reader names of
+  the month buttons. `{{month}}` is the month the button shows. Keep it at the start, so the name
+  begins with the visible text (WCAG 2.5.3). The built-in texts cover de, en, fr, it, nl and lb,
+  e.g. "Oktober, vorheriger Monat". Any other language gets English. A shop can override them in its
+  translations.
+
+## Changed (behavior)
+
+- In `<go-calendar>`, the previous-month and next-month buttons (`.go-calendar-prev-button`,
+  `.go-calendar-next-button`) now show the name of the month they go to. Under "November 2026"
+  they show "Oktober" and "Dezember". Before, they always showed the English "Prev" and "Next".
+  The labels are longer than before. If your CSS sizes these buttons or swaps their text for icons,
+  check how they look.
+- The screen-reader names of these buttons now come from `calendar.previousMonth` and
+  `calendar.nextMonth`. `<go-calendar>` no longer reads `datepicker.aria.previousMonth` and
+  `datepicker.aria.nextMonth`. Before, the visible "Prev"/"Next" did not match the name a screen
+  reader announced, so voice-control users could not say what they saw. If your shop overrode the
+  `datepicker.aria.*` month texts for the calendar, add the same override to the new keys and
+  include `{{month}}`. The form date picker still uses the `datepicker.aria.*` keys.
+
+---
+
 # v4.31.5
 
 _Released 2026-10-30_
