@@ -84,8 +84,8 @@ The built-in (non-`custom`) fields are:
 
 ## Events
 
-| Event            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `detail`                                                                                                                         | bubbles | Since     |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- | ------- | --------- |
+| Event            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | `detail`                                                                                                                         | bubbles | Since     |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------- | --------- |
 | `go-form-failed` | Fires when the guest signup or the checkout request is rejected, **before** the errors render. Also fires with the generic `form.error` message in `errors` when the request cannot complete (offline, DNS, CORS) or your `beforeSubmit` / `navigateTo` throws after the order exists _(Since `v4.30.0`)_. Cancelable: `preventDefault()` renders nothing. `detail` is live — edit `errors` / `fieldErrors` to change what renders. Fires on the inner `<go-form>` and bubbles through this element | `{ formId: 'checkoutGuest' \| 'checkoutUser', apiAction: undefined, errors: string[], fieldErrors: Record<fieldKey, string[]> }` | yes     | `v4.24.0` |
 
 Listen on the element itself to react, rewrite a message, or render the error yourself; see
@@ -231,9 +231,26 @@ go.config({
 })
 ```
 
+## Ticket reservations
+
+Since `v4.32.0`
+
+With `go.config({ ticketReservations: true })` the cart holds the capacity of its dated
+ticket lines while they sit in the cart (see **Components / Cart → Ticket reservations**).
+The checkout components take part in that:
+
+- **On entering checkout**, `<go-checkout-guest>`, `<go-checkout-user>` and
+  `<go-checkout-form>` restart every hold in the cart, so the customer gets the full
+  hold time to fill in the form. A hold that already ran out is reserved again. A
+  `<go-reservation-timer>` on the page restarts its countdown too.
+- **Once the order is created**, it uses up the holds. They are no longer renewed or
+  cancelled, and the ticket lines are not held again while they stay in the cart.
+- **If the checkout request is rejected or cannot complete**, no order exists and the
+  holds stay as they are, so the customer can retry.
+
 ## Localization
 
-| Key                            | Purpose                                                                                                             |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
-| `cart.detail.actions.checkout` | Label for the submit button                                                                                         |
+| Key                            | Purpose                                                                                                          |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| `cart.detail.actions.checkout` | Label for the submit button                                                                                      |
 | `form.error`                   | Generic error shown when the signup or checkout request cannot complete (offline, DNS, CORS) _(Since `v4.30.0`)_ |

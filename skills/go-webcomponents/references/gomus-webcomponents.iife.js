@@ -1,20 +1,17 @@
 (function() {
-	//#region src/zod-config.ts
+	// src/zod-config.ts
 	var g = globalThis;
 	(g.__zod_globalConfig ??= {}).jitless = true;
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/disclose-version.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/disclose-version.js
 	if (typeof window !== "undefined") ((window.__svelte ??= {}).v ??= /* @__PURE__ */ new Set()).add("5");
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/constants.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/constants.js
 	var HYDRATION_ERROR = {};
 	var UNINITIALIZED = Symbol("uninitialized");
 	var NAMESPACE_HTML = "http://www.w3.org/1999/xhtml";
 	var NAMESPACE_SVG = "http://www.w3.org/2000/svg";
 	var NAMESPACE_MATHML = "http://www.w3.org/1998/Math/MathML";
 	var ATTACHMENT_KEY = "@attach";
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/shared/utils.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/shared/utils.js
 	var is_array = Array.isArray;
 	var index_of = Array.prototype.indexOf;
 	var includes = Array.prototype.includes;
@@ -91,8 +88,7 @@
 		}
 		return array;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/constants.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/constants.js
 	/**
 	* An effect that does not destroy its child effects when it reruns.
 	* Runs as part of render effects, i.e. not eagerly as part of tree traversal or effect flushing.
@@ -115,17 +111,12 @@
 	var EFFECT_PRESERVED = 1 << 19;
 	var USER_EFFECT = 1 << 20;
 	var EFFECT_OFFSCREEN = 1 << 25;
-	/**
-	* Tells that we marked this derived and its reactions as visited during the "mark as (maybe) dirty"-phase.
-	* Will be lifted during execution of the derived and during checking its dirty state (both are necessary
-	* because a derived might be checked but not executed). This is a pure performance optimization flag and
-	* should not be used for any other purpose!
-	*/
-	var WAS_MARKED = 65536;
 	var REACTION_IS_UPDATING = 1 << 21;
 	var ASYNC = 1 << 22;
 	var ERROR_VALUE = 1 << 23;
 	var STATE_SYMBOL = Symbol("$state");
+	/** Marks component export objects, so that `proxy(...)` leaves them untouched */
+	var COMPONENT_SYMBOL = Symbol("component");
 	var LEGACY_PROPS = Symbol("legacy props");
 	var LOADING_ATTR_SYMBOL = Symbol("");
 	var ATTRIBUTES_CACHE = Symbol("attributes");
@@ -139,113 +130,6 @@
 		message = "The reaction that called `getAbortSignal()` was re-run or destroyed";
 	}();
 	var IS_XHTML = !!globalThis.document?.contentType && /* @__PURE__ */ globalThis.document.contentType.includes("xml");
-	/**
-	* `%name%(...)` can only be used during component initialisation
-	* @param {string} name
-	* @returns {never}
-	*/
-	function lifecycle_outside_component(name) {
-		throw new Error(`https://svelte.dev/e/lifecycle_outside_component`);
-	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/errors.js
-	/**
-	* Cannot create a `$derived(...)` with an `await` expression outside of an effect tree
-	* @returns {never}
-	*/
-	function async_derived_orphan() {
-		throw new Error(`https://svelte.dev/e/async_derived_orphan`);
-	}
-	/**
-	* Keyed each block has duplicate key `%value%` at indexes %a% and %b%
-	* @param {string} a
-	* @param {string} b
-	* @param {string | undefined | null} [value]
-	* @returns {never}
-	*/
-	function each_key_duplicate(a, b, value) {
-		throw new Error(`https://svelte.dev/e/each_key_duplicate`);
-	}
-	/**
-	* `%rune%` cannot be used inside an effect cleanup function
-	* @param {string} rune
-	* @returns {never}
-	*/
-	function effect_in_teardown(rune) {
-		throw new Error(`https://svelte.dev/e/effect_in_teardown`);
-	}
-	/**
-	* Effect cannot be created inside a `$derived` value that was not itself created inside an effect
-	* @returns {never}
-	*/
-	function effect_in_unowned_derived() {
-		throw new Error(`https://svelte.dev/e/effect_in_unowned_derived`);
-	}
-	/**
-	* `%rune%` can only be used inside an effect (e.g. during component initialisation)
-	* @param {string} rune
-	* @returns {never}
-	*/
-	function effect_orphan(rune) {
-		throw new Error(`https://svelte.dev/e/effect_orphan`);
-	}
-	/**
-	* Maximum update depth exceeded. This typically indicates that an effect reads and writes the same piece of state
-	* @returns {never}
-	*/
-	function effect_update_depth_exceeded() {
-		throw new Error(`https://svelte.dev/e/effect_update_depth_exceeded`);
-	}
-	/**
-	* Failed to hydrate the application
-	* @returns {never}
-	*/
-	function hydration_failed() {
-		throw new Error(`https://svelte.dev/e/hydration_failed`);
-	}
-	/**
-	* Cannot do `bind:%key%={undefined}` when `%key%` has a fallback value
-	* @param {string} key
-	* @returns {never}
-	*/
-	function props_invalid_value(key) {
-		throw new Error(`https://svelte.dev/e/props_invalid_value`);
-	}
-	/**
-	* `setContext` must be called when a component first initializes, not in a subsequent effect or after an `await` expression
-	* @returns {never}
-	*/
-	function set_context_after_init() {
-		throw new Error(`https://svelte.dev/e/set_context_after_init`);
-	}
-	/**
-	* Property descriptors defined on `$state` objects must contain `value` and always be `enumerable`, `configurable` and `writable`.
-	* @returns {never}
-	*/
-	function state_descriptors_fixed() {
-		throw new Error(`https://svelte.dev/e/state_descriptors_fixed`);
-	}
-	/**
-	* Cannot set prototype of `$state` object
-	* @returns {never}
-	*/
-	function state_prototype_fixed() {
-		throw new Error(`https://svelte.dev/e/state_prototype_fixed`);
-	}
-	/**
-	* Updating state inside `$derived(...)`, `$inspect(...)` or a template expression is forbidden. If the value should not be reactive, declare it without `$state`
-	* @returns {never}
-	*/
-	function state_unsafe_mutation() {
-		throw new Error(`https://svelte.dev/e/state_unsafe_mutation`);
-	}
-	/**
-	* A `<svelte:boundary>` `reset` function cannot be called while an error is still being handled
-	* @returns {never}
-	*/
-	function svelte_boundary_reset_onerror() {
-		throw new Error(`https://svelte.dev/e/svelte_boundary_reset_onerror`);
-	}
 	/**
 	* Reading a derived belonging to a now-destroyed effect may result in stale values
 	*/
@@ -271,8 +155,7 @@
 	function svelte_boundary_reset_noop() {
 		console.warn(`https://svelte.dev/e/svelte_boundary_reset_noop`);
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/hydration.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/hydration.js
 	/** @import { TemplateNode } from '#client' */
 	/**
 	* Use this variable to guard everything related to hydration code so it can be treeshaken out
@@ -350,8 +233,7 @@
 		}
 		return node.data;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/equality.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/reactivity/equality.js
 	/** @import { Equals } from '#client' */
 	/** @type {Equals} */
 	function equals(value) {
@@ -369,8 +251,113 @@
 	function safe_equals(value) {
 		return !safe_not_equal(value, this.v);
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/flags/index.js
+	/**
+	* `%name%(...)` can only be used during component initialisation
+	* @param {string} name
+	* @returns {never}
+	*/
+	function lifecycle_outside_component(name) {
+		throw new Error(`https://svelte.dev/e/lifecycle_outside_component`);
+	}
+	/**
+	* `setContext` must be called when a component first initializes, not in a subsequent effect or after an `await` expression
+	* @returns {never}
+	*/
+	function set_context_after_init() {
+		throw new Error(`https://svelte.dev/e/set_context_after_init`);
+	}
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/errors.js
+	/**
+	* Cannot create a `$derived(...)` with an `await` expression outside of an effect tree
+	* @returns {never}
+	*/
+	function async_derived_orphan() {
+		throw new Error(`https://svelte.dev/e/async_derived_orphan`);
+	}
+	/**
+	* Keyed each block has duplicate key `%value%` at indexes %a% and %b%
+	* @param {string} a
+	* @param {string} b
+	* @param {string | undefined | null} [value]
+	* @returns {never}
+	*/
+	function each_key_duplicate(a, b, value) {
+		throw new Error(`https://svelte.dev/e/each_key_duplicate`);
+	}
+	/**
+	* `%rune%` cannot be used inside an effect cleanup function
+	* @param {string} rune
+	* @returns {never}
+	*/
+	function effect_in_teardown(rune) {
+		throw new Error(`https://svelte.dev/e/effect_in_teardown`);
+	}
+	/**
+	* Effect cannot be created inside a `$derived` value that was not itself created inside an effect
+	* @returns {never}
+	*/
+	function effect_in_unowned_derived() {
+		throw new Error(`https://svelte.dev/e/effect_in_unowned_derived`);
+	}
+	/**
+	* `%rune%` can only be used inside an effect (e.g. during component initialisation)
+	* @param {string} rune
+	* @returns {never}
+	*/
+	function effect_orphan(rune) {
+		throw new Error(`https://svelte.dev/e/effect_orphan`);
+	}
+	/**
+	* Maximum update depth exceeded. This typically indicates that an effect reads and writes the same piece of state
+	* @returns {never}
+	*/
+	function effect_update_depth_exceeded() {
+		throw new Error(`https://svelte.dev/e/effect_update_depth_exceeded`);
+	}
+	/**
+	* Failed to hydrate the application
+	* @returns {never}
+	*/
+	function hydration_failed() {
+		throw new Error(`https://svelte.dev/e/hydration_failed`);
+	}
+	/**
+	* Cannot do `bind:%key%={undefined}` when `%key%` has a fallback value
+	* @param {string} key
+	* @returns {never}
+	*/
+	function props_invalid_value(key) {
+		throw new Error(`https://svelte.dev/e/props_invalid_value`);
+	}
+	/**
+	* Property descriptors defined on `$state` objects must contain `value` and always be `enumerable`, `configurable` and `writable`.
+	* @returns {never}
+	*/
+	function state_descriptors_fixed() {
+		throw new Error(`https://svelte.dev/e/state_descriptors_fixed`);
+	}
+	/**
+	* Cannot set prototype of `$state` object
+	* @returns {never}
+	*/
+	function state_prototype_fixed() {
+		throw new Error(`https://svelte.dev/e/state_prototype_fixed`);
+	}
+	/**
+	* Updating state inside `$derived(...)`, `$inspect(...)` or a template expression is forbidden. If the value should not be reactive, declare it without `$state`
+	* @returns {never}
+	*/
+	function state_unsafe_mutation() {
+		throw new Error(`https://svelte.dev/e/state_unsafe_mutation`);
+	}
+	/**
+	* A `<svelte:boundary>` `reset` function cannot be called while an error is still being handled
+	* @returns {never}
+	*/
+	function svelte_boundary_reset_onerror() {
+		throw new Error(`https://svelte.dev/e/svelte_boundary_reset_onerror`);
+	}
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/flags/index.js
 	/** True if experimental.async=true */
 	var async_mode_flag = false;
 	/** True if we're not certain that we only have Svelte 5 code in the compilation */
@@ -378,8 +365,7 @@
 	function enable_legacy_mode_flag() {
 		legacy_mode_flag = true;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/shared/clone.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/shared/clone.js
 	/** @import { Snapshot } from './types' */
 	/**
 	* In dev, we keep track of which properties could not be cloned. In prod
@@ -432,7 +418,10 @@
 				for (var key of Object.keys(value)) copy[key] = clone$2(value[key], cloned, path, paths, null, no_tojson);
 				return copy;
 			}
-			if (value instanceof Date) return structuredClone(value);
+			if (value instanceof Date) {
+				value.getTime();
+				return structuredClone(value);
+			}
 			if (typeof value.toJSON === "function" && !no_tojson) return clone$2(
 				/** @type {T & { toJSON(): any } } */
 				value.toJSON(),
@@ -449,8 +438,29 @@
 			return value;
 		}
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/context.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/shared/context.js
+	/**
+	* @typedef {{ p: Context | null, c: Map<unknown, unknown> | null }} Context
+	*/
+	/**
+	* @param {Context} context
+	* @returns {Map<unknown, unknown> | null}
+	*/
+	function get_parent_context(context) {
+		let parent = context.p;
+		while (parent !== null && parent.c === null) parent = parent.p;
+		return parent?.c ?? null;
+	}
+	/**
+	* @param {Context | null} context
+	* @param {string} name
+	* @returns {Map<unknown, unknown>}
+	*/
+	function get_or_init_context_map(context, name) {
+		if (context === null) lifecycle_outside_component(name);
+		return context.c ??= new Map(get_parent_context(context) || void 0);
+	}
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/context.js
 	/** @import { ComponentContext, DevStackEntry, Effect } from '#client' */
 	/** @type {ComponentContext | null} */
 	var component_context = null;
@@ -459,7 +469,9 @@
 		component_context = context;
 	}
 	/**
-	* Retrieves the context that belongs to the closest parent component with the specified `key`.
+	* Retrieves the context set with the specified `key` in the current component or any of its
+	* ancestors. If multiple components set the same key, the value from the closest one is returned.
+	* A `setContext` call in the current component is only visible to `getContext` calls that run after it.
 	* Must be called during component initialisation.
 	*
 	* [`createContext`](https://svelte.dev/docs/svelte/svelte#createContext) is a type-safe alternative.
@@ -469,12 +481,12 @@
 	* @returns {T}
 	*/
 	function getContext(key) {
-		return get_or_init_context_map("getContext").get(key);
+		return get_or_init_context_map(component_context, "getContext").get(key);
 	}
 	/**
 	* Associates an arbitrary `context` object with the current component and the specified `key`
-	* and returns that object. The context is then available to children of the component
-	* (including slotted content) with `getContext`.
+	* and returns that object. The context is then available to the component itself and all of its
+	* descendants (including slotted content) with `getContext`.
 	*
 	* Like lifecycle functions, this must be called during component initialisation.
 	*
@@ -486,7 +498,7 @@
 	* @returns {T}
 	*/
 	function setContext(key, context) {
-		const context_map = get_or_init_context_map("setContext");
+		const context_map = get_or_init_context_map(component_context, "setContext");
 		if (async_mode_flag) {
 			var flags = active_effect.f;
 			if (!(!active_reaction && (flags & 32) !== 0 && !component_context.i)) set_context_after_init();
@@ -495,14 +507,14 @@
 		return context;
 	}
 	/**
-	* Checks whether a given `key` has been set in the context of a parent component.
-	* Must be called during component initialisation.
+	* Checks whether a given `key` has been set in the context of the current component or any of
+	* its ancestors. Must be called during component initialisation.
 	*
 	* @param {any} key
 	* @returns {boolean}
 	*/
 	function hasContext(key) {
-		return get_or_init_context_map("hasContext").has(key);
+		return get_or_init_context_map(component_context, "hasContext").has(key);
 	}
 	/**
 	* @param {Record<string, unknown>} props
@@ -541,35 +553,21 @@
 		if (component !== void 0) context.x = component;
 		context.i = true;
 		component_context = context.p;
-		return component ?? {};
+		return mark_as_component(component);
+	}
+	/**
+	* Add a symbol to the object (or create one if undefined) to mark it as a component so it isn't proxified.
+	* @param {any} component
+	*/
+	function mark_as_component(component = {}) {
+		define_property(component, COMPONENT_SYMBOL, { value: true });
+		return component;
 	}
 	/** @returns {boolean} */
 	function is_runes() {
 		return !legacy_mode_flag || component_context !== null && component_context.l === null;
 	}
-	/**
-	* @param {string} name
-	* @returns {Map<unknown, unknown>}
-	*/
-	function get_or_init_context_map(name) {
-		if (component_context === null) lifecycle_outside_component(name);
-		return component_context.c ??= new Map(get_parent_context(component_context) || void 0);
-	}
-	/**
-	* @param {ComponentContext} component_context
-	* @returns {Map<unknown, unknown> | null}
-	*/
-	function get_parent_context(component_context) {
-		let parent = component_context.p;
-		while (parent !== null) {
-			const context_map = parent.c;
-			if (context_map !== null) return context_map;
-			parent = parent.p;
-		}
-		return null;
-	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/task.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/task.js
 	/** @type {Array<() => void>} */
 	var micro_tasks = [];
 	function run_micro_tasks() {
@@ -595,40 +593,7 @@
 	function flush_tasks() {
 		while (micro_tasks.length > 0) run_micro_tasks();
 	}
-	/**
-	* @param {unknown} error
-	*/
-	function handle_error(error) {
-		var effect = active_effect;
-		if (effect === null) {
-			/** @type {Derived} */ active_reaction.f |= ERROR_VALUE;
-			return error;
-		}
-		if ((effect.f & 32768) === 0 && (effect.f & 4) === 0) throw error;
-		invoke_error_boundary(error, effect);
-	}
-	/**
-	* @param {unknown} error
-	* @param {Effect | null} effect
-	*/
-	function invoke_error_boundary(error, effect) {
-		if (effect !== null && (effect.f & 16384) !== 0) return;
-		while (effect !== null) {
-			if ((effect.f & 128) !== 0) {
-				if ((effect.f & 32768) === 0) throw error;
-				try {
-					/** @type {Boundary} */ effect.b.error(error);
-					return;
-				} catch (e) {
-					error = e;
-				}
-			}
-			effect = effect.parent;
-		}
-		throw error;
-	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/status.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/reactivity/status.js
 	/** @import { Derived, Signal } from '#client' */
 	var STATUS_MASK = ~(DIRTY | MAYBE_DIRTY | CLEAN);
 	/**
@@ -646,66 +611,18 @@
 		if ((derived.f & 512) !== 0 || derived.deps === null) set_signal_status(derived, CLEAN);
 		else set_signal_status(derived, MAYBE_DIRTY);
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/utils.js
-	/** @import { Derived, Effect, Value } from '#client' */
-	/**
-	* @param {Value[] | null} deps
-	*/
-	function clear_marked(deps) {
-		if (deps === null) return;
-		for (const dep of deps) {
-			if ((dep.f & 2) === 0 || (dep.f & 65536) === 0) continue;
-			dep.f ^= WAS_MARKED;
-			clear_marked(
-				/** @type {Derived} */
-				dep.deps
-			);
-		}
-	}
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/reactivity/utils.js
+	/** @import { Effect } from '#client' */
 	/**
 	* @param {Effect} effect
-	* @param {Set<Effect>} dirty_effects
-	* @param {Set<Effect>} maybe_dirty_effects
+	* @param {Map<Effect, number>} dirty_reactions
 	*/
-	function defer_effect(effect, dirty_effects, maybe_dirty_effects) {
-		if ((effect.f & 2048) !== 0) dirty_effects.add(effect);
-		else if ((effect.f & 4096) !== 0) maybe_dirty_effects.add(effect);
-		clear_marked(effect.deps);
+	function defer_effect(effect, dirty_reactions) {
+		if ((effect.f & 2048) !== 0) dirty_reactions.set(effect, DIRTY);
+		else if ((effect.f & 4096) !== 0 && dirty_reactions.get(effect) !== 2048) dirty_reactions.set(effect, MAYBE_DIRTY);
 		set_signal_status(effect, CLEAN);
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/store.js
-	/**
-	* We set this to `true` when updating a store so that we correctly
-	* schedule effects if the update takes place inside a `$:` effect
-	*/
-	var legacy_is_updating_store = false;
-	/**
-	* Whether or not the prop currently being read is a store binding, as in
-	* `<Child bind:x={$y} />`. If it is, we treat the prop as mutable even in
-	* runes mode, and skip `binding_property_non_reactive` validation
-	*/
-	var is_store_binding = false;
-	/**
-	* Returns a tuple that indicates whether `fn()` reads a prop that is a store binding.
-	* Used to prevent `binding_property_non_reactive` validation false positives and
-	* ensure that these props are treated as mutable even in runes mode
-	* @template T
-	* @param {() => T} fn
-	* @returns {[T, boolean]}
-	*/
-	function capture_store_binding(fn) {
-		var previous_is_store_binding = is_store_binding;
-		try {
-			is_store_binding = false;
-			return [fn(), is_store_binding];
-		} finally {
-			is_store_binding = previous_is_store_binding;
-		}
-	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/misc.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/elements/misc.js
 	/**
 	* @param {HTMLElement} dom
 	* @param {boolean} value
@@ -741,8 +658,7 @@
 			}, { capture: true });
 		}
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/bindings/shared.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/elements/bindings/shared.js
 	/**
 	* @template T
 	* @param {() => T} fn
@@ -779,440 +695,7 @@
  /** @type {any} */ element[FORM_RESET_HANDLER] = () => on_reset(true);
 		add_form_reset_listener();
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/reactivity/create-subscriber.js
-	/**
-	* Returns a `subscribe` function that integrates external event-based systems with Svelte's reactivity.
-	* It's particularly useful for integrating with web APIs like `MediaQuery`, `IntersectionObserver`, or `WebSocket`.
-	*
-	* If `subscribe` is called inside an effect (including indirectly, for example inside a getter),
-	* the `start` callback will be called with an `update` function. Whenever `update` is called, the effect re-runs.
-	*
-	* If `start` returns a cleanup function, it will be called when the effect is destroyed.
-	*
-	* If `subscribe` is called in multiple effects, `start` will only be called once as long as the effects
-	* are active, and the returned teardown function will only be called when all effects are destroyed.
-	*
-	* It's best understood with an example. Here's an implementation of [`MediaQuery`](https://svelte.dev/docs/svelte/svelte-reactivity#MediaQuery):
-	*
-	* ```js
-	* import { createSubscriber } from 'svelte/reactivity';
-	* import { on } from 'svelte/events';
-	*
-	* export class MediaQuery {
-	* 	#query;
-	* 	#subscribe;
-	*
-	* 	constructor(query) {
-	* 		this.#query = window.matchMedia(`(${query})`);
-	*
-	* 		this.#subscribe = createSubscriber((update) => {
-	* 			// when the `change` event occurs, re-run any effects that read `this.current`
-	* 			const off = on(this.#query, 'change', update);
-	*
-	* 			// stop listening when all the effects are destroyed
-	* 			return () => off();
-	* 		});
-	* 	}
-	*
-	* 	get current() {
-	* 		// This makes the getter reactive, if read in an effect
-	* 		this.#subscribe();
-	*
-	* 		// Return the current state of the query, whether or not we're in an effect
-	* 		return this.#query.matches;
-	* 	}
-	* }
-	* ```
-	* @param {(update: () => void) => (() => void) | void} start
-	* @since 5.7.0
-	*/
-	function createSubscriber(start) {
-		let subscribers = 0;
-		let version = source(0);
-		/** @type {(() => void) | void} */
-		let stop;
-		return () => {
-			if (effect_tracking()) {
-				get$2(version);
-				render_effect(() => {
-					if (subscribers === 0) stop = untrack(() => start(() => increment$1(version)));
-					subscribers += 1;
-					return () => {
-						queue_micro_task(() => {
-							subscribers -= 1;
-							if (subscribers === 0) {
-								stop?.();
-								stop = void 0;
-								increment$1(version);
-							}
-						});
-					};
-				});
-			}
-		};
-	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/blocks/boundary.js
-	/** @import { Effect, Source, TemplateNode, } from '#client' */
-	/**
-	* @typedef {{
-	* 	 onerror?: ((error: unknown, reset: () => void) => void) | null;
-	*   failed?: ((anchor: Node, error: () => unknown, reset: () => () => void) => void) | null;
-	*   pending?: ((anchor: Node) => void) | null;
-	* }} BoundaryProps
-	*/
-	var flags = EFFECT_TRANSPARENT | EFFECT_PRESERVED;
-	/**
-	* @param {TemplateNode} node
-	* @param {BoundaryProps} props
-	* @param {((anchor: Node) => void)} children
-	* @param {((error: unknown) => unknown) | undefined} [transform_error]
-	* @returns {void}
-	*/
-	function boundary(node, props, children, transform_error) {
-		new Boundary(node, props, children, transform_error);
-	}
-	var Boundary = class {
-		/** @type {Boundary | null} */
-		parent;
-		is_pending = false;
-		/**
-		* API-level transformError transform function. Transforms errors before they reach the `failed` snippet.
-		* Inherited from parent boundary, or defaults to identity.
-		* @type {(error: unknown) => unknown}
-		*/
-		transform_error;
-		/** @type {TemplateNode} */
-		#anchor;
-		/** @type {TemplateNode | null} */
-		#hydrate_open = hydrating ? hydrate_node : null;
-		/** @type {BoundaryProps} */
-		#props;
-		/** @type {((anchor: Node) => void)} */
-		#children;
-		/** @type {Effect} */
-		#effect;
-		/** @type {Effect | null} */
-		#main_effect = null;
-		/** @type {Effect | null} */
-		#pending_effect = null;
-		/** @type {Effect | null} */
-		#failed_effect = null;
-		/** @type {DocumentFragment | null} */
-		#offscreen_fragment = null;
-		#local_pending_count = 0;
-		#pending_count = 0;
-		#pending_count_update_queued = false;
-		/** @type {Set<Effect>} */
-		#dirty_effects = /* @__PURE__ */ new Set();
-		/** @type {Set<Effect>} */
-		#maybe_dirty_effects = /* @__PURE__ */ new Set();
-		/**
-		* A source containing the number of pending async deriveds/expressions.
-		* Only created if `$effect.pending()` is used inside the boundary,
-		* otherwise updating the source results in needless `Batch.ensure()`
-		* calls followed by no-op flushes
-		* @type {Source<number> | null}
-		*/
-		#effect_pending = null;
-		#effect_pending_subscriber = createSubscriber(() => {
-			this.#effect_pending = source(this.#local_pending_count);
-			return () => {
-				this.#effect_pending = null;
-			};
-		});
-		/**
-		* @param {TemplateNode} node
-		* @param {BoundaryProps} props
-		* @param {((anchor: Node) => void)} children
-		* @param {((error: unknown) => unknown) | undefined} [transform_error]
-		*/
-		constructor(node, props, children, transform_error) {
-			this.#anchor = node;
-			this.#props = props;
-			this.#children = (anchor) => {
-				var effect = active_effect;
-				effect.b = this;
-				effect.f |= 128;
-				children(anchor);
-			};
-			this.parent = active_effect.b;
-			this.transform_error = transform_error ?? this.parent?.transform_error ?? ((e) => e);
-			this.#effect = block(() => {
-				if (hydrating) {
-					const comment = this.#hydrate_open;
-					hydrate_next();
-					const server_rendered_pending = comment.data === "[!";
-					if (comment.data.startsWith("[?")) {
-						const serialized_error = JSON.parse(comment.data.slice(2));
-						this.#hydrate_failed_content(serialized_error);
-					} else if (server_rendered_pending) this.#hydrate_pending_content();
-					else this.#hydrate_resolved_content();
-				} else this.#render();
-			}, flags);
-			if (hydrating) this.#anchor = hydrate_node;
-		}
-		#hydrate_resolved_content() {
-			try {
-				this.#main_effect = branch(() => this.#children(this.#anchor));
-			} catch (error) {
-				this.error(error);
-			}
-		}
-		/**
-		* @param {unknown} error The deserialized error from the server's hydration comment
-		*/
-		#hydrate_failed_content(error) {
-			const failed = this.#props.failed;
-			const { reset, invoke_onerror } = this.#create_reset(error);
-			queue_micro_task(invoke_onerror);
-			if (!failed) return;
-			this.#failed_effect = branch(() => {
-				failed(this.#anchor, () => error, () => reset);
-			});
-		}
-		/**
-		* Creates the `reset` function for a failed boundary, along with a function
-		* that invokes `onerror` with it (if provided)
-		* @param {unknown} error
-		* @returns {{ reset: () => void, invoke_onerror: () => void }}
-		*/
-		#create_reset(error) {
-			var did_reset = false;
-			var calling_on_error = false;
-			const reset = () => {
-				if (did_reset) {
-					svelte_boundary_reset_noop();
-					return;
-				}
-				did_reset = true;
-				if (calling_on_error) svelte_boundary_reset_onerror();
-				if (this.#failed_effect !== null) pause_effect(this.#failed_effect, () => {
-					this.#failed_effect = null;
-				});
-				this.#run(() => {
-					this.#render();
-				});
-			};
-			const invoke_onerror = () => {
-				try {
-					calling_on_error = true;
-					this.#props.onerror?.(error, reset);
-					calling_on_error = false;
-				} catch (err) {
-					invoke_error_boundary(err, this.#effect && this.#effect.parent);
-				}
-			};
-			return {
-				reset,
-				invoke_onerror
-			};
-		}
-		#hydrate_pending_content() {
-			const pending = this.#props.pending;
-			if (!pending) return;
-			this.is_pending = true;
-			this.#pending_effect = branch(() => pending(this.#anchor));
-			queue_micro_task(() => {
-				var fragment = this.#offscreen_fragment = document.createDocumentFragment();
-				var anchor = create_text();
-				fragment.append(anchor);
-				this.#main_effect = this.#run(() => {
-					return branch(() => this.#children(anchor));
-				});
-				if (this.#pending_count === 0) {
-					this.#anchor.before(fragment);
-					this.#offscreen_fragment = null;
-					pause_effect(this.#pending_effect, () => {
-						this.#pending_effect = null;
-					});
-					this.#resolve(current_batch);
-				}
-			});
-		}
-		#render() {
-			try {
-				this.is_pending = this.has_pending_snippet();
-				this.#pending_count = 0;
-				this.#local_pending_count = 0;
-				this.#main_effect = branch(() => {
-					this.#children(this.#anchor);
-				});
-				if (this.#pending_count > 0) {
-					var fragment = this.#offscreen_fragment = document.createDocumentFragment();
-					move_effect(this.#main_effect, fragment);
-					const pending = this.#props.pending;
-					this.#pending_effect = branch(() => pending(this.#anchor));
-				} else this.#resolve(current_batch);
-			} catch (error) {
-				this.error(error);
-			}
-		}
-		/**
-		* @param {Batch} batch
-		*/
-		#resolve(batch) {
-			this.is_pending = false;
-			batch.transfer_effects(this.#dirty_effects, this.#maybe_dirty_effects);
-		}
-		/**
-		* Defer an effect inside a pending boundary until the boundary resolves
-		* @param {Effect} effect
-		*/
-		defer_effect(effect) {
-			defer_effect(effect, this.#dirty_effects, this.#maybe_dirty_effects);
-		}
-		/**
-		* Returns `false` if the effect exists inside a boundary whose pending snippet is shown
-		* @returns {boolean}
-		*/
-		is_rendered() {
-			return !this.is_pending && (!this.parent || this.parent.is_rendered());
-		}
-		has_pending_snippet() {
-			return !!this.#props.pending;
-		}
-		/**
-		* @template T
-		* @param {() => T} fn
-		*/
-		#run(fn) {
-			var previous_effect = active_effect;
-			var previous_reaction = active_reaction;
-			var previous_ctx = component_context;
-			set_active_effect(this.#effect);
-			set_active_reaction(this.#effect);
-			set_component_context(this.#effect.ctx);
-			try {
-				Batch.ensure();
-				return fn();
-			} catch (e) {
-				handle_error(e);
-				return null;
-			} finally {
-				set_active_effect(previous_effect);
-				set_active_reaction(previous_reaction);
-				set_component_context(previous_ctx);
-			}
-		}
-		/**
-		* Updates the pending count associated with the currently visible pending snippet,
-		* if any, such that we can replace the snippet with content once work is done
-		* @param {1 | -1} d
-		* @param {Batch} batch
-		*/
-		#update_pending_count(d, batch) {
-			if (!this.has_pending_snippet()) {
-				if (this.parent) this.parent.#update_pending_count(d, batch);
-				return;
-			}
-			this.#pending_count += d;
-			if (this.#pending_count === 0) {
-				this.#resolve(batch);
-				if (this.#pending_effect) pause_effect(this.#pending_effect, () => {
-					this.#pending_effect = null;
-				});
-				if (this.#offscreen_fragment) {
-					this.#anchor.before(this.#offscreen_fragment);
-					this.#offscreen_fragment = null;
-				}
-			}
-		}
-		/**
-		* Update the source that powers `$effect.pending()` inside this boundary,
-		* and controls when the current `pending` snippet (if any) is removed.
-		* Do not call from inside the class
-		* @param {1 | -1} d
-		* @param {Batch} batch
-		*/
-		update_pending_count(d, batch) {
-			this.#update_pending_count(d, batch);
-			this.#local_pending_count += d;
-			if (!this.#effect_pending || this.#pending_count_update_queued) return;
-			this.#pending_count_update_queued = true;
-			queue_micro_task(() => {
-				this.#pending_count_update_queued = false;
-				if (this.#effect_pending) internal_set(this.#effect_pending, this.#local_pending_count);
-			});
-		}
-		get_effect_pending() {
-			this.#effect_pending_subscriber();
-			return get$2(this.#effect_pending);
-		}
-		/** @param {unknown} error */
-		error(error) {
-			if (!this.#props.onerror && !this.#props.failed) throw error;
-			if (current_batch?.is_fork) {
-				if (this.#main_effect) current_batch.skip_effect(this.#main_effect);
-				if (this.#pending_effect) current_batch.skip_effect(this.#pending_effect);
-				if (this.#failed_effect) current_batch.skip_effect(this.#failed_effect);
-				current_batch.oncommit(() => {
-					this.#handle_error(error);
-				});
-			} else this.#handle_error(error);
-		}
-		/**
-		* @param {unknown} error
-		*/
-		#handle_error(error) {
-			if (this.#main_effect) {
-				destroy_effect(this.#main_effect);
-				this.#main_effect = null;
-			}
-			if (this.#pending_effect) {
-				destroy_effect(this.#pending_effect);
-				this.#pending_effect = null;
-			}
-			if (this.#failed_effect) {
-				destroy_effect(this.#failed_effect);
-				this.#failed_effect = null;
-			}
-			if (hydrating) {
-				set_hydrate_node(this.#hydrate_open);
-				next();
-				set_hydrate_node(skip_nodes());
-			}
-			let failed = this.#props.failed;
-			/** @param {unknown} transformed_error */
-			const handle_error_result = (transformed_error) => {
-				const { reset, invoke_onerror } = this.#create_reset(transformed_error);
-				invoke_onerror();
-				if (failed) this.#failed_effect = this.#run(() => {
-					try {
-						return branch(() => {
-							var effect = active_effect;
-							effect.b = this;
-							effect.f |= 128;
-							failed(this.#anchor, () => transformed_error, () => reset);
-						});
-					} catch (error) {
-						invoke_error_boundary(error, this.#effect.parent);
-						return null;
-					}
-				});
-			};
-			queue_micro_task(() => {
-				/** @type {unknown} */
-				var result;
-				try {
-					result = this.transform_error(error);
-				} catch (e) {
-					invoke_error_boundary(e, this.#effect && this.#effect.parent);
-					return;
-				}
-				if (result !== null && typeof result === "object" && typeof result.then === "function")
- /** @type {any} */ result.then(
-					handle_error_result,
-					/** @param {unknown} e */
-					(e) => invoke_error_boundary(e, this.#effect && this.#effect.parent)
-				);
-				else handle_error_result(result);
-			});
-		}
-	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/async.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/reactivity/async.js
 	/** @import { Blocker, Effect, Source, Value } from '#client' */
 	/**
 	* @param {Blocker[]} blockers
@@ -1221,7 +704,7 @@
 	* @param {(values: Value[]) => any} fn
 	*/
 	function flatten(blockers, sync, async, fn) {
-		const d = is_runes() ? derived : derived_safe_equal;
+		const d = is_runes() ? derived$1 : derived_safe_equal;
 		var pending = blockers.filter((b) => !b.settled);
 		var deriveds = sync.map(d);
 		if (async.length === 0 && pending.length === 0) {
@@ -1253,6 +736,10 @@
 			Promise.all(async.map((expression) => /* @__PURE__ */ async_derived(expression))).then(finish).catch((error) => invoke_error_boundary(error, parent)).finally(decrement_pending);
 		}
 		if (blocker_promise) blocker_promise.then(() => {
+			if ((parent.f & 16384) !== 0) {
+				decrement_pending();
+				return;
+			}
 			restore();
 			run();
 			unset_context();
@@ -1306,7 +793,7 @@
 	* @returns {Derived<V>}
 	*/
 	/*#__NO_SIDE_EFFECTS__*/
-	function derived(fn) {
+	function derived$1(fn) {
 		var flags = 2 | DIRTY;
 		if (active_effect !== null) active_effect.f |= EFFECT_PRESERVED;
 		return {
@@ -1404,7 +891,7 @@
 	*/
 	/*#__NO_SIDE_EFFECTS__*/
 	function user_derived(fn) {
-		const d = /* @__PURE__ */ derived(fn);
+		const d = /* @__PURE__ */ derived$1(fn);
 		if (!async_mode_flag) push_reaction_value(d);
 		return d;
 	}
@@ -1415,7 +902,7 @@
 	*/
 	/*#__NO_SIDE_EFFECTS__*/
 	function derived_safe_equal(fn) {
-		const signal = /* @__PURE__ */ derived(fn);
+		const signal = /* @__PURE__ */ derived$1(fn);
 		signal.equals = safe_equals;
 		return signal;
 	}
@@ -1445,7 +932,6 @@
 		}
 		set_active_effect(parent);
 		try {
-			derived.f &= ~WAS_MARKED;
 			destroy_derived_effects(derived);
 			value = update_reaction(derived);
 		} finally {
@@ -1500,8 +986,7 @@
 		if (derived.effects === null) return;
 		for (const e of derived.effects) if (e.teardown && e.fn !== null) update_effect(e);
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/batch.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/reactivity/batch.js
 	/** @import { Fork } from 'svelte' */
 	/** @import { Derived, Effect, Reaction, Source, Value } from '#client' */
 	/** @type {Batch | null} */
@@ -1546,24 +1031,24 @@
 	var Batch = class Batch {
 		id = uid++;
 		/** True as soon as `#process` was called */
-		#started = false;
+		started = false;
 		linked = true;
 		/** @type {Batch | null} */
-		#prev = null;
+		prev = null;
 		/** @type {Batch | null} */
-		#next = null;
+		next = null;
 		/** @type {Map<Effect, ReturnType<typeof deferred<any>>>} */
 		async_deriveds = /* @__PURE__ */ new Map();
 		/**
 		* The current values of any signals that are updated in this batch.
 		* Tuple format: [value, is_derived] (note: is_derived is false for deriveds, too, if they were overridden via assignment)
-		* They keys of this map are identical to `this.#previous`
+		* The keys of this map are identical to `this.previous`
 		* @type {Map<Value, [any, boolean]>}
 		*/
 		current = /* @__PURE__ */ new Map();
 		/**
 		* The values of any signals (sources and deriveds) that are updated in this batch _before_ those updates took place.
-		* They keys of this map are identical to `this.#current`
+		* The keys of this map are identical to `this.current`
 		* @type {Map<Value, any>}
 		*/
 		previous = /* @__PURE__ */ new Map();
@@ -1594,25 +1079,27 @@
 		*/
 		#deferred = null;
 		/**
-		* The root effects that need to be flushed
+		* Effects that were scheduled in this batch but not yet 'resolved' into the
+		* root effects that need to be flushed. Resolving — the upwards traversal that
+		* marks the path to each effect on the shared effect tree (see #resolve) — is
+		* deferred until the batch is processed, so that the markers are created and
+		* consumed within a single traversal. Scheduling into other batches (which can
+		* happen concurrently, e.g. while a batch is committed) can therefore never
+		* observe (and be confused by) this batch's markers.
+		* May contain duplicates — deduplication happens during resolving
 		* @type {Effect[]}
 		*/
-		#roots = [];
+		#scheduled = [];
 		/**
 		* Effects created while this batch was active.
 		* @type {Effect[]}
 		*/
 		#new_effects = [];
 		/**
-		* Deferred effects (which run after async work has completed) that are DIRTY
-		* @type {Set<Effect>}
+		* Deferred effects (which run after async work has completed) and their status (DIRTY or MAYBE_DIRTY)
+		* @type {Map<Effect, number>}
 		*/
-		#dirty_effects = /* @__PURE__ */ new Set();
-		/**
-		* Deferred effects that are MAYBE_DIRTY
-		* @type {Set<Effect>}
-		*/
-		#maybe_dirty_effects = /* @__PURE__ */ new Set();
+		#dirty_reactions = /* @__PURE__ */ new Map();
 		/**
 		* A map of branches that still exist, but will be destroyed when this batch
 		* is committed — we skip over these during `process`.
@@ -1631,25 +1118,22 @@
 		constructor() {
 			if (last_batch === null) first_batch = last_batch = this;
 			else {
-				last_batch.#next = this;
-				this.#prev = last_batch;
+				last_batch.next = this;
+				this.prev = last_batch;
 			}
 			last_batch = this;
 		}
 		#is_deferred() {
 			if (this.is_fork) return true;
-			for (const effect of this.#blocking_pending.keys()) {
-				var e = effect;
-				var skipped = false;
-				while (e.parent !== null) {
-					if (this.#skipped_branches.has(e)) {
-						skipped = true;
-						break;
-					}
-					e = e.parent;
-				}
-				if (!skipped) return true;
-			}
+			for (const effect of this.#blocking_pending.keys()) if (!this.#is_skipped(effect)) return true;
+			return false;
+		}
+		/**
+		* Whether `effect` is inside a branch that this batch skips
+		* @param {Effect} effect
+		*/
+		#is_skipped(effect) {
+			for (var e = effect; e !== null; e = e.parent) if (this.#skipped_branches.has(e)) return true;
 			return false;
 		}
 		/**
@@ -1684,23 +1168,44 @@
 			}
 			this.#unskipped_branches.add(effect);
 		}
+		/**
+		* Convert the effects that were scheduled in this batch into the root effects
+		* that need to be traversed, marking the path to each effect (by clearing the
+		* `CLEAN` flag on ancestor branches) so that the traversal can find them.
+		* This happens right before traversal rather than at scheduling time, so that
+		* the markers left on the (shared) effect tree are created and consumed within
+		* a single traversal — scheduling into other batches can never observe them
+		* @returns {Effect[]}
+		*/
+		#resolve() {
+			/** @type {Effect[]} */
+			var roots = [];
+			for (const effect of this.#scheduled) {
+				if ((effect.f & 16384) !== 0 || (effect.f & 6144) === 0) continue;
+				var e = effect;
+				var covered = false;
+				while (e.parent !== null) {
+					e = e.parent;
+					var flags = e.f;
+					if ((flags & 96) !== 0) {
+						if ((flags & 1024) === 0) {
+							covered = true;
+							break;
+						}
+						e.f ^= CLEAN;
+					}
+				}
+				if (!covered) roots.push(e);
+			}
+			this.#scheduled = [];
+			return roots;
+		}
 		#process() {
-			this.#started = true;
-			if (flush_count++ > 1e3) {
-				this.#unlink();
-				infinite_loop_guard();
-			}
-			for (const e of this.#dirty_effects) {
-				this.#maybe_dirty_effects.delete(e);
-				set_signal_status(e, DIRTY);
+			this.started = true;
+			for (const [e, status] of this.#dirty_reactions) {
+				set_signal_status(e, status);
 				this.schedule(e);
 			}
-			for (const e of this.#maybe_dirty_effects) {
-				set_signal_status(e, MAYBE_DIRTY);
-				this.schedule(e);
-			}
-			const roots = this.#roots;
-			this.#roots = [];
 			this.apply();
 			/** @type {Effect[]} */
 			var effects = collected_effects = [];
@@ -1711,12 +1216,18 @@
 			* @deprecated when we get rid of legacy mode and stores, we can get rid of this
 			*/
 			var updates = legacy_updates = [];
-			for (const root of roots) try {
-				this.#traverse(root, effects, render_effects);
-			} catch (e) {
-				reset_all(root);
-				if (!this.#is_deferred()) this.discard();
-				throw e;
+			while (this.#scheduled.length > 0) {
+				if (flush_count++ > 1e3) {
+					this.#unlink();
+					infinite_loop_guard();
+				}
+				for (const root of this.#resolve()) try {
+					this.#traverse(root, effects, render_effects);
+				} catch (e) {
+					reset_all(root);
+					if (!this.#is_deferred()) this.discard();
+					throw e;
+				}
 			}
 			current_batch = null;
 			if (updates.length > 0) {
@@ -1740,8 +1251,7 @@
 				earlier_batch.#merge(this);
 				return;
 			}
-			this.#dirty_effects.clear();
-			this.#maybe_dirty_effects.clear();
+			this.#dirty_reactions.clear();
 			for (const fn of this.#commit_callbacks) fn(this);
 			this.#commit_callbacks.clear();
 			previous_batch = this;
@@ -1750,20 +1260,17 @@
 			previous_batch = null;
 			this.#deferred?.resolve();
 			var next_batch = current_batch;
-			if (this.#pending === 0 && (this.#roots.length === 0 || next_batch !== null)) {
+			if (this.#pending === 0 && (this.#scheduled.length === 0 || next_batch !== null)) {
 				this.#unlink();
 				if (async_mode_flag) {
 					this.#commit();
 					current_batch = next_batch;
 				}
 			}
-			if (this.#roots.length > 0) {
-				if (next_batch !== null) {
-					const batch = next_batch;
-					batch.#roots.push(...this.#roots.filter((r) => !batch.#roots.includes(r)));
-				} else next_batch = this;
+			if (next_batch !== null) {
+				old_values.clear();
+				next_batch.#process();
 			}
-			if (next_batch !== null) next_batch.#process();
 		}
 		/**
 		* Traverse the effect tree, executing effects or stashing
@@ -1783,7 +1290,7 @@
 					else if ((flags & 4) !== 0) effects.push(effect);
 					else if (async_mode_flag && (flags & 16777224) !== 0) render_effects.push(effect);
 					else if (is_dirty(effect)) {
-						if ((flags & 16) !== 0) this.#maybe_dirty_effects.add(effect);
+						if ((flags & 16) !== 0) this.add_dirty_reaction(effect, MAYBE_DIRTY);
 						update_effect(effect);
 					}
 					var child = effect.first;
@@ -1803,14 +1310,16 @@
 			}
 		}
 		#find_earlier_batch() {
-			var batch = this.#prev;
-			while (batch !== null) {
-				if (!batch.is_fork) {
-					for (const [value, [, is_derived]] of this.current) if (batch.current.has(value) && !is_derived) return batch;
-				}
-				batch = batch.#prev;
-			}
+			for (var batch = this.prev; batch !== null; batch = batch.prev) if (!batch.is_fork && this.#intersects(batch)) return batch;
 			return null;
+		}
+		/** @param {Batch} batch */
+		#intersects(batch) {
+			for (const [source, [, is_derived]] of this.current) {
+				if (is_derived) continue;
+				if (batch.current.has(source)) return true;
+			}
+			return false;
 		}
 		/**
 		* @param {Batch} batch
@@ -1825,7 +1334,7 @@
 				if (d) deferred.promise.then(d.resolve).catch(d.reject);
 			}
 			batch.async_deriveds.clear();
-			this.transfer_effects(batch.#dirty_effects, batch.#maybe_dirty_effects);
+			this.transfer_reactions(batch.#dirty_reactions);
 			/**
 			* mark all effects that depend on `batch.current`, except the
 			* async effects that we just resolved (TODO unless they depend
@@ -1844,7 +1353,7 @@
 					else {
 						var effect = reaction;
 						if (flags & 4194320 && !this.async_deriveds.has(effect)) {
-							this.#maybe_dirty_effects.delete(effect);
+							this.#dirty_reactions.delete(effect);
 							set_signal_status(effect, DIRTY);
 							this.schedule(effect);
 						}
@@ -1861,7 +1370,7 @@
 		* @param {Effect[]} effects
 		*/
 		#defer_effects(effects) {
-			for (var i = 0; i < effects.length; i += 1) defer_effect(effects[i], this.#dirty_effects, this.#maybe_dirty_effects);
+			for (var i = 0; i < effects.length; i += 1) defer_effect(effects[i], this.#dirty_reactions);
 		}
 		/**
 		* Associate a change to a given source with the current
@@ -1915,7 +1424,7 @@
 			this.#new_effects.push(effect);
 		}
 		#commit() {
-			for (let batch = first_batch; batch !== null; batch = batch.#next) {
+			for (let batch = first_batch; batch !== null; batch = batch.next) {
 				var is_earlier = batch.id < this.id;
 				/** @type {Source[]} */
 				var sources = [];
@@ -1932,7 +1441,7 @@
 					if (d) deferred.promise.then(d.resolve).catch(d.reject);
 				}
 				var current = [...batch.current.keys()].filter((source) => !batch.current.get(source)[1]);
-				if (!batch.#started || current.length === 0) continue;
+				if (!batch.started || current.length === 0) continue;
 				var others = current.filter((source) => !this.current.has(source));
 				if (others.length === 0) {
 					if (is_earlier) batch.discard();
@@ -1958,13 +1467,12 @@
 							if ((effect.f & 4194320) !== 0) {
 								set_signal_status(effect, DIRTY);
 								batch.schedule(effect);
-							} else batch.#dirty_effects.add(effect);
+							} else batch.add_dirty_reaction(effect, DIRTY);
 						}
 					}
-					if (batch.#roots.length > 0 && !batch.#decrement_queued) {
+					if (batch.#scheduled.length > 0 && !batch.#decrement_queued) {
 						batch.apply();
-						for (var root of batch.#roots) batch.#traverse(root, [], []);
-						batch.#roots = [];
+						for (var root of batch.#resolve()) batch.#traverse(root, [], []);
 					}
 					batch.deactivate();
 				}
@@ -2000,14 +1508,18 @@
 			});
 		}
 		/**
-		* @param {Set<Effect>} dirty_effects
-		* @param {Set<Effect>} maybe_dirty_effects
+		* @param {Map<Effect, number>} dirty_reactions
 		*/
-		transfer_effects(dirty_effects, maybe_dirty_effects) {
-			for (const e of dirty_effects) this.#dirty_effects.add(e);
-			for (const e of maybe_dirty_effects) this.#maybe_dirty_effects.add(e);
-			dirty_effects.clear();
-			maybe_dirty_effects.clear();
+		transfer_reactions(dirty_reactions) {
+			for (const [effect, status] of dirty_reactions) this.add_dirty_reaction(effect, status);
+			dirty_reactions.clear();
+		}
+		/**
+		* @param {Effect} effect
+		* @param {number} status
+		*/
+		add_dirty_reaction(effect, status) {
+			if (status === 2048 || this.#dirty_reactions.get(effect) !== 2048) this.#dirty_reactions.set(effect, status);
 		}
 		/** @param {(batch: Batch) => void} fn */
 		oncommit(fn) {
@@ -2024,29 +1536,21 @@
 			if (current_batch === null) {
 				const batch = current_batch = new Batch();
 				if (!is_processing && !is_flushing_sync) queue_micro_task(() => {
-					if (!batch.#started) batch.flush();
+					if (!batch.started) batch.flush();
 				});
 			}
 			return current_batch;
 		}
 		apply() {
-			if (!async_mode_flag || !this.is_fork && this.#prev === null && this.#next === null) {
+			if (!async_mode_flag || !this.is_fork && this.prev === null && this.next === null) {
 				batch_values = null;
 				return;
 			}
 			batch_values = /* @__PURE__ */ new Map();
 			for (const [source, [value]] of this.current) batch_values.set(source, value);
-			for (let batch = first_batch; batch !== null; batch = batch.#next) {
+			for (let batch = first_batch; batch !== null; batch = batch.next) {
 				if (batch === this || batch.is_fork) continue;
-				var intersects = false;
-				if (batch.id < this.id) for (const [source, [, is_derived]] of batch.current) {
-					if (is_derived) continue;
-					if (this.current.has(source)) {
-						intersects = true;
-						break;
-					}
-				}
-				if (!intersects) {
+				if (batch.id >= this.id || !batch.#intersects(this)) {
 					for (const [source, previous] of batch.previous) if (!batch_values.has(source)) batch_values.set(source, previous);
 				}
 			}
@@ -2061,29 +1565,16 @@
 				effect.b.defer_effect(effect);
 				return;
 			}
-			var e = effect;
-			while (e.parent !== null) {
-				e = e.parent;
-				var flags = e.f;
-				if (collected_effects !== null && e === active_effect) {
-					if (async_mode_flag) return;
-					if ((active_reaction === null || (active_reaction.f & 2) === 0) && !legacy_is_updating_store) return;
-				}
-				if ((flags & 96) !== 0) {
-					if ((flags & 1024) === 0) return;
-					e.f ^= CLEAN;
-				}
-			}
-			this.#roots.push(e);
+			this.#scheduled.push(effect);
 		}
 		#unlink() {
 			if (!this.linked) return;
-			var prev = this.#prev;
-			var next = this.#next;
+			var prev = this.prev;
+			var next = this.next;
 			if (prev === null) first_batch = next;
-			else prev.#next = next;
+			else prev.next = next;
 			if (next === null) last_batch = prev;
-			else next.#prev = prev;
+			else next.prev = prev;
 			this.linked = false;
 		}
 	};
@@ -2096,11 +1587,13 @@
 	*/
 	function flushSync(fn) {
 		var was_flushing_sync = is_flushing_sync;
+		var prev_previous_batch = previous_batch;
+		previous_batch = null;
 		is_flushing_sync = true;
 		try {
 			var result;
 			if (fn) {
-				if (current_batch !== null && !current_batch.is_fork) current_batch.flush();
+				flushSync();
 				result = fn();
 			}
 			while (true) {
@@ -2110,6 +1603,7 @@
 			}
 		} finally {
 			is_flushing_sync = was_flushing_sync;
+			previous_batch = prev_previous_batch;
 		}
 	}
 	function infinite_loop_guard() {
@@ -2237,12 +1731,11 @@
 			e = e.next;
 		}
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/sources.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/reactivity/sources.js
 	/** @import { Derived, Effect, Source, Value } from '#client' */
 	/** @type {Set<Effect>} */
 	var eager_effects = /* @__PURE__ */ new Set();
-	/** @type {Map<Source, any>} */
+	/** @type {Map<Value, any>} */
 	var old_values = /* @__PURE__ */ new Map();
 	var eager_effects_deferred = false;
 	/**
@@ -2287,7 +1780,7 @@
 	}
 	/**
 	* @template V
-	* @param {Source<V>} source
+	* @param {Value<V>} source
 	* @param {V} value
 	* @param {boolean} [should_proxy]
 	* @returns {V}
@@ -2297,15 +1790,26 @@
 		return internal_set(source, should_proxy ? proxy(value) : value, legacy_updates);
 	}
 	/**
+	* A set of signals we have already seen while traversing in mark_reactions.
+	* Not always set to balance the common case of sources only having a couple
+	* of (transitive) dependencies (where always creating a Set would be bad for perf)
+	* with the edge case of extremely deep or wide dependency arrays with cycles.
+	* @type {Set<any> | null}
+	*/
+	var seen = null;
+	/** Number of transitive dependencies, see {@link seen} for more info */
+	var count_deps = 0;
+	/**
 	* @template V
-	* @param {Source<V>} source
+	* @param {Value<V>} source
 	* @param {V} value
 	* @param {Effect[] | null} [updated_during_traversal]
 	* @returns {V}
 	*/
 	function internal_set(source, value, updated_during_traversal = null) {
 		if (!source.equals(value)) {
-			old_values.set(source, is_destroying_effect ? value : source.v);
+			if (is_destroying_effect) old_values.set(source, value);
+			else if (!old_values.has(source)) old_values.set(source, source.v);
 			var batch = Batch.ensure();
 			batch.capture(source, value);
 			if ((source.f & 2) !== 0) {
@@ -2314,7 +1818,10 @@
 				if (batch_values === null) update_derived_status(derived);
 			}
 			source.wv = increment_write_version();
+			seen = null;
+			count_deps = 0;
 			mark_reactions(source, DIRTY, updated_during_traversal);
+			seen = null;
 			if (is_runes() && active_effect !== null && (active_effect.f & 1024) !== 0 && (active_effect.f & 96) === 0) {
 				if (untracked_writes === null) set_untracked_writes([source]);
 				else untracked_writes.push(source);
@@ -2355,6 +1862,12 @@
 		if (reactions === null) return;
 		var runes = is_runes();
 		var length = reactions.length;
+		count_deps += length;
+		if (count_deps > 1e5 && seen === null) seen = /* @__PURE__ */ new Set();
+		if (seen !== null) {
+			if (seen.has(signal)) return;
+			seen.add(signal);
+		}
 		for (var i = 0; i < length; i++) {
 			var reaction = reactions[i];
 			var flags = reaction.f;
@@ -2365,10 +1878,7 @@
 			else if ((flags & 2) !== 0) {
 				var derived = reaction;
 				batch_values?.delete(derived);
-				if ((flags & 65536) === 0) {
-					if (flags & 512 && (active_effect === null || (active_effect.f & 2097152) === 0)) reaction.f |= WAS_MARKED;
-					mark_reactions(derived, MAYBE_DIRTY, updated_during_traversal);
-				}
+				mark_reactions(derived, MAYBE_DIRTY, updated_during_traversal);
 			} else if (not_dirty) {
 				var effect = reaction;
 				if ((flags & 16) !== 0 && eager_block_effects !== null) eager_block_effects.add(effect);
@@ -2383,7 +1893,7 @@
 	* @returns {T}
 	*/
 	function proxy(value) {
-		if (typeof value !== "object" || value === null || STATE_SYMBOL in value) return value;
+		if (typeof value !== "object" || value === null || STATE_SYMBOL in value || COMPONENT_SYMBOL in value) return value;
 		const prototype = get_prototype_of(value);
 		if (prototype !== object_prototype && prototype !== array_prototype) return value;
 		/** @type {Map<any, Source<any>>} */
@@ -2456,14 +1966,14 @@
 				return Reflect.get(target, prop, receiver);
 			},
 			getOwnPropertyDescriptor(target, prop) {
+				this.has?.(target, prop);
 				var descriptor = Reflect.getOwnPropertyDescriptor(target, prop);
-				if (descriptor && "value" in descriptor) {
-					var s = sources.get(prop);
-					if (s) descriptor.value = get$2(s);
-				} else if (descriptor === void 0) {
-					var source = sources.get(prop);
-					var value = source?.v;
-					if (source !== void 0 && value !== UNINITIALIZED) return {
+				var s = sources.get(prop);
+				if (s !== void 0) {
+					var value = get$2(s);
+					if (value === UNINITIALIZED) return;
+					if (descriptor && "value" in descriptor) descriptor.value = value;
+					else return {
 						enumerable: true,
 						configurable: true,
 						value,
@@ -2476,7 +1986,7 @@
 				if (prop === STATE_SYMBOL) return true;
 				var s = sources.get(prop);
 				var has = s !== void 0 && s.v !== UNINITIALIZED || Reflect.has(target, prop);
-				if (s !== void 0 || active_effect !== null && (!has || get_descriptor(target, prop)?.writable)) {
+				if (s !== void 0 || (active_effect !== null || active_reaction !== null) && (!has || get_descriptor(target, prop)?.writable)) {
 					if (s === void 0) {
 						s = with_parent(() => {
 							return /* @__PURE__ */ state(has ? proxy(target[prop]) : UNINITIALIZED, stack);
@@ -2551,8 +2061,7 @@
 	function is(a, b) {
 		return Object.is(get_proxied_value(a), get_proxied_value(b));
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/operations.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/operations.js
 	/** @import { Effect, TemplateNode } from '#client' */
 	/** @type {Window} */
 	var $window;
@@ -2652,6 +2161,21 @@
 		return hydrate_node;
 	}
 	/**
+	* `child`, for the very common case of an element with exactly one child. Resetting the
+	* hydration cursor is part of the same step, so the compiler doesn't have to emit a
+	* separate `reset` call for every `<p>{text}</p>` in an app.
+	* Don't mark this as side-effect-free, hydration needs to walk all nodes
+	* @param {TemplateNode} node
+	* @param {boolean} [is_text]
+	* @returns {TemplateNode | null}
+	*/
+	function only_child(node, is_text = false) {
+		if (!hydrating) return /* @__PURE__ */ get_first_child(node);
+		var first = child(node, is_text);
+		reset(node);
+		return first;
+	}
+	/**
 	* Don't mark this as side-effect-free, hydration needs to walk all nodes
 	* @param {TemplateNode} node
 	* @param {number} count
@@ -2736,8 +2260,40 @@
 			next = text.nextSibling;
 		}
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/effects.js
+	/**
+	* @param {unknown} error
+	*/
+	function handle_error(error) {
+		var effect = active_effect;
+		if (effect === null) {
+			/** @type {Derived} */ active_reaction.f |= ERROR_VALUE;
+			return error;
+		}
+		if ((effect.f & 32768) === 0 && (effect.f & 4) === 0) throw error;
+		invoke_error_boundary(error, effect);
+	}
+	/**
+	* @param {unknown} error
+	* @param {Effect | null} effect
+	*/
+	function invoke_error_boundary(error, effect) {
+		if (error === HYDRATION_ERROR) throw error;
+		if (effect !== null && (effect.f & 16384) !== 0) return;
+		while (effect !== null) {
+			if ((effect.f & 128) !== 0 && (effect.f & 33570816) === 0) {
+				if ((effect.f & 32768) === 0) throw error;
+				try {
+					/** @type {Boundary} */ effect.b.error(error);
+					return;
+				} catch (e) {
+					error = e;
+				}
+			}
+			effect = effect.parent;
+		}
+		throw error;
+	}
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/reactivity/effects.js
 	/** @import { Blocker, ComponentContext, ComponentContextLegacy, Derived, Effect, TemplateNode, TransitionManager } from '#client' */
 	/**
 	* @param {'$effect' | '$effect.pre' | '$inspect'} rune
@@ -2957,6 +2513,8 @@
 			set_active_reaction(null);
 			try {
 				teardown.call(null);
+			} catch (error) {
+				invoke_error_boundary(error, effect.parent);
 			} finally {
 				set_is_destroying_effect(previously_destroying_effect);
 				set_active_reaction(previous_reaction);
@@ -3059,6 +2617,7 @@
 	function pause_effect(effect, callback, destroy = true) {
 		/** @type {TransitionManager[]} */
 		var transitions = [];
+		effect.f |= 256;
 		pause_children(effect, transitions, true);
 		var fn = () => {
 			if (destroy) destroy_effect(effect);
@@ -3098,6 +2657,7 @@
 	* @param {Effect} effect
 	*/
 	function resume_effect(effect) {
+		effect.f &= -257;
 		resume_children(effect, true);
 	}
 	/**
@@ -3105,6 +2665,7 @@
 	* @param {boolean} local
 	*/
 	function resume_children(effect, local) {
+		if ((effect.f & 256) !== 0) return;
 		if ((effect.f & 8192) === 0) return;
 		effect.f ^= INERT;
 		if ((effect.f & 1024) === 0) {
@@ -3139,20 +2700,14 @@
 			node = next;
 		}
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/legacy.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/legacy.js
 	/**
 	* @type {Set<Value> | null}
 	* @deprecated
 	*/
 	var captured_signals = null;
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/runtime.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/runtime.js
 	/** @import { Derived, Effect, Reaction, Source, Value } from '#client' */
-	/**
-	* True if updating in an effect context that is reactive (i.e. not branch/root effects)
-	*/
-	var is_updating_effect = false;
 	var is_destroying_effect = false;
 	/** @param {boolean} value */
 	function set_is_destroying_effect(value) {
@@ -3174,12 +2729,12 @@
 	/**
 	* When sources are created within a reaction, reading and writing
 	* them within that reaction should not cause a re-run
-	* @type {null | Set<Source>}
+	* @type {null | Set<Value>}
 	*/
 	var current_sources = null;
 	/** @param {Value} value */
 	function push_reaction_value(value) {
-		if (active_reaction !== null && (!async_mode_flag || (active_reaction.f & 2) !== 0)) (current_sources ??= /* @__PURE__ */ new Set()).add(value);
+		if (active_reaction !== null && (!async_mode_flag && (active_reaction.f & 2097152) !== 0 || (active_reaction.f & 2) !== 0)) (current_sources ??= /* @__PURE__ */ new Set()).add(value);
 	}
 	/**
 	* The dependencies of the reaction that is currently being executed. In many cases,
@@ -3192,10 +2747,10 @@
 	/**
 	* Tracks writes that the effect it's executed in doesn't listen to yet,
 	* so that the dependency can be added to the effect later on if it then reads it
-	* @type {null | Source[]}
+	* @type {null | Value[]}
 	*/
 	var untracked_writes = null;
-	/** @param {null | Source[]} value */
+	/** @param {null | Value[]} value */
 	function set_untracked_writes(value) {
 		untracked_writes = value;
 	}
@@ -3204,7 +2759,7 @@
 	* Version starts from 1 so that unowned deriveds differentiate between a created effect and a run one for tracing
 	**/
 	var write_version = 1;
-	/** @type {number} Used to version each read of a source of derived to avoid duplicating depedencies inside a reaction */
+	/** @type {number} Used to version each read of a source of derived to avoid duplicating dependencies inside a reaction */
 	var read_version = 0;
 	var update_version = read_version;
 	/** @param {number} value */
@@ -3223,7 +2778,6 @@
 	function is_dirty(reaction) {
 		var flags = reaction.f;
 		if ((flags & 2048) !== 0) return true;
-		if (flags & 2) reaction.f &= ~WAS_MARKED;
 		if ((flags & 4096) !== 0) {
 			var dependencies = reaction.deps;
 			var length = dependencies.length;
@@ -3285,21 +2839,8 @@
 			var fn = reaction.fn;
 			var result = fn();
 			reaction.f |= REACTION_RAN;
-			var deps = reaction.deps;
-			var is_fork = current_batch?.is_fork;
-			if (new_deps !== null) {
-				var i;
-				if (!is_fork) remove_reactions(reaction, skipped_deps);
-				if (deps !== null && skipped_deps > 0) {
-					deps.length = skipped_deps + new_deps.length;
-					for (i = 0; i < new_deps.length; i++) deps[skipped_deps + i] = new_deps[i];
-				} else reaction.deps = deps = new_deps;
-				if (effect_tracking() && (reaction.f & 512) !== 0) for (i = skipped_deps; i < deps.length; i++) (deps[i].reactions ??= []).push(reaction);
-			} else if (!is_fork && deps !== null && skipped_deps < deps.length) {
-				remove_reactions(reaction, skipped_deps);
-				deps.length = skipped_deps;
-			}
-			if (is_runes() && untracked_writes !== null && !untracking && deps !== null && (reaction.f & 6146) === 0) for (i = 0; i < untracked_writes.length; i++) schedule_possible_effect_self_invalidation(untracked_writes[i], reaction);
+			var deps = update_dependencies(reaction);
+			if (is_runes() && untracked_writes !== null && !untracking && deps !== null && (reaction.f & 6146) === 0) for (var i = 0; i < untracked_writes.length; i++) schedule_possible_effect_self_invalidation(untracked_writes[i], reaction);
 			if (previous_reaction !== null && previous_reaction !== reaction) {
 				read_version++;
 				if (previous_reaction.deps !== null) for (let i = 0; i < previous_skipped_deps; i += 1) previous_reaction.deps[i].rv = read_version;
@@ -3312,6 +2853,7 @@
 			if ((reaction.f & 8388608) !== 0) reaction.f ^= ERROR_VALUE;
 			return result;
 		} catch (error) {
+			update_dependencies(reaction);
 			return handle_error(error);
 		} finally {
 			reaction.f ^= REACTION_IS_UPDATING;
@@ -3324,6 +2866,26 @@
 			untracking = previous_untracking;
 			update_version = previous_update_version;
 		}
+	}
+	/**
+	* @param {Reaction} reaction
+	*/
+	function update_dependencies(reaction) {
+		var deps = reaction.deps;
+		var is_fork = current_batch?.is_fork;
+		if (new_deps !== null) {
+			var i;
+			if (!is_fork) remove_reactions(reaction, skipped_deps);
+			if (deps !== null && skipped_deps > 0) {
+				deps.length = skipped_deps + new_deps.length;
+				for (i = 0; i < new_deps.length; i++) deps[skipped_deps + i] = new_deps[i];
+			} else reaction.deps = deps = new_deps;
+			if (effect_tracking() && (reaction.f & 512) !== 0) for (i = skipped_deps; i < deps.length; i++) (deps[i].reactions ??= []).push(reaction);
+		} else if (!is_fork && deps !== null && skipped_deps < deps.length) {
+			remove_reactions(reaction, skipped_deps);
+			deps.length = skipped_deps;
+		}
+		return deps;
 	}
 	/**
 	* @template V
@@ -3346,10 +2908,7 @@
 		}
 		if (reactions === null && (dependency.f & 2) !== 0 && (new_deps === null || !includes.call(new_deps, dependency))) {
 			var derived = dependency;
-			if ((derived.f & 512) !== 0) {
-				derived.f ^= 512;
-				derived.f &= ~WAS_MARKED;
-			}
+			if ((derived.f & 512) !== 0) derived.f ^= 512;
 			if (derived.v !== UNINITIALIZED) update_derived_status(derived);
 			if (derived.ac !== null) without_reactive_context(() => {
 				/** @type {AbortController} */ derived.ac.abort(STALE_REACTION);
@@ -3379,9 +2938,7 @@
 		if ((flags & 16384) !== 0) return;
 		set_signal_status(effect, CLEAN);
 		var previous_effect = active_effect;
-		var was_updating_effect = is_updating_effect;
 		active_effect = effect;
-		is_updating_effect = (flags & 96) === 0;
 		try {
 			if ((flags & 16777232) !== 0) destroy_block_effect_children(effect);
 			else destroy_effect_children(effect);
@@ -3390,7 +2947,6 @@
 			effect.teardown = typeof teardown === "function" ? teardown : null;
 			effect.wv = write_version;
 		} finally {
-			is_updating_effect = was_updating_effect;
 			active_effect = previous_effect;
 		}
 	}
@@ -3442,7 +2998,7 @@
 				old_values.set(derived, value);
 				return value;
 			}
-			var should_connect = (derived.f & 512) === 0 && !untracking && active_reaction !== null && (is_updating_effect || (active_reaction.f & 512) !== 0);
+			var should_connect = (derived.f & 512) === 0 && !untracking && active_reaction !== null && (active_reaction.f & 512) !== 0;
 			var is_new = (derived.f & REACTION_RAN) === 0;
 			if (is_dirty(derived)) {
 				if (should_connect) derived.f |= 512;
@@ -3466,7 +3022,9 @@
 		derived.f |= 512;
 		if (derived.deps === null) return;
 		for (const dep of derived.deps) {
-			(dep.reactions ??= []).push(derived);
+			var reactions = dep.reactions;
+			if (reactions === null) dep.reactions = [derived];
+			else if (!includes.call(reactions, derived)) reactions.push(derived);
 			if ((dep.f & 2) !== 0 && (dep.f & 512) === 0) {
 				unfreeze_derived_effects(dep);
 				reconnect(dep);
@@ -3548,8 +3106,7 @@
 			}
 		}
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/events.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/elements/events.js
 	/**
 	* Used on elements, as a map of event type -> event handler,
 	* and on events themselves to track which element handled an event
@@ -3575,10 +3132,12 @@
 				return handler?.call(this, event);
 			});
 		}
-		if (event_name.startsWith("pointer") || event_name.startsWith("touch") || event_name === "wheel") queue_micro_task(() => {
-			dom.addEventListener(event_name, target_handler, options);
-		});
-		else dom.addEventListener(event_name, target_handler, options);
+		if (event_name.startsWith("pointer") || event_name.startsWith("touch") || event_name === "wheel") {
+			target_handler.__removed = false;
+			queue_micro_task(() => {
+				if (!target_handler.__removed) dom.addEventListener(event_name, target_handler, options);
+			});
+		} else dom.addEventListener(event_name, target_handler, options);
 		return target_handler;
 	}
 	/**
@@ -3594,6 +3153,7 @@
 	function on(element, type, handler, options = {}) {
 		var target_handler = create_event(type, element, handler, options);
 		return () => {
+			target_handler.__removed = true;
 			element.removeEventListener(type, target_handler, options);
 		};
 	}
@@ -3612,6 +3172,7 @@
 		};
 		var target_handler = create_event(event_name, dom, handler, options);
 		if (dom === document.body || dom === window || dom === document || dom instanceof HTMLMediaElement) teardown(() => {
+			target_handler.__removed = true;
 			dom.removeEventListener(event_name, target_handler, options);
 		});
 	}
@@ -3633,6 +3194,7 @@
 		for (var fn of root_event_handles) fn(events);
 	}
 	var last_propagated_event = null;
+	var last_propagated_event_clear_scheduled = false;
 	/**
 	* @this {EventTarget}
 	* @param {Event} event
@@ -3645,6 +3207,13 @@
 		var path = event.composedPath?.() || [];
 		var current_target = path[0] || event.target;
 		last_propagated_event = event;
+		if (!last_propagated_event_clear_scheduled) {
+			last_propagated_event_clear_scheduled = true;
+			setTimeout(() => {
+				last_propagated_event_clear_scheduled = false;
+				last_propagated_event = null;
+			});
+		}
 		var path_idx = 0;
 		var handled_at = last_propagated_event === event && event[event_symbol];
 		if (handled_at) {
@@ -3704,8 +3273,7 @@
 			set_active_effect(previous_effect);
 		}
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/reconciler.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/reconciler.js
 	var policy = globalThis?.window?.trustedTypes && /* @__PURE__ */ globalThis.window.trustedTypes.createPolicy("svelte-trusted-html", { 
 	/** @param {string} html */
 createHTML: (html) => {
@@ -3723,8 +3291,7 @@ createHTML: (html) => {
 		elem.innerHTML = create_trusted_html(html.replaceAll("<!>", "<!---->"));
 		return elem.content;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/template.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/template.js
 	/** @import { Effect, EffectNodes, TemplateNode } from '#client' */
 	/** @import { TemplateStructure } from './types' */
 	/**
@@ -3952,6 +3519,456 @@ createHTML: (html) => {
 	function is_passive_event(name) {
 		return PASSIVE_EVENTS.includes(name);
 	}
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/reactivity/create-subscriber.js
+	/**
+	* Returns a `subscribe` function that integrates external event-based systems with Svelte's reactivity.
+	* It's particularly useful for integrating with web APIs like `MediaQuery`, `IntersectionObserver`, or `WebSocket`.
+	*
+	* If `subscribe` is called inside an effect (including indirectly, for example inside a getter),
+	* the `start` callback will be called with an `update` function. Whenever `update` is called, the effect re-runs.
+	*
+	* If `start` returns a cleanup function, it will be called when the effect is destroyed.
+	*
+	* If `subscribe` is called in multiple effects, `start` will only be called once as long as the effects
+	* are active, and the returned teardown function will only be called when all effects are destroyed.
+	*
+	* It's best understood with an example. Here's an implementation of [`MediaQuery`](https://svelte.dev/docs/svelte/svelte-reactivity#MediaQuery):
+	*
+	* ```js
+	* import { createSubscriber } from 'svelte/reactivity';
+	* import { on } from 'svelte/events';
+	*
+	* export class MediaQuery {
+	* 	#query;
+	* 	#subscribe;
+	*
+	* 	constructor(query) {
+	* 		this.#query = window.matchMedia(`(${query})`);
+	*
+	* 		this.#subscribe = createSubscriber((update) => {
+	* 			// when the `change` event occurs, re-run any effects that read `this.current`
+	* 			const off = on(this.#query, 'change', update);
+	*
+	* 			// stop listening when all the effects are destroyed
+	* 			return () => off();
+	* 		});
+	* 	}
+	*
+	* 	get current() {
+	* 		// This makes the getter reactive, if read in an effect
+	* 		this.#subscribe();
+	*
+	* 		// Return the current state of the query, whether or not we're in an effect
+	* 		return this.#query.matches;
+	* 	}
+	* }
+	* ```
+	* @param {(update: () => void) => (() => void) | void} start
+	* @since 5.7.0
+	*/
+	function createSubscriber(start) {
+		let subscribers = 0;
+		let version = source(0);
+		/** @type {(() => void) | void} */
+		let stop;
+		return () => {
+			if (effect_tracking()) {
+				get$2(version);
+				render_effect(() => {
+					if (subscribers === 0) stop = untrack(() => start(() => increment$1(version)));
+					subscribers += 1;
+					return () => {
+						queue_micro_task(() => {
+							subscribers -= 1;
+							if (subscribers === 0) {
+								stop?.();
+								stop = void 0;
+								increment$1(version);
+							}
+						});
+					};
+				});
+			}
+		};
+	}
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/blocks/boundary.js
+	/** @import { Effect, Source, TemplateNode, } from '#client' */
+	/**
+	* @typedef {{
+	* 	 onerror?: ((error: unknown, reset: () => void) => void) | null;
+	*   failed?: ((anchor: Node, error: () => unknown, reset: () => () => void) => void) | null;
+	*   pending?: ((anchor: Node) => void) | null;
+	* }} BoundaryProps
+	*/
+	var flags = EFFECT_TRANSPARENT | EFFECT_PRESERVED;
+	/**
+	* @param {TemplateNode} node
+	* @param {BoundaryProps} props
+	* @param {((anchor: Node) => void)} children
+	* @param {((error: unknown) => unknown) | undefined} [transform_error]
+	* @returns {void}
+	*/
+	function boundary(node, props, children, transform_error) {
+		new Boundary(node, props, children, transform_error);
+	}
+	var Boundary = class {
+		/** @type {Boundary | null} */
+		parent;
+		is_pending = false;
+		/**
+		* API-level transformError transform function. Transforms errors before they reach the `failed` snippet.
+		* Inherited from parent boundary, or defaults to identity.
+		* @type {(error: unknown) => unknown}
+		*/
+		transform_error;
+		/** @type {TemplateNode} */
+		#anchor;
+		/** @type {TemplateNode | null} */
+		#hydrate_open = hydrating ? hydrate_node : null;
+		/** @type {BoundaryProps} */
+		#props;
+		/** @type {((anchor: Node) => void)} */
+		#children;
+		/** @type {Effect} */
+		#effect;
+		/** @type {Effect | null} */
+		#main_effect = null;
+		/** @type {Effect | null} */
+		#pending_effect = null;
+		/** @type {Effect | null} */
+		#failed_effect = null;
+		/** @type {DocumentFragment | null} */
+		#offscreen_fragment = null;
+		#local_pending_count = 0;
+		#pending_count = 0;
+		#pending_count_update_queued = false;
+		/** @type {Map<Effect, number>} */
+		#dirty_reactions = /* @__PURE__ */ new Map();
+		/**
+		* A source containing the number of pending async deriveds/expressions.
+		* Only created if `$effect.pending()` is used inside the boundary,
+		* otherwise updating the source results in needless `Batch.ensure()`
+		* calls followed by no-op flushes
+		* @type {Source<number> | null}
+		*/
+		#effect_pending = null;
+		#effect_pending_subscriber = createSubscriber(() => {
+			this.#effect_pending = source(this.#local_pending_count);
+			return () => {
+				this.#effect_pending = null;
+			};
+		});
+		/**
+		* @param {TemplateNode} node
+		* @param {BoundaryProps} props
+		* @param {((anchor: Node) => void)} children
+		* @param {((error: unknown) => unknown) | undefined} [transform_error]
+		*/
+		constructor(node, props, children, transform_error) {
+			this.#anchor = node;
+			this.#props = props;
+			this.#children = (anchor) => {
+				var effect = active_effect;
+				effect.b = this;
+				effect.f |= 128;
+				children(anchor);
+			};
+			this.parent = active_effect.b;
+			this.transform_error = transform_error ?? this.parent?.transform_error ?? ((e) => e);
+			this.#effect = block(() => {
+				if (hydrating) {
+					const comment_data = read_hydration_instruction(this.#hydrate_open);
+					hydrate_next();
+					const server_rendered_pending = comment_data === "[!";
+					if (comment_data.startsWith("[?")) {
+						const serialized_error = JSON.parse(comment_data.slice(2));
+						this.#hydrate_failed_content(serialized_error);
+					} else if (server_rendered_pending) this.#hydrate_pending_content();
+					else this.#hydrate_resolved_content();
+				} else this.#render();
+			}, flags);
+			if (hydrating) this.#anchor = hydrate_node;
+		}
+		#hydrate_resolved_content() {
+			try {
+				this.#main_effect = branch(() => this.#children(this.#anchor));
+			} catch (error) {
+				this.error(error);
+			}
+		}
+		/**
+		* @param {unknown} error The deserialized error from the server's hydration comment
+		*/
+		#hydrate_failed_content(error) {
+			const failed = this.#props.failed;
+			const { reset, invoke_onerror } = this.#create_reset(error);
+			queue_micro_task(invoke_onerror);
+			if (!failed) return;
+			this.#failed_effect = branch(() => {
+				failed(this.#anchor, () => error, () => reset);
+			});
+		}
+		/**
+		* Creates the `reset` function for a failed boundary, along with a function
+		* that invokes `onerror` with it (if provided)
+		* @param {unknown} error
+		* @returns {{ reset: () => void, invoke_onerror: () => void }}
+		*/
+		#create_reset(error) {
+			var did_reset = false;
+			var calling_on_error = false;
+			const reset = () => {
+				if (this.#is_destroyed()) return;
+				if (did_reset) {
+					svelte_boundary_reset_noop();
+					return;
+				}
+				did_reset = true;
+				if (calling_on_error) svelte_boundary_reset_onerror();
+				if (this.#failed_effect !== null) pause_effect(this.#failed_effect, () => {
+					this.#failed_effect = null;
+				});
+				this.#run(() => {
+					this.#render();
+				});
+			};
+			const invoke_onerror = () => {
+				if (this.#is_destroyed()) return;
+				try {
+					calling_on_error = true;
+					this.#props.onerror?.(error, reset);
+					calling_on_error = false;
+				} catch (err) {
+					invoke_error_boundary(err, this.#effect && this.#effect.parent);
+				}
+			};
+			return {
+				reset,
+				invoke_onerror
+			};
+		}
+		#is_destroyed() {
+			return (this.#effect.f & (DESTROYED | DESTROYING)) !== 0;
+		}
+		#hydrate_pending_content() {
+			const pending = this.#props.pending;
+			if (!pending) return;
+			this.is_pending = true;
+			this.#pending_effect = branch(() => pending(this.#anchor));
+			queue_micro_task(() => {
+				if (this.#is_destroyed()) return;
+				var fragment = this.#offscreen_fragment = document.createDocumentFragment();
+				var anchor = create_text();
+				var handled = false;
+				fragment.append(anchor);
+				this.#main_effect = this.#run(() => {
+					try {
+						return branch(() => this.#children(anchor));
+					} catch (error) {
+						try {
+							this.error(error);
+							handled = true;
+						} catch (error) {
+							invoke_error_boundary(error, this.#effect.parent);
+						}
+						return null;
+					}
+				});
+				if (this.#main_effect === null) {
+					this.#offscreen_fragment = null;
+					if (handled) this.#resolve(current_batch);
+					return;
+				}
+				if (this.#pending_count === 0) {
+					this.#anchor.before(fragment);
+					this.#offscreen_fragment = null;
+					pause_effect(this.#pending_effect, () => {
+						this.#pending_effect = null;
+					});
+					this.#resolve(current_batch);
+				}
+			});
+		}
+		#render() {
+			try {
+				this.is_pending = this.has_pending_snippet();
+				this.#pending_count = 0;
+				this.#local_pending_count = 0;
+				this.#main_effect = branch(() => {
+					this.#children(this.#anchor);
+				});
+				if (this.#pending_count > 0) {
+					var fragment = this.#offscreen_fragment = document.createDocumentFragment();
+					move_effect(this.#main_effect, fragment);
+					const pending = this.#props.pending;
+					this.#pending_effect = branch(() => pending(this.#anchor));
+				} else this.#resolve(current_batch);
+			} catch (error) {
+				this.error(error);
+			}
+		}
+		/**
+		* @param {Batch} batch
+		*/
+		#resolve(batch) {
+			this.is_pending = false;
+			batch.transfer_reactions(this.#dirty_reactions);
+		}
+		/**
+		* Defer an effect inside a pending boundary until the boundary resolves
+		* @param {Effect} effect
+		*/
+		defer_effect(effect) {
+			defer_effect(effect, this.#dirty_reactions);
+		}
+		/**
+		* Returns `false` if the effect exists inside a boundary whose pending snippet is shown
+		* @returns {boolean}
+		*/
+		is_rendered() {
+			return !this.is_pending && (!this.parent || this.parent.is_rendered());
+		}
+		has_pending_snippet() {
+			return !!this.#props.pending;
+		}
+		/**
+		* @template T
+		* @param {() => T} fn
+		*/
+		#run(fn) {
+			var previous_effect = active_effect;
+			var previous_reaction = active_reaction;
+			var previous_ctx = component_context;
+			set_active_effect(this.#effect);
+			set_active_reaction(this.#effect);
+			set_component_context(this.#effect.ctx);
+			try {
+				Batch.ensure();
+				return fn();
+			} finally {
+				set_active_effect(previous_effect);
+				set_active_reaction(previous_reaction);
+				set_component_context(previous_ctx);
+			}
+		}
+		/**
+		* Updates the pending count associated with the currently visible pending snippet,
+		* if any, such that we can replace the snippet with content once work is done
+		* @param {1 | -1} d
+		* @param {Batch} batch
+		*/
+		#update_pending_count(d, batch) {
+			if (!this.has_pending_snippet()) {
+				if (this.parent) this.parent.#update_pending_count(d, batch);
+				return;
+			}
+			this.#pending_count += d;
+			if (this.#pending_count === 0) {
+				this.#resolve(batch);
+				if (this.#pending_effect) pause_effect(this.#pending_effect, () => {
+					this.#pending_effect = null;
+				});
+				if (this.#offscreen_fragment) {
+					this.#anchor.before(this.#offscreen_fragment);
+					this.#offscreen_fragment = null;
+				}
+			}
+		}
+		/**
+		* Update the source that powers `$effect.pending()` inside this boundary,
+		* and controls when the current `pending` snippet (if any) is removed.
+		* Do not call from inside the class
+		* @param {1 | -1} d
+		* @param {Batch} batch
+		*/
+		update_pending_count(d, batch) {
+			this.#update_pending_count(d, batch);
+			this.#local_pending_count += d;
+			if (!this.#effect_pending || this.#pending_count_update_queued) return;
+			this.#pending_count_update_queued = true;
+			queue_micro_task(() => {
+				this.#pending_count_update_queued = false;
+				if (this.#effect_pending) internal_set(this.#effect_pending, this.#local_pending_count);
+			});
+		}
+		get_effect_pending() {
+			this.#effect_pending_subscriber();
+			return get$2(this.#effect_pending);
+		}
+		/** @param {unknown} error */
+		error(error) {
+			if (error === HYDRATION_ERROR) throw error;
+			if (!this.#props.onerror && !this.#props.failed) throw error;
+			if (current_batch?.is_fork) {
+				if (this.#main_effect) current_batch.skip_effect(this.#main_effect);
+				if (this.#pending_effect) current_batch.skip_effect(this.#pending_effect);
+				if (this.#failed_effect) current_batch.skip_effect(this.#failed_effect);
+				current_batch.oncommit(() => {
+					if (!this.#is_destroyed()) this.#handle_error(error);
+				});
+			} else this.#handle_error(error);
+		}
+		/**
+		* @param {unknown} error
+		*/
+		#handle_error(error) {
+			if (this.#main_effect) {
+				destroy_effect(this.#main_effect);
+				this.#main_effect = null;
+			}
+			if (this.#pending_effect) {
+				destroy_effect(this.#pending_effect);
+				this.#pending_effect = null;
+			}
+			if (this.#failed_effect) {
+				destroy_effect(this.#failed_effect);
+				this.#failed_effect = null;
+			}
+			if (hydrating) {
+				set_hydrate_node(this.#hydrate_open);
+				next();
+				set_hydrate_node(skip_nodes());
+			}
+			let failed = this.#props.failed;
+			/** @param {unknown} transformed_error */
+			const handle_error_result = (transformed_error) => {
+				if (this.#is_destroyed()) return;
+				const { reset, invoke_onerror } = this.#create_reset(transformed_error);
+				invoke_onerror();
+				if (failed && !this.#is_destroyed()) this.#failed_effect = this.#run(() => {
+					try {
+						return branch(() => {
+							var effect = active_effect;
+							effect.b = this;
+							effect.f |= 128;
+							failed(this.#anchor, () => transformed_error, () => reset);
+						});
+					} catch (error) {
+						invoke_error_boundary(error, this.#effect.parent);
+						return null;
+					}
+				});
+			};
+			queue_micro_task(() => {
+				if (this.#is_destroyed()) return;
+				/** @type {unknown} */
+				var result;
+				try {
+					result = this.transform_error(error);
+				} catch (e) {
+					invoke_error_boundary(e, this.#effect && this.#effect.parent);
+					return;
+				}
+				if (result !== null && typeof result === "object" && typeof result.then === "function")
+ /** @type {any} */ result.then(
+					handle_error_result,
+					/** @param {unknown} e */
+					(e) => invoke_error_boundary(e, this.#effect && this.#effect.parent)
+				);
+				else handle_error_result(result);
+			});
+		}
+	};
 	/**
 	* @param {Element} text
 	* @param {string} value
@@ -4054,7 +4071,7 @@ createHTML: (html) => {
 				if (events)
  /** @type {any} */ props.$$events = events;
 				if (hydrating) assign_nodes(anchor_node, null);
-				component = Component(anchor_node, props) || {};
+				component = Component(anchor_node, props) || mark_as_component();
 				if (hydrating) {
 					/** @type {Effect & { nodes: EffectNodes }} */ active_effect.nodes.end = hydrate_node;
 					if (hydrate_node === null || hydrate_node.nodeType !== 8 || hydrate_node.data !== "]") {
@@ -4139,8 +4156,7 @@ createHTML: (html) => {
 		}
 		return Promise.resolve();
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/blocks/branches.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/blocks/branches.js
 	/** @import { Effect, TemplateNode } from '#client' */
 	/**
 	* @typedef {{ effect: Effect, fragment: DocumentFragment }} Branch
@@ -4287,8 +4303,7 @@ createHTML: (html) => {
 			}
 		}
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/blocks/snippet.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/blocks/snippet.js
 	/** @import { Snippet } from 'svelte' */
 	/** @import { TemplateNode } from '#client' */
 	/** @import { Getters } from '#shared' */
@@ -4340,8 +4355,7 @@ createHTML: (html) => {
 			m: []
 		};
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/attachments/index.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/attachments/index.js
 	/**
 	* Creates an object key that will be recognised as an attachment when the object is spread onto an element,
 	* as a programmatic alternative to using `{@attach ...}`. This can be useful for library authors, though
@@ -4367,8 +4381,7 @@ createHTML: (html) => {
 	function createAttachmentKey() {
 		return Symbol(ATTACHMENT_KEY);
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/blocks/if.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/blocks/if.js
 	/** @import { TemplateNode } from '#client' */
 	/**
 	* @param {TemplateNode} node
@@ -4413,9 +4426,8 @@ createHTML: (html) => {
 			if (!has_branch) update_branch(-1, null);
 		}, flags);
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/blocks/each.js
-	/** @import { EachItem, EachOutroGroup, EachState, Effect, EffectNodes, MaybeSource, Source, TemplateNode, TransitionManager, Value } from '#client' */
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/blocks/each.js
+	/** @import { EachItem, EachOutroGroup, EachState, Effect, EffectNodes, MaybeSource, TemplateNode, TransitionManager } from '#client' */
 	/** @import { Batch } from '../../reactivity/batch.js'; */
 	/**
 	* @param {any} _
@@ -4521,8 +4533,6 @@ createHTML: (html) => {
 			var collection = get_collection();
 			return is_array(collection) ? collection : collection == null ? [] : array_from(collection);
 		});
-		/** @type {V[]} */
-		var array;
 		/** @type {Map<Batch, Set<any>>} */
 		var pending = /* @__PURE__ */ new Map();
 		var first_run = true;
@@ -4532,6 +4542,7 @@ createHTML: (html) => {
 		function commit(batch) {
 			if ((state.effect.f & 16384) !== 0) return;
 			state.pending.delete(batch);
+			var array = get$2(each_array);
 			state.fallback = fallback;
 			reconcile(state, array, anchor, flags, get_key);
 			if (fallback !== null) {
@@ -4555,7 +4566,7 @@ createHTML: (html) => {
 		/** @type {EachState} */
 		var state = {
 			effect: block(() => {
-				array = get$2(each_array);
+				var array = get$2(each_array);
 				var length = array.length;
 				/** `true` if there was a hydration mismatch. Needs to be a `let` or else it isn't treeshaken out */
 				let mismatch = false;
@@ -4783,7 +4794,7 @@ createHTML: (html) => {
 	* @param {V} value
 	* @param {unknown} key
 	* @param {number} index
-	* @param {(anchor: Node, item: V | Source<V>, index: number | Value<number>, collection: () => V[]) => void} render_fn
+	* @param {(anchor: Node, item: MaybeSource<V>, index: MaybeSource<number>, collection: () => V[]) => void} render_fn
 	* @param {number} flags
 	* @param {() => V[]} get_collection
 	* @returns {EachItem}
@@ -4890,8 +4901,7 @@ createHTML: (html) => {
 			else anchor.before(node);
 		});
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/blocks/slot.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/blocks/slot.js
 	/**
 	* @param {Comment} anchor
 	* @param {Record<string, any>} $$props
@@ -4901,6 +4911,17 @@ createHTML: (html) => {
 	*/
 	function slot(anchor, $$props, name, slot_props, fallback_fn) {
 		if (hydrating) hydrate_next();
+		if ($$props.$$host?.$$shadowRoot) {
+			const element = create_element("slot");
+			if (name !== "default") element.name = name;
+			append(anchor, element);
+			if (fallback_fn !== null) {
+				const fallback_anchor = create_text();
+				element.append(fallback_anchor);
+				fallback_fn(fallback_anchor);
+			}
+			return;
+		}
 		var slot_fn = $$props.$$slots?.[name];
 		var is_interop = false;
 		if (slot_fn === true) {
@@ -4911,8 +4932,7 @@ createHTML: (html) => {
 			if (fallback_fn !== null) fallback_fn(anchor);
 		} else slot_fn(anchor, is_interop ? () => slot_props : slot_props);
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/blocks/svelte-component.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/blocks/svelte-component.js
 	/** @import { TemplateNode, Dom } from '#client' */
 	/**
 	* @template P
@@ -4946,8 +4966,7 @@ createHTML: (html) => {
 			branches.ensure(component, component && ((target) => render_fn(target, component)));
 		}, EFFECT_TRANSPARENT);
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/attachments.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/elements/attachments.js
 	/** @import { Effect } from '#client' */
 	/**
 	* @param {Element} node
@@ -4970,8 +4989,7 @@ createHTML: (html) => {
 			}
 		});
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/clsx@2.1.1/node_modules/clsx/dist/clsx.mjs
+	// ../../node_modules/.pnpm/clsx@2.1.1/node_modules/clsx/dist/clsx.mjs
 	function r(e) {
 		var t, f, n = "";
 		if ("string" == typeof e || "number" == typeof e) n += e;
@@ -4985,8 +5003,7 @@ createHTML: (html) => {
 		for (var e, t, f = 0, n = "", o = arguments.length; f < o; f++) (e = arguments[f]) && (t = r(e)) && (n && (n += " "), n += t);
 		return n;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/shared/attributes.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/shared/attributes.js
 	/**
 	* Small wrapper around clsx to preserve Svelte's (weird) handling of falsy values.
 	* TODO Svelte 6 revisit this, and likely turn all falsy values into the empty string (what clsx also does)
@@ -5059,7 +5076,7 @@ createHTML: (html) => {
 				important_styles = styles[1];
 			} else normal_styles = styles;
 			if (value) {
-				value = String(value).replaceAll(/\s*\/\*.*?\*\/\s*/g, "").trim();
+				value = String(value).replaceAll(/\/\*.*?\*\//g, "").trim();
 				/** @type {boolean | '"' | "'"} */
 				var in_str = false;
 				var in_apo = 0;
@@ -5104,8 +5121,7 @@ createHTML: (html) => {
 		}
 		return value == null ? null : String(value);
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/class.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/elements/class.js
 	/**
 	* @param {Element} dom
 	* @param {boolean | number} is_html
@@ -5131,8 +5147,7 @@ createHTML: (html) => {
 		}
 		return next_classes;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/style.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/elements/style.js
 	/**
 	* @param {Element & ElementCSSInlineStyle} dom
 	* @param {Record<string, any>} prev
@@ -5171,8 +5186,53 @@ createHTML: (html) => {
 		}
 		return next_styles;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/bindings/select.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/elements/bindings/select.js
+	/**
+	* Sets the `selected` attribute on an option so form reset can restore it.
+	* @param {HTMLOptionElement} option
+	* @param {boolean} selected
+	*/
+	function set_selected(option, selected) {
+		if (selected) {
+			if (!option.hasAttribute("selected")) option.setAttribute("selected", "");
+		} else option.removeAttribute("selected");
+	}
+	/**
+	* Sets the options a form reset should restore. The first call selects
+	* them if nothing has set a value, later calls leave the current selection alone.
+	* @param {HTMLSelectElement} select
+	* @param {any} value
+	*/
+	function set_default_select_value(select, value) {
+		var mounting = !("__defaultValue" in select);
+		if (!mounting && select.__defaultValue === value) return;
+		select.__defaultValue = value;
+		apply_default_select_value(select, !mounting || "__value" in select);
+	}
+	/**
+	* Marks the options matching `__defaultValue` as selected. Without `preserve`
+	* a newly matching option gets selected, as an inserted `<option selected>` would.
+	* @param {HTMLSelectElement} select
+	* @param {boolean} preserve
+	*/
+	function apply_default_select_value(select, preserve) {
+		var value = select.__defaultValue;
+		var multiple = select.multiple;
+		var values = multiple ? value ?? [] : null;
+		if (multiple && !is_array(values)) return;
+		var index = select.selectedIndex;
+		var selected = preserve && multiple ? new Set(select.selectedOptions) : null;
+		for (var option of select.options) {
+			var option_value = get_option_value(option);
+			set_selected(option, multiple ? values.includes(option_value) : is(option_value, value));
+		}
+		if (!preserve) return;
+		if (selected !== null) for (option of select.options) {
+			var was_selected = selected.has(option);
+			if (option.selected !== was_selected) option.selected = was_selected;
+		}
+		else if (select.selectedIndex !== index) select.selectedIndex = index;
+	}
 	/**
 	* Selects the correct option(s) (depending on whether this is a multiple select)
 	* @template V
@@ -5194,15 +5254,16 @@ createHTML: (html) => {
 		if (!mounting || value !== void 0) select.selectedIndex = -1;
 	}
 	/**
-	* Selects the correct option(s) if `value` is given,
-	* and then sets up a mutation observer to sync the
-	* current selection to the dom when it changes. Such
-	* changes could for example occur when options are
-	* inside an `#each` block.
+	* Sets up a mutation observer to sync the current selection
+	* and default to the dom when the options change, for example
+	* when they are inside an `#each` block. Called once per `<select>`,
+	* by the compiled output or by `attribute_effect` for spreads.
 	* @param {HTMLSelectElement} select
 	*/
 	function init_select(select) {
-		var observer = new MutationObserver(() => {
+		var observer = new MutationObserver((entries) => {
+			if (entries.every(is_selectedcontent_mutation)) return;
+			if ("__defaultValue" in select) apply_default_select_value(select, false);
 			if ("__value" in select) select_option(select, select.__value);
 		});
 		observer.observe(select, {
@@ -5256,15 +5317,27 @@ createHTML: (html) => {
 			select.__value = value;
 			mounting = false;
 		});
-		init_select(select);
 	}
 	/** @param {HTMLOptionElement} option */
 	function get_option_value(option) {
 		if ("__value" in option) return option.__value;
 		else return option.value;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/attributes.js
+	/**
+	* Returns `true` if the mutation stems from the browser mirroring the selected
+	* option's content into `<selectedcontent>`, or from us replacing the
+	* `<selectedcontent>` element with a clone of itself
+	* @param {MutationRecord} entry
+	*/
+	function is_selectedcontent_mutation(entry) {
+		if (entry.target.closest("selectedcontent") !== null) return true;
+		if (entry.type === "childList") {
+			var nodes = [...entry.addedNodes, ...entry.removedNodes];
+			return nodes.length > 0 && nodes.every((node) => node.nodeName === "SELECTEDCONTENT");
+		}
+		return false;
+	}
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/elements/attributes.js
 	/** @import { Blocker, Effect } from '#client' */
 	var CLASS = Symbol("class");
 	var STYLE = Symbol("style");
@@ -5321,18 +5394,6 @@ createHTML: (html) => {
 		element.checked = checked;
 	}
 	/**
-	* Sets the `selected` attribute on an `option` element.
-	* Not set through the property because that doesn't reflect to the DOM,
-	* which means it wouldn't be taken into account when a form is reset.
-	* @param {HTMLOptionElement} element
-	* @param {boolean} selected
-	*/
-	function set_selected(element, selected) {
-		if (selected) {
-			if (!element.hasAttribute("selected")) element.setAttribute("selected", "");
-		} else element.removeAttribute("selected");
-	}
-	/**
 	* @param {Element} element
 	* @param {string} attribute
 	* @param {string | null} value
@@ -5347,11 +5408,12 @@ createHTML: (html) => {
 				return;
 			}
 		}
-		if (attributes[attribute] === (attributes[attribute] = value)) return;
+		var previous = attributes[attribute];
+		if (previous === (attributes[attribute] = value)) return;
 		if (attribute === "loading") element[LOADING_ATTR_SYMBOL] = value;
 		if (value == null) element.removeAttribute(attribute);
-		else if (typeof value !== "string" && get_setters(element).includes(attribute)) element[attribute] = value;
-		else element.setAttribute(attribute, value);
+		else if (typeof value !== "string" && get_setters(element).has(attribute)) element[attribute] = value;
+		else if (!(hydrating && (typeof value === "number" || typeof value === "boolean") && previous === String(value))) element.setAttribute(attribute, value);
 	}
 	/**
 	* @param {HTMLElement} node
@@ -5366,7 +5428,7 @@ createHTML: (html) => {
 		set_active_reaction(null);
 		set_active_effect(null);
 		try {
-			if (prop !== "style" && (setters_cache.has(node.getAttribute("is") || node.nodeName) || !customElements || customElements.get(node.getAttribute("is") || node.nodeName.toLowerCase()) ? get_setters(node).includes(prop) : value && typeof value === "object")) node[prop] = value;
+			if (prop !== "style" && (setters_cache.has(node.getAttribute("is") || node.nodeName) || !customElements || customElements.get(node.getAttribute("is") || node.nodeName.toLowerCase()) ? get_setters(node).has(prop) : value && typeof value === "object")) node[prop] = value;
 			else set_attribute(node, prop, value == null ? value : String(value));
 		} finally {
 			set_active_reaction(previous_reaction);
@@ -5386,8 +5448,7 @@ createHTML: (html) => {
 	*/
 	function set_attributes(element, prev, next, css_hash, should_remove_defaults = false, skip_warning = false) {
 		if (hydrating && should_remove_defaults && element.nodeName === INPUT_TAG) {
-			var input = element;
-			if (!((input.type === "checkbox" ? "defaultChecked" : "defaultValue") in next)) remove_input_defaults(input);
+			if (!("defaultValue" in next || "defaultChecked" in next)) remove_input_defaults(element);
 		}
 		var attributes = get_attributes(element);
 		var is_custom_element = attributes[IS_CUSTOM_ELEMENT];
@@ -5396,102 +5457,109 @@ createHTML: (html) => {
 		if (is_hydrating_custom_element) set_hydrating(false);
 		var current = prev || {};
 		var is_option_element = element.nodeName === OPTION_TAG;
-		for (var key in prev) if (!(key in next)) next[key] = null;
-		if (next.class) next.class = clsx(next.class);
-		else if (css_hash || next[CLASS]) next.class = null;
-		if (next[STYLE]) next.style ??= null;
-		var setters = get_setters(element);
-		if (element.nodeName === INPUT_TAG && "type" in next && ("value" in next || "__value" in next)) {
-			var type = next.type;
-			if (type !== current.type || type === void 0 && element.hasAttribute("type")) {
-				current.type = type;
-				set_attribute(element, "type", type, skip_warning);
-			}
-		}
-		for (const key in next) {
-			let value = next[key];
-			if (is_option_element && key === "value" && value == null) {
-				element.value = element.__value = "";
-				current[key] = value;
-				continue;
-			}
-			if (key === "class") {
-				set_class(element, element.namespaceURI === "http://www.w3.org/1999/xhtml", value, css_hash, prev?.[CLASS], next[CLASS]);
-				current[key] = value;
-				current[CLASS] = next[CLASS];
-				continue;
-			}
-			if (key === "style") {
-				set_style(element, value, prev?.[STYLE], next[STYLE]);
-				current[key] = value;
-				current[STYLE] = next[STYLE];
-				continue;
-			}
-			var prev_value = current[key];
-			if (value === prev_value && !(value === void 0 && element.hasAttribute(key))) continue;
-			current[key] = value;
-			var prefix = key[0] + key[1];
-			if (prefix === "$$") continue;
-			if (prefix === "on") {
-				/** @type {{ capture?: true }} */
-				const opts = {};
-				const event_handle_key = "$$" + key;
-				let event_name = key.slice(2);
-				var is_delegated = can_delegate_event(event_name);
-				if (is_capture_event(event_name)) {
-					event_name = event_name.slice(0, -7);
-					opts.capture = true;
+		var is_select_element = element.nodeName === SELECT_TAG;
+		try {
+			for (var key in prev) if (!(key in next) && key[0] + key[1] !== "$$") next[key] = null;
+			if (next.class) next.class = clsx(next.class);
+			else if (css_hash || next[CLASS]) next.class = null;
+			if (next[STYLE]) next.style ??= null;
+			var setters = get_setters(element);
+			if (element.nodeName === INPUT_TAG && "type" in next && ("value" in next || "__value" in next)) {
+				var type = next.type;
+				if (type !== current.type || type === void 0 && element.hasAttribute("type")) {
+					current.type = type;
+					set_attribute(element, "type", type, skip_warning);
 				}
-				if (!is_delegated && prev_value) {
-					if (value != null) continue;
-					element.removeEventListener(event_name, current[event_handle_key], opts);
-					current[event_handle_key] = null;
+			}
+			for (const key in next) {
+				let value = next[key];
+				if (is_option_element && key === "value" && value == null) {
+					element.value = element.__value = "";
+					current[key] = value;
+					continue;
 				}
-				if (is_delegated) {
-					delegated(event_name, element, value);
-					delegate([event_name]);
-				} else if (value != null) {
-					/**
-					* @this {any}
-					* @param {Event} evt
-					*/
-					function handle(evt) {
-						current[key].call(this, evt);
+				if (key === "class") {
+					set_class(element, element.namespaceURI === "http://www.w3.org/1999/xhtml", value, css_hash, prev?.[CLASS], next[CLASS]);
+					current[key] = value;
+					current[CLASS] = next[CLASS];
+					continue;
+				}
+				if (key === "style") {
+					set_style(element, value, prev?.[STYLE], next[STYLE]);
+					current[key] = value;
+					current[STYLE] = next[STYLE];
+					continue;
+				}
+				var prev_value = current[key];
+				if (value === prev_value && !(value === void 0 && element.hasAttribute(key))) continue;
+				current[key] = value;
+				var prefix = key[0] + key[1];
+				if (prefix === "$$") continue;
+				if (prefix === "on") {
+					/** @type {{ capture?: true }} */
+					const opts = {};
+					const event_handle_key = "$$" + key;
+					let event_name = key.slice(2);
+					var is_delegated = can_delegate_event(event_name);
+					if (is_capture_event(event_name)) {
+						event_name = event_name.slice(0, -7);
+						opts.capture = true;
 					}
-					current[event_handle_key] = create_event(event_name, element, handle, opts);
-				}
-			} else if (key === "style") set_attribute(element, key, value);
-			else if (key === "autofocus") autofocus(element, Boolean(value));
-			else if (!is_custom_element && (key === "__value" || key === "value" && value != null)) element.value = element.__value = value;
-			else if (key === "selected" && is_option_element) set_selected(element, value);
-			else {
-				var name = key;
-				if (!preserve_attribute_case) name = normalize_attribute(name);
-				var is_default = name === "defaultValue" || name === "defaultChecked";
-				if (value == null && !is_custom_element && !is_default) {
-					attributes[key] = null;
-					if (name === "value" || name === "checked") {
-						let input = element;
-						const use_default = prev === void 0;
-						if (name === "value") {
-							let previous = input.defaultValue;
-							input.removeAttribute(name);
-							input.defaultValue = previous;
-							input.value = input.__value = use_default ? previous : null;
-						} else {
-							let previous = input.defaultChecked;
-							input.removeAttribute(name);
-							input.defaultChecked = previous;
-							input.checked = use_default ? previous : false;
+					if (!is_delegated && prev_value) {
+						if (value != null) continue;
+						element.removeEventListener(event_name, current[event_handle_key], opts);
+						current[event_handle_key] = null;
+					}
+					if (is_delegated) {
+						delegated(event_name, element, value);
+						delegate([event_name]);
+					} else if (value != null) {
+						/**
+						* @this {any}
+						* @param {Event} evt
+						*/
+						function handle(evt) {
+							current[key].call(this, evt);
 						}
-					} else element.removeAttribute(key);
-				} else if (is_default || setters.includes(name) && (is_custom_element || typeof value !== "string")) {
-					element[name] = value;
-					if (name in attributes) attributes[name] = UNINITIALIZED;
-				} else if (typeof value !== "function") set_attribute(element, name, value, skip_warning);
+						current[event_handle_key] = create_event(event_name, element, handle, opts);
+					}
+				} else if (key === "style") set_attribute(element, key, value);
+				else if (key === "autofocus") autofocus(element, Boolean(value));
+				else if (!is_custom_element && (key === "__value" || key === "value" && value != null)) {
+					element.__value = value;
+					if (prev_value == null || element.value !== value || value === 0 && element.nodeName === PROGRESS_TAG) element.value = value;
+				} else if (key === "selected" && is_option_element) set_selected(element, value);
+				else {
+					var name = key;
+					if (!preserve_attribute_case) name = normalize_attribute(name);
+					var is_default = name === "defaultValue" || name === "defaultChecked";
+					if (is_select_element && name === "defaultValue") continue;
+					if (value == null && !is_custom_element && !is_default) {
+						attributes[key] = null;
+						if (name === "value" || name === "checked") {
+							let input = element;
+							const use_default = prev === void 0;
+							if (name === "value") {
+								let previous = input.defaultValue;
+								input.removeAttribute(name);
+								input.defaultValue = previous;
+								input.value = input.__value = use_default ? previous : null;
+							} else {
+								let previous = input.defaultChecked;
+								input.removeAttribute(name);
+								input.defaultChecked = previous;
+								input.checked = use_default ? previous : false;
+							}
+						} else element.removeAttribute(key);
+					} else if (is_default || (is_custom_element || typeof value !== "string") && setters.has(name)) {
+						element[name] = value;
+						if (name in attributes) attributes[name] = UNINITIALIZED;
+					} else if (typeof value !== "function") set_attribute(element, name, value, skip_warning);
+				}
 			}
+		} finally {
+			if (is_hydrating_custom_element) set_hydrating(true);
 		}
-		if (is_hydrating_custom_element) set_hydrating(true);
 		return current;
 	}
 	/**
@@ -5516,7 +5584,11 @@ createHTML: (html) => {
 				var next = fn(...values.map(get$2));
 				/** @type {Record<string | symbol, any>} */
 				var current = set_attributes(element, prev, next, css_hash, should_remove_defaults, skip_warning);
-				if (inited && is_select && "value" in next) select_option(element, next.value);
+				if (inited && is_select) {
+					var select = element;
+					if ("defaultValue" in next) set_default_select_value(select, next.defaultValue);
+					if ("value" in next) select_option(select, next.value);
+				}
 				for (let symbol of Object.getOwnPropertySymbols(effects)) if (!next[symbol]) destroy_effect(effects[symbol]);
 				for (let symbol of Object.getOwnPropertySymbols(next)) {
 					var n = next[symbol];
@@ -5531,12 +5603,9 @@ createHTML: (html) => {
 			if (is_select) {
 				var select = element;
 				effect(() => {
-					select_option(
-						select,
-						/** @type {Record<string | symbol, any>} */
-						prev.value,
-						true
-					);
+					var attrs = prev;
+					if ("defaultValue" in attrs) set_default_select_value(select, attrs.defaultValue);
+					select_option(select, attrs.value, true);
 					init_select(select);
 				});
 			}
@@ -5553,26 +5622,25 @@ createHTML: (html) => {
 			[IS_HTML]: element.namespaceURI === NAMESPACE_HTML
 		};
 	}
-	/** @type {Map<string, string[]>} */
+	/** @type {Map<string, Set<string>>} */
 	var setters_cache = /* @__PURE__ */ new Map();
 	/** @param {Element} element */
 	function get_setters(element) {
 		var cache_key = element.getAttribute("is") || element.nodeName;
 		var setters = setters_cache.get(cache_key);
 		if (setters) return setters;
-		setters_cache.set(cache_key, setters = []);
+		setters_cache.set(cache_key, setters = /* @__PURE__ */ new Set());
 		var descriptors;
 		var proto = element;
 		var element_proto = Element.prototype;
 		while (element_proto !== proto) {
 			descriptors = get_descriptors(proto);
-			for (var key in descriptors) if (descriptors[key].set && key !== "innerHTML" && key !== "textContent" && key !== "innerText") setters.push(key);
+			for (var key in descriptors) if (descriptors[key].set && key !== "innerHTML" && key !== "textContent" && key !== "innerText") setters.add(key);
 			proto = get_prototype_of(proto);
 		}
 		return setters;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/customizable-select.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/elements/customizable-select.js
 	/** @type {boolean | null} */
 	var supported = null;
 	/**
@@ -5615,8 +5683,7 @@ createHTML: (html) => {
 			}
 		}
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/bindings/input.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/elements/bindings/input.js
 	/** @import { Batch } from '../../../reactivity/batch.js' */
 	/**
 	* @param {HTMLInputElement} input
@@ -5760,8 +5827,7 @@ createHTML: (html) => {
 	function to_number(value) {
 		return value === "" ? null : +value;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/bindings/this.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/elements/bindings/this.js
 	/** @import { ComponentContext, Effect } from '#client' */
 	/**
 	* @param {any} bound_value
@@ -5779,7 +5845,7 @@ createHTML: (html) => {
 	* 										returns all the parts of the each block context that are used in the expression
 	* @returns {void}
 	*/
-	function bind_this(element_or_component = {}, update, get_value, get_parts) {
+	function bind_this(element_or_component = mark_as_component(), update, get_value, get_parts) {
 		var component_effect = component_context.r;
 		var parent = active_effect;
 		effect(() => {
@@ -5812,8 +5878,7 @@ createHTML: (html) => {
 		});
 		return element_or_component;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/legacy/lifecycle.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/legacy/lifecycle.js
 	/** @import { ComponentContextLegacy } from '#client' */
 	/**
 	* Legacy-mode only: Call `onMount` callbacks and set up `beforeUpdate`/`afterUpdate` effects
@@ -5827,7 +5892,7 @@ createHTML: (html) => {
 		if (immutable) {
 			let version = 0;
 			let prev = {};
-			const d = /* @__PURE__ */ derived(() => {
+			const d = /* @__PURE__ */ derived$1(() => {
 				let changed = false;
 				const props = context.s;
 				for (const key in props) if (props[key] !== prev[key]) {
@@ -5864,8 +5929,31 @@ createHTML: (html) => {
 		if (context.l.s) for (const signal of context.l.s) get$2(signal);
 		props();
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/reactivity/props.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/reactivity/store.js
+	/**
+	* Whether or not the prop currently being read is a store binding, as in
+	* `<Child bind:x={$y} />`. If it is, we treat the prop as mutable even in
+	* runes mode, and skip `binding_property_non_reactive` validation
+	*/
+	var is_store_binding = false;
+	/**
+	* Returns a tuple that indicates whether `fn()` reads a prop that is a store binding.
+	* Used to prevent `binding_property_non_reactive` validation false positives and
+	* ensure that these props are treated as mutable even in runes mode
+	* @template T
+	* @param {() => T} fn
+	* @returns {[T, boolean]}
+	*/
+	function capture_store_binding(fn) {
+		var previous_is_store_binding = is_store_binding;
+		try {
+			is_store_binding = false;
+			return [fn(), is_store_binding];
+		} finally {
+			is_store_binding = previous_is_store_binding;
+		}
+	}
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/reactivity/props.js
 	/** @import { Derived, Effect, Source } from './types.js' */
 	/**
 	* The proxy handler for rest props (i.e. `const { x, ...rest } = $props()`).
@@ -5995,7 +6083,7 @@ createHTML: (html) => {
 		var fallback_signal = void 0;
 		var get_fallback = () => {
 			if (lazy && runes) {
-				fallback_signal ??= /* @__PURE__ */ derived(fallback);
+				fallback_signal ??= /* @__PURE__ */ derived$1(fallback);
 				return get$2(fallback_signal);
 			}
 			if (fallback_dirty) {
@@ -6048,7 +6136,7 @@ createHTML: (html) => {
 			});
 		}
 		var overridden = false;
-		var d = ((flags & 1) !== 0 ? derived : derived_safe_equal)(() => {
+		var d = ((flags & 1) !== 0 ? derived$1 : derived_safe_equal)(() => {
 			overridden = false;
 			return getter();
 		});
@@ -6066,8 +6154,7 @@ createHTML: (html) => {
 			return get$2(d);
 		});
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/legacy/legacy-client.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/legacy/legacy-client.js
 	/** @import { ComponentConstructorOptions, ComponentType, SvelteComponent, Component } from 'svelte' */
 	/**
 	* Takes the same options as a Svelte 4 component and the component function and returns a Svelte 4 compatible component.
@@ -6185,8 +6272,7 @@ createHTML: (html) => {
 			this.#instance.$destroy();
 		}
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/client/dom/elements/custom-element.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/client/dom/elements/custom-element.js
 	/**
 	* @typedef {Object} CustomElementPropDefinition
 	* @property {string} [attribute]
@@ -6430,8 +6516,7 @@ createHTML: (html) => {
 		Component.element = Class;
 		return Class;
 	}
-	//#endregion
-	//#region src/lib/helpers/locale.ts
+	// src/lib/helpers/locale.ts
 	function warnOnInvalidLocale(locale) {
 		try {
 			if (Intl.NumberFormat.supportedLocalesOf(locale).length === 0) console.warn(`[go] Unknown locale "${locale}" — the browser has no locale data for it; price and date formatting will fall back to the browser default.`);
@@ -6459,7 +6544,11 @@ createHTML: (html) => {
 			"product.detail.table.title": "Ticket",
 			"ticket.timeSlot.noAvailable": "Sold out",
 			"calendar.previousMonth": "{{month}}, previous month",
-			"calendar.nextMonth": "{{month}}, next month"
+			"calendar.nextMonth": "{{month}}, next month",
+			"ticket.reservations.timer": "Time left on your reservation",
+			"ticket.reservations.expiresSoon": "Your reservation expires in less than a minute.",
+			"ticket.reservations.expired": "Your reservation has expired.",
+			"ticket.reservations.extend": "Extend reservation"
 		},
 		de: {
 			"quantity.remove": "Artikel entfernen",
@@ -6480,7 +6569,11 @@ createHTML: (html) => {
 			"product.detail.table.title": "Ticket",
 			"ticket.timeSlot.noAvailable": "Ausverkauft",
 			"calendar.previousMonth": "{{month}}, vorheriger Monat",
-			"calendar.nextMonth": "{{month}}, nächster Monat"
+			"calendar.nextMonth": "{{month}}, nächster Monat",
+			"ticket.reservations.timer": "Verbleibende Zeit Ihrer Reservierung",
+			"ticket.reservations.expiresSoon": "Ihre Reservierung läuft in weniger als einer Minute ab.",
+			"ticket.reservations.expired": "Ihre Reservierung ist abgelaufen.",
+			"ticket.reservations.extend": "Reservierung verlängern"
 		},
 		fr: {
 			"calendar.previousMonth": "{{month}}, mois précédent",
@@ -6499,8 +6592,7 @@ createHTML: (html) => {
 			"calendar.nextMonth": "{{month}}, nächste Mount"
 		}
 	};
-	//#endregion
-	//#region src/lib/helpers/urls.ts
+	// src/lib/helpers/urls.ts
 	var ANGULAR_URLS = {
 		account: () => "/#/user/account",
 		annualTickets: () => "/#/tickets/annual",
@@ -6548,8 +6640,7 @@ createHTML: (html) => {
 	function toursGroupUrl(id) {
 		return `/#/products/tours?category_id=${(shop.settings?.multipleToursMenuItems.tour_groups[id] || []).join("&category_id=")}`;
 	}
-	//#endregion
-	//#region src/lib/utils.ts
+	// src/lib/utils.ts
 	function wait(ms) {
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
@@ -6595,8 +6686,7 @@ createHTML: (html) => {
 			poll();
 		});
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/radash@12.1.1/node_modules/radash/dist/esm/typed.mjs
+	// ../../node_modules/.pnpm/radash@12.1.1/node_modules/radash/dist/esm/typed.mjs
 	var isArray = Array.isArray;
 	var isObject$2 = (value) => {
 		return !!value && value.constructor === Object;
@@ -6620,8 +6710,7 @@ createHTML: (html) => {
 		if (!isFunction$2(value.then)) return false;
 		return true;
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/radash@12.1.1/node_modules/radash/dist/esm/array.mjs
+	// ../../node_modules/.pnpm/radash@12.1.1/node_modules/radash/dist/esm/array.mjs
 	var group = (array, getGroupId) => {
 		return array.reduce((acc, item) => {
 			const groupId = getGroupId(item);
@@ -6665,8 +6754,7 @@ createHTML: (html) => {
 		for (let i = 1; i <= count; i++) value = func(value, i);
 		return value;
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/radash@12.1.1/node_modules/radash/dist/esm/object.mjs
+	// ../../node_modules/.pnpm/radash@12.1.1/node_modules/radash/dist/esm/object.mjs
 	var omit = (obj, keys2) => {
 		if (!obj) return {};
 		if (!keys2 || keys2.length === 0) return obj;
@@ -6690,8 +6778,7 @@ createHTML: (html) => {
 			};
 		}, {});
 	};
-	//#endregion
-	//#region src/lib/stores/auth.svelte.ts
+	// src/lib/stores/auth.svelte.ts
 	var Auth = class {
 		#data = /* @__PURE__ */ state(proxy({
 			uid: "",
@@ -6764,8 +6851,7 @@ createHTML: (html) => {
 			this.signIn(d);
 		}
 	};
-	//#endregion
-	//#region src/lib/middlewares/AuthMiddleware.ts
+	// src/lib/middlewares/AuthMiddleware.ts
 	var AuthMiddleware = class {
 		auth;
 		constructor(auth) {
@@ -6800,8 +6886,7 @@ createHTML: (html) => {
 			return response;
 		}
 	};
-	//#endregion
-	//#region src/lib/models/ticket/UITicket.svelte.ts
+	// src/lib/models/ticket/UITicket.svelte.ts
 	function isUITicket(x) {
 		return x?.type === "Ticket";
 	}
@@ -6860,8 +6945,7 @@ createHTML: (html) => {
 		if (selectedTime !== "") available = available.filter(([, t]) => t.total_capacities?.[selectedTime] && t.total_capacities[selectedTime] > 0);
 		return Object.fromEntries(available);
 	}
-	//#endregion
-	//#region src/lib/models/capacity/calculators/quotas.ts
+	// src/lib/models/capacity/calculators/quotas.ts
 	/** Σ of a mantle's chosen sub-ticket quantities (the capacity one mantle draws); 0 otherwise. */
 	var compositionSum = (item) => sum(Object.values(item.mantle?.composition ?? {}));
 	/**
@@ -6916,8 +7000,7 @@ createHTML: (html) => {
 			unavailable: total === 0
 		};
 	};
-	//#endregion
-	//#region src/lib/models/capacity/calculators/mantle.ts
+	// src/lib/models/capacity/calculators/mantle.ts
 	/**
 	* Capacity for a Mantelticket — a verbatim port of the legacy Angular shop
 	* (`gomus-shop` `ticket.service.coffee`: `getNeededCapacityForTicket` +
@@ -6974,8 +7057,7 @@ createHTML: (html) => {
 		}
 		return Object.fromEntries(subTicketDefs(p).map((s) => [s.id, Math.min(s.max_persons, (item.mantle?.composition?.[s.id] ?? 0) + growth)]));
 	}
-	//#endregion
-	//#region src/lib/models/eventTicket/UIEventTicket.svelte.ts
+	// src/lib/models/eventTicket/UIEventTicket.svelte.ts
 	function isEventTicket(x) {
 		return x?.type === "Event";
 	}
@@ -7012,8 +7094,7 @@ createHTML: (html) => {
 	function createUIEventTicket(apiTicket, dateId, options) {
 		return buildUIEventTicket(apiTicket, dateId, options);
 	}
-	//#endregion
-	//#region src/lib/models/capacity/calculators/seats.ts
+	// src/lib/models/capacity/calculators/seats.ts
 	/**
 	* Calculates the maximum number of available seats for a given item in the cart and preCart.
 	*
@@ -7058,8 +7139,7 @@ createHTML: (html) => {
 			bookedOut: max === 0
 		};
 	};
-	//#endregion
-	//#region src/lib/models/capacity/calculators/unlimited.ts
+	// src/lib/models/capacity/calculators/unlimited.ts
 	/** The cart line an item belongs to: a display row points at its base line, a real line is its own. */
 	var lineUuid = (item) => item.display?.reference_uuid ?? item.uuid;
 	/**
@@ -7090,8 +7170,7 @@ createHTML: (html) => {
 			bookedOut: false
 		};
 	};
-	//#endregion
-	//#region src/lib/models/capacity/calculators/quotaManager/QuotaManager.ts
+	// src/lib/models/capacity/calculators/quotaManager/QuotaManager.ts
 	var quotaIdOf = (key) => key.split(":")[0];
 	var dayOf = (slot) => slot.slice(0, 10);
 	var withoutDays = (slots, days) => Object.fromEntries(Object.entries(slots).filter(([slot]) => !days.includes(dayOf(slot))));
@@ -7227,8 +7306,7 @@ createHTML: (html) => {
 			}
 		};
 	}
-	//#endregion
-	//#region src/lib/models/cart/CartEvents.svelte.ts
+	// src/lib/models/cart/CartEvents.svelte.ts
 	function dispatchCartEvents(cart) {
 		let lastLength = 0;
 		effect_root(() => {
@@ -7240,8 +7318,7 @@ createHTML: (html) => {
 			});
 		});
 	}
-	//#endregion
-	//#region src/lib/helpers/utils.ts
+	// src/lib/helpers/utils.ts
 	function formatCurrency(priceCents) {
 		let format;
 		try {
@@ -7283,8 +7360,7 @@ createHTML: (html) => {
 		const parsed = ids.split(",").map((id) => id.trim()).map(Number).filter((num) => !isNaN(num) && num > 0);
 		return parsed.length > 0 ? parsed : void 0;
 	}
-	//#endregion
-	//#region src/lib/models/tour/UITour.svelte.ts
+	// src/lib/models/tour/UITour.svelte.ts
 	function isUITour(x) {
 		return x?.type === "Tour";
 	}
@@ -7326,8 +7402,7 @@ createHTML: (html) => {
 			totalPriceCents: price_cents
 		}, { instanceKey });
 	}
-	//#endregion
-	//#region src/lib/models/cart/CartItem.ts
+	// src/lib/models/cart/CartItem.ts
 	var lastMantleKey = 0;
 	function createCartItem(product, options) {
 		const finalOptions = {
@@ -7343,6 +7418,7 @@ createHTML: (html) => {
 			...finalOptions,
 			quantity: finalOptions.quantity ?? 0,
 			time: finalOptions.time ?? "",
+			reservation: finalOptions.reservation,
 			type: product.type,
 			product,
 			/**
@@ -7360,7 +7436,8 @@ createHTML: (html) => {
 						...base,
 						time: this.time,
 						quantity: this.quantity,
-						...isMantleTicket(this.product) && this.mantle ? { sub_ticket_quantities: this.mantle.composition } : {}
+						...isMantleTicket(this.product) && this.mantle ? { sub_ticket_quantities: this.mantle.composition } : {},
+						...this.reservation ? { reservations: [this.reservation.token] } : {}
 					};
 					case "Event": switch (product.subtype) {
 						case "flat": return {
@@ -7453,8 +7530,7 @@ createHTML: (html) => {
 			console.warn(`Failed to remove from localStorage (${key}):`, e);
 		}
 	}
-	//#endregion
-	//#region src/lib/models/coupon/UICoupon.svelte.ts
+	// src/lib/models/coupon/UICoupon.svelte.ts
 	function isUICoupon(x) {
 		return x?.type === "Coupon";
 	}
@@ -7475,13 +7551,11 @@ createHTML: (html) => {
 			type: "Coupon"
 		};
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/utils.mjs
+	// ../../node_modules/.pnpm/@internationalized+date@3.12.4/node_modules/@internationalized/date/dist/private/utils.mjs
 	function $09ec6a572d60460f$export$842a2cf37af977e1(amount, numerator) {
 		return amount - numerator * Math.floor(amount / numerator);
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/calendars/GregorianCalendar.mjs
+	// ../../node_modules/.pnpm/@internationalized+date@3.12.4/node_modules/@internationalized/date/dist/private/calendars/GregorianCalendar.mjs
 	var $93635573935797de$var$EPOCH = 1721426;
 	function $93635573935797de$export$f297eb839006d339(era, year, month, day) {
 		year = $93635573935797de$export$c36e0ecb2d4fa69d(era, year);
@@ -7591,8 +7665,7 @@ createHTML: (html) => {
 			this.identifier = "gregory";
 		}
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/weekStartData.mjs
+	// ../../node_modules/.pnpm/@internationalized+date@3.12.4/node_modules/@internationalized/date/dist/private/weekStartData.mjs
 	var $d2ca8165c9aa885a$export$7a5acbd77d414bd9 = {
 		"001": 1,
 		AD: 1,
@@ -7690,8 +7763,7 @@ createHTML: (html) => {
 		VN: 1,
 		XK: 1
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/queries.mjs
+	// ../../node_modules/.pnpm/@internationalized+date@3.12.4/node_modules/@internationalized/date/dist/private/queries.mjs
 	function $ad063034c8620db8$export$ea39ec197993aef0(a, b) {
 		b = $d07e34cce18680fd$export$b4a036af3fc0b032(b, a.calendar);
 		return a.era === b.era && a.year === b.year && a.month === b.month && a.day === b.day;
@@ -7794,8 +7866,7 @@ createHTML: (html) => {
 		}
 		return weekInfo.firstDay;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/conversion.mjs
+	// ../../node_modules/.pnpm/@internationalized+date@3.12.4/node_modules/@internationalized/date/dist/private/conversion.mjs
 	function $d07e34cce18680fd$export$bd4fb2bc8bb06fb(date) {
 		date = $d07e34cce18680fd$export$b4a036af3fc0b032(date, new $93635573935797de$export$80ee6245ec4f29ec());
 		return $d07e34cce18680fd$var$epochFromParts($93635573935797de$export$c36e0ecb2d4fa69d(date.era, date.year), date.month, date.day, date.hour, date.minute, date.second, date.millisecond);
@@ -7933,8 +8004,7 @@ createHTML: (html) => {
 	function $d07e34cce18680fd$export$538b00033cc11c75(date, timeZone) {
 		return $d07e34cce18680fd$export$b4a036af3fc0b032($d07e34cce18680fd$export$1b96692a1ba042ac($d07e34cce18680fd$export$bd4fb2bc8bb06fb(date) - date.offset, timeZone), date.calendar);
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/manipulation.mjs
+	// ../../node_modules/.pnpm/@internationalized+date@3.12.4/node_modules/@internationalized/date/dist/private/manipulation.mjs
 	var $435a2ceaa8778ed8$var$ONE_HOUR = 36e5;
 	function $435a2ceaa8778ed8$export$e16d8520af44a096(date, duration) {
 		let mutableDate = date.copy();
@@ -8192,8 +8262,7 @@ createHTML: (html) => {
 		if (res.compare(plainDateTime) === 0) return dateTime;
 		return $d07e34cce18680fd$export$b4a036af3fc0b032($d07e34cce18680fd$export$1b96692a1ba042ac($d07e34cce18680fd$export$5107c82f94518f5c(res, dateTime.timeZone, disambiguation), dateTime.timeZone), dateTime.calendar);
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/string.mjs
+	// ../../node_modules/.pnpm/@internationalized+date@3.12.4/node_modules/@internationalized/date/dist/private/string.mjs
 	var $58246871e4652552$var$DATE_RE = /^([+-]\d{6}|\d{4})-(\d{2})-(\d{2})$/;
 	var $58246871e4652552$var$DATE_TIME_RE = /^([+-]\d{6}|\d{4})-(\d{2})-(\d{2})(?:T(\d{2}))?(?::(\d{2}))?(?::(\d{2}))?(\.\d+)?$/;
 	var $58246871e4652552$var$ZONED_DATE_TIME_RE = /^([+-]\d{6}|\d{4})-(\d{2})-(\d{2})(?:T(\d{2}))?(?::(\d{2}))?(?::(\d{2}))?(\.\d+)?(?:([+-]\d{2})(?::?(\d{2}))?(?::?(\d{2}))?)?\[(.*?)\]$/;
@@ -8275,8 +8344,7 @@ createHTML: (html) => {
 	function $58246871e4652552$export$bf79f1ebf4b18792(date) {
 		return `${$58246871e4652552$export$4223de14708adc63(date)}${$58246871e4652552$var$offsetToString(date.offset)}[${date.timeZone}]`;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/CalendarDate.mjs
+	// ../../node_modules/.pnpm/@internationalized+date@3.12.4/node_modules/@internationalized/date/dist/private/CalendarDate.mjs
 	function $2aaf608024c21ca1$var$shiftArgs(args) {
 		let calendar = typeof args[0] === "object" ? args.shift() : new $93635573935797de$export$80ee6245ec4f29ec();
 		let era;
@@ -8463,8 +8531,7 @@ createHTML: (html) => {
 			return this.toDate().getTime() - $d07e34cce18680fd$export$84c95a83c799e074(b, this.timeZone).toDate().getTime();
 		}
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/@internationalized+date@3.12.3/node_modules/@internationalized/date/dist/private/DateFormatter.mjs
+	// ../../node_modules/.pnpm/@internationalized+date@3.12.4/node_modules/@internationalized/date/dist/private/DateFormatter.mjs
 	var $12a3c853105e5a70$var$formatterCache = /* @__PURE__ */ new Map();
 	var $12a3c853105e5a70$export$ad991b66133851cf = class {
 		constructor(locale, options = {}) {
@@ -8567,9 +8634,13 @@ createHTML: (html) => {
 		if (min === 12 && max === 11) return "h12";
 		throw new Error("Unexpected hour cycle result");
 	}
-	//#endregion
-	//#region src/lib/models/cart/localStorage.svelte.ts
+	// src/lib/models/cart/localStorage.svelte.ts
 	var KEY$7 = "go-cart";
+	var reviveReservation = (r) => typeof r?.token === "string" && typeof r?.quantity === "number" && typeof r?.valid_until === "string" ? {
+		token: r.token,
+		quantity: r.quantity,
+		valid_until: r.valid_until
+	} : void 0;
 	var persistCart = (items, coupons, donations) => localStorage.setItem(KEY$7, JSON.stringify({
 		items,
 		coupons,
@@ -8585,7 +8656,8 @@ createHTML: (html) => {
 					time: cartItem.time,
 					quantity: cartItem.quantity,
 					mantle: cartItem.mantle,
-					voucher: cartItem.voucher
+					voucher: cartItem.voucher,
+					reservation: reviveReservation(cartItem.reservation)
 				});
 			case "Event":
 				if (!isStillValid(cartItem)) return;
@@ -8692,8 +8764,498 @@ createHTML: (html) => {
 		return cartItem.product.subtype === "day" ? validForToday(cartItem.time) : inTheFuture(cartItem.time);
 	};
 	var defined = (x) => x !== void 0;
-	//#endregion
-	//#region src/lib/models/cart/cart.svelte.ts
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/reactivity/map.js
+	/** @import { Source } from '#client' */
+	/**
+	* A reactive version of the built-in [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) object.
+	* Reading contents of the map (by iterating, or by reading `map.size` or calling `map.get(...)` or `map.has(...)` as in the [tic-tac-toe example](https://svelte.dev/playground/0b0ff4aa49c9443f9b47fe5203c78293) below) in an [effect](https://svelte.dev/docs/svelte/$effect) or [derived](https://svelte.dev/docs/svelte/$derived)
+	* will cause it to be re-evaluated as necessary when the map is updated.
+	*
+	* Note that values in a reactive map are _not_ made [deeply reactive](https://svelte.dev/docs/svelte/$state#Deep-state).
+	*
+	* ```svelte
+	* <script>
+	* 	import { SvelteMap } from 'svelte/reactivity';
+	* 	import { result } from './game.js';
+	*
+	* 	let board = new SvelteMap();
+	* 	let player = $state('x');
+	* 	let winner = $derived(result(board));
+	*
+	* 	function reset() {
+	* 		player = 'x';
+	* 		board.clear();
+	* 	}
+	* <\/script>
+	*
+	* <div class="board">
+	* 	{#each Array(9), i}
+	* 		<button
+	* 			disabled={board.has(i) || winner}
+	* 			onclick={() => {
+	* 				board.set(i, player);
+	* 				player = player === 'x' ? 'o' : 'x';
+	* 			}}
+	* 		>{board.get(i)}</button>
+	* 	{/each}
+	* </div>
+	*
+	* {#if winner}
+	* 	<p>{winner} wins!</p>
+	* 	<button onclick={reset}>reset</button>
+	* {:else}
+	* 	<p>{player} is next</p>
+	* {/if}
+	* ```
+	*
+	* @template K
+	* @template V
+	* @extends {Map<K, V>}
+	*/
+	var SvelteMap = class extends Map {
+		/** @type {Map<K, Source<number>>} */
+		#sources = /* @__PURE__ */ new Map();
+		#version = /* @__PURE__ */ state(0);
+		#size = /* @__PURE__ */ state(0);
+		#update_version = update_version || -1;
+		/**
+		* @param {Iterable<readonly [K, V]> | null | undefined} [value]
+		*/
+		constructor(value) {
+			super();
+			if (value) {
+				for (var [key, v] of value) super.set(key, v);
+				this.#size.v = super.size;
+			}
+		}
+		/**
+		* If the source is being created inside the same reaction as the SvelteMap instance,
+		* we use `state` so that it will not be a dependency of the reaction. Otherwise we
+		* use `source` so it will be.
+		*
+		* @template T
+		* @param {T} value
+		* @returns {Source<T>}
+		*/
+		#source(value) {
+			return update_version === this.#update_version ? /* @__PURE__ */ state(value) : source(value);
+		}
+		/** @param {K} key */
+		has(key) {
+			var sources = this.#sources;
+			var s = sources.get(key);
+			if (s === void 0) {
+				if (super.has(key)) {
+					s = this.#source(0);
+					sources.set(key, s);
+				} else {
+					get$2(this.#version);
+					return false;
+				}
+			}
+			get$2(s);
+			return true;
+		}
+		/**
+		* @param {(value: V, key: K, map: Map<K, V>) => void} callbackfn
+		* @param {any} [this_arg]
+		*/
+		forEach(callbackfn, this_arg) {
+			this.#read_all();
+			super.forEach(callbackfn, this_arg);
+		}
+		/** @param {K} key */
+		get(key) {
+			var sources = this.#sources;
+			var s = sources.get(key);
+			if (s === void 0) {
+				if (super.has(key)) {
+					s = this.#source(0);
+					sources.set(key, s);
+				} else {
+					get$2(this.#version);
+					return;
+				}
+			}
+			get$2(s);
+			return super.get(key);
+		}
+		/**
+		* @param {K} key
+		* @param {V} value
+		* */
+		getOrInsert(key, value) {
+			if (!super.has(key)) this.set(key, value);
+			return this.get(key);
+		}
+		/**
+		* @param {K} key
+		* @param {(key: K) => V} callbackFn
+		*/
+		getOrInsertComputed(key, callbackFn) {
+			if (!super.has(key)) this.set(key, callbackFn(key));
+			return this.get(key);
+		}
+		/**
+		* @param {K} key
+		* @param {V} value
+		* */
+		set(key, value) {
+			var sources = this.#sources;
+			var s = sources.get(key);
+			var prev_res = super.get(key);
+			var res = super.set(key, value);
+			var version = this.#version;
+			if (s === void 0) {
+				s = this.#source(0);
+				sources.set(key, s);
+				set(this.#size, super.size);
+				increment$1(version);
+			} else if (prev_res !== value) {
+				increment$1(s);
+				var v_reactions = version.reactions === null ? null : new Set(version.reactions);
+				if (v_reactions === null || !s.reactions?.every((r) => v_reactions.has(r))) increment$1(version);
+			}
+			return res;
+		}
+		/** @param {K} key */
+		delete(key) {
+			var sources = this.#sources;
+			var s = sources.get(key);
+			var res = super.delete(key);
+			if (s !== void 0) {
+				sources.delete(key);
+				set(s, -1);
+			}
+			if (res) {
+				set(this.#size, super.size);
+				increment$1(this.#version);
+			}
+			return res;
+		}
+		clear() {
+			if (super.size === 0) return;
+			super.clear();
+			var sources = this.#sources;
+			set(this.#size, 0);
+			for (var s of sources.values()) set(s, -1);
+			increment$1(this.#version);
+			sources.clear();
+		}
+		#read_all() {
+			get$2(this.#version);
+			var sources = this.#sources;
+			if (this.#size.v !== sources.size) {
+				for (var key of super.keys()) if (!sources.has(key)) {
+					var s = this.#source(0);
+					sources.set(key, s);
+				}
+			}
+			for ([, s] of this.#sources) get$2(s);
+		}
+		keys() {
+			get$2(this.#version);
+			return super.keys();
+		}
+		values() {
+			this.#read_all();
+			return super.values();
+		}
+		entries() {
+			this.#read_all();
+			return super.entries();
+		}
+		[Symbol.iterator]() {
+			return this.entries();
+		}
+		get size() {
+			get$2(this.#size);
+			return super.size;
+		}
+	};
+	// src/lib/models/cart/reservationClock.svelte.ts
+	var subscribe = createSubscriber((update) => {
+		const id = setInterval(update, 1e3);
+		return () => clearInterval(id);
+	});
+	/** The current time in ms; read inside an effect or template, it re-runs every second. */
+	function now() {
+		subscribe();
+		return Date.now();
+	}
+	/** `m:ss` for a remaining time in ms, rounded up so 0:00 only shows once it has run out. */
+	function formatRemaining(ms) {
+		const seconds = Math.max(0, Math.ceil(ms / 1e3));
+		return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+	}
+	// src/config/configStore.svelte.ts
+	var defaultConfig = {
+		urls: {},
+		navigateTo: (url) => {
+			window.location.assign(url);
+		},
+		forms: {},
+		fields: {},
+		quantityStepper: true,
+		quantityStepperAtMinimum: "remove",
+		ticketReservations: false,
+		ticketReservationExpiry: "keep",
+		experimental: { includeCustomerCategoryTickets: false }
+	};
+	var ConfigStoreSvelte = class {
+		defaultConfig = assign(defaultConfig, globalThis.window?.customOptions ?? {});
+		override = this.defaultConfig;
+		#options = /* @__PURE__ */ state(proxy(this.defaultConfig));
+		get options() {
+			return get$2(this.#options);
+		}
+		set options(value) {
+			set(this.#options, value, true);
+		}
+		constructor() {
+			this.update();
+		}
+		update() {
+			const merged = assign(this.defaultConfig, this.override);
+			merged.forms = Object.keys({
+				...this.defaultConfig.forms,
+				...this.override.forms
+			}).reduce((acc, key) => {
+				const defaults = this.defaultConfig.forms[key];
+				const override = this.override.forms[key];
+				acc[key] = {
+					...defaults,
+					...override
+				};
+				if (override?.services || defaults?.services) acc[key].services = combineServices({
+					shop: override?.services ?? [],
+					form: defaults?.services ?? []
+				});
+				return acc;
+			}, {});
+			this.options = merged;
+		}
+		get config() {
+			return this.options;
+		}
+		define(options) {
+			this.override = assign(this.override, options);
+			this.update();
+			return this;
+		}
+		default(options) {
+			this.defaultConfig = assign(this.defaultConfig, options);
+			this.update();
+			return this;
+		}
+	};
+	function combineServices({ shop, form }) {
+		const combined = [...shop];
+		for (const service of form) if (!combined.includes(service)) combined.push(service);
+		return combined;
+	}
+	var configStore = new ConfigStoreSvelte();
+	// src/lib/models/cart/ticketReservations.svelte.ts
+	var NOT_FOUND$1 = 404;
+	var LAPSED = "reservation not valid anymore";
+	var lapsed = (error) => error?.error === LAPSED;
+	var MAX_DELAY = 2 ** 31 - 1;
+	function isReservable(item) {
+		const product = item.product;
+		return product.type === "Ticket" && !!item.time && item.quantity > 0 && product.subtype !== "annual" && !isMantleTicket(product) && !item.voucher;
+	}
+	var toHold = ({ token, quantity, valid_until }) => ({
+		token,
+		quantity,
+		valid_until
+	});
+	/**
+	* With `go.config({ ticketReservations: true })`, keeps one backend hold per
+	* reservable cart line: creates it when the line is added, moves it with the
+	* line's quantity, and cancels it when the line leaves the cart. The hold lives
+	* on the line (`item.reservation`), so localStorage persists it and
+	* orderAttributes sends its token.
+	*
+	* A hold the backend refuses (sold out, over the ticket's max) or that fails to
+	* reach it (network down) leaves the line as it is; it is retried once the
+	* line's quantity changes. Reservation calls never block or alter the cart.
+	*
+	* Whenever a hold is taken or moved, every other hold is refreshed too, so all of
+	* them end together (the backend caps a hold at 60 minutes after it was taken, so
+	* a very old one may end earlier); a hold whose new quantity was refused restarts
+	* at the quantity it has. A hold that lapses stays on its line and is not
+	* taken again on its own: the line is reserved afresh once the customer changes
+	* the cart or refreshes. When the earliest hold lapses, the sync fires
+	* `go-reservation-expired` on `document` once; with
+	* `ticketReservationExpiry: 'clearCart'` it empties the cart first. With the
+	* setting off, holds still on the lines are kept but neither counted down,
+	* refreshed nor expired.
+	*
+	* Returns the cart's reservation state for the timer, `refresh()`, and the switch
+	* checkout flips once an order redeemed the holds.
+	*/
+	function syncTicketReservations(cart) {
+		const busy = /* @__PURE__ */ new Set();
+		const refused = /* @__PURE__ */ new Map();
+		let held = /* @__PURE__ */ new Map();
+		const consumed = /* @__PURE__ */ new Set();
+		const lineByUuid = (uuid) => cart.items.find((i) => i.uuid === uuid);
+		const warn = (what, error) => console.warn(`Ticket reservation ${what} failed:`, error);
+		const release = (token) => shop.deleteTicketReservation(token).catch((error) => warn("cancel", error));
+		function settle(uuid, reservation, asked = true) {
+			const line = lineByUuid(uuid);
+			if (!line || consumed.has(uuid)) {
+				release(reservation.token);
+				return false;
+			}
+			if (asked) refused.delete(uuid);
+			line.reservation = toHold(reservation);
+			return true;
+		}
+		async function run(uuid, quantity, request) {
+			busy.add(uuid);
+			try {
+				await request();
+			} catch (error) {
+				warn("request", error);
+				refused.set(uuid, quantity);
+			} finally {
+				busy.delete(uuid);
+				reconcile();
+			}
+		}
+		const create = (item) => run(item.uuid, item.quantity, async () => {
+			const quantity = item.quantity;
+			const { data } = await shop.createTicketReservation({
+				ticket_id: item.product.id,
+				quantity,
+				start_at: item.time
+			});
+			if (!data?.reservation) refused.set(item.uuid, quantity);
+			else if (settle(item.uuid, data.reservation)) refreshAll(item.uuid);
+		});
+		const update = (item, hold, align = true) => run(item.uuid, item.quantity, async () => {
+			const asked = refused.get(item.uuid) !== item.quantity;
+			const quantity = asked ? item.quantity : hold.quantity;
+			const { data, error, response } = await shop.updateTicketReservation(hold.token, { quantity });
+			if (data?.reservation) {
+				if (settle(item.uuid, data.reservation, asked) && align) refreshAll(item.uuid);
+				return;
+			}
+			const line = lineByUuid(item.uuid);
+			if (response?.status === NOT_FOUND$1 || lapsed(error)) {
+				if (line) line.reservation = void 0;
+				refused.delete(item.uuid);
+			} else refused.set(item.uuid, item.quantity);
+		});
+		function reconcile() {
+			const enabled = configStore.config.ticketReservations;
+			const current = /* @__PURE__ */ new Map();
+			for (const item of cart.items) {
+				if (busy.has(item.uuid)) {
+					if (item.reservation) current.set(item.uuid, item.reservation.token);
+					continue;
+				}
+				if (item.reservation && !isReservable(item)) {
+					release(item.reservation.token);
+					item.reservation = void 0;
+					continue;
+				}
+				if (item.reservation) current.set(item.uuid, item.reservation.token);
+				if (!enabled || !isReservable(item) || consumed.has(item.uuid)) continue;
+				if (refused.get(item.uuid) === item.quantity) continue;
+				if (!item.reservation) create(item);
+				else if (item.reservation.quantity !== item.quantity) update(item, item.reservation);
+			}
+			const inCart = new Set(cart.items.map((i) => i.uuid));
+			for (const [uuid, token] of held) if (!inCart.has(uuid)) release(token);
+			for (const uuid of refused.keys()) if (!inCart.has(uuid)) refused.delete(uuid);
+			for (const uuid of consumed) if (!inCart.has(uuid)) consumed.delete(uuid);
+			held = current;
+		}
+		function refreshAll(except) {
+			if (!configStore.config.ticketReservations) return Promise.resolve();
+			const lines = cart.items.filter((item) => item.uuid !== except && item.reservation && !busy.has(item.uuid) && !consumed.has(item.uuid) && isReservable(item));
+			return Promise.all(lines.map((item) => update(item, item.reservation, false))).then(() => {});
+		}
+		function expiresAt() {
+			if (!configStore.config.ticketReservations) return void 0;
+			const ends = cart.items.flatMap((item) => item.reservation ? [Date.parse(item.reservation.valid_until)] : []);
+			return ends.length ? Math.min(...ends) : void 0;
+		}
+		let announced = false;
+		function expire() {
+			const end = expiresAt();
+			if (end === void 0 || end - Date.now() > 1e3 || announced) return;
+			announced = true;
+			const expiry = configStore.config.ticketReservationExpiry;
+			if (expiry === "clearCart") {
+				cart.clearItems();
+				cart.clearCoupons();
+				cart.clearDonations();
+			}
+			document.dispatchEvent(new CustomEvent("go-reservation-expired", { detail: { expiry } }));
+		}
+		/**
+		* The order redeemed the holds: forget the tokens without cancelling them (the
+		* backend consumed them), and leave the ordered lines unheld until they leave the cart.
+		*/
+		function orderPlaced() {
+			for (const item of cart.items) {
+				consumed.add(item.uuid);
+				item.reservation = void 0;
+			}
+			held.clear();
+			refused.clear();
+		}
+		effect_root(() => {
+			user_effect(() => {
+				configStore.config.ticketReservations;
+				for (const item of cart.items) {
+					item.quantity;
+					item.reservation?.token;
+					item.reservation?.quantity;
+				}
+				untrack(reconcile);
+			});
+			user_effect(() => {
+				const end = expiresAt();
+				if (end === void 0) {
+					announced = false;
+					return;
+				}
+				const delay = Math.max(0, end - Date.now());
+				if (delay > 0) announced = false;
+				const timer = setTimeout(() => untrack(expire), Math.min(MAX_DELAY, delay));
+				return () => clearTimeout(timer);
+			});
+		});
+		return {
+			orderPlaced,
+			/**
+			* Restart every hold at the backend's hold time, renewing lapsed ones. Never
+			* rejects; does nothing while the setting is off.
+			*/
+			refresh: () => refreshAll(),
+			/**
+			* When the earliest hold in the cart ends (ms since epoch), or undefined without
+			* holds or while the setting is off.
+			*/
+			get expiresAt() {
+				return expiresAt();
+			},
+			/** Time left on the earliest hold in ms, updated every second; undefined without holds. */
+			get remainingMs() {
+				const end = expiresAt();
+				return end === void 0 ? void 0 : Math.max(0, end - now());
+			},
+			/** The earliest hold has run out. */
+			get expired() {
+				return this.remainingMs === 0;
+			}
+		};
+	}
+	// src/lib/models/cart/cart.svelte.ts
 	var lastUuid = 0;
 	function createCart(products, contingent = 20) {
 		const items = proxy([]);
@@ -8809,14 +9371,15 @@ createHTML: (html) => {
 		if (products) products.forEach((p) => cart.addItem(createCartItem(p)));
 		return cart;
 	}
+	/** The shop's cart: persisted, dispatching cart events, and holding ticket capacity. */
 	function createMainCart() {
 		const cart = proxy(createCart());
 		syncCartToLocalStorage(cart);
 		dispatchCartEvents(cart);
-		return cart;
+		const reservations = syncTicketReservations(cart);
+		return Object.assign(cart, { reservations });
 	}
-	//#endregion
-	//#region src/lib/models/capacity/localStorage.ts
+	// src/lib/models/capacity/localStorage.ts
 	var KEY$6 = "go-capacity";
 	function saveCapacityToLocalStorage(allSeats, allQuotas) {
 		const existing = loadFromLocalStorage$1(KEY$6);
@@ -8855,8 +9418,7 @@ createHTML: (html) => {
 			}
 		});
 	}
-	//#endregion
-	//#region src/lib/models/capacity/CapacityManager.ts
+	// src/lib/models/capacity/CapacityManager.ts
 	/**
 	* Creates and returns an object to manage capacity for quotas and seats.
 	* It provides methods to calculate the maximum quantity of items in a cart.
@@ -8930,8 +9492,7 @@ createHTML: (html) => {
 		syncCapacityAcrossTabs(manager);
 		return manager;
 	}
-	//#endregion
-	//#region src/lib/helpers/cookies.ts
+	// src/lib/helpers/cookies.ts
 	function getCookie(name) {
 		if (typeof document === "undefined") return;
 		if (!name) return;
@@ -8941,8 +9502,7 @@ createHTML: (html) => {
 			return rawValue ? decodeURIComponent(rawValue) : void 0;
 		}
 	}
-	//#endregion
-	//#region src/lib/stores/user.svelte.ts
+	// src/lib/stores/user.svelte.ts
 	var User = class {
 		get isAuthenticated() {
 			return this.isLoggedIn || this.isGuest;
@@ -8992,8 +9552,7 @@ createHTML: (html) => {
 			default: throw new Error("Unhandled shop type: " + type);
 		}
 	};
-	//#endregion
-	//#region src/lib/validation.ts
+	// src/lib/validation.ts
 	/**
 	* Checks if a value is empty (null, undefined, empty string, or whitespace-only string)
 	*/
@@ -9020,8 +9579,7 @@ createHTML: (html) => {
 	function validateApiPostBody(body, requiredFields) {
 		return validateRequiredFields(body, requiredFields);
 	}
-	//#endregion
-	//#region src/lib/helpers/dateFormat.ts
+	// src/lib/helpers/dateFormat.ts
 	/** Named date presets — the single place defining what each rendering means (WI 151). */
 	var DATE_FORMAT_PRESETS = {
 		dayMonth: {
@@ -9049,8 +9607,7 @@ createHTML: (html) => {
 			...DATE_FORMAT_PRESETS[preset]
 		}).format(zoned.toDate());
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/openapi-fetch@0.17.0/node_modules/openapi-fetch/dist/index.mjs
+	// ../../node_modules/.pnpm/openapi-fetch@0.17.0/node_modules/openapi-fetch/dist/index.mjs
 	var PATH_PARAM_RE = /\{[^{}]+\}/g;
 	var supportsRequestInitExt = () => {
 		return typeof process === "object" && Number.parseInt(process?.versions?.node?.substring(0, 2)) >= 18 && process.versions.undici;
@@ -9438,8 +9995,7 @@ createHTML: (html) => {
 		if (url.endsWith("/")) return url.substring(0, url.length - 1);
 		return url;
 	}
-	//#endregion
-	//#region ../../packages/gomus-api-client/src/query.ts
+	// ../../packages/gomus-api-client/src/query.ts
 	/**
 	* Serializes a query object the way Rails reads it, matching the
 	* `URLSearchParams` encoding the shops send today:
@@ -9479,8 +10035,7 @@ createHTML: (html) => {
 		for (const [name, value] of Object.entries(query)) add(name, value);
 		return search.toString();
 	}
-	//#endregion
-	//#region ../../packages/gomus-api-client/src/client.ts
+	// ../../packages/gomus-api-client/src/client.ts
 	/** Converts the `go-auth` object into the headers the gomus API reads. */
 	function authHeaders(auth) {
 		const headers = {};
@@ -9506,8 +10061,7 @@ createHTML: (html) => {
 		if (options.middleware?.length) client.use(...options.middleware);
 		return client;
 	}
-	//#endregion
-	//#region src/lib/api/endpoints.ts
+	// src/lib/api/endpoints.ts
 	var CALENDAR_ENDPOINT = "/api/v4/calendar";
 	var TICKETS_CALENDAR_ENDPOINT = "/api/v4/tickets/calendar";
 	var VALIDATE_TOKEN_ENDPOINT = "/api/v4/auth/validate_token";
@@ -9521,74 +10075,9 @@ createHTML: (html) => {
 	var CUSTOMER_ADDRESSES_ENDPOINT = "/api/v4/customer/customer_addresses";
 	var CUSTOMER_MEMBERSHIPS_ENDPOINT = "/api/v4/customer/memberships";
 	var CUSTOMER_ADDRESS_ENDPOINT = "/api/v4/customer/customer_addresses/{id}";
-	//#endregion
-	//#region src/config/configStore.svelte.ts
-	var defaultConfig = {
-		urls: {},
-		navigateTo: (url) => {
-			window.location.assign(url);
-		},
-		forms: {},
-		fields: {},
-		quantityStepper: true,
-		quantityStepperAtMinimum: "remove",
-		experimental: { includeCustomerCategoryTickets: false }
-	};
-	var ConfigStoreSvelte = class {
-		defaultConfig = assign(defaultConfig, globalThis.window?.customOptions ?? {});
-		override = this.defaultConfig;
-		#options = /* @__PURE__ */ state(proxy(this.defaultConfig));
-		get options() {
-			return get$2(this.#options);
-		}
-		set options(value) {
-			set(this.#options, value, true);
-		}
-		constructor() {
-			this.update();
-		}
-		update() {
-			const merged = assign(this.defaultConfig, this.override);
-			merged.forms = Object.keys({
-				...this.defaultConfig.forms,
-				...this.override.forms
-			}).reduce((acc, key) => {
-				const defaults = this.defaultConfig.forms[key];
-				const override = this.override.forms[key];
-				acc[key] = {
-					...defaults,
-					...override
-				};
-				if (override?.services || defaults?.services) acc[key].services = combineServices({
-					shop: override?.services ?? [],
-					form: defaults?.services ?? []
-				});
-				return acc;
-			}, {});
-			this.options = merged;
-		}
-		get config() {
-			return this.options;
-		}
-		define(options) {
-			this.override = assign(this.override, options);
-			this.update();
-			return this;
-		}
-		default(options) {
-			this.defaultConfig = assign(this.defaultConfig, options);
-			this.update();
-			return this;
-		}
-	};
-	function combineServices({ shop, form }) {
-		const combined = [...shop];
-		for (const service of form) if (!combined.includes(service)) combined.push(service);
-		return combined;
-	}
-	var configStore = new ConfigStoreSvelte();
-	//#endregion
-	//#region src/lib/stores/shop.svelte.ts
+	var TICKET_RESERVATIONS_ENDPOINT = "/api/v4/tickets/reservations";
+	var TICKET_RESERVATION_ENDPOINT = "/api/v4/tickets/reservations/{id}";
+	// src/lib/stores/shop.svelte.ts
 	var NOT_SIGNED_IN = { error: {
 		success: false,
 		errors: ["Not signed in"]
@@ -9838,7 +10327,12 @@ createHTML: (html) => {
 			};
 		}
 		ticketsAndQuotas(params) {
-			const query = this.#withTicketsExperiments(params ?? {});
+			const tokens = this.cart?.items.flatMap((item) => item.reservation ? [item.reservation.token] : []) ?? [];
+			const withHolds = tokens.length > 0 ? {
+				...params,
+				"reservations[]": tokens
+			} : params;
+			const query = this.#withTicketsExperiments(withHolds ?? {});
 			return this.fetchAndCache(TICKET_AND_QUOTAS_ENDPOINT, `ticketsAndQuotas-${JSON.stringify(query)}`, "", {
 				cache: 60,
 				query: assign({ per_page: 100 }, query)
@@ -9951,6 +10445,42 @@ createHTML: (html) => {
 			return this.apiPost(`/api/v4/orders`, {
 				body: params,
 				requiredFields: ["items", "total"]
+			});
+		}
+		/**
+		* Holds `quantity` of a ticket at `start_at` during checkout (guests too — no
+		* auth guard). Redeem the returned `reservation.token` by passing it in the
+		* ticket line's `reservations` when creating the order.
+		*/
+		createTicketReservation(params) {
+			return this.apiPost(TICKET_RESERVATIONS_ENDPOINT, {
+				body: { reservation: params },
+				requiredFields: [
+					"ticket_id",
+					"quantity",
+					"start_at"
+				],
+				rootKey: "reservation"
+			});
+		}
+		/**
+		* Refreshes a still-valid hold, optionally changing its quantity. An expired
+		* hold answers 422, an unknown token 404 — create a new reservation then.
+		*/
+		updateTicketReservation(token, params = {}) {
+			return this.apiPut(TICKET_RESERVATION_ENDPOINT, {
+				body: { reservation: params },
+				params: { path: { id: token } }
+			});
+		}
+		/**
+		* Cancels a hold, freeing its capacity at once. Success is 204 No Content —
+		* parseAs 'text' skips openapi-fetch's JSON parse (see apiCall).
+		*/
+		deleteTicketReservation(token) {
+			return this.apiDELETE(TICKET_RESERVATION_ENDPOINT, {
+				params: { path: { id: token } },
+				parseAs: "text"
 			});
 		}
 		#lastCart = null;
@@ -10290,8 +10820,7 @@ createHTML: (html) => {
 	};
 	var CUSTOMER_CATEGORY_TICKETS = { by_not_vip: false };
 	var shop = new Shop();
-	//#endregion
-	//#region src/lib/helpers/context.svelte.ts
+	// src/lib/helpers/context.svelte.ts
 	function createSetDetails(KEY) {
 		return function(host, details) {
 			if (host) host.addEventListener(KEY, (e) => {
@@ -10345,8 +10874,7 @@ createHTML: (html) => {
 			} else throw new Error("(createGetDetails) Host is undefined, You are probably trying to use this in a non-web-component context.");
 		};
 	}
-	//#endregion
-	//#region src/components/annualTicketPersonalization/lib/PersonalizationDetails.svelte.ts
+	// src/components/annualTicketPersonalization/lib/PersonalizationDetails.svelte.ts
 	var PersonalizationDetails = class {
 		#token = /* @__PURE__ */ state();
 		get token() {
@@ -10380,10 +10908,9 @@ createHTML: (html) => {
 	var KEY$5 = "go-annual-ticket-personalization";
 	var setPersonalizationDetails = createSetDetails(KEY$5);
 	var getPersonalizationDetails = createGetDetails(KEY$5);
-	//#endregion
-	//#region src/components/annualTicketPersonalization/components/AnnualTicketPersonalization.svelte
-	var root$65 = /* @__PURE__ */ from_html(`<li><a> </a></li>`);
-	var root_1$26 = /* @__PURE__ */ from_html(`<ul class="go-annual-ticket"><li class="go-annual-ticket-title"> </li> <li class="go-annual-ticket-personalization-count"> </li> <!></ul>`);
+	// src/components/annualTicketPersonalization/components/AnnualTicketPersonalization.svelte
+	var root$66 = /* @__PURE__ */ from_html(`<li><a> </a></li>`);
+	var root_1$27 = /* @__PURE__ */ from_html(`<ul class="go-annual-ticket"><li class="go-annual-ticket-title"> </li> <li class="go-annual-ticket-personalization-count"> </li> <!></ul>`);
 	function AnnualTicketPersonalization($$anchor, $$props) {
 		push($$props, true);
 		let token = prop($$props, "token", 7);
@@ -10408,19 +10935,16 @@ createHTML: (html) => {
 		var consequent_1 = ($$anchor) => {
 			var fragment_1 = comment();
 			each(first_child(fragment_1), 17, () => get$2(order).ticket_sales, (ticketSale) => ticketSale.id, ($$anchor, ticketSale) => {
-				var ul = root_1$26();
+				var ul = root_1$27();
 				var li = child(ul);
-				var text = child(li, true);
-				reset(li);
+				var text = only_child(li, true);
 				var li_1 = sibling(li, 2);
-				var text_1 = child(li_1, true);
-				reset(li_1);
+				var text_1 = only_child(li_1, true);
 				var node_2 = sibling(li_1, 2);
 				var consequent = ($$anchor) => {
-					var li_2 = root$65();
+					var li_2 = root$66();
 					var a = child(li_2);
-					var text_2 = child(a, true);
-					reset(a);
+					var text_2 = only_child(a, true);
 					reset(li_2);
 					template_effect(($0, $1) => {
 						set_attribute(a, "href", $0);
@@ -10452,67 +10976,10 @@ createHTML: (html) => {
 		reflect: true,
 		type: "String"
 	} }, [], ["details"]));
-	//#endregion
-	//#region ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v4/core/core.js
-	var _a$1;
-	function $constructor(name, initializer, params) {
-		function init(inst, def) {
-			if (!inst._zod) Object.defineProperty(inst, "_zod", {
-				value: {
-					def,
-					constr: _,
-					traits: /* @__PURE__ */ new Set()
-				},
-				enumerable: false
-			});
-			if (inst._zod.traits.has(name)) return;
-			inst._zod.traits.add(name);
-			initializer(inst, def);
-			const proto = _.prototype;
-			const keys = Object.keys(proto);
-			for (let i = 0; i < keys.length; i++) {
-				const k = keys[i];
-				if (!(k in inst)) inst[k] = proto[k].bind(inst);
-			}
-		}
-		const Parent = params?.Parent ?? Object;
-		class Definition extends Parent {}
-		Object.defineProperty(Definition, "name", { value: name });
-		function _(def) {
-			var _a;
-			const inst = params?.Parent ? new Definition() : this;
-			init(inst, def);
-			(_a = inst._zod).deferred ?? (_a.deferred = []);
-			for (const fn of inst._zod.deferred) fn();
-			return inst;
-		}
-		Object.defineProperty(_, "init", { value: init });
-		Object.defineProperty(_, Symbol.hasInstance, { value: (inst) => {
-			if (params?.Parent && inst instanceof params.Parent) return true;
-			return inst?._zod?.traits?.has(name);
-		} });
-		Object.defineProperty(_, "name", { value: name });
-		return _;
+	// ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/util.js
+	function joinValues(array, separator = "|") {
+		return array.map((val) => stringifyPrimitive(val)).join(separator);
 	}
-	var $ZodAsyncError = class extends Error {
-		constructor() {
-			super(`Encountered Promise during synchronous parse. Use .parseAsync() instead.`);
-		}
-	};
-	var $ZodEncodeError = class extends Error {
-		constructor(name) {
-			super(`Encountered unidirectional transform during encode: ${name}`);
-			this.name = "ZodEncodeError";
-		}
-	};
-	(_a$1 = globalThis).__zod_globalConfig ?? (_a$1.__zod_globalConfig = {});
-	var globalConfig = globalThis.__zod_globalConfig;
-	function config(newConfig) {
-		if (newConfig) Object.assign(globalConfig, newConfig);
-		return globalConfig;
-	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v4/core/util.js
 	function jsonStringifyReplacer(_, value) {
 		if (typeof value === "bigint") return value.toString();
 		return value;
@@ -10525,23 +10992,22 @@ createHTML: (html) => {
 		const end = source.endsWith("$") ? source.length - 1 : source.length;
 		return source.slice(start, end);
 	}
-	var EVALUATING = /* @__PURE__*/ Symbol("evaluating");
-	function defineLazy(object, key, getter) {
-		let value = void 0;
-		Object.defineProperty(object, key, {
-			get() {
-				if (value === EVALUATING) return;
-				if (value === void 0) {
-					value = EVALUATING;
-					value = getter();
-				}
-				return value;
-			},
-			set(v) {
-				Object.defineProperty(object, key, { value: v });
-			},
+	function assignProp(target, prop, value) {
+		Object.defineProperty(target, prop, {
+			value,
+			writable: true,
+			enumerable: true,
 			configurable: true
 		});
+	}
+	/**
+	* Whichever object a def's `shape` currently answers from: the one the caller passed until the first read, the frozen copy after it.
+	*
+	* Its keys and descriptors read without invoking anything, which is what lets a discriminated union check its discriminator, and the cycle walk read a shape, without resolving a getter that references the schema being constructed. A def that answers `shape` from an accessor of its own has none.
+	*/
+	function rawShape(def) {
+		const desc = Object.getOwnPropertyDescriptor(def, "shape");
+		return desc?.get ? desc.get.raw : desc?.value;
 	}
 	function mergeDefs(...defs) {
 		const mergedDescriptors = {};
@@ -10598,7 +11064,22 @@ createHTML: (html) => {
 		};
 		return params;
 	}
-	Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, -Number.MAX_VALUE, Number.MAX_VALUE;
+	function stringifyPrimitive(value) {
+		if (typeof value === "bigint") return value.toString() + "n";
+		if (typeof value === "string") return `"${value}"`;
+		return `${value}`;
+	}
+	var NUMBER_FORMAT_RANGES = /*@__PURE__*/ (() => ({
+		safeint: [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER],
+		int32: [-2147483648, 2147483647],
+		uint32: [0, 4294967295],
+		float32: [-34028234663852886e22, 34028234663852886e22],
+		float64: [-Number.MAX_VALUE, Number.MAX_VALUE]
+	}))();
+	var BIGINT_FORMAT_RANGES = {
+		int64: [/* @__PURE__*/ BigInt("-9223372036854775808"), /* @__PURE__*/ BigInt("9223372036854775807")],
+		uint64: [/* @__PURE__*/ BigInt(0), /* @__PURE__*/ BigInt("18446744073709551615")]
+	};
 	function aborted(x, startIndex = 0) {
 		if (x.aborted === true) return true;
 		for (let i = startIndex; i < x.issues.length; i++) if (x.issues[i]?.continue !== true) return true;
@@ -10620,18 +11101,68 @@ createHTML: (html) => {
 	function unwrapMessage(message) {
 		return typeof message === "string" ? message : message?.message;
 	}
+	/** The leading size checks of `defChecks` that set an upper bound, each paired with it. */
+	function sizeCaps(defChecks) {
+		const caps = [];
+		for (const ch of defChecks ?? []) {
+			const d = ch._zod.def;
+			if (!/_(length|size)$|_equals$/.test(d.check)) break;
+			const max = d.maximum ?? d.length ?? d.size;
+			if (max >= 0) caps.push([max, ch]);
+		}
+		return caps;
+	}
+	function attachSchema(issues, start, inst) {
+		var _a;
+		for (let i = start; i < issues.length; i++) (_a = issues[i]).schema ?? (_a.schema = inst);
+	}
 	function finalizeIssue(iss, ctx, config) {
-		const message = iss.message ? iss.message : unwrapMessage(iss.inst?._zod.def?.error?.(iss)) ?? unwrapMessage(ctx?.error?.(iss)) ?? unwrapMessage(config.customError?.(iss)) ?? unwrapMessage(config.localeError?.(iss)) ?? "Invalid input";
-		const { inst: _inst, continue: _continue, input: _input, ...rest } = iss;
-		rest.path ?? (rest.path = []);
-		rest.message = message;
-		if (ctx?.reportInput) rest.input = _input;
-		return rest;
+		var _a;
+		const traits = iss.inst?._zod?.traits;
+		if (traits?.has("$ZodType")) {
+			if (traits.has("$ZodCheck")) (_a = iss).schema ?? (_a.schema = iss.inst);
+			else iss.schema = iss.inst;
+		}
+		const schemaError = iss.schema !== iss.inst ? iss.schema?._zod.def?.error : void 0;
+		const message = iss.message ? iss.message : unwrapMessage(iss.inst?._zod.def?.error?.(iss)) ?? unwrapMessage(schemaError?.(iss)) ?? unwrapMessage(ctx?.error?.(iss)) ?? unwrapMessage(config.customError?.(iss)) ?? unwrapMessage(config.localeError?.(iss)) ?? "Invalid input";
+		const full = {};
+		for (const k of Object.keys(iss)) {
+			if (k === "inst" || k === "schema" || k === "continue" || k === "input" || k === "__proto__") continue;
+			full[k] = iss[k];
+		}
+		full.path ?? (full.path = []);
+		full.message = message;
+		if (ctx?.reportInput) full.input = iss.input;
+		return full;
+	}
+	var highSurrogate = /[\uD800-\uDBFF]/;
+	function codePointLength(str) {
+		const units = str.length;
+		if (!highSurrogate.test(str)) return units;
+		let count = units;
+		for (let i = 0; i < units - 1; i++) if ((str.charCodeAt(i) & 64512) === 55296 && (str.charCodeAt(i + 1) & 64512) === 56320) {
+			count--;
+			i++;
+		}
+		return count;
 	}
 	function getLengthableOrigin(input) {
 		if (Array.isArray(input)) return "array";
 		if (typeof input === "string") return "string";
 		return "unknown";
+	}
+	function parsedType(data) {
+		const t = typeof data;
+		switch (t) {
+			case "number": return Number.isNaN(data) ? "nan" : "number";
+			case "object": {
+				if (data === null) return "null";
+				if (Array.isArray(data)) return "array";
+				const obj = data;
+				if (obj && Object.getPrototypeOf(obj) !== Object.prototype && "constructor" in obj && obj.constructor) return obj.constructor.name;
+			}
+		}
+		return t;
 	}
 	function issue(...args) {
 		const [iss, input, inst] = args;
@@ -10643,33 +11174,301 @@ createHTML: (html) => {
 		};
 		return { ...iss };
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v4/core/errors.js
+	/**
+	* Installs a trait's members on its prototype. Each value builds that member for the instance on first read; the built value shadows the accessor as an own property, so a detached `const { parse } = schema` keeps working.
+	*
+	* Call this from a `proto` initializer, which runs once per prototype — never per instance.
+	*/
+	function members(proto, table) {
+		for (const key in table) {
+			const desc = Object.getOwnPropertyDescriptor(table, key);
+			if (desc.get) Object.defineProperty(proto, key, {
+				...desc,
+				enumerable: false
+			});
+			else defineBound(proto, key, desc.value);
+		}
+	}
+	/** Shadows a prototype member with an own value, so a getter that builds from the instance runs once. */
+	function own(inst, key, value, enumerable = true) {
+		Object.defineProperty(inst, key, {
+			configurable: true,
+			writable: true,
+			enumerable,
+			value
+		});
+		return value;
+	}
+	/** Like {@link own}, for a member that was never an own data property and has to stay out of `Object.keys`. */
+	function hide$2(inst, key, value) {
+		return own(inst, key, value, false);
+	}
+	/** Adds members a table derives from the instance: each builds on first read and shadows as own data, and assignment shadows the same way, as when these were own properties. */
+	/* @__NO_SIDE_EFFECTS__ */
+	function derived(computes, table) {
+		for (const key in computes) {
+			const compute = computes[key];
+			Object.defineProperty(table, key, {
+				configurable: true,
+				enumerable: true,
+				get() {
+					return own(this, key, compute(this));
+				},
+				set(value) {
+					own(this, key, value);
+				}
+			});
+		}
+		return table;
+	}
+	function defineBound(proto, key, fn) {
+		Object.defineProperty(proto, key, {
+			configurable: true,
+			get() {
+				return this == null ? fn : own(this, key, fn.bind(this));
+			},
+			set(value) {
+				own(this, key, value);
+			}
+		});
+	}
+	var installing;
+	var broke = false;
+	var breaker = {
+		configurable: true,
+		get() {
+			broke = true;
+		}
+	};
+	/**
+	* Installs a lazily-derived internal on the `_zod` prototype of `inst`'s
+	* constructor, computed from the internals object itself and cached there on
+	* first read. One accessor per constructor rather than one per instance.
+	*/
+	function defineLazyInternal(inst, key, compute) {
+		const proto = Object.getPrototypeOf(inst._zod);
+		if (key in proto && installing !== inst._zod) {
+			installing = void 0;
+			return;
+		}
+		installing = inst._zod;
+		Object.defineProperty(proto, key, {
+			configurable: true,
+			get() {
+				Object.defineProperty(this, key, breaker);
+				const outer = broke;
+				broke = false;
+				try {
+					const value = compute(this);
+					if (broke) delete this[key];
+					else Object.defineProperty(this, key, {
+						configurable: true,
+						writable: true,
+						value
+					});
+					broke = broke || outer;
+					return value;
+				} catch (err) {
+					delete this[key];
+					broke = broke || outer;
+					throw err;
+				}
+			},
+			set(value) {
+				Object.defineProperty(this, key, {
+					configurable: true,
+					writable: true,
+					value
+				});
+			}
+		});
+	}
+	/** Marks the thunk `_catch` synthesises for a constant catch value. `Function.length` cannot tell that thunk from a user callback — rest and defaulted parameters both report arity 0 — and a user callback reads `ctx.error`, whose issues only finalize correctly against the caller's per-parse error map. Provenance can say what arity cannot. A plain string key rather than `Symbol.for`, whose call at module scope no bundler can prove pure — the same shape that anchored `urlCanParse` into every build. */
+	var CONSTANT_CATCH = "~constantCatch";
+	/** Wraps a constant catch value in a thunk tagged with {@link CONSTANT_CATCH}. */
+	function constantCatch(value) {
+		const fn = () => value;
+		fn[CONSTANT_CATCH] = true;
+		return fn;
+	}
+	// ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/core.js
+	var _a$1;
+	var _zodDesc = {
+		value: void 0,
+		enumerable: false
+	};
+	var _E = "captureStackTrace" in Error ? Error : null;
+	function newError(Definition) {
+		const E = _E;
+		if (E) {
+			const saved = E.stackTraceLimit;
+			if (typeof saved === "number") {
+				try {
+					E.stackTraceLimit = 0;
+				} catch {
+					_E = null;
+					return new Definition();
+				}
+				try {
+					return new Definition();
+				} finally {
+					E.stackTraceLimit = saved;
+				}
+			}
+		}
+		return new Definition();
+	}
+	/* @__NO_SIDE_EFFECTS__ */
+	function $constructor(name, initializer, proto, params) {
+		const zodProto = {};
+		function Internals(def) {
+			this.def = def;
+			this.constr = _;
+			this.traits = /* @__PURE__ */ new Set();
+		}
+		Internals.prototype = zodProto;
+		const protoMembers = proto;
+		const initialized = protoMembers && /* @__PURE__ */ new WeakSet();
+		function init(inst, def) {
+			if (!inst._zod) {
+				_zodDesc.value = new Internals(def);
+				try {
+					Object.defineProperty(inst, "_zod", _zodDesc);
+				} finally {
+					_zodDesc.value = void 0;
+				}
+			} else if (inst._zod.traits.has(name)) return;
+			inst._zod.traits.add(name);
+			initializer(inst, def);
+			if (initialized) {
+				const own = Object.getPrototypeOf(inst);
+				const ctorProto = inst._zod.constr.prototype;
+				let up = own;
+				while (up && up !== ctorProto) up = Object.getPrototypeOf(up);
+				const target = up ?? own;
+				if (!initialized.has(target)) {
+					initialized.add(target);
+					members(target, protoMembers);
+				}
+			}
+			const proto = _.prototype;
+			for (const k in proto) {
+				if (!Object.prototype.hasOwnProperty.call(proto, k)) continue;
+				if (!(k in inst)) inst[k] = proto[k].bind(inst);
+			}
+		}
+		const Parent = params?.Parent ?? Object;
+		class Definition extends Parent {}
+		Object.defineProperty(Definition, "name", { value: name });
+		function _(def) {
+			const inst = params?.Parent ? newError(Definition) : this;
+			init(inst, def);
+			const deferred = inst._zod.deferred;
+			if (deferred) {
+				for (const fn of deferred) fn();
+				inst._zod.deferred = void 0;
+			}
+			const pp = globalThis.__zod_globalConfig?.postProcessor;
+			if (pp) pp(inst);
+			return inst;
+		}
+		Object.defineProperty(_, "init", { value: init });
+		Object.defineProperty(_, Symbol.hasInstance, { value: (inst) => {
+			if (params?.Parent && inst instanceof params.Parent) return true;
+			return inst?._zod?.traits?.has(name);
+		} });
+		Object.defineProperty(_, "name", { value: name });
+		return _;
+	}
+	var $ZodAsyncError = class extends Error {
+		constructor() {
+			super(`Encountered Promise during synchronous parse. Use .parseAsync() instead.`);
+		}
+	};
+	var $ZodEncodeError = class extends Error {
+		constructor(name) {
+			super(`Encountered unidirectional transform during encode: ${name}`);
+			this.name = "ZodEncodeError";
+		}
+	};
+	(_a$1 = globalThis).__zod_globalConfig ?? (_a$1.__zod_globalConfig = {});
+	var globalConfig = globalThis.__zod_globalConfig;
+	function config(newConfig) {
+		if (newConfig) Object.assign(globalConfig, newConfig);
+		return globalConfig;
+	}
+	// ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/errors.js
+	function _getMessage() {
+		const internals = this._zod;
+		internals.message ?? (internals.message = JSON.stringify(internals.def, jsonStringifyReplacer, 2));
+		return internals.message;
+	}
+	function _setMessage(value) {
+		this._zod.message = value;
+	}
+	var _messageDesc = {
+		get: _getMessage,
+		set: _setMessage,
+		enumerable: true,
+		configurable: true
+	};
+	var _issuesDesc = {
+		value: void 0,
+		enumerable: false
+	};
+	var _installedToString = /* @__PURE__ */ new WeakSet([Object.prototype, Error.prototype]);
 	var initializer$1 = (inst, def) => {
 		inst.name = "$ZodError";
-		Object.defineProperty(inst, "_zod", {
-			value: inst._zod,
-			enumerable: false
-		});
-		Object.defineProperty(inst, "issues", {
-			value: def,
-			enumerable: false
-		});
-		inst.message = JSON.stringify(def, jsonStringifyReplacer, 2);
-		Object.defineProperty(inst, "toString", {
-			value: () => inst.message,
-			enumerable: false
-		});
+		_issuesDesc.value = def;
+		Object.defineProperty(inst, "issues", _issuesDesc);
+		_issuesDesc.value = void 0;
+		Object.defineProperty(inst, "message", _messageDesc);
+		const proto = Object.getPrototypeOf(inst);
+		if (!_installedToString.has(proto)) {
+			_installedToString.add(proto);
+			Object.defineProperty(proto, "toString", {
+				configurable: true,
+				enumerable: false,
+				get() {
+					const value = () => this.message;
+					Object.defineProperty(this, "toString", {
+						value,
+						configurable: true,
+						writable: true
+					});
+					return value;
+				},
+				set(value) {
+					Object.defineProperty(this, "toString", {
+						value,
+						configurable: true,
+						writable: true
+					});
+				}
+			});
+		}
 	};
-	var $ZodError = $constructor("$ZodError", initializer$1);
-	var $ZodRealError = $constructor("$ZodError", initializer$1, { Parent: Error });
+	var $ZodError = /* @__PURE__ */ $constructor("$ZodError", initializer$1);
+	/** Get-or-create `obj[key]` as an own data property. A path segment naming an inherited member
+	* ("toString", "constructor") would otherwise read through to the prototype, and assigning
+	* "__proto__" would hit the setter instead of creating a key. */
+	function node(obj, key, make) {
+		if (!Object.prototype.hasOwnProperty.call(obj, key)) {
+			if (key === "__proto__") Object.defineProperty(obj, key, {
+				value: make(),
+				writable: true,
+				enumerable: true,
+				configurable: true
+			});
+			else obj[key] = make();
+		}
+		return obj[key];
+	}
 	function flattenError(error, mapper = (issue) => issue.message) {
 		const fieldErrors = {};
 		const formErrors = [];
-		for (const sub of error.issues) if (sub.path.length > 0) {
-			fieldErrors[sub.path[0]] = fieldErrors[sub.path[0]] || [];
-			fieldErrors[sub.path[0]].push(mapper(sub));
-		} else formErrors.push(mapper(sub));
+		for (const sub of error.issues) if (sub.path.length > 0) node(fieldErrors, sub.path[0], () => []).push(mapper(sub));
+		else formErrors.push(mapper(sub));
 		return {
 			formErrors,
 			fieldErrors
@@ -10689,12 +11488,21 @@ createHTML: (html) => {
 					let i = 0;
 					while (i < fullpath.length) {
 						const el = fullpath[i];
-						if (!(i === fullpath.length - 1)) curr[el] = curr[el] || { _errors: [] };
-						else {
-							curr[el] = curr[el] || { _errors: [] };
-							curr[el]._errors.push(mapper(issue));
+						const terminal = i === fullpath.length - 1;
+						if (el === "_errors") {
+							if (terminal) curr._errors.push(mapper(issue));
+							i++;
+							continue;
 						}
-						curr = curr[el];
+						if (!Object.prototype.hasOwnProperty.call(curr, el)) Object.defineProperty(curr, el, {
+							value: { _errors: [] },
+							enumerable: true,
+							writable: true,
+							configurable: true
+						});
+						const node = curr[el];
+						if (terminal) node._errors.push(mapper(issue));
+						curr = node;
 						i++;
 					}
 				}
@@ -10703,41 +11511,52 @@ createHTML: (html) => {
 		processError(error);
 		return fieldErrors;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v4/core/parse.js
-	var _parse = (_Err) => (schema, value, _ctx, _params) => {
-		const ctx = _ctx ? {
-			..._ctx,
-			async: false
-		} : { async: false };
-		const result = schema._zod.run({
-			value,
-			issues: []
-		}, ctx);
-		if (result instanceof Promise) throw new $ZodAsyncError();
-		if (result.issues.length) {
-			const e = new ((_params?.Err) ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())));
-			captureStackTrace(e, _params?.callee);
-			throw e;
-		}
-		return result.value;
+	// ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/parse.js
+	function finalizeParams(callee, params) {
+		return {
+			callee: params?.callee ?? callee,
+			Err: params?.Err
+		};
+	}
+	var _parse = (_Err) => {
+		const fn = (schema, value, _ctx, _params) => {
+			const ctx = _ctx ? {
+				..._ctx,
+				async: false
+			} : { async: false };
+			const result = schema._zod.run({
+				value,
+				issues: []
+			}, ctx);
+			if (result instanceof Promise) throw new $ZodAsyncError();
+			if (result.issues.length) {
+				const e = new ((_params?.Err) ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())));
+				captureStackTrace(e, _params?.callee ?? fn);
+				throw e;
+			}
+			return result.value;
+		};
+		return fn;
 	};
-	var _parseAsync = (_Err) => async (schema, value, _ctx, params) => {
-		const ctx = _ctx ? {
-			..._ctx,
-			async: true
-		} : { async: true };
-		let result = schema._zod.run({
-			value,
-			issues: []
-		}, ctx);
-		if (result instanceof Promise) result = await result;
-		if (result.issues.length) {
-			const e = new ((params?.Err) ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())));
-			captureStackTrace(e, params?.callee);
-			throw e;
-		}
-		return result.value;
+	var _parseAsync = (_Err) => {
+		const fn = async (schema, value, _ctx, params) => {
+			const ctx = _ctx ? {
+				..._ctx,
+				async: true
+			} : { async: true };
+			let result = schema._zod.run({
+				value,
+				issues: []
+			}, ctx);
+			if (result instanceof Promise) result = await result;
+			if (result.issues.length) {
+				const e = new ((params?.Err) ?? _Err)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())));
+				captureStackTrace(e, params?.callee ?? fn);
+				throw e;
+			}
+			return result.value;
+		};
+		return fn;
 	};
 	var _safeParse = (_Err) => (schema, value, _ctx) => {
 		const ctx = _ctx ? {
@@ -10749,15 +11568,30 @@ createHTML: (html) => {
 			issues: []
 		}, ctx);
 		if (result instanceof Promise) throw new $ZodAsyncError();
-		return result.issues.length ? {
-			success: false,
-			error: new (_Err ?? $ZodError)(result.issues.map((iss) => finalizeIssue(iss, ctx, config())))
-		} : {
+		return result.issues.length ? failure(_Err, result.issues, ctx) : {
 			success: true,
 			data: result.value
 		};
 	};
-	var safeParse$1 = /* @__PURE__*/ _safeParse($ZodRealError);
+	function failure(Err, issues, ctx) {
+		let error;
+		return {
+			success: false,
+			get error() {
+				if (!error) {
+					error = new Err(issues.map((iss) => finalizeIssue(iss, ctx, config())));
+					issues = void 0;
+					ctx = void 0;
+				}
+				return error;
+			},
+			set error(e) {
+				error = e;
+				issues = void 0;
+				ctx = void 0;
+			}
+		};
+	}
 	var _safeParseAsync = (_Err) => async (schema, value, _ctx) => {
 		const ctx = _ctx ? {
 			..._ctx,
@@ -10768,34 +11602,96 @@ createHTML: (html) => {
 			issues: []
 		}, ctx);
 		if (result instanceof Promise) result = await result;
-		return result.issues.length ? {
-			success: false,
-			error: new _Err(result.issues.map((iss) => finalizeIssue(iss, ctx, config())))
-		} : {
+		return result.issues.length ? failure(_Err, result.issues, ctx) : {
 			success: true,
 			data: result.value
 		};
 	};
-	var safeParseAsync$1 = /* @__PURE__*/ _safeParseAsync($ZodRealError);
-	var _encode = (_Err) => (schema, value, _ctx) => {
+	var COMPILE_INVALID = /* @__PURE__ */ Symbol.for("zod.compile.invalid");
+	var COMPILE_FALLBACK = /* @__PURE__ */ Symbol.for("zod.compile.fallback");
+	var validate = ((schema, value, _ctx) => {
+		const validator = schema._zod.bag.validator;
+		if (validator !== void 0) {
+			if (validator(value) !== COMPILE_INVALID) return true;
+			if (validator.definite === true && _ctx === void 0) return false;
+		}
+		return validateFallback(schema, value, _ctx);
+	});
+	function validateFallback(schema, value, _ctx) {
 		const ctx = _ctx ? {
 			..._ctx,
-			direction: "backward"
-		} : { direction: "backward" };
-		return _parse(_Err)(schema, value, ctx);
-	};
-	var _decode = (_Err) => (schema, value, _ctx) => {
-		return _parse(_Err)(schema, value, _ctx);
-	};
-	var _encodeAsync = (_Err) => async (schema, value, _ctx) => {
+			async: false,
+			abortEarly: true
+		} : {
+			async: false,
+			abortEarly: true
+		};
+		const fallbackRun = schema._zod.bag.fallbackRun;
+		let result;
+		if (fallbackRun) {
+			ctx[COMPILE_FALLBACK] = true;
+			result = fallbackRun({
+				value,
+				issues: []
+			}, ctx);
+		} else result = schema._zod.run({
+			value,
+			issues: []
+		}, ctx);
+		if (result instanceof Promise) throw new $ZodAsyncError();
+		return result.issues.length === 0;
+	}
+	var validateAsync$1 = async (schema, value, _ctx) => {
 		const ctx = _ctx ? {
 			..._ctx,
-			direction: "backward"
-		} : { direction: "backward" };
-		return _parseAsync(_Err)(schema, value, ctx);
+			async: true,
+			abortEarly: true
+		} : {
+			async: true,
+			abortEarly: true
+		};
+		let result = schema._zod.run({
+			value,
+			issues: []
+		}, ctx);
+		if (result instanceof Promise) result = await result;
+		return result.issues.length === 0;
 	};
-	var _decodeAsync = (_Err) => async (schema, value, _ctx) => {
-		return _parseAsync(_Err)(schema, value, _ctx);
+	var _encode = (_Err) => {
+		const parse = _parse(_Err);
+		const fn = (schema, value, _ctx, _params) => {
+			const ctx = _ctx ? {
+				..._ctx,
+				direction: "backward"
+			} : { direction: "backward" };
+			return parse(schema, value, ctx, finalizeParams(fn, _params));
+		};
+		return fn;
+	};
+	var _decode = (_Err) => {
+		const parse = _parse(_Err);
+		const fn = (schema, value, _ctx, _params) => {
+			return parse(schema, value, _ctx, finalizeParams(fn, _params));
+		};
+		return fn;
+	};
+	var _encodeAsync = (_Err) => {
+		const parseAsync = _parseAsync(_Err);
+		const fn = async (schema, value, _ctx, _params) => {
+			const ctx = _ctx ? {
+				..._ctx,
+				direction: "backward"
+			} : { direction: "backward" };
+			return await parseAsync(schema, value, ctx, finalizeParams(fn, _params));
+		};
+		return fn;
+	};
+	var _decodeAsync = (_Err) => {
+		const parseAsync = _parseAsync(_Err);
+		const fn = async (schema, value, _ctx, _params) => {
+			return await parseAsync(schema, value, _ctx, finalizeParams(fn, _params));
+		};
+		return fn;
 	};
 	var _safeEncode = (_Err) => (schema, value, _ctx) => {
 		const ctx = _ctx ? {
@@ -10817,8 +11713,7 @@ createHTML: (html) => {
 	var _safeDecodeAsync = (_Err) => async (schema, value, _ctx) => {
 		return _safeParseAsync(_Err)(schema, value, _ctx);
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v4/core/regexes.js
+	// ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/regexes.js
 	/**
 	* @deprecated CUID v1 is deprecated by its authors due to information leakage
 	* (timestamps embedded in the id). Use {@link cuid2} instead.
@@ -10826,12 +11721,15 @@ createHTML: (html) => {
 	*/
 	var cuid = /^[cC][0-9a-z]{6,}$/;
 	var cuid2 = /^[0-9a-z]+$/;
-	var ulid = /^[0-9A-HJKMNP-TV-Za-hjkmnp-tv-z]{26}$/;
+	var ulid = /^[0-7][0-9A-HJKMNP-TV-Za-hjkmnp-tv-z]{25}$/;
 	var xid = /^[0-9a-vA-V]{20}$/;
 	var ksuid = /^[A-Za-z0-9]{27}$/;
 	var nanoid = /^[a-zA-Z0-9_-]{21}$/;
+	function nanoidOfLength(length) {
+		return new RegExp(`^[a-zA-Z0-9_-]{${length}}$`);
+	}
 	/** ISO 8601-1 duration regex. Does not support the 8601-2 extensions like negative durations or fractional/negative components. */
-	var duration$1 = /^P(?:(\d+W)|(?!.*W)(?=\d|T\d)(\d+Y)?(\d+M)?(\d+D)?(T(?=\d)(\d+H)?(\d+M)?(\d+([.,]\d+)?S)?)?)$/;
+	var duration = /^P(?:(\d+W)|(?!.*W)(?=\d|T\d)(\d+Y)?(\d+M)?(\d+D)?(T(?=\d)(\d+H)?(\d+M)?(\d+([.,]\d+)?S)?)?)$/;
 	/** A regex for any UUID-like identifier: 8-4-4-4-12 hex pattern */
 	var guid = /^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$/;
 	/** Returns a regex for validating an RFC 9562/4122 UUID.
@@ -10842,64 +11740,67 @@ createHTML: (html) => {
 		return new RegExp(`^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-${version}[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$`);
 	};
 	/** Practical email validation */
-	var email = /^(?!\.)(?!.*\.\.)([A-Za-z0-9_'+\-\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$/;
-	var _emoji$1 = `^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$`;
+	var email = /^(?:[A-Za-z0-9_'+\-]+\.)*[A-Za-z0-9_'+\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\-]*\.)+[A-Za-z]{2,}$/;
+	var _emoji$1 = `^(?=[\\s\\S]*[\\p{Extended_Pictographic}\\p{Regional_Indicator}\\u20E3])[\\p{Extended_Pictographic}\\p{Emoji_Component}]+$`;
 	function emoji() {
 		return new RegExp(_emoji$1, "u");
 	}
 	var ipv4 = /^(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])$/;
 	var ipv6 = /^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))$/;
 	var cidrv4 = /^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\/([0-9]|[1-2][0-9]|3[0-2])$/;
-	var cidrv6 = /^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|::|([0-9a-fA-F]{1,4})?::([0-9a-fA-F]{1,4}:?){0,6})\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/;
+	var cidrv6 = /^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))\/(12[0-8]|1[01][0-9]|[1-9]?[0-9])$/;
 	var base64 = /^$|^(?:[0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$/;
-	var base64url = /^[A-Za-z0-9_-]*$/;
+	var base64url = /^(?:[A-Za-z0-9_-]{4})*(?:[A-Za-z0-9_-]{2,3})?$/;
 	var httpProtocol = /^https?$/;
 	var e164 = /^\+[1-9]\d{6,14}$/;
 	var dateSource = `(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))`;
-	var date$1 = /*@__PURE__*/ new RegExp(`^${dateSource}$`);
+	/** Anchors a pattern source. The interpolation lives here rather than at the call site because
+	* esbuild will not drop a `@__PURE__` call whose own argument interpolates a variable, but it
+	* will drop `anchor(dateSource)`. Keeping it inline pinned `date` into every bundle. */
+	function anchor(source) {
+		return new RegExp(`^${source}$`);
+	}
+	var date = /*@__PURE__*/ anchor(dateSource);
 	function timeSource(args) {
 		const hhmm = `(?:[01]\\d|2[0-3]):[0-5]\\d`;
-		return typeof args.precision === "number" ? args.precision === -1 ? `${hhmm}` : args.precision === 0 ? `${hhmm}:[0-5]\\d` : `${hhmm}:[0-5]\\d\\.\\d{${args.precision}}` : `${hhmm}(?::[0-5]\\d(?:\\.\\d+)?)?`;
+		return typeof args.precision === "number" ? args.precision === -1 ? `${hhmm}` : args.precision === 0 ? `${hhmm}:[0-5]\\d` : `${hhmm}:[0-5]\\d\\.\\d{${args.precision}}` : args.seconds ? `${hhmm}:[0-5]\\d(?:\\.\\d+)?` : `${hhmm}(?::[0-5]\\d(?:\\.\\d+)?)?`;
 	}
-	function time$1(args) {
+	function time(args) {
 		return new RegExp(`^${timeSource(args)}$`);
 	}
-	function datetime$1(args) {
-		const time = timeSource({ precision: args.precision });
+	function datetime(args) {
 		const opts = ["Z"];
-		if (args.local) opts.push("");
 		if (args.offset) opts.push(`([+-](?:[01]\\d|2[0-3]):[0-5]\\d)`);
-		const timeRegex = `${time}(?:${opts.join("|")})`;
+		const qualified = `${timeSource({
+			precision: args.precision,
+			seconds: true
+		})}(?:${opts.join("|")})`;
+		const timeRegex = args.local ? `${qualified}|${timeSource({ precision: args.precision })}` : qualified;
 		return new RegExp(`^${dateSource}T(?:${timeRegex})$`);
 	}
-	var string$1 = (params) => {
-		const regex = params ? `[\\s\\S]{${params?.minimum ?? 0},${params?.maximum ?? ""}}` : `[\\s\\S]*`;
-		return new RegExp(`^${regex}$`);
-	};
+	var anyString = /^[\s\S]{0,}$/;
 	var lowercase = /^[^A-Z]*$/;
 	var uppercase = /^[^a-z]*$/;
-	//#endregion
-	//#region ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v4/core/checks.js
+	// ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/checks.js
 	var $ZodCheck = /*@__PURE__*/ $constructor("$ZodCheck", (inst, def) => {
 		var _a;
 		inst._zod ?? (inst._zod = {});
 		inst._zod.def = def;
 		(_a = inst._zod).onattach ?? (_a.onattach = []);
 	});
+	/** Default `when` for length-based checks: run only on non-nullish values with a `length`. */
+	var _whenHasLength = (payload) => {
+		const val = payload.value;
+		return !nullish(val) && val.length !== void 0;
+	};
 	var $ZodCheckMaxLength = /*@__PURE__*/ $constructor("$ZodCheckMaxLength", (inst, def) => {
 		var _a;
 		$ZodCheck.init(inst, def);
-		(_a = inst._zod.def).when ?? (_a.when = (payload) => {
-			const val = payload.value;
-			return !nullish(val) && val.length !== void 0;
-		});
-		inst._zod.onattach.push((inst) => {
-			const curr = inst._zod.bag.maximum ?? Number.POSITIVE_INFINITY;
-			if (def.maximum < curr) inst._zod.bag.maximum = def.maximum;
-		});
+		(_a = inst._zod.def).when ?? (_a.when = _whenHasLength);
 		inst._zod.check = (payload) => {
 			const input = payload.value;
-			if (input.length <= def.maximum) return;
+			const units = input.length;
+			if ((typeof input === "string" && units > def.maximum ? codePointLength(input) : units) <= def.maximum) return;
 			const origin = getLengthableOrigin(input);
 			payload.issues.push({
 				origin,
@@ -10915,17 +11816,11 @@ createHTML: (html) => {
 	var $ZodCheckMinLength = /*@__PURE__*/ $constructor("$ZodCheckMinLength", (inst, def) => {
 		var _a;
 		$ZodCheck.init(inst, def);
-		(_a = inst._zod.def).when ?? (_a.when = (payload) => {
-			const val = payload.value;
-			return !nullish(val) && val.length !== void 0;
-		});
-		inst._zod.onattach.push((inst) => {
-			const curr = inst._zod.bag.minimum ?? Number.NEGATIVE_INFINITY;
-			if (def.minimum > curr) inst._zod.bag.minimum = def.minimum;
-		});
+		(_a = inst._zod.def).when ?? (_a.when = _whenHasLength);
 		inst._zod.check = (payload) => {
 			const input = payload.value;
-			if (input.length >= def.minimum) return;
+			const units = input.length;
+			if ((typeof input === "string" && units >= def.minimum && units < def.minimum * 2 ? codePointLength(input) : units) >= def.minimum) return;
 			const origin = getLengthableOrigin(input);
 			payload.issues.push({
 				origin,
@@ -10941,19 +11836,11 @@ createHTML: (html) => {
 	var $ZodCheckLengthEquals = /*@__PURE__*/ $constructor("$ZodCheckLengthEquals", (inst, def) => {
 		var _a;
 		$ZodCheck.init(inst, def);
-		(_a = inst._zod.def).when ?? (_a.when = (payload) => {
-			const val = payload.value;
-			return !nullish(val) && val.length !== void 0;
-		});
-		inst._zod.onattach.push((inst) => {
-			const bag = inst._zod.bag;
-			bag.minimum = def.length;
-			bag.maximum = def.length;
-			bag.length = def.length;
-		});
+		(_a = inst._zod.def).when ?? (_a.when = _whenHasLength);
 		inst._zod.check = (payload) => {
 			const input = payload.value;
-			const length = input.length;
+			const units = input.length;
+			const length = typeof input === "string" && units >= def.length && units <= def.length * 2 ? codePointLength(input) : units;
 			if (length === def.length) return;
 			const origin = getLengthableOrigin(input);
 			const tooBig = length > def.length;
@@ -10977,14 +11864,6 @@ createHTML: (html) => {
 	var $ZodCheckStringFormat = /*@__PURE__*/ $constructor("$ZodCheckStringFormat", (inst, def) => {
 		var _a, _b;
 		$ZodCheck.init(inst, def);
-		inst._zod.onattach.push((inst) => {
-			const bag = inst._zod.bag;
-			bag.format = def.format;
-			if (def.pattern) {
-				bag.patterns ?? (bag.patterns = /* @__PURE__ */ new Set());
-				bag.patterns.add(def.pattern);
-			}
-		});
 		if (def.pattern) (_a = inst._zod).check ?? (_a.check = (payload) => {
 			def.pattern.lastIndex = 0;
 			if (def.pattern.test(payload.value)) return;
@@ -11027,13 +11906,7 @@ createHTML: (html) => {
 	var $ZodCheckIncludes = /*@__PURE__*/ $constructor("$ZodCheckIncludes", (inst, def) => {
 		$ZodCheck.init(inst, def);
 		const escapedRegex = escapeRegex(def.includes);
-		const pattern = new RegExp(typeof def.position === "number" ? `^.{${def.position}}${escapedRegex}` : escapedRegex);
-		def.pattern = pattern;
-		inst._zod.onattach.push((inst) => {
-			const bag = inst._zod.bag;
-			bag.patterns ?? (bag.patterns = /* @__PURE__ */ new Set());
-			bag.patterns.add(pattern);
-		});
+		def.pattern = new RegExp(typeof def.position === "number" ? `^.{${def.position},}${escapedRegex}` : escapedRegex);
 		inst._zod.check = (payload) => {
 			if (payload.value.includes(def.includes, def.position)) return;
 			payload.issues.push({
@@ -11051,11 +11924,6 @@ createHTML: (html) => {
 		$ZodCheck.init(inst, def);
 		const pattern = new RegExp(`^${escapeRegex(def.prefix)}.*`);
 		def.pattern ?? (def.pattern = pattern);
-		inst._zod.onattach.push((inst) => {
-			const bag = inst._zod.bag;
-			bag.patterns ?? (bag.patterns = /* @__PURE__ */ new Set());
-			bag.patterns.add(pattern);
-		});
 		inst._zod.check = (payload) => {
 			if (payload.value.startsWith(def.prefix)) return;
 			payload.issues.push({
@@ -11073,11 +11941,6 @@ createHTML: (html) => {
 		$ZodCheck.init(inst, def);
 		const pattern = new RegExp(`.*${escapeRegex(def.suffix)}$`);
 		def.pattern ?? (def.pattern = pattern);
-		inst._zod.onattach.push((inst) => {
-			const bag = inst._zod.bag;
-			bag.patterns ?? (bag.patterns = /* @__PURE__ */ new Set());
-			bag.patterns.add(pattern);
-		});
 		inst._zod.check = (payload) => {
 			if (payload.value.endsWith(def.suffix)) return;
 			payload.issues.push({
@@ -11091,29 +11954,62 @@ createHTML: (html) => {
 			});
 		};
 	});
+	function handleCheckPropertyResult(result, payload, property) {
+		if (result.issues.length) payload.issues.push(...prefixIssues(property, result.issues));
+	}
+	var $ZodCheckProperties = /*@__PURE__*/ $constructor("$ZodCheckProperties", (inst, def) => {
+		$ZodCheck.init(inst, def);
+		hide$2(inst, Symbol.iterator, function* () {
+			yield inst;
+		});
+		let entries;
+		inst._zod.check = (payload) => {
+			if (payload.value == null) {
+				payload.issues.push({
+					expected: "object",
+					code: "invalid_type",
+					input: payload.value,
+					inst
+				});
+				return;
+			}
+			entries ?? (entries = Reflect.ownKeys(def.shape).map((key) => [key, def.shape[key]]));
+			const input = payload.value;
+			let proms;
+			for (const [key, schema] of entries) {
+				const result = schema._zod.run({
+					value: input[key],
+					issues: []
+				}, {});
+				if (result instanceof Promise) {
+					proms ?? (proms = []);
+					proms.push(result.then((result) => handleCheckPropertyResult(result, payload, key)));
+				} else handleCheckPropertyResult(result, payload, key);
+			}
+			if (proms) return Promise.all(proms).then(() => void 0);
+		};
+	});
 	var $ZodCheckOverwrite = /*@__PURE__*/ $constructor("$ZodCheckOverwrite", (inst, def) => {
 		$ZodCheck.init(inst, def);
 		inst._zod.check = (payload) => {
 			payload.value = def.tx(payload.value);
 		};
 	});
-	//#endregion
-	//#region ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v4/core/versions.js
+	// ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/versions.js
 	var version = {
 		major: 4,
-		minor: 4,
-		patch: 3
+		minor: 6,
+		patch: 7
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v4/core/schemas.js
+	// ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/schemas.js
 	var $ZodType = /*@__PURE__*/ $constructor("$ZodType", (inst, def) => {
 		var _a;
 		inst ?? (inst = {});
 		inst._zod.def = def;
 		inst._zod.bag = inst._zod.bag || {};
 		inst._zod.version = version;
-		const checks = [...inst._zod.def.checks ?? []];
-		if (inst._zod.traits.has("$ZodCheck")) checks.unshift(inst);
+		const defChecks = inst._zod.def.checks;
+		const checks = inst._zod.traits.has("$ZodCheck") ? [inst, ...defChecks ?? []] : defChecks?.length ? [...defChecks] : [];
 		for (const ch of checks) for (const fn of ch._zod.onattach) fn(inst);
 		if (checks.length === 0) {
 			(_a = inst._zod).deferred ?? (_a.deferred = []);
@@ -11122,6 +12018,7 @@ createHTML: (html) => {
 			});
 		} else {
 			const runChecks = (payload, checks, ctx) => {
+				if (payload.memo) return payload;
 				let isAborted = aborted(payload);
 				let asyncResult;
 				for (const ch of checks) {
@@ -11135,10 +12032,12 @@ createHTML: (html) => {
 					if (asyncResult || _ instanceof Promise) asyncResult = (asyncResult ?? Promise.resolve()).then(async () => {
 						await _;
 						if (payload.issues.length === currLen) return;
+						attachSchema(payload.issues, currLen, inst);
 						if (!isAborted) isAborted = aborted(payload, currLen);
 					});
 					else {
 						if (payload.issues.length === currLen) continue;
+						attachSchema(payload.issues, currLen, inst);
 						if (!isAborted) isAborted = aborted(payload, currLen);
 					}
 				}
@@ -11182,22 +12081,43 @@ createHTML: (html) => {
 				return runChecks(result, checks, ctx);
 			};
 		}
-		defineLazy(inst, "~standard", () => ({
+	}, {
+		get "~standard"() {
+			return hide$2(this, "~standard", standardProps(this));
+		},
+		set "~standard"(value) {
+			own(this, "~standard", value);
+		}
+	});
+	/** The Standard Schema surface for `inst`. Shared so wrappers can extend it without forcing it. */
+	var toStandardResult = (r, ctx) => r.issues.length ? { issues: r.issues.map((iss) => finalizeIssue(iss, ctx, config())) } : { value: r.value };
+	async function validateAsync(inst, value) {
+		const ctx = { async: true };
+		return toStandardResult(await inst._zod.run({
+			value,
+			issues: []
+		}, ctx), ctx);
+	}
+	function standardProps(inst) {
+		return {
 			validate: (value) => {
+				const ctx = { async: false };
 				try {
-					const r = safeParse$1(inst, value);
-					return r.success ? { value: r.data } : { issues: r.error?.issues };
-				} catch (_) {
-					return safeParseAsync$1(inst, value).then((r) => r.success ? { value: r.data } : { issues: r.error?.issues });
-				}
+					const r = inst._zod.run({
+						value,
+						issues: []
+					}, ctx);
+					if (!(r instanceof Promise)) return toStandardResult(r, ctx);
+				} catch (_) {}
+				return validateAsync(inst, value);
 			},
 			vendor: "zod",
 			version: 1
-		}));
-	});
+		};
+	}
 	var $ZodString = /*@__PURE__*/ $constructor("$ZodString", (inst, def) => {
 		$ZodType.init(inst, def);
-		inst._zod.pattern = [...inst?._zod.bag?.patterns ?? []].pop() ?? string$1(inst._zod.bag);
+		inst._zod.pattern = def.pattern ?? anyString;
 		inst._zod.parse = (payload, _) => {
 			if (def.coerce) try {
 				payload.value = String(payload.value);
@@ -11241,51 +12161,95 @@ createHTML: (html) => {
 		def.pattern ?? (def.pattern = email);
 		$ZodStringFormat.init(inst, def);
 	});
+	function canParseURL(input) {
+		try {
+			if (typeof URL !== "undefined" && typeof URL.canParse === "function") return URL.canParse(input);
+			new URL(input);
+			return true;
+		} catch {
+			return false;
+		}
+	}
+	function validateURL(trimmed, def) {
+		if (!("normalize" in def) && !("hostname" in def) && !("protocol" in def)) return canParseURL(trimmed) || 2;
+		return parseURLObject(trimmed, def);
+	}
+	/** Parses a URL while preserving the non-normalizing HTTP guard. */
+	function parseURLObject(trimmed, def) {
+		if (!def.normalize && def.protocol?.source === httpProtocol.source && !/^https?:\/\//i.test(trimmed)) return 1;
+		try {
+			if (typeof URL !== "undefined") {
+				const URLStatic = URL;
+				if (typeof URLStatic.parse === "function") return URLStatic.parse(trimmed) ?? 2;
+			}
+			return new URL(trimmed);
+		} catch {
+			return 2;
+		}
+	}
+	var asciiTabOrNewline = /[\t\n\r]/g;
+	/** The URL parser deletes every ASCII tab, LF and CR from its input before it parses, so `new URL("https://exa\nmple.com")` reports on `example.com`. Applying the same deletion to the returned value closes the half of that divergence which can move the host; the parser's other rewrite, stripping C0 controls at the edges, cannot. */
+	function stripTabAndNewline(value) {
+		return value.replace(asciiTabOrNewline, "");
+	}
+	function urlHostnameOk(url, hostname) {
+		hostname.lastIndex = 0;
+		return hostname.test(url.hostname);
+	}
+	function urlProtocolOk(url, protocol) {
+		protocol.lastIndex = 0;
+		return protocol.test(url.protocol.endsWith(":") ? url.protocol.slice(0, -1) : url.protocol);
+	}
 	var $ZodURL = /*@__PURE__*/ $constructor("$ZodURL", (inst, def) => {
 		$ZodStringFormat.init(inst, def);
 		inst._zod.check = (payload) => {
 			try {
 				const trimmed = payload.value.trim();
-				if (!def.normalize && def.protocol?.source === httpProtocol.source) {
-					if (!/^https?:\/\//i.test(trimmed)) {
-						payload.issues.push({
-							code: "invalid_format",
-							format: "url",
-							note: "Invalid URL format",
-							input: payload.value,
-							inst,
-							continue: !def.abort
-						});
-						return;
-					}
-				}
-				const url = new URL(trimmed);
-				if (def.hostname) {
-					def.hostname.lastIndex = 0;
-					if (!def.hostname.test(url.hostname)) payload.issues.push({
+				const url = validateURL(trimmed, def);
+				if (url === 1) {
+					payload.issues.push({
 						code: "invalid_format",
 						format: "url",
-						note: "Invalid hostname",
-						pattern: def.hostname.source,
+						note: "Invalid URL format",
 						input: payload.value,
 						inst,
 						continue: !def.abort
 					});
+					return;
 				}
-				if (def.protocol) {
-					def.protocol.lastIndex = 0;
-					if (!def.protocol.test(url.protocol.endsWith(":") ? url.protocol.slice(0, -1) : url.protocol)) payload.issues.push({
+				if (url === 2) {
+					payload.issues.push({
 						code: "invalid_format",
 						format: "url",
-						note: "Invalid protocol",
-						pattern: def.protocol.source,
 						input: payload.value,
 						inst,
 						continue: !def.abort
 					});
+					return;
 				}
-				if (def.normalize) payload.value = url.href;
-				else payload.value = trimmed;
+				if (url === true) {
+					payload.value = stripTabAndNewline(trimmed);
+					return;
+				}
+				if (def.hostname && !urlHostnameOk(url, def.hostname)) payload.issues.push({
+					code: "invalid_format",
+					format: "url",
+					note: "Invalid hostname",
+					pattern: def.hostname.source,
+					input: payload.value,
+					inst,
+					continue: !def.abort
+				});
+				if (def.protocol && !urlProtocolOk(url, def.protocol)) payload.issues.push({
+					code: "invalid_format",
+					format: "url",
+					note: "Invalid protocol",
+					pattern: def.protocol.source,
+					input: payload.value,
+					inst,
+					continue: !def.abort
+				});
+				payload.value = def.normalize ? url.href : stripTabAndNewline(trimmed);
 				return;
 			} catch (_) {
 				payload.issues.push({
@@ -11303,7 +12267,8 @@ createHTML: (html) => {
 		$ZodStringFormat.init(inst, def);
 	});
 	var $ZodNanoID = /*@__PURE__*/ $constructor("$ZodNanoID", (inst, def) => {
-		def.pattern ?? (def.pattern = nanoid);
+		if (def.length !== void 0 && (!Number.isInteger(def.length) || def.length < 1)) throw new Error(`Invalid nanoid length: ${def.length}`);
+		def.pattern ?? (def.pattern = def.length === void 0 ? nanoid : nanoidOfLength(def.length));
 		$ZodStringFormat.init(inst, def);
 	});
 	/**
@@ -11332,70 +12297,69 @@ createHTML: (html) => {
 		$ZodStringFormat.init(inst, def);
 	});
 	var $ZodISODateTime = /*@__PURE__*/ $constructor("$ZodISODateTime", (inst, def) => {
-		def.pattern ?? (def.pattern = datetime$1(def));
+		def.pattern ?? (def.pattern = datetime(def));
 		$ZodStringFormat.init(inst, def);
 	});
 	var $ZodISODate = /*@__PURE__*/ $constructor("$ZodISODate", (inst, def) => {
-		def.pattern ?? (def.pattern = date$1);
+		def.pattern ?? (def.pattern = date);
 		$ZodStringFormat.init(inst, def);
 	});
 	var $ZodISOTime = /*@__PURE__*/ $constructor("$ZodISOTime", (inst, def) => {
-		def.pattern ?? (def.pattern = time$1(def));
+		def.pattern ?? (def.pattern = time(def));
 		$ZodStringFormat.init(inst, def);
 	});
 	var $ZodISODuration = /*@__PURE__*/ $constructor("$ZodISODuration", (inst, def) => {
-		def.pattern ?? (def.pattern = duration$1);
+		def.pattern ?? (def.pattern = duration);
 		$ZodStringFormat.init(inst, def);
 	});
 	var $ZodIPv4 = /*@__PURE__*/ $constructor("$ZodIPv4", (inst, def) => {
 		def.pattern ?? (def.pattern = ipv4);
 		$ZodStringFormat.init(inst, def);
-		inst._zod.bag.format = `ipv4`;
 	});
+	/** An IPv6 address is written with hex digits, colons and dots, and nothing else. The guard is what makes the check below an IPv6 check: `new URL("http://[...]")` parses an authority, not an address, so `@` and `\` re-delimit it and `"::@1\\"` validates against the host `0.0.0.1`. The URL parser also deletes ASCII tab, LF and CR rather than failing, which is how `"::1\n"` validated as `::1`. */
+	var ipv6Alphabet = /^[0-9a-fA-F:.]+$/;
+	function isValidIPv6(value) {
+		if (!ipv6Alphabet.test(value)) return false;
+		return canParseURL(`http://[${value}]`);
+	}
 	var $ZodIPv6 = /*@__PURE__*/ $constructor("$ZodIPv6", (inst, def) => {
 		def.pattern ?? (def.pattern = ipv6);
 		$ZodStringFormat.init(inst, def);
-		inst._zod.bag.format = `ipv6`;
 		inst._zod.check = (payload) => {
-			try {
-				new URL(`http://[${payload.value}]`);
-			} catch {
-				payload.issues.push({
-					code: "invalid_format",
-					format: "ipv6",
-					input: payload.value,
-					inst,
-					continue: !def.abort
-				});
-			}
+			if (!isValidIPv6(payload.value)) payload.issues.push({
+				code: "invalid_format",
+				format: "ipv6",
+				input: payload.value,
+				inst,
+				continue: !def.abort
+			});
 		};
 	});
 	var $ZodCIDRv4 = /*@__PURE__*/ $constructor("$ZodCIDRv4", (inst, def) => {
 		def.pattern ?? (def.pattern = cidrv4);
 		$ZodStringFormat.init(inst, def);
 	});
+	function isValidCIDRv6(value) {
+		const parts = value.split("/");
+		if (parts.length !== 2) return false;
+		const [address, prefix] = parts;
+		if (!prefix) return false;
+		const prefixNum = Number(prefix);
+		if (`${prefixNum}` !== prefix) return false;
+		if (prefixNum < 0 || prefixNum > 128) return false;
+		return isValidIPv6(address);
+	}
 	var $ZodCIDRv6 = /*@__PURE__*/ $constructor("$ZodCIDRv6", (inst, def) => {
 		def.pattern ?? (def.pattern = cidrv6);
 		$ZodStringFormat.init(inst, def);
 		inst._zod.check = (payload) => {
-			const parts = payload.value.split("/");
-			try {
-				if (parts.length !== 2) throw new Error();
-				const [address, prefix] = parts;
-				if (!prefix) throw new Error();
-				const prefixNum = Number(prefix);
-				if (`${prefixNum}` !== prefix) throw new Error();
-				if (prefixNum < 0 || prefixNum > 128) throw new Error();
-				new URL(`http://[${address}]`);
-			} catch {
-				payload.issues.push({
-					code: "invalid_format",
-					format: "cidrv6",
-					input: payload.value,
-					inst,
-					continue: !def.abort
-				});
-			}
+			if (!isValidCIDRv6(payload.value)) payload.issues.push({
+				code: "invalid_format",
+				format: "cidrv6",
+				input: payload.value,
+				inst,
+				continue: !def.abort
+			});
 		};
 	});
 	function isValidBase64(data) {
@@ -11409,10 +12373,10 @@ createHTML: (html) => {
 			return false;
 		}
 	}
+	var base64Charset = /^[0-9a-zA-Z+/]*={0,2}$/;
 	var $ZodBase64 = /*@__PURE__*/ $constructor("$ZodBase64", (inst, def) => {
-		def.pattern ?? (def.pattern = base64);
+		def.pattern ?? (def.pattern = base64Charset);
 		$ZodStringFormat.init(inst, def);
-		inst._zod.bag.contentEncoding = "base64";
 		inst._zod.check = (payload) => {
 			if (isValidBase64(payload.value)) return;
 			payload.issues.push({
@@ -11424,15 +12388,15 @@ createHTML: (html) => {
 			});
 		};
 	});
+	var base64urlCharset = /^[A-Za-z0-9_-]*$/;
 	function isValidBase64URL(data) {
-		if (!base64url.test(data)) return false;
+		if (!base64urlCharset.test(data)) return false;
 		const base64 = data.replace(/[-_]/g, (c) => c === "-" ? "+" : "/");
 		return isValidBase64(base64.padEnd(Math.ceil(base64.length / 4) * 4, "="));
 	}
 	var $ZodBase64URL = /*@__PURE__*/ $constructor("$ZodBase64URL", (inst, def) => {
-		def.pattern ?? (def.pattern = base64url);
+		def.pattern ?? (def.pattern = base64urlCharset);
 		$ZodStringFormat.init(inst, def);
-		inst._zod.bag.contentEncoding = "base64url";
 		inst._zod.check = (payload) => {
 			if (isValidBase64URL(payload.value)) return;
 			payload.issues.push({
@@ -11476,12 +12440,34 @@ createHTML: (html) => {
 			});
 		};
 	});
+	function capSize(inst, size) {
+		const caps = sizeCaps(inst._zod.def.checks);
+		if (!caps.length) return;
+		const cap = Math.min(...caps.map((c) => c[0]));
+		const parse = inst._zod.parse;
+		inst._zod.parse = (payload, ctx) => {
+			const n = size(payload.value);
+			if (n > cap && !ctx?.skipChecks && ctx?.direction !== "backward") {
+				for (const [max, ch] of sizeCaps(inst._zod.def.checks)) if (n > max && ch._zod.def.when(payload)) {
+					const start = payload.issues.length;
+					ch._zod.check(payload);
+					payload.issues[start].continue = false;
+					attachSchema(payload.issues, start, inst);
+					return payload;
+				}
+			}
+			return parse(payload, ctx);
+		};
+	}
+	var arraySize = (input) => Array.isArray(input) ? input.length : -1;
 	function handleArrayResult(result, final, index) {
 		if (result.issues.length) final.issues.push(...prefixIssues(index, result.issues));
 		final.value[index] = result.value;
 	}
 	var $ZodArray = /*@__PURE__*/ $constructor("$ZodArray", (inst, def) => {
 		$ZodType.init(inst, def);
+		const memo = globalConfig.memoizer;
+		memo?.attach(inst);
 		inst._zod.parse = (payload, ctx) => {
 			const input = payload.value;
 			if (!Array.isArray(input)) {
@@ -11493,8 +12479,9 @@ createHTML: (html) => {
 				});
 				return payload;
 			}
-			payload.value = Array(input.length);
+			payload.value = memo ? memo.alloc(inst, payload, Array(input.length), ctx) : Array(input.length);
 			const proms = [];
+			const abortEarly = ctx?.abortEarly;
 			for (let i = 0; i < input.length; i++) {
 				const item = input[i];
 				const result = def.element._zod.run({
@@ -11502,11 +12489,15 @@ createHTML: (html) => {
 					issues: []
 				}, ctx);
 				if (result instanceof Promise) proms.push(result.then((result) => handleArrayResult(result, payload, i)));
-				else handleArrayResult(result, payload, i);
+				else {
+					handleArrayResult(result, payload, i);
+					if (abortEarly && result.issues.length !== 0 && aborted(result)) break;
+				}
 			}
 			if (proms.length) return Promise.all(proms).then(() => payload);
 			return payload;
 		};
+		capSize(inst, arraySize);
 	});
 	function handleUnionResults(results, final, inst, ctx) {
 		for (const result of results) if (result.issues.length === 0) {
@@ -11528,14 +12519,14 @@ createHTML: (html) => {
 	}
 	var $ZodUnion = /*@__PURE__*/ $constructor("$ZodUnion", (inst, def) => {
 		$ZodType.init(inst, def);
-		defineLazy(inst._zod, "optin", () => def.options.some((o) => o._zod.optin === "optional") ? "optional" : void 0);
-		defineLazy(inst._zod, "optout", () => def.options.some((o) => o._zod.optout === "optional") ? "optional" : void 0);
-		defineLazy(inst._zod, "values", () => {
-			if (def.options.every((o) => o._zod.values)) return new Set(def.options.flatMap((option) => Array.from(option._zod.values)));
+		defineLazyInternal(inst, "optin", (zod) => zod.def.options.some((o) => o._zod.optin === "defaulted") ? "defaulted" : zod.def.options.some((o) => o._zod.optin !== void 0) ? "optional" : void 0);
+		defineLazyInternal(inst, "optout", (zod) => zod.def.options.some((o) => o._zod.optout === "optional") ? "optional" : void 0);
+		defineLazyInternal(inst, "values", (zod) => {
+			if (zod.def.options.every((o) => o._zod.values)) return new Set(zod.def.options.flatMap((option) => Array.from(option._zod.values)));
 		});
-		defineLazy(inst._zod, "pattern", () => {
-			if (def.options.every((o) => o._zod.pattern)) {
-				const patterns = def.options.map((o) => o._zod.pattern);
+		defineLazyInternal(inst, "pattern", (zod) => {
+			if (zod.def.options.every((o) => o._zod.pattern)) {
+				const patterns = zod.def.options.map((o) => o._zod.pattern);
 				return new RegExp(`^(${patterns.map((p) => cleanRegex(p.source)).join("|")})$`);
 			}
 		});
@@ -11597,7 +12588,9 @@ createHTML: (html) => {
 				...a,
 				...b
 			};
+			if (Object.prototype.hasOwnProperty.call(newObj, "__proto__")) delete newObj.__proto__;
 			for (const key of sharedKeys) {
+				if (key === "__proto__") continue;
 				const sharedValue = mergeValues(a[key], b[key]);
 				if (!sharedValue.valid) return {
 					valid: false,
@@ -11639,93 +12632,105 @@ createHTML: (html) => {
 	function handleIntersectionResults(result, left, right) {
 		const unrecKeys = /* @__PURE__ */ new Map();
 		let unrecIssue;
-		for (const iss of left.issues) if (iss.code === "unrecognized_keys") {
-			unrecIssue ?? (unrecIssue = iss);
-			for (const k of iss.keys) {
+		const keyIssues = /* @__PURE__ */ new Map();
+		const collect = (iss, side) => {
+			let keys;
+			if (iss.code === "unrecognized_keys" && !iss.path?.length) {
+				unrecIssue ?? (unrecIssue = iss);
+				keys = iss.keys;
+			} else if (iss.code === "invalid_key" && iss.origin === "record" && iss.path?.length === 1) {
+				const k = String(iss.path[0]);
+				if (!keyIssues.has(k)) keyIssues.set(k, iss);
+				keys = [k];
+			} else return false;
+			for (const k of keys) {
 				if (!unrecKeys.has(k)) unrecKeys.set(k, {});
-				unrecKeys.get(k).l = true;
+				unrecKeys.get(k)[side] = true;
 			}
-		} else result.issues.push(iss);
-		for (const iss of right.issues) if (iss.code === "unrecognized_keys") for (const k of iss.keys) {
-			if (!unrecKeys.has(k)) unrecKeys.set(k, {});
-			unrecKeys.get(k).r = true;
-		}
-		else result.issues.push(iss);
+			return true;
+		};
+		for (const iss of left.issues) if (!collect(iss, "l")) result.issues.push(iss);
+		for (const iss of right.issues) if (!collect(iss, "r")) result.issues.push(iss);
 		const bothKeys = [...unrecKeys].filter(([, f]) => f.l && f.r).map(([k]) => k);
-		if (bothKeys.length && unrecIssue) result.issues.push({
-			...unrecIssue,
-			keys: bothKeys
-		});
-		if (aborted(result)) return result;
+		if (bothKeys.length) {
+			const aggregated = unrecIssue ? bothKeys.filter((k) => unrecIssue.keys.includes(k)) : [];
+			if (aggregated.length) result.issues.push({
+				...unrecIssue,
+				keys: aggregated
+			});
+			for (const k of bothKeys) if (!aggregated.includes(k) && keyIssues.has(k)) result.issues.push(keyIssues.get(k));
+		}
 		const merged = mergeValues(left.value, right.value);
-		if (!merged.valid) throw new Error(`Unmergable intersection. Error path: ${JSON.stringify(merged.mergeErrorPath)}`);
+		if (!merged.valid) {
+			if (aborted(result)) return result;
+			throw new Error(`Unmergable intersection. Error path: ${JSON.stringify(merged.mergeErrorPath)}`);
+		}
 		result.value = merged.data;
 		return result;
 	}
 	var $ZodTransform = /*@__PURE__*/ $constructor("$ZodTransform", (inst, def) => {
 		$ZodType.init(inst, def);
 		inst._zod.optin = "optional";
+		globalConfig.memoizer?.guard(inst);
 		inst._zod.parse = (payload, ctx) => {
 			if (ctx.direction === "backward") throw new $ZodEncodeError(inst.constructor.name);
 			const _out = def.transform(payload.value, payload);
 			if (ctx.async) return (_out instanceof Promise ? _out : Promise.resolve(_out)).then((output) => {
 				payload.value = output;
-				payload.fallback = true;
 				return payload;
 			});
 			if (_out instanceof Promise) throw new $ZodAsyncError();
 			payload.value = _out;
-			payload.fallback = true;
 			return payload;
 		};
 	});
-	function handleOptionalResult(result, input) {
-		if (input === void 0 && (result.issues.length || result.fallback)) return {
-			issues: [],
-			value: void 0
-		};
-		return result;
+	function handleOptionalResult(payload, result) {
+		payload.value = result.issues.length ? void 0 : result.value;
+		return payload;
 	}
 	var $ZodOptional = /*@__PURE__*/ $constructor("$ZodOptional", (inst, def) => {
 		$ZodType.init(inst, def);
-		inst._zod.optin = "optional";
+		defineLazyInternal(inst, "optin", (zod) => zod.def.innerType._zod.optin === "defaulted" ? "defaulted" : "optional");
 		inst._zod.optout = "optional";
-		defineLazy(inst._zod, "values", () => {
-			return def.innerType._zod.values ? /* @__PURE__ */ new Set([...def.innerType._zod.values, void 0]) : void 0;
+		defineLazyInternal(inst, "values", (zod) => {
+			const values = zod.def.innerType._zod.values;
+			return values ? /* @__PURE__ */ new Set([...values, void 0]) : void 0;
 		});
-		defineLazy(inst._zod, "pattern", () => {
-			const pattern = def.innerType._zod.pattern;
+		defineLazyInternal(inst, "pattern", (zod) => {
+			const pattern = zod.def.innerType._zod.pattern;
 			return pattern ? new RegExp(`^(${cleanRegex(pattern.source)})?$`) : void 0;
 		});
 		inst._zod.parse = (payload, ctx) => {
-			if (def.innerType._zod.optin === "optional") {
-				const input = payload.value;
-				const result = def.innerType._zod.run(payload, ctx);
-				if (result instanceof Promise) return result.then((r) => handleOptionalResult(r, input));
-				return handleOptionalResult(result, input);
+			if (payload.value === void 0) {
+				if (def.innerType._zod.optin !== "defaulted") return payload;
+				const result = def.innerType._zod.run({
+					value: payload.value,
+					issues: []
+				}, ctx);
+				if (result instanceof Promise) return result.then((result) => handleOptionalResult(payload, result));
+				return handleOptionalResult(payload, result);
 			}
-			if (payload.value === void 0) return payload;
 			return def.innerType._zod.run(payload, ctx);
 		};
 	});
 	var $ZodExactOptional = /*@__PURE__*/ $constructor("$ZodExactOptional", (inst, def) => {
 		$ZodOptional.init(inst, def);
-		defineLazy(inst._zod, "values", () => def.innerType._zod.values);
-		defineLazy(inst._zod, "pattern", () => def.innerType._zod.pattern);
+		defineLazyInternal(inst, "values", (zod) => zod.def.innerType._zod.values);
+		defineLazyInternal(inst, "pattern", (zod) => zod.def.innerType._zod.pattern);
 		inst._zod.parse = (payload, ctx) => {
 			return def.innerType._zod.run(payload, ctx);
 		};
 	});
 	var $ZodNullable = /*@__PURE__*/ $constructor("$ZodNullable", (inst, def) => {
 		$ZodType.init(inst, def);
-		defineLazy(inst._zod, "optin", () => def.innerType._zod.optin);
-		defineLazy(inst._zod, "optout", () => def.innerType._zod.optout);
-		defineLazy(inst._zod, "pattern", () => {
-			const pattern = def.innerType._zod.pattern;
+		defineLazyInternal(inst, "optin", (zod) => zod.def.innerType._zod.optin);
+		defineLazyInternal(inst, "optout", (zod) => zod.def.innerType._zod.optout);
+		defineLazyInternal(inst, "pattern", (zod) => {
+			const pattern = zod.def.innerType._zod.pattern;
 			return pattern ? new RegExp(`^(${cleanRegex(pattern.source)}|null)$`) : void 0;
 		});
-		defineLazy(inst._zod, "values", () => {
-			return def.innerType._zod.values ? /* @__PURE__ */ new Set([...def.innerType._zod.values, null]) : void 0;
+		defineLazyInternal(inst, "values", (zod) => {
+			return zod.def.innerType._zod.values ? /* @__PURE__ */ new Set([...zod.def.innerType._zod.values, null]) : void 0;
 		});
 		inst._zod.parse = (payload, ctx) => {
 			if (payload.value === null) return payload;
@@ -11734,8 +12739,8 @@ createHTML: (html) => {
 	});
 	var $ZodDefault = /*@__PURE__*/ $constructor("$ZodDefault", (inst, def) => {
 		$ZodType.init(inst, def);
-		inst._zod.optin = "optional";
-		defineLazy(inst._zod, "values", () => def.innerType._zod.values);
+		inst._zod.optin = "defaulted";
+		defineLazyInternal(inst, "values", (zod) => zod.def.innerType._zod.values);
 		inst._zod.parse = (payload, ctx) => {
 			if (ctx.direction === "backward") return def.innerType._zod.run(payload, ctx);
 			if (payload.value === void 0) {
@@ -11756,8 +12761,8 @@ createHTML: (html) => {
 	}
 	var $ZodPrefault = /*@__PURE__*/ $constructor("$ZodPrefault", (inst, def) => {
 		$ZodType.init(inst, def);
-		inst._zod.optin = "optional";
-		defineLazy(inst._zod, "values", () => def.innerType._zod.values);
+		inst._zod.optin = "defaulted";
+		defineLazyInternal(inst, "values", (zod) => zod.def.innerType._zod.values);
 		inst._zod.parse = (payload, ctx) => {
 			if (ctx.direction === "backward") return def.innerType._zod.run(payload, ctx);
 			if (payload.value === void 0) payload.value = def.defaultValue;
@@ -11766,8 +12771,8 @@ createHTML: (html) => {
 	});
 	var $ZodNonOptional = /*@__PURE__*/ $constructor("$ZodNonOptional", (inst, def) => {
 		$ZodType.init(inst, def);
-		defineLazy(inst._zod, "values", () => {
-			const v = def.innerType._zod.values;
+		defineLazyInternal(inst, "values", (zod) => {
+			const v = zod.def.innerType._zod.values;
 			return v ? new Set([...v].filter((x) => x !== void 0)) : void 0;
 		});
 		inst._zod.parse = (payload, ctx) => {
@@ -11785,46 +12790,41 @@ createHTML: (html) => {
 		});
 		return payload;
 	}
+	function handleCatchResult(payload, result, def, ctx) {
+		if (!result.issues.length) {
+			payload.value = result.value;
+			if (result.memo) payload.memo = true;
+			return payload;
+		}
+		payload.value = def.catchValue({
+			...result,
+			value: payload.value,
+			error: { issues: result.issues.map((iss) => finalizeIssue(iss, ctx, config())) },
+			input: payload.value
+		});
+		return payload;
+	}
 	var $ZodCatch = /*@__PURE__*/ $constructor("$ZodCatch", (inst, def) => {
 		$ZodType.init(inst, def);
-		inst._zod.optin = "optional";
-		defineLazy(inst._zod, "optout", () => def.innerType._zod.optout);
-		defineLazy(inst._zod, "values", () => def.innerType._zod.values);
+		defineLazyInternal(inst, "optin", (zod) => zod.def.innerType._zod.optin === "defaulted" ? "defaulted" : "optional");
+		defineLazyInternal(inst, "optout", (zod) => zod.def.innerType._zod.optout);
+		defineLazyInternal(inst, "values", (zod) => zod.def.innerType._zod.values);
 		inst._zod.parse = (payload, ctx) => {
 			if (ctx.direction === "backward") return def.innerType._zod.run(payload, ctx);
-			const result = def.innerType._zod.run(payload, ctx);
-			if (result instanceof Promise) return result.then((result) => {
-				payload.value = result.value;
-				if (result.issues.length) {
-					payload.value = def.catchValue({
-						...payload,
-						error: { issues: result.issues.map((iss) => finalizeIssue(iss, ctx, config())) },
-						input: payload.value
-					});
-					payload.issues = [];
-					payload.fallback = true;
-				}
-				return payload;
-			});
-			payload.value = result.value;
-			if (result.issues.length) {
-				payload.value = def.catchValue({
-					...payload,
-					error: { issues: result.issues.map((iss) => finalizeIssue(iss, ctx, config())) },
-					input: payload.value
-				});
-				payload.issues = [];
-				payload.fallback = true;
-			}
-			return payload;
+			const result = def.innerType._zod.run({
+				value: payload.value,
+				issues: []
+			}, ctx);
+			if (result instanceof Promise) return result.then((result) => handleCatchResult(payload, result, def, ctx));
+			return handleCatchResult(payload, result, def, ctx);
 		};
 	});
 	var $ZodPipe = /*@__PURE__*/ $constructor("$ZodPipe", (inst, def) => {
 		$ZodType.init(inst, def);
-		defineLazy(inst._zod, "values", () => def.in._zod.values);
-		defineLazy(inst._zod, "optin", () => def.in._zod.optin);
-		defineLazy(inst._zod, "optout", () => def.out._zod.optout);
-		defineLazy(inst._zod, "propValues", () => def.in._zod.propValues);
+		defineLazyInternal(inst, "values", (zod) => zod.def.in._zod.values);
+		defineLazyInternal(inst, "optin", (zod) => zod.def.in._zod.optin);
+		defineLazyInternal(inst, "optout", (zod) => zod.def.out._zod.optout);
+		defineLazyInternal(inst, "propValues", (zod) => zod.def.in._zod.propValues);
 		inst._zod.parse = (payload, ctx) => {
 			if (ctx.direction === "backward") {
 				const right = def.out._zod.run(payload, ctx);
@@ -11837,22 +12837,21 @@ createHTML: (html) => {
 		};
 	});
 	function handlePipeResult(left, next, ctx) {
-		if (left.issues.length) {
+		if (left.issues.some((iss) => iss.code !== "unrecognized_keys")) {
 			left.aborted = true;
 			return left;
 		}
 		return next._zod.run({
 			value: left.value,
-			issues: left.issues,
-			fallback: left.fallback
+			issues: left.issues
 		}, ctx);
 	}
 	var $ZodReadonly = /*@__PURE__*/ $constructor("$ZodReadonly", (inst, def) => {
 		$ZodType.init(inst, def);
-		defineLazy(inst._zod, "propValues", () => def.innerType._zod.propValues);
-		defineLazy(inst._zod, "values", () => def.innerType._zod.values);
-		defineLazy(inst._zod, "optin", () => def.innerType?._zod?.optin);
-		defineLazy(inst._zod, "optout", () => def.innerType?._zod?.optout);
+		defineLazyInternal(inst, "propValues", (zod) => zod.def.innerType._zod.propValues);
+		defineLazyInternal(inst, "values", (zod) => zod.def.innerType._zod.values);
+		defineLazyInternal(inst, "optin", (zod) => zod.def.innerType?._zod?.optin);
+		defineLazyInternal(inst, "optout", (zod) => zod.def.innerType?._zod?.optout);
 		inst._zod.parse = (payload, ctx) => {
 			if (ctx.direction === "backward") return def.innerType._zod.run(payload, ctx);
 			const result = def.innerType._zod.run(payload, ctx);
@@ -11861,7 +12860,7 @@ createHTML: (html) => {
 		};
 	});
 	function handleReadonlyResult(payload) {
-		payload.value = Object.freeze(payload.value);
+		if (!payload.memo) payload.value = Object.freeze(payload.value);
 		return payload;
 	}
 	var $ZodCustom = /*@__PURE__*/ $constructor("$ZodCustom", (inst, def) => {
@@ -11890,8 +12889,366 @@ createHTML: (html) => {
 			payload.issues.push(issue(_iss));
 		}
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v4/core/registries.js
+	// ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/memoizer.js
+	var $ZodCyclicError = class extends Error {
+		constructor() {
+			super(`Cannot parse a reference cycle that closes through a transform`);
+			this.name = "ZodCyclicError";
+		}
+	};
+	/** Keyed off the context object every schema in one parse call already shares. */
+	var STATE = "~memo";
+	var NO_ISSUES = [];
+	function isRef(value) {
+		return value !== null && typeof value === "object";
+	}
+	function cloneIssues(issues) {
+		return issues.map((iss) => iss.path ? {
+			...iss,
+			path: iss.path.slice()
+		} : { ...iss });
+	}
+	var recursive = /*@__PURE__*/ new WeakMap();
+	/** What the walk established, in order of certainty: ordered so the strongest answer among children wins. */
+	var NONE = 0;
+	var ASSUMED = 1;
+	var PROVEN = 2;
+	/** Whether this schema's subtree contains a cycle, so one parse can re-enter it. */
+	function isRecursive(inst, stack, resolve) {
+		const cached = recursive.get(inst);
+		if (cached !== void 0) return cached ? PROVEN : NONE;
+		if (stack.has(inst)) return PROVEN;
+		stack.add(inst);
+		let result = NONE;
+		const check = (child) => {
+			if (result !== PROVEN && child?._zod) {
+				const answer = isRecursive(child, stack, resolve);
+				if (answer > result) result = answer;
+			}
+		};
+		const shape = (sh, spread) => {
+			let answer = NONE;
+			for (const key of Reflect.ownKeys(sh)) {
+				const desc = Object.getOwnPropertyDescriptor(sh, key);
+				if (spread && !desc.enumerable) continue;
+				const child = desc.get ? ASSUMED : desc.value?._zod ? isRecursive(desc.value, stack, resolve) : NONE;
+				if (child > answer) answer = child;
+			}
+			return answer;
+		};
+		const merge = (answer) => {
+			if (answer > result) result = answer;
+		};
+		const def = inst._zod.def;
+		switch (def.type) {
+			case "object": {
+				const raw = rawShape(def);
+				merge(raw ? shape(raw, true) : ASSUMED);
+				check(def.catchall);
+				break;
+			}
+			case "array":
+				check(def.element);
+				break;
+			case "tuple":
+				for (const el of def.items) check(el);
+				check(def.rest);
+				break;
+			case "record":
+			case "map":
+				check(def.keyType);
+				check(def.valueType);
+				break;
+			case "set":
+				check(def.valueType);
+				break;
+			case "union":
+				for (const el of def.options) check(el);
+				break;
+			case "intersection":
+				check(def.left);
+				check(def.right);
+				break;
+			case "optional":
+			case "nullable":
+			case "default":
+			case "prefault":
+			case "catch":
+			case "readonly":
+			case "nonoptional":
+			case "promise":
+			case "success":
+				check(def.innerType);
+				break;
+			case "pipe":
+				check(def.in);
+				check(def.out);
+				break;
+			case "function":
+				check(def.input);
+				check(def.output);
+				break;
+			case "lazy": {
+				const inner = def._cachedInner ?? (resolve ? inst._zod.innerType : void 0);
+				merge(inner ? isRecursive(inner, stack, false) : ASSUMED);
+				break;
+			}
+			case "template_literal":
+			case "string":
+			case "number":
+			case "int":
+			case "boolean":
+			case "bigint":
+			case "symbol":
+			case "undefined":
+			case "null":
+			case "void":
+			case "never":
+			case "any":
+			case "unknown":
+			case "date":
+			case "nan":
+			case "enum":
+			case "literal":
+			case "file":
+			case "transform":
+			case "custom": break;
+			default: for (const key in def) {
+				const desc = Object.getOwnPropertyDescriptor(def, key);
+				if (!desc || desc.get) continue;
+				const value = desc.value;
+				if (!value || typeof value !== "object") continue;
+				if (value._zod) check(value);
+				else if (Array.isArray(value)) for (const el of value) check(el);
+			}
+		}
+		stack.delete(inst);
+		return settle(inst, result);
+	}
+	/** An assumed answer must not outlive the resolution that settles it, so only a certain one is cached. */
+	function settle(inst, answer) {
+		if (answer !== ASSUMED) recursive.set(inst, answer === PROVEN);
+		return answer;
+	}
+	function bucketFor(state, inst) {
+		let bucket = state.buckets.get(inst);
+		if (!bucket) {
+			bucket = /* @__PURE__ */ new WeakMap();
+			state.buckets.set(inst, bucket);
+		}
+		return bucket;
+	}
+	var handoff;
+	var open = [];
+	var memo = {
+		alloc(_inst, payload, empty) {
+			const bucket = handoff;
+			if (!bucket) return empty;
+			handoff = void 0;
+			const entry = {
+				value: empty,
+				issues: null
+			};
+			bucket.set(payload.value, entry);
+			open.push(entry);
+			return empty;
+		},
+		guard(inst) {
+			var _a;
+			(_a = inst._zod).deferred ?? (_a.deferred = []);
+			inst._zod.deferred.push(() => {
+				const base = inst._zod.parse;
+				const wrapped = (payload, ctx) => {
+					if (ctx.direction !== "backward" && isBackEdge(ctx, payload.value)) throw new $ZodCyclicError();
+					return base(payload, ctx);
+				};
+				inst._zod.parse = wrapped;
+				if (inst._zod.run === base) inst._zod.run = wrapped;
+			});
+		},
+		attach(inst) {
+			var _a;
+			let isRecursiveInst;
+			let rechecked = false;
+			let lastCtx;
+			let lastBucket;
+			(_a = inst._zod).deferred ?? (_a.deferred = []);
+			inst._zod.deferred.push(() => {
+				const base = inst._zod.parse;
+				const wrapped = (payload, ctx) => {
+					if (isRecursiveInst === void 0) {
+						const walked = isRecursive(inst, /* @__PURE__ */ new Set(), false);
+						if (walked === NONE) {
+							inst._zod.parse = base;
+							if (inst._zod.run === wrapped) inst._zod.run = base;
+							return base(payload, ctx);
+						}
+						if (walked === PROVEN || rechecked) isRecursiveInst = true;
+						else rechecked = true;
+					}
+					const input = payload.value;
+					if (!isRef(input)) return base(payload, ctx);
+					let state = ctx[STATE];
+					if (!state) {
+						state = {
+							buckets: /* @__PURE__ */ new WeakMap(),
+							backEdges: void 0
+						};
+						ctx[STATE] = state;
+					}
+					let bucket;
+					if (lastCtx === ctx) bucket = lastBucket;
+					else {
+						bucket = bucketFor(state, inst);
+						lastCtx = ctx;
+						lastBucket = bucket;
+					}
+					const hit = bucket.get(input);
+					if (hit) {
+						payload.value = hit.value;
+						if (hit.issues) {
+							if (hit.issues.length) payload.issues.push(...cloneIssues(hit.issues));
+						} else {
+							payload.memo = true;
+							state.backEdges ?? (state.backEdges = /* @__PURE__ */ new WeakSet());
+							state.backEdges.add(hit.value);
+						}
+						return payload;
+					}
+					handoff = bucket;
+					const depth = open.length;
+					const result = base(payload, ctx);
+					handoff = void 0;
+					const entry = open.length > depth ? open.pop() : void 0;
+					if (result instanceof Promise) return result.then((r) => {
+						if (entry) entry.issues = r.issues.length ? cloneIssues(r.issues) : NO_ISSUES;
+						return r;
+					});
+					if (entry) entry.issues = result.issues.length ? cloneIssues(result.issues) : NO_ISSUES;
+					return result;
+				};
+				inst._zod.parse = wrapped;
+				if (inst._zod.run === base) inst._zod.run = wrapped;
+			});
+		}
+	};
+	/** The memoizer that gives containers cycle support. `zod` installs it by default; `zod/mini` opts in with `config({ memoizer: memoizer() })`. */
+	function memoizer() {
+		return memo;
+	}
+	/** Whether this value is a node a back-edge resolved to before it finished. */
+	function isBackEdge(ctx, value) {
+		const backEdges = ctx[STATE]?.backEdges;
+		return backEdges !== void 0 && isRef(value) && backEdges.has(value);
+	}
+	// ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/locales/en.js
+	var error = () => {
+		const Sizable = {
+			string: {
+				unit: "characters",
+				verb: "to have"
+			},
+			file: {
+				unit: "bytes",
+				verb: "to have"
+			},
+			array: {
+				unit: "items",
+				verb: "to have"
+			},
+			set: {
+				unit: "items",
+				verb: "to have"
+			},
+			map: {
+				unit: "entries",
+				verb: "to have"
+			}
+		};
+		function getSizing(origin) {
+			return Sizable[origin] ?? null;
+		}
+		const FormatDictionary = {
+			regex: "input",
+			email: "email address",
+			url: "URL",
+			emoji: "emoji",
+			uuid: "UUID",
+			uuidv4: "UUIDv4",
+			uuidv6: "UUIDv6",
+			nanoid: "nanoid",
+			guid: "GUID",
+			cuid: "cuid",
+			cuid2: "cuid2",
+			ulid: "ULID",
+			xid: "XID",
+			ksuid: "KSUID",
+			datetime: "ISO datetime",
+			date: "ISO date",
+			time: "ISO time",
+			duration: "ISO duration",
+			ipv4: "IPv4 address",
+			ipv6: "IPv6 address",
+			mac: "MAC address",
+			cidrv4: "IPv4 range",
+			cidrv6: "IPv6 range",
+			base64: "base64-encoded string",
+			base64url: "base64url-encoded string",
+			json_string: "JSON string",
+			e164: "E.164 number",
+			currency_code: "currency code",
+			credit_card: "credit card number",
+			iban: "IBAN",
+			jwt: "JWT",
+			template_literal: "input"
+		};
+		const TypeDictionary = { nan: "NaN" };
+		function getTypeName(type, input) {
+			if (type === "number" && typeof input === "number" && !Number.isFinite(input)) return String(input);
+			return TypeDictionary[type] ?? type;
+		}
+		return (issue) => {
+			switch (issue.code) {
+				case "invalid_type": return `Invalid input: expected ${getTypeName(issue.expected)}, received ${getTypeName(parsedType(issue.input), issue.input)}`;
+				case "invalid_value":
+					if (issue.values.length === 1) return `Invalid input: expected ${stringifyPrimitive(issue.values[0])}`;
+					return `Invalid option: expected one of ${joinValues(issue.values, "|")}`;
+				case "too_big": {
+					const adj = issue.exact ? "exactly " : issue.inclusive ? "<=" : "<";
+					const sizing = getSizing(issue.origin);
+					if (sizing) return `Too big: expected ${issue.origin ?? "value"} to have ${adj}${issue.maximum.toString()} ${sizing.unit ?? "elements"}`;
+					return `Too big: expected ${issue.origin ?? "value"} to be ${adj}${issue.maximum.toString()}`;
+				}
+				case "too_small": {
+					const adj = issue.exact ? "exactly " : issue.inclusive ? ">=" : ">";
+					const sizing = getSizing(issue.origin);
+					if (sizing) return `Too small: expected ${issue.origin} to have ${adj}${issue.minimum.toString()} ${sizing.unit}`;
+					return `Too small: expected ${issue.origin} to be ${adj}${issue.minimum.toString()}`;
+				}
+				case "invalid_format": {
+					const _issue = issue;
+					if (_issue.format === "starts_with") return `Invalid string: must start with "${_issue.prefix}"`;
+					if (_issue.format === "ends_with") return `Invalid string: must end with "${_issue.suffix}"`;
+					if (_issue.format === "includes") return `Invalid string: must include "${_issue.includes}"`;
+					if (_issue.format === "regex") return `Invalid string: must match pattern ${_issue.pattern}`;
+					return `Invalid ${FormatDictionary[_issue.format] ?? issue.format}`;
+				}
+				case "not_multiple_of": return `Invalid number: must be a multiple of ${issue.divisor}`;
+				case "unrecognized_keys": return `Unrecognized key${issue.keys.length > 1 ? "s" : ""}: ${joinValues(issue.keys, ", ")}`;
+				case "invalid_key": return `Invalid key in ${issue.origin}`;
+				case "invalid_union":
+					if (issue.options && Array.isArray(issue.options) && issue.options.length > 0) return `Invalid discriminator value. Expected ${issue.options.map((o) => `'${o}'`).join(" | ")}`;
+					if (issue.inclusive === false) return "Invalid input: more than one option matched";
+					return "Invalid input";
+				case "invalid_element": return `Invalid value in ${issue.origin}`;
+				default: return `Invalid input`;
+			}
+		};
+	};
+	function en_default() {
+		return { localeError: error() };
+	}
+	// ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/registries.js
 	var _a;
 	var $ZodRegistry = class {
 		constructor() {
@@ -11937,14 +13294,17 @@ createHTML: (html) => {
 	}
 	(_a = globalThis).__zod_globalRegistry ?? (_a.__zod_globalRegistry = registry());
 	var globalRegistry = globalThis.__zod_globalRegistry;
-	//#endregion
-	//#region ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v4/core/api.js
+	// ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/api.js
+	function snapshotChecks(def) {
+		if (def.checks) def.checks = [...def.checks];
+		return def;
+	}
 	// @__NO_SIDE_EFFECTS__
 	function _string(Class, params) {
-		return new Class({
+		return new Class(snapshotChecks({
 			type: "string",
 			...normalizeParams(params)
-		});
+		}));
 	}
 	// @__NO_SIDE_EFFECTS__
 	function _email(Class, params) {
@@ -12291,6 +13651,14 @@ createHTML: (html) => {
 		});
 	}
 	// @__NO_SIDE_EFFECTS__
+	function _properties(shape, params) {
+		return new $ZodCheckProperties({
+			check: "properties",
+			shape,
+			...normalizeParams(params)
+		});
+	}
+	// @__NO_SIDE_EFFECTS__
 	function _overwrite(tx) {
 		return new $ZodCheckOverwrite({
 			check: "overwrite",
@@ -12343,7 +13711,7 @@ createHTML: (html) => {
 					const _issue = issue$2;
 					if (_issue.fatal) _issue.continue = false;
 					_issue.code ?? (_issue.code = "custom");
-					_issue.input ?? (_issue.input = payload.value);
+					if (!("input" in _issue)) _issue.input = payload.value;
 					_issue.inst ?? (_issue.inst = ch);
 					_issue.continue ?? (_issue.continue = !ch._zod.def.abort);
 					payload.issues.push(issue(_issue));
@@ -12362,8 +13730,11 @@ createHTML: (html) => {
 		ch._zod.check = fn;
 		return ch;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v4/core/to-json-schema.js
+	// ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/to-json-schema.js
+	function assignProps(target, ...sources) {
+		for (const source of sources) for (const key of Reflect.ownKeys(source)) if (Object.prototype.propertyIsEnumerable.call(source, key)) assignProp(target, key, source[key]);
+		return target;
+	}
 	function initializeContext(params) {
 		let target = params?.target ?? "draft-2020-12";
 		if (target === "draft-4") target = "draft-04";
@@ -12377,12 +13748,32 @@ createHTML: (html) => {
 			io: params?.io ?? "output",
 			counter: 0,
 			seen: /* @__PURE__ */ new Map(),
+			sharedDefsExtractedFor: void 0,
+			sharedEmitDoneFor: void 0,
 			cycles: params?.cycles ?? "ref",
 			reused: params?.reused ?? "inline",
+			intersections: [],
+			deferred: [],
 			external: params?.external ?? void 0
 		};
 	}
-	function process$1(schema, ctx, _params = {
+	/**
+	* Applies the `unrepresentable` setting at a site that has no JSON Schema equivalent. Throws
+	* `message` unless the setting (or the handler's return value) says otherwise. Returns `true` if a
+	* custom JSON Schema was written into `json`, in which case the caller must not write its own.
+	*/
+	function handleUnrepresentable(schema, ctx, json, params, message) {
+		const result = typeof ctx.unrepresentable === "function" ? ctx.unrepresentable({
+			zodSchema: schema,
+			path: params.path,
+			message
+		}) : ctx.unrepresentable;
+		if (result === "any") return false;
+		if (result === void 0 || result === "throw") throw new Error(message);
+		Object.assign(json, result);
+		return true;
+	}
+	function processSchema(schema, ctx, _params = {
 		path: [],
 		schemaPath: []
 	}) {
@@ -12401,6 +13792,8 @@ createHTML: (html) => {
 			path: _params.path
 		};
 		ctx.seen.set(schema, result);
+		ctx.sharedDefsExtractedFor = void 0;
+		ctx.sharedEmitDoneFor = void 0;
 		const overrideSchema = schema._zod.toJSONSchema?.();
 		if (overrideSchema) result.schema = overrideSchema;
 		else {
@@ -12419,12 +13812,12 @@ createHTML: (html) => {
 			const parent = schema._zod.parent;
 			if (parent) {
 				if (!result.ref) result.ref = parent;
-				process$1(parent, ctx, params);
+				processSchema(parent, ctx, params);
 				ctx.seen.get(parent).isParent = true;
 			}
 		}
 		const meta = ctx.metadataRegistry.get(schema);
-		if (meta) Object.assign(result.schema, meta);
+		if (meta) assignProps(result.schema, meta);
 		if (ctx.io === "input" && isTransforming(schema)) {
 			delete result.schema.examples;
 			delete result.schema.default;
@@ -12433,9 +13826,13 @@ createHTML: (html) => {
 		delete result.schema._prefault;
 		return ctx.seen.get(schema).schema;
 	}
+	function encodeJSONPointerSegment(segment) {
+		return segment.replace(/~/g, "~0").replace(/\//g, "~1");
+	}
 	function extractDefs(ctx, schema) {
 		const root = ctx.seen.get(schema);
 		if (!root) throw new Error("Unprocessed schema. This is a bug in Zod.");
+		if (ctx.external && ctx.sharedDefsExtractedFor === ctx.external) return;
 		const idToSchema = /* @__PURE__ */ new Map();
 		for (const entry of ctx.seen.entries()) {
 			const id = ctx.metadataRegistry.get(entry[0])?.id;
@@ -12455,15 +13852,16 @@ createHTML: (html) => {
 				entry[1].defId = id;
 				return {
 					defId: id,
-					ref: `${uriGenerator("__shared")}#/${defsSegment}/${id}`
+					ref: `${uriGenerator("__shared")}#/${defsSegment}/${encodeJSONPointerSegment(id)}`
 				};
 			}
-			if (entry[1] === root) return { ref: "#" };
-			const defUriPrefix = `#/${defsSegment}/`;
+			const uriPrefix = `#`;
+			const defUriPrefix = `${uriPrefix}/${defsSegment}/`;
+			if (entry[1] === root && !entry[1].schema.id) return { ref: uriPrefix };
 			const defId = entry[1].schema.id ?? `__schema${ctx.counter++}`;
 			return {
 				defId,
-				ref: defUriPrefix + defId
+				ref: defUriPrefix + encodeJSONPointerSegment(defId)
 			};
 		};
 		const extractToDef = (entry) => {
@@ -12504,12 +13902,114 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				continue;
 			}
 			if (seen.count > 1) {
-				if (ctx.reused === "ref") {
-					extractToDef(entry);
-					continue;
-				}
+				if (ctx.reused === "ref") extractToDef(entry);
 			}
 		}
+		if (ctx.external) ctx.sharedDefsExtractedFor = ctx.external;
+	}
+	/** Rewrites `anyOf: [{type: "a"}, {type: "b"}]` to `type: ["a", "b"]`, which every JSON Schema draft treats as equivalent and most consumers render far better for the nullable case. Only branches that are a bare type assertion qualify — anything carrying a constraint, `$ref`, `const` or metadata is left alone. Runs after `flattenRef`, so a branch an override decorated or `$defs` extraction turned into a `$ref` is no longer bare and correctly stays in `anyOf`. `oneOf` is excluded: `integer` and `number` overlap, so "exactly one" and "at least one" are not the same there. OpenAPI 3.0 is excluded: its `type` must be a single string. */
+	function compactTypeUnion(schema) {
+		const options = schema.anyOf;
+		if (!Array.isArray(options) || options.length === 0 || schema.type !== void 0) return;
+		const types = [];
+		for (const option of options) {
+			if (!option || typeof option !== "object") return;
+			compactTypeUnion(option);
+			const keys = Object.keys(option);
+			if (keys.length !== 1 || keys[0] !== "type") return;
+			const type = option.type;
+			for (const member of Array.isArray(type) ? type : [type]) {
+				if (typeof member !== "string") return;
+				if (!types.includes(member)) types.push(member);
+			}
+		}
+		delete schema.anyOf;
+		schema.type = types.length === 1 ? types[0] : types;
+	}
+	/** Keywords `foldIntersection` knows how to combine. Anything else — `$ref`, `patternProperties`,
+	* an annotation like `description` — makes a member unfoldable, so a constraint this does not
+	* understand leaves the `allOf` alone instead of being silently dropped or misattributed. */
+	var FOLDABLE_KEYS = /* @__PURE__ */ new Set([
+		"type",
+		"properties",
+		"required",
+		"additionalProperties"
+	]);
+	var UNION_KEYS = ["oneOf", "anyOf"];
+	/** A member's constraint on a key it does not declare itself. A `catchall` states one; `false`, an absent `additionalProperties`, and the empty schema a loose object emits state nothing. */
+	function undeclaredConstraint(member) {
+		const extra = member.additionalProperties;
+		if (extra === void 0 || extra === false || typeof extra !== "object" || extra === null) return null;
+		return Object.keys(extra).length ? extra : null;
+	}
+	/** Combines object members into the single object they describe together, or returns `null` if any of them carries a keyword outside {@link FOLDABLE_KEYS}. */
+	function foldObjects(members) {
+		const objects = [];
+		for (const member of members) {
+			if (typeof member !== "object" || member.type !== "object") return null;
+			for (const key in member) if (!FOLDABLE_KEYS.has(key)) return null;
+			objects.push(member);
+		}
+		const properties = {};
+		const required = /* @__PURE__ */ new Set();
+		for (const object of objects) {
+			for (const key in object.properties) {
+				if (Object.prototype.hasOwnProperty.call(properties, key)) continue;
+				const parts = [];
+				for (const other of objects) {
+					const part = other.properties?.[key] ?? undeclaredConstraint(other);
+					if (part === null || part === void 0) continue;
+					if (!parts.some((seen) => JSON.stringify(seen) === JSON.stringify(part))) parts.push(part);
+				}
+				assignProp(properties, key, parts.length === 1 ? parts[0] : foldObjects(parts) ?? { allOf: parts });
+			}
+			for (const key of object.required ?? []) required.add(key);
+		}
+		const folded = {
+			type: "object",
+			properties
+		};
+		if (required.size) folded.required = [...required];
+		if (objects.every((object) => object.additionalProperties === false)) folded.additionalProperties = false;
+		else {
+			const constraints = [];
+			for (const object of objects) {
+				const constraint = undeclaredConstraint(object);
+				if (constraint && !constraints.some((seen) => JSON.stringify(seen) === JSON.stringify(constraint))) constraints.push(constraint);
+			}
+			if (constraints.length === 1) folded.additionalProperties = constraints[0];
+			else if (constraints.length > 1) folded.additionalProperties = { allOf: constraints };
+		}
+		return folded;
+	}
+	/** `additionalProperties` in an `allOf` member sees only that member's own `properties`, so two
+	* closed object members reject each other's keys and the schema validates nothing. Zod's parser
+	* pools the key sets instead — `handleIntersectionResults` reports a key as unrecognized only when
+	* *every* side rejects it — so the emitted schema has to pool them too, and folding the members
+	* into one object is the encoding that says so on every target.
+	*
+	* This runs from `finalize`, after `extractDefs`, which is what keeps it clear of the `$ref`
+	* machinery: a member extracted into `$defs` is already a `$ref` by now and declines to fold, so it
+	* keeps its reference and its own closedness rather than being inlined as a stale copy. */
+	function foldIntersection(json) {
+		const allOf = json.allOf;
+		if (!Array.isArray(allOf) || allOf.length < 2) return;
+		for (const key of FOLDABLE_KEYS) if (key in json) return;
+		const unions = allOf.filter((m) => UNION_KEYS.some((k) => Array.isArray(m[k])));
+		let folded = null;
+		if (!unions.length) folded = foldObjects(allOf);
+		else {
+			const union = unions[0];
+			const keyword = UNION_KEYS.find((k) => Array.isArray(union[k]));
+			if (Object.keys(union).length !== 1) return;
+			const rest = allOf.filter((m) => m !== union);
+			const branches = union[keyword].map((branch) => foldObjects([...rest, branch]));
+			if (branches.some((b) => !b)) return;
+			folded = { [keyword]: branches };
+		}
+		if (!folded) return;
+		delete json.allOf;
+		assignProps(json, folded);
 	}
 	function finalize(ctx, schema) {
 		const root = ctx.seen.get(schema);
@@ -12528,8 +14028,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				if (refSchema.$ref && (ctx.target === "draft-07" || ctx.target === "draft-04" || ctx.target === "openapi-3.0")) {
 					schema.allOf = schema.allOf ?? [];
 					schema.allOf.push(refSchema);
-				} else Object.assign(schema, refSchema);
-				Object.assign(schema, _cached);
+				} else assignProps(schema, refSchema);
+				assignProps(schema, _cached);
 				if (zodSchema._zod.parent === ref) for (const key in schema) {
 					if (key === "$ref" || key === "allOf") continue;
 					if (!(key in _cached)) delete schema[key];
@@ -12557,7 +14057,22 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				path: seen.path ?? []
 			});
 		};
-		for (const entry of [...ctx.seen.entries()].reverse()) flattenRef(entry[0]);
+		if (!ctx.external || ctx.sharedEmitDoneFor !== ctx.external) {
+			for (const entry of [...ctx.seen.entries()].reverse()) flattenRef(entry[0]);
+			if (ctx.target !== "openapi-3.0") for (const entry of ctx.seen.entries()) compactTypeUnion(entry[1].def ?? entry[1].schema);
+			for (const rewrite of ctx.deferred) rewrite();
+			if (ctx.intersections.length) {
+				const carriers = /* @__PURE__ */ new Map();
+				for (const seen of ctx.seen.values()) for (const json of [seen.schema, seen.def]) {
+					const allOf = json?.allOf;
+					if (!Array.isArray(allOf)) continue;
+					const existing = carriers.get(allOf);
+					if (existing) existing.push(json);
+					else carriers.set(allOf, [json]);
+				}
+				for (const allOf of ctx.intersections) for (const json of carriers.get(allOf) ?? []) foldIntersection(json);
+			}
+		}
 		const result = {};
 		if (ctx.target === "draft-2020-12") result.$schema = "https://json-schema.org/draft/2020-12/schema";
 		else if (ctx.target === "draft-07") result.$schema = "http://json-schema.org/draft-07/schema#";
@@ -12568,17 +14083,18 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if (!id) throw new Error("Schema is missing an `id` property");
 			result.$id = ctx.external.uri(id);
 		}
-		Object.assign(result, root.def ?? root.schema);
+		assignProps(result, root.defId ? root.schema : root.def ?? root.schema);
 		const rootMetaId = ctx.metadataRegistry.get(schema)?.id;
 		if (rootMetaId !== void 0 && result.id === rootMetaId) delete result.id;
 		const defs = ctx.external?.defs ?? {};
-		for (const entry of ctx.seen.entries()) {
+		if (!ctx.external || ctx.sharedEmitDoneFor !== ctx.external) for (const entry of ctx.seen.entries()) {
 			const seen = entry[1];
 			if (seen.def && seen.defId) {
 				if (seen.def.id === seen.defId) delete seen.def.id;
-				defs[seen.defId] = seen.def;
+				assignProp(defs, seen.defId, seen.def);
 			}
 		}
+		if (ctx.external) ctx.sharedEmitDoneFor = ctx.external;
 		if (ctx.external) {} else if (Object.keys(defs).length > 0) {
 			if (ctx.target === "draft-2020-12") result.$defs = defs;
 			else result.definitions = defs;
@@ -12610,7 +14126,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (def.type === "array") return isTransforming(def.element, ctx);
 		if (def.type === "set") return isTransforming(def.valueType, ctx);
 		if (def.type === "lazy") return isTransforming(def.getter(), ctx);
-		if (def.type === "promise" || def.type === "optional" || def.type === "nonoptional" || def.type === "nullable" || def.type === "readonly" || def.type === "default" || def.type === "prefault") return isTransforming(def.innerType, ctx);
+		if (def.type === "promise" || def.type === "optional" || def.type === "nonoptional" || def.type === "nullable" || def.type === "readonly" || def.type === "default" || def.type === "prefault" || def.type === "catch") return isTransforming(def.innerType, ctx);
 		if (def.type === "intersection") return isTransforming(def.left, ctx) || isTransforming(def.right, ctx);
 		if (def.type === "record" || def.type === "map") return isTransforming(def.keyType, ctx) || isTransforming(def.valueType, ctx);
 		if (def.type === "pipe") {
@@ -12641,7 +14157,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			...params,
 			processors
 		});
-		process$1(schema, ctx);
+		processSchema(schema, ctx);
 		extractDefs(ctx, schema);
 		return finalize(ctx, schema);
 	};
@@ -12653,12 +14169,83 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			io,
 			processors
 		});
-		process$1(schema, ctx);
+		processSchema(schema, ctx);
 		extractDefs(ctx, schema);
 		return finalize(ctx, schema);
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v4/core/json-schema-processors.js
+	// ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/core/json-schema-processors.js
+	var narrowMin = (agg, key, value) => {
+		if (agg[key] === void 0 || value > agg[key]) agg[key] = value;
+	};
+	var narrowMax = (agg, key, value) => {
+		if (agg[key] === void 0 || value < agg[key]) agg[key] = value;
+	};
+	var narrowBoth = (agg, value) => {
+		narrowMin(agg, "minimum", value);
+		narrowMax(agg, "maximum", value);
+	};
+	var addDivisor = (agg, value) => {
+		agg.multipleOf ?? (agg.multipleOf = []);
+		if (!agg.multipleOf.includes(value)) agg.multipleOf.push(value);
+	};
+	var addPattern = (agg, pattern) => {
+		agg.patterns ?? (agg.patterns = /* @__PURE__ */ new Set());
+		agg.patterns.add(pattern);
+	};
+	var intersectMime = (agg, mime) => {
+		agg.mime = agg.mime ? agg.mime.filter((m) => mime.includes(m)) : [...mime];
+	};
+	var setFormat = (agg, format) => {
+		agg.format = format;
+		if (format.includes("int")) agg.isInt = true;
+	};
+	var minContributor = (agg, def) => narrowMin(agg, "minimum", def.minimum);
+	var maxContributor = (agg, def) => narrowMax(agg, "maximum", def.maximum);
+	var formatContributor = (ranges) => (agg, def) => {
+		setFormat(agg, def.format);
+		const [minimum, maximum] = ranges[def.format];
+		narrowMin(agg, "minimum", minimum);
+		narrowMax(agg, "maximum", maximum);
+	};
+	var contributors = {
+		greater_than: (agg, def) => narrowMin(agg, def.inclusive ? "minimum" : "exclusiveMinimum", def.value),
+		less_than: (agg, def) => narrowMax(agg, def.inclusive ? "maximum" : "exclusiveMaximum", def.value),
+		multiple_of: (agg, def) => addDivisor(agg, def.value),
+		number_format: formatContributor(NUMBER_FORMAT_RANGES),
+		bigint_format: formatContributor(BIGINT_FORMAT_RANGES),
+		min_length: minContributor,
+		max_length: maxContributor,
+		length_equals: (agg, def) => narrowBoth(agg, def.length),
+		min_size: minContributor,
+		max_size: maxContributor,
+		size_equals: (agg, def) => narrowBoth(agg, def.size),
+		string_format: (agg, def) => {
+			setFormat(agg, def.format);
+			if (def.pattern) addPattern(agg, def.pattern);
+			if (def.format === "base64" || def.format === "base64url") agg.contentEncoding = def.format;
+			if (def.local || def.precision === -1) agg.laxFormat = true;
+		},
+		mime_type: (agg, def) => intersectMime(agg, def.mime)
+	};
+	function aggregateChecks(schema) {
+		const agg = {};
+		const def = schema._zod.def;
+		const list = schema._zod.traits.has("$ZodCheck") ? [schema, ...def.checks ?? []] : def.checks ?? [];
+		for (const ch of list) contributors[ch._zod.def.check]?.(agg, ch._zod.def);
+		const bag = schema._zod.bag;
+		if (bag.minimum !== void 0) narrowMin(agg, "minimum", bag.minimum);
+		if (bag.exclusiveMinimum !== void 0) narrowMin(agg, "exclusiveMinimum", bag.exclusiveMinimum);
+		if (bag.maximum !== void 0) narrowMax(agg, "maximum", bag.maximum);
+		if (bag.exclusiveMaximum !== void 0) narrowMax(agg, "exclusiveMaximum", bag.exclusiveMaximum);
+		if (bag.multipleOf !== void 0) addDivisor(agg, bag.multipleOf);
+		if (bag.format !== void 0) {
+			agg.format ?? (agg.format = bag.format);
+			if (bag.format.includes("int")) agg.isInt = true;
+		}
+		if (bag.mime) intersectMime(agg, bag.mime);
+		for (const pattern of bag.patterns ?? []) addPattern(agg, pattern);
+		return agg;
+	}
 	var formatMap = {
 		guid: "uuid",
 		url: "uri",
@@ -12666,41 +14253,43 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		json_string: "json-string",
 		regex: ""
 	};
+	var exactPatterns = /* @__PURE__ */ new Map([[base64Charset, base64], [base64urlCharset, base64url]]);
+	var exactPattern = (p) => exactPatterns.get(p) ?? p;
 	var stringProcessor = (schema, ctx, _json, _params) => {
 		const json = _json;
 		json.type = "string";
-		const { minimum, maximum, format, patterns, contentEncoding } = schema._zod.bag;
+		const { minimum, maximum, format, patterns, contentEncoding, laxFormat } = aggregateChecks(schema);
 		if (typeof minimum === "number") json.minLength = minimum;
 		if (typeof maximum === "number") json.maxLength = maximum;
 		if (format) {
 			json.format = formatMap[format] ?? format;
 			if (json.format === "") delete json.format;
-			if (format === "time") delete json.format;
+			if (format === "time" || laxFormat) delete json.format;
 		}
 		if (contentEncoding) json.contentEncoding = contentEncoding;
 		if (patterns && patterns.size > 0) {
-			const regexes = [...patterns];
-			if (regexes.length === 1) json.pattern = regexes[0].source;
-			else if (regexes.length > 1) json.allOf = [...regexes.map((regex) => ({
+			const patternList = [...patterns].map(exactPattern);
+			if (patternList.length === 1) json.pattern = patternList[0].source;
+			else if (patternList.length > 1) json.allOf = [...patternList.map((regex) => ({
 				...ctx.target === "draft-07" || ctx.target === "draft-04" || ctx.target === "openapi-3.0" ? { type: "string" } : {},
 				pattern: regex.source
 			}))];
 		}
 	};
-	var customProcessor = (_schema, ctx, _json, _params) => {
-		if (ctx.unrepresentable === "throw") throw new Error("Custom types cannot be represented in JSON Schema");
+	var customProcessor = (schema, ctx, json, params) => {
+		handleUnrepresentable(schema, ctx, json, params, "Custom types cannot be represented in JSON Schema");
 	};
-	var transformProcessor = (_schema, ctx, _json, _params) => {
-		if (ctx.unrepresentable === "throw") throw new Error("Transforms cannot be represented in JSON Schema");
+	var transformProcessor = (schema, ctx, json, params) => {
+		handleUnrepresentable(schema, ctx, json, params, "Transforms cannot be represented in JSON Schema");
 	};
 	var arrayProcessor = (schema, ctx, _json, params) => {
 		const json = _json;
 		const def = schema._zod.def;
-		const { minimum, maximum } = schema._zod.bag;
+		const { minimum, maximum } = aggregateChecks(schema);
 		if (typeof minimum === "number") json.minItems = minimum;
 		if (typeof maximum === "number") json.maxItems = maximum;
 		json.type = "array";
-		json.items = process$1(def.element, ctx, {
+		json.items = processSchema(def.element, ctx, {
 			...params,
 			path: [...params.path, "items"]
 		});
@@ -12708,7 +14297,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var unionProcessor = (schema, ctx, json, params) => {
 		const def = schema._zod.def;
 		const isExclusive = def.inclusive === false;
-		const options = def.options.map((x, i) => process$1(x, ctx, {
+		const options = def.options.map((x, i) => processSchema(x, ctx, {
 			...params,
 			path: [
 				...params.path,
@@ -12721,7 +14310,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	};
 	var intersectionProcessor = (schema, ctx, json, params) => {
 		const def = schema._zod.def;
-		const a = process$1(def.left, ctx, {
+		const a = processSchema(def.left, ctx, {
 			...params,
 			path: [
 				...params.path,
@@ -12729,7 +14318,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				0
 			]
 		});
-		const b = process$1(def.right, ctx, {
+		const b = processSchema(def.right, ctx, {
 			...params,
 			path: [
 				...params.path,
@@ -12738,11 +14327,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			]
 		});
 		const isSimpleIntersection = (val) => "allOf" in val && Object.keys(val).length === 1;
-		json.allOf = [...isSimpleIntersection(a) ? a.allOf : [a], ...isSimpleIntersection(b) ? b.allOf : [b]];
+		const allOf = [...isSimpleIntersection(a) ? a.allOf : [a], ...isSimpleIntersection(b) ? b.allOf : [b]];
+		json.allOf = allOf;
+		ctx.intersections.push(allOf);
 	};
 	var nullableProcessor = (schema, ctx, json, params) => {
 		const def = schema._zod.def;
-		const inner = process$1(def.innerType, ctx, params);
+		const inner = processSchema(def.innerType, ctx, params);
 		const seen = ctx.seen.get(schema);
 		if (ctx.target === "openapi-3.0") {
 			seen.ref = def.innerType;
@@ -12751,34 +14342,53 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	};
 	var nonoptionalProcessor = (schema, ctx, _json, params) => {
 		const def = schema._zod.def;
-		process$1(def.innerType, ctx, params);
+		processSchema(def.innerType, ctx, params);
 		const seen = ctx.seen.get(schema);
 		seen.ref = def.innerType;
 	};
+	/** Round-trips a default value through JSON so the emitted schema is guaranteed to be valid JSON.
+	* A BigInt has no reliable encoding, so it goes through `unrepresentable` like any other
+	* unrepresentable value. Returns a sentinel when the caller must not write a default of its own. */
+	var UNREPRESENTABLE_DEFAULT = Symbol();
+	function serializeDefaultValue(value, schema, ctx, json, params) {
+		let unrepresentable = false;
+		const serialized = JSON.stringify(value, (_, val) => {
+			if (typeof val !== "bigint") return val;
+			unrepresentable = true;
+			return null;
+		});
+		if (!unrepresentable) return JSON.parse(serialized);
+		handleUnrepresentable(schema, ctx, json, params, "BigInt defaults cannot be represented in JSON Schema");
+		return UNREPRESENTABLE_DEFAULT;
+	}
 	var defaultProcessor = (schema, ctx, json, params) => {
 		const def = schema._zod.def;
-		process$1(def.innerType, ctx, params);
+		processSchema(def.innerType, ctx, params);
 		const seen = ctx.seen.get(schema);
 		seen.ref = def.innerType;
-		json.default = JSON.parse(JSON.stringify(def.defaultValue));
+		const value = serializeDefaultValue(def.defaultValue, schema, ctx, json, params);
+		if (value !== UNREPRESENTABLE_DEFAULT) json.default = value;
 	};
 	var prefaultProcessor = (schema, ctx, json, params) => {
 		const def = schema._zod.def;
-		process$1(def.innerType, ctx, params);
+		processSchema(def.innerType, ctx, params);
 		const seen = ctx.seen.get(schema);
 		seen.ref = def.innerType;
-		if (ctx.io === "input") json._prefault = JSON.parse(JSON.stringify(def.defaultValue));
+		if (ctx.io !== "input") return;
+		const value = serializeDefaultValue(def.defaultValue, schema, ctx, json, params);
+		if (value !== UNREPRESENTABLE_DEFAULT) json._prefault = value;
 	};
 	var catchProcessor = (schema, ctx, json, params) => {
 		const def = schema._zod.def;
-		process$1(def.innerType, ctx, params);
+		processSchema(def.innerType, ctx, params);
 		const seen = ctx.seen.get(schema);
 		seen.ref = def.innerType;
 		let catchValue;
 		try {
 			catchValue = def.catchValue(void 0);
 		} catch {
-			throw new Error("Dynamic catch values are not supported in JSON Schema");
+			handleUnrepresentable(schema, ctx, json, params, "Dynamic catch values are not supported in JSON Schema");
+			return;
 		}
 		json.default = catchValue;
 	};
@@ -12786,77 +14396,73 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const def = schema._zod.def;
 		const inIsTransform = def.in._zod.traits.has("$ZodTransform");
 		const innerType = ctx.io === "input" ? inIsTransform ? def.out : def.in : def.out;
-		process$1(innerType, ctx, params);
+		processSchema(innerType, ctx, params);
 		const seen = ctx.seen.get(schema);
 		seen.ref = innerType;
 	};
 	var readonlyProcessor = (schema, ctx, json, params) => {
 		const def = schema._zod.def;
-		process$1(def.innerType, ctx, params);
+		processSchema(def.innerType, ctx, params);
 		const seen = ctx.seen.get(schema);
 		seen.ref = def.innerType;
 		json.readOnly = true;
 	};
 	var optionalProcessor = (schema, ctx, _json, params) => {
 		const def = schema._zod.def;
-		process$1(def.innerType, ctx, params);
+		processSchema(def.innerType, ctx, params);
 		const seen = ctx.seen.get(schema);
 		seen.ref = def.innerType;
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v4/classic/iso.js
-	var ZodISODateTime = /*@__PURE__*/ $constructor("ZodISODateTime", (inst, def) => {
-		$ZodISODateTime.init(inst, def);
-		ZodStringFormat.init(inst, def);
-	});
-	function datetime(params) {
-		return /* @__PURE__ */ _isoDateTime(ZodISODateTime, params);
+	// ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/classic/errors.js
+	var _installedErrorProtos = /* @__PURE__ */ new WeakSet([Object.prototype, Error.prototype]);
+	function _lazyMethod(proto, key, make) {
+		Object.defineProperty(proto, key, {
+			configurable: true,
+			enumerable: false,
+			get() {
+				const value = make(this);
+				Object.defineProperty(this, key, {
+					value,
+					configurable: true,
+					writable: true
+				});
+				return value;
+			},
+			set(value) {
+				Object.defineProperty(this, key, {
+					value,
+					configurable: true,
+					writable: true
+				});
+			}
+		});
 	}
-	var ZodISODate = /*@__PURE__*/ $constructor("ZodISODate", (inst, def) => {
-		$ZodISODate.init(inst, def);
-		ZodStringFormat.init(inst, def);
-	});
-	function date(params) {
-		return /* @__PURE__ */ _isoDate(ZodISODate, params);
-	}
-	var ZodISOTime = /*@__PURE__*/ $constructor("ZodISOTime", (inst, def) => {
-		$ZodISOTime.init(inst, def);
-		ZodStringFormat.init(inst, def);
-	});
-	function time(params) {
-		return /* @__PURE__ */ _isoTime(ZodISOTime, params);
-	}
-	var ZodISODuration = /*@__PURE__*/ $constructor("ZodISODuration", (inst, def) => {
-		$ZodISODuration.init(inst, def);
-		ZodStringFormat.init(inst, def);
-	});
-	function duration(params) {
-		return /* @__PURE__ */ _isoDuration(ZodISODuration, params);
-	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v4/classic/errors.js
 	var initializer = (inst, issues) => {
 		$ZodError.init(inst, issues);
 		inst.name = "ZodError";
-		Object.defineProperties(inst, {
-			format: { value: (mapper) => formatError(inst, mapper) },
-			flatten: { value: (mapper) => flattenError(inst, mapper) },
-			addIssue: { value: (issue) => {
-				inst.issues.push(issue);
-				inst.message = JSON.stringify(inst.issues, jsonStringifyReplacer, 2);
-			} },
-			addIssues: { value: (issues) => {
-				inst.issues.push(...issues);
-				inst.message = JSON.stringify(inst.issues, jsonStringifyReplacer, 2);
-			} },
-			isEmpty: { get() {
-				return inst.issues.length === 0;
-			} }
+		const proto = Object.getPrototypeOf(inst);
+		if (_installedErrorProtos.has(proto)) return;
+		_installedErrorProtos.add(proto);
+		_lazyMethod(proto, "format", (self) => (mapper) => formatError(self, mapper));
+		_lazyMethod(proto, "flatten", (self) => (mapper) => flattenError(self, mapper));
+		_lazyMethod(proto, "addIssue", (self) => (issue) => {
+			self.issues.push(issue);
+			self.message = JSON.stringify(self.issues, jsonStringifyReplacer, 2);
+		});
+		_lazyMethod(proto, "addIssues", (self) => (issues) => {
+			self.issues.push(...issues);
+			self.message = JSON.stringify(self.issues, jsonStringifyReplacer, 2);
+		});
+		Object.defineProperty(proto, "isEmpty", {
+			configurable: true,
+			enumerable: false,
+			get() {
+				return this.issues.length === 0;
+			}
 		});
 	};
-	var ZodRealError = /*@__PURE__*/ $constructor("ZodError", initializer, { Parent: Error });
-	//#endregion
-	//#region ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v4/classic/parse.js
+	var ZodRealError = /*@__PURE__*/ $constructor("ZodError", initializer, void 0, { Parent: Error });
+	// ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/classic/parse.js
 	var parse = /* @__PURE__ */ _parse(ZodRealError);
 	var parseAsync = /* @__PURE__ */ _parseAsync(ZodRealError);
 	var safeParse = /* @__PURE__ */ _safeParse(ZodRealError);
@@ -12869,256 +14475,320 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var safeDecode = /* @__PURE__ */ _safeDecode(ZodRealError);
 	var safeEncodeAsync = /* @__PURE__ */ _safeEncodeAsync(ZodRealError);
 	var safeDecodeAsync = /* @__PURE__ */ _safeDecodeAsync(ZodRealError);
-	//#endregion
-	//#region ../../node_modules/.pnpm/zod@4.4.3/node_modules/zod/v4/classic/schemas.js
-	var _installedGroups = /* @__PURE__ */ new WeakMap();
-	function _installLazyMethods(inst, group, methods) {
-		const proto = Object.getPrototypeOf(inst);
-		let installed = _installedGroups.get(proto);
-		if (!installed) {
-			installed = /* @__PURE__ */ new Set();
-			_installedGroups.set(proto, installed);
-		}
-		if (installed.has(group)) return;
-		installed.add(group);
-		for (const key in methods) {
-			const fn = methods[key];
-			Object.defineProperty(proto, key, {
-				configurable: true,
-				enumerable: false,
-				get() {
-					const bound = fn.bind(this);
-					Object.defineProperty(this, key, {
-						configurable: true,
-						writable: true,
-						enumerable: true,
-						value: bound
-					});
-					return bound;
-				},
-				set(v) {
-					Object.defineProperty(this, key, {
-						configurable: true,
-						writable: true,
-						enumerable: true,
-						value: v
-					});
-				}
-			});
-		}
+	// ../../node_modules/.pnpm/zod@4.6.7/node_modules/zod/v4/classic/schemas.js
+	function _ensureDefaultLocale() {
+		if (!globalConfig.localeError) config(en_default());
+	}
+	function _ensureDefaultMemoizer() {
+		if (!globalConfig.memoizer) config({ memoizer: memoizer() });
 	}
 	var ZodType = /*@__PURE__*/ $constructor("ZodType", (inst, def) => {
+		_ensureDefaultLocale();
 		$ZodType.init(inst, def);
-		Object.assign(inst["~standard"], { jsonSchema: {
-			input: createStandardJSONSchemaMethod(inst, "input"),
-			output: createStandardJSONSchemaMethod(inst, "output")
-		} });
-		inst.toJSONSchema = createToJSONSchemaMethod(inst, {});
 		inst.def = def;
 		inst.type = def.type;
-		Object.defineProperty(inst, "_def", { value: def });
-		inst.parse = (data, params) => parse(inst, data, params, { callee: inst.parse });
-		inst.safeParse = (data, params) => safeParse(inst, data, params);
-		inst.parseAsync = async (data, params) => parseAsync(inst, data, params, { callee: inst.parseAsync });
-		inst.safeParseAsync = async (data, params) => safeParseAsync(inst, data, params);
-		inst.spa = inst.safeParseAsync;
-		inst.encode = (data, params) => encode(inst, data, params);
-		inst.decode = (data, params) => decode(inst, data, params);
-		inst.encodeAsync = async (data, params) => encodeAsync(inst, data, params);
-		inst.decodeAsync = async (data, params) => decodeAsync(inst, data, params);
-		inst.safeEncode = (data, params) => safeEncode(inst, data, params);
-		inst.safeDecode = (data, params) => safeDecode(inst, data, params);
-		inst.safeEncodeAsync = async (data, params) => safeEncodeAsync(inst, data, params);
-		inst.safeDecodeAsync = async (data, params) => safeDecodeAsync(inst, data, params);
-		_installLazyMethods(inst, "ZodType", {
-			check(...chks) {
-				const def = this.def;
-				return this.clone(mergeDefs(def, { checks: [...def.checks ?? [], ...chks.map((ch) => typeof ch === "function" ? { _zod: {
-					check: ch,
-					def: { check: "custom" },
-					onattach: []
-				} } : ch)] }), { parent: true });
-			},
-			with(...chks) {
-				return this.check(...chks);
-			},
-			clone(def, params) {
-				return clone$1(this, def, params);
-			},
-			brand() {
-				return this;
-			},
-			register(reg, meta) {
-				reg.add(this, meta);
-				return this;
-			},
-			refine(check, params) {
-				return this.check(refine(check, params));
-			},
-			superRefine(refinement, params) {
-				return this.check(superRefine(refinement, params));
-			},
-			overwrite(fn) {
-				return this.check(/* @__PURE__ */ _overwrite(fn));
-			},
-			optional() {
-				return optional(this);
-			},
-			exactOptional() {
-				return exactOptional(this);
-			},
-			nullable() {
-				return nullable(this);
-			},
-			nullish() {
-				return optional(nullable(this));
-			},
-			nonoptional(params) {
-				return nonoptional(this, params);
-			},
-			array() {
-				return array(this);
-			},
-			or(arg) {
-				return union([this, arg]);
-			},
-			and(arg) {
-				return intersection(this, arg);
-			},
-			transform(tx) {
-				return pipe(this, transform(tx));
-			},
-			default(d) {
-				return _default(this, d);
-			},
-			prefault(d) {
-				return prefault(this, d);
-			},
-			catch(params) {
-				return _catch(this, params);
-			},
-			pipe(target) {
-				return pipe(this, target);
-			},
-			readonly() {
-				return readonly(this);
-			},
-			describe(description) {
-				const cl = this.clone();
-				globalRegistry.add(cl, { description });
-				return cl;
-			},
-			meta(...args) {
-				if (args.length === 0) return globalRegistry.get(this);
-				const cl = this.clone();
-				globalRegistry.add(cl, args[0]);
-				return cl;
-			},
-			isOptional() {
-				return this.safeParse(void 0).success;
-			},
-			isNullable() {
-				return this.safeParse(null).success;
-			},
-			apply(fn) {
-				return fn(this);
-			}
-		});
-		Object.defineProperty(inst, "description", {
-			get() {
-				return globalRegistry.get(inst)?.description;
-			},
-			configurable: true
-		});
 		return inst;
+	}, {
+		check(...chks) {
+			const def = this.def;
+			return this.clone(mergeDefs(def, { checks: [...def.checks ?? [], ...chks.map((ch) => typeof ch === "function" ? { _zod: {
+				check: ch,
+				def: { check: "custom" },
+				onattach: []
+			} } : ch)] }), { parent: true });
+		},
+		with(...chks) {
+			return this.check(...chks);
+		},
+		clone(def, params) {
+			return clone$1(this, def, params);
+		},
+		brand() {
+			return this;
+		},
+		register(reg, meta) {
+			reg.add(this, meta);
+			return this;
+		},
+		refine(check, params) {
+			return this.check(refine(check, params));
+		},
+		superRefine(refinement, params) {
+			return this.check(superRefine(refinement, params));
+		},
+		overwrite(fn) {
+			return this.check(/* @__PURE__ */ _overwrite(fn));
+		},
+		optional() {
+			return optional(this);
+		},
+		exactOptional() {
+			return exactOptional(this);
+		},
+		nullable() {
+			return nullable(this);
+		},
+		nullish() {
+			return optional(nullable(this));
+		},
+		nonoptional(params) {
+			return nonoptional(this, params);
+		},
+		array() {
+			return array(this);
+		},
+		or(arg) {
+			return union([this, arg]);
+		},
+		and(arg) {
+			return intersection(this, arg);
+		},
+		transform(tx) {
+			return pipe(this, transform(tx));
+		},
+		default(d) {
+			return _default(this, d);
+		},
+		prefault(d) {
+			return prefault(this, d);
+		},
+		catch(params) {
+			return _catch(this, params);
+		},
+		pipe(target) {
+			return pipe(this, target);
+		},
+		readonly() {
+			return readonly(this);
+		},
+		describe(description) {
+			const cl = this.clone();
+			globalRegistry.add(cl, { description });
+			return cl;
+		},
+		meta(...args) {
+			if (args.length === 0) return globalRegistry.get(this);
+			const cl = this.clone();
+			globalRegistry.add(cl, args[0]);
+			return cl;
+		},
+		isOptional() {
+			return this.safeParse(void 0).success;
+		},
+		isNullable() {
+			return this.safeParse(null).success;
+		},
+		apply(fn, ...args) {
+			return args.length === 0 ? fn(this) : fn(this, ...args);
+		},
+		get "~standard"() {
+			return hide$2(this, "~standard", {
+				...standardProps(this),
+				jsonSchema: {
+					input: createStandardJSONSchemaMethod(this, "input"),
+					output: createStandardJSONSchemaMethod(this, "output")
+				}
+			});
+		},
+		set "~standard"(value) {
+			own(this, "~standard", value);
+		},
+		parse: function _parse(data, params) {
+			return parse(this, data, params, { callee: _parse });
+		},
+		parseAsync: async function _parseAsync(data, params) {
+			return await parseAsync(this, data, params, { callee: _parseAsync });
+		},
+		safeParse(data, params) {
+			return safeParse(this, data, params);
+		},
+		async safeParseAsync(data, params) {
+			return safeParseAsync(this, data, params);
+		},
+		get spa() {
+			return this?.safeParseAsync;
+		},
+		set spa(value) {
+			own(this, "spa", value);
+		},
+		validate(data, params) {
+			return validate(this, data, params);
+		},
+		validateAsync(data, params) {
+			return validateAsync$1(this, data, params);
+		},
+		encode: function _encode(data, params) {
+			return encode(this, data, params, { callee: _encode });
+		},
+		decode: function _decode(data, params) {
+			return decode(this, data, params, { callee: _decode });
+		},
+		encodeAsync: async function _encodeAsync(data, params) {
+			return await encodeAsync(this, data, params, { callee: _encodeAsync });
+		},
+		decodeAsync: async function _decodeAsync(data, params) {
+			return await decodeAsync(this, data, params, { callee: _decodeAsync });
+		},
+		safeEncode(data, params) {
+			return safeEncode(this, data, params);
+		},
+		safeDecode(data, params) {
+			return safeDecode(this, data, params);
+		},
+		async safeEncodeAsync(data, params) {
+			return safeEncodeAsync(this, data, params);
+		},
+		async safeDecodeAsync(data, params) {
+			return safeDecodeAsync(this, data, params);
+		},
+		toJSONSchema(params) {
+			return createToJSONSchemaMethod(this, {})(params);
+		},
+		get description() {
+			return globalRegistry.get(this)?.description;
+		},
+		get _def() {
+			return this._zod.def;
+		}
 	});
 	/** @internal */
 	var _ZodString = /*@__PURE__*/ $constructor("_ZodString", (inst, def) => {
 		$ZodString.init(inst, def);
 		ZodType.init(inst, def);
 		inst._zod.processJSONSchema = (ctx, json, params) => stringProcessor(inst, ctx, json, params);
-		const bag = inst._zod.bag;
-		inst.format = bag.format ?? null;
-		inst.minLength = bag.minimum ?? null;
-		inst.maxLength = bag.maximum ?? null;
-		_installLazyMethods(inst, "_ZodString", {
-			regex(...args) {
-				return this.check(/* @__PURE__ */ _regex(...args));
-			},
-			includes(...args) {
-				return this.check(/* @__PURE__ */ _includes(...args));
-			},
-			startsWith(...args) {
-				return this.check(/* @__PURE__ */ _startsWith(...args));
-			},
-			endsWith(...args) {
-				return this.check(/* @__PURE__ */ _endsWith(...args));
-			},
-			min(...args) {
-				return this.check(/* @__PURE__ */ _minLength(...args));
-			},
-			max(...args) {
-				return this.check(/* @__PURE__ */ _maxLength(...args));
-			},
-			length(...args) {
-				return this.check(/* @__PURE__ */ _length(...args));
-			},
-			nonempty(...args) {
-				return this.check(/* @__PURE__ */ _minLength(1, ...args));
-			},
-			lowercase(params) {
-				return this.check(/* @__PURE__ */ _lowercase(params));
-			},
-			uppercase(params) {
-				return this.check(/* @__PURE__ */ _uppercase(params));
-			},
-			trim() {
-				return this.check(/* @__PURE__ */ _trim());
-			},
-			normalize(...args) {
-				return this.check(/* @__PURE__ */ _normalize(...args));
-			},
-			toLowerCase() {
-				return this.check(/* @__PURE__ */ _toLowerCase());
-			},
-			toUpperCase() {
-				return this.check(/* @__PURE__ */ _toUpperCase());
-			},
-			slugify() {
-				return this.check(/* @__PURE__ */ _slugify());
-			}
-		});
-	});
+	}, /*@__PURE__*/ derived({
+		format: (inst) => aggregateChecks(inst).format ?? null,
+		minLength: (inst) => aggregateChecks(inst).minimum ?? null,
+		maxLength: (inst) => aggregateChecks(inst).maximum ?? null
+	}, {
+		regex(...args) {
+			return this.check(/* @__PURE__ */ _regex(...args));
+		},
+		includes(...args) {
+			return this.check(/* @__PURE__ */ _includes(...args));
+		},
+		startsWith(...args) {
+			return this.check(/* @__PURE__ */ _startsWith(...args));
+		},
+		endsWith(...args) {
+			return this.check(/* @__PURE__ */ _endsWith(...args));
+		},
+		min(...args) {
+			return this.check(/* @__PURE__ */ _minLength(...args));
+		},
+		max(...args) {
+			return this.check(/* @__PURE__ */ _maxLength(...args));
+		},
+		length(...args) {
+			return this.check(/* @__PURE__ */ _length(...args));
+		},
+		nonempty(...args) {
+			return this.check(/* @__PURE__ */ _minLength(1, ...args));
+		},
+		lowercase(params) {
+			return this.check(/* @__PURE__ */ _lowercase(params));
+		},
+		uppercase(params) {
+			return this.check(/* @__PURE__ */ _uppercase(params));
+		},
+		trim() {
+			return this.check(/* @__PURE__ */ _trim());
+		},
+		normalize(...args) {
+			return this.check(/* @__PURE__ */ _normalize(...args));
+		},
+		toLowerCase() {
+			return this.check(/* @__PURE__ */ _toLowerCase());
+		},
+		toUpperCase() {
+			return this.check(/* @__PURE__ */ _toUpperCase());
+		},
+		slugify() {
+			return this.check(/* @__PURE__ */ _slugify());
+		}
+	}));
 	var ZodString = /*@__PURE__*/ $constructor("ZodString", (inst, def) => {
 		$ZodString.init(inst, def);
 		_ZodString.init(inst, def);
-		inst.email = (params) => inst.check(/* @__PURE__ */ _email(ZodEmail, params));
-		inst.url = (params) => inst.check(/* @__PURE__ */ _url(ZodURL, params));
-		inst.jwt = (params) => inst.check(/* @__PURE__ */ _jwt(ZodJWT, params));
-		inst.emoji = (params) => inst.check(/* @__PURE__ */ _emoji(ZodEmoji, params));
-		inst.guid = (params) => inst.check(/* @__PURE__ */ _guid(ZodGUID, params));
-		inst.uuid = (params) => inst.check(/* @__PURE__ */ _uuid(ZodUUID, params));
-		inst.uuidv4 = (params) => inst.check(/* @__PURE__ */ _uuidv4(ZodUUID, params));
-		inst.uuidv6 = (params) => inst.check(/* @__PURE__ */ _uuidv6(ZodUUID, params));
-		inst.uuidv7 = (params) => inst.check(/* @__PURE__ */ _uuidv7(ZodUUID, params));
-		inst.nanoid = (params) => inst.check(/* @__PURE__ */ _nanoid(ZodNanoID, params));
-		inst.guid = (params) => inst.check(/* @__PURE__ */ _guid(ZodGUID, params));
-		inst.cuid = (params) => inst.check(/* @__PURE__ */ _cuid(ZodCUID, params));
-		inst.cuid2 = (params) => inst.check(/* @__PURE__ */ _cuid2(ZodCUID2, params));
-		inst.ulid = (params) => inst.check(/* @__PURE__ */ _ulid(ZodULID, params));
-		inst.base64 = (params) => inst.check(/* @__PURE__ */ _base64(ZodBase64, params));
-		inst.base64url = (params) => inst.check(/* @__PURE__ */ _base64url(ZodBase64URL, params));
-		inst.xid = (params) => inst.check(/* @__PURE__ */ _xid(ZodXID, params));
-		inst.ksuid = (params) => inst.check(/* @__PURE__ */ _ksuid(ZodKSUID, params));
-		inst.ipv4 = (params) => inst.check(/* @__PURE__ */ _ipv4(ZodIPv4, params));
-		inst.ipv6 = (params) => inst.check(/* @__PURE__ */ _ipv6(ZodIPv6, params));
-		inst.cidrv4 = (params) => inst.check(/* @__PURE__ */ _cidrv4(ZodCIDRv4, params));
-		inst.cidrv6 = (params) => inst.check(/* @__PURE__ */ _cidrv6(ZodCIDRv6, params));
-		inst.e164 = (params) => inst.check(/* @__PURE__ */ _e164(ZodE164, params));
-		inst.datetime = (params) => inst.check(datetime(params));
-		inst.date = (params) => inst.check(date(params));
-		inst.time = (params) => inst.check(time(params));
-		inst.duration = (params) => inst.check(duration(params));
+	}, {
+		email(params) {
+			return this.check(/* @__PURE__ */ _email(ZodEmail, params));
+		},
+		url(params) {
+			return this.check(/* @__PURE__ */ _url(ZodURL, params));
+		},
+		jwt(params) {
+			return this.check(/* @__PURE__ */ _jwt(ZodJWT, params));
+		},
+		emoji(params) {
+			return this.check(/* @__PURE__ */ _emoji(ZodEmoji, params));
+		},
+		guid(params) {
+			return this.check(/* @__PURE__ */ _guid(ZodGUID, params));
+		},
+		uuid(params) {
+			return this.check(/* @__PURE__ */ _uuid(ZodUUID, params));
+		},
+		uuidv4(params) {
+			return this.check(/* @__PURE__ */ _uuidv4(ZodUUID, params));
+		},
+		uuidv6(params) {
+			return this.check(/* @__PURE__ */ _uuidv6(ZodUUID, params));
+		},
+		uuidv7(params) {
+			return this.check(/* @__PURE__ */ _uuidv7(ZodUUID, params));
+		},
+		nanoid(params) {
+			return this.check(/* @__PURE__ */ _nanoid(ZodNanoID, params));
+		},
+		cuid(params) {
+			return this.check(/* @__PURE__ */ _cuid(ZodCUID, params));
+		},
+		cuid2(params) {
+			return this.check(/* @__PURE__ */ _cuid2(ZodCUID2, params));
+		},
+		ulid(params) {
+			return this.check(/* @__PURE__ */ _ulid(ZodULID, params));
+		},
+		base64(params) {
+			return this.check(/* @__PURE__ */ _base64(ZodBase64, params));
+		},
+		base64url(params) {
+			return this.check(/* @__PURE__ */ _base64url(ZodBase64URL, params));
+		},
+		xid(params) {
+			return this.check(/* @__PURE__ */ _xid(ZodXID, params));
+		},
+		ksuid(params) {
+			return this.check(/* @__PURE__ */ _ksuid(ZodKSUID, params));
+		},
+		ipv4(params) {
+			return this.check(/* @__PURE__ */ _ipv4(ZodIPv4, params));
+		},
+		ipv6(params) {
+			return this.check(/* @__PURE__ */ _ipv6(ZodIPv6, params));
+		},
+		cidrv4(params) {
+			return this.check(/* @__PURE__ */ _cidrv4(ZodCIDRv4, params));
+		},
+		cidrv6(params) {
+			return this.check(/* @__PURE__ */ _cidrv6(ZodCIDRv6, params));
+		},
+		e164(params) {
+			return this.check(/* @__PURE__ */ _e164(ZodE164, params));
+		},
+		datetime(params) {
+			return this.check(/* @__PURE__ */ _isoDateTime(ZodISODateTime, params));
+		},
+		date(params) {
+			return this.check(/* @__PURE__ */ _isoDate(ZodISODate, params));
+		},
+		time(params) {
+			return this.check(/* @__PURE__ */ _isoTime(ZodISOTime, params));
+		},
+		duration(params) {
+			return this.check(/* @__PURE__ */ _isoDuration(ZodISODuration, params));
+		}
 	});
 	function string(params) {
 		return /* @__PURE__ */ _string(ZodString, params);
@@ -13126,6 +14796,22 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var ZodStringFormat = /*@__PURE__*/ $constructor("ZodStringFormat", (inst, def) => {
 		$ZodStringFormat.init(inst, def);
 		_ZodString.init(inst, def);
+	});
+	var ZodISODateTime = /*@__PURE__*/ $constructor("ZodISODateTime", (inst, def) => {
+		$ZodISODateTime.init(inst, def);
+		ZodStringFormat.init(inst, def);
+	});
+	var ZodISODate = /*@__PURE__*/ $constructor("ZodISODate", (inst, def) => {
+		$ZodISODate.init(inst, def);
+		ZodStringFormat.init(inst, def);
+	});
+	var ZodISOTime = /*@__PURE__*/ $constructor("ZodISOTime", (inst, def) => {
+		$ZodISOTime.init(inst, def);
+		ZodStringFormat.init(inst, def);
+	});
+	var ZodISODuration = /*@__PURE__*/ $constructor("ZodISODuration", (inst, def) => {
+		$ZodISODuration.init(inst, def);
+		ZodStringFormat.init(inst, def);
 	});
 	var ZodEmail = /*@__PURE__*/ $constructor("ZodEmail", (inst, def) => {
 		$ZodEmail.init(inst, def);
@@ -13209,27 +14895,27 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ZodStringFormat.init(inst, def);
 	});
 	var ZodArray = /*@__PURE__*/ $constructor("ZodArray", (inst, def) => {
+		_ensureDefaultMemoizer();
 		$ZodArray.init(inst, def);
 		ZodType.init(inst, def);
 		inst._zod.processJSONSchema = (ctx, json, params) => arrayProcessor(inst, ctx, json, params);
 		inst.element = def.element;
-		_installLazyMethods(inst, "ZodArray", {
-			min(n, params) {
-				return this.check(/* @__PURE__ */ _minLength(n, params));
-			},
-			nonempty(params) {
-				return this.check(/* @__PURE__ */ _minLength(1, params));
-			},
-			max(n, params) {
-				return this.check(/* @__PURE__ */ _maxLength(n, params));
-			},
-			length(n, params) {
-				return this.check(/* @__PURE__ */ _length(n, params));
-			},
-			unwrap() {
-				return this.element;
-			}
-		});
+	}, {
+		min(n, params) {
+			return this.check(/* @__PURE__ */ _minLength(n, params));
+		},
+		nonempty(params) {
+			return this.check(/* @__PURE__ */ _minLength(1, params));
+		},
+		max(n, params) {
+			return this.check(/* @__PURE__ */ _maxLength(n, params));
+		},
+		length(n, params) {
+			return this.check(/* @__PURE__ */ _length(n, params));
+		},
+		unwrap() {
+			return this.element;
+		}
 	});
 	function array(element, params) {
 		return /* @__PURE__ */ _array(ZodArray, element, params);
@@ -13260,6 +14946,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		});
 	}
 	var ZodTransform = /*@__PURE__*/ $constructor("ZodTransform", (inst, def) => {
+		_ensureDefaultMemoizer();
 		$ZodTransform.init(inst, def);
 		ZodType.init(inst, def);
 		inst._zod.processJSONSchema = (ctx, json, params) => transformProcessor(inst, ctx, json, params);
@@ -13271,7 +14958,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					const _issue = issue$1;
 					if (_issue.fatal) _issue.continue = false;
 					_issue.code ?? (_issue.code = "custom");
-					_issue.input ?? (_issue.input = payload.value);
+					if (!("input" in _issue)) _issue.input = payload.value;
 					_issue.inst ?? (_issue.inst = inst);
 					payload.issues.push(issue(_issue));
 				}
@@ -13279,11 +14966,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const output = def.transform(payload.value, payload);
 			if (output instanceof Promise) return output.then((output) => {
 				payload.value = output;
-				payload.fallback = true;
 				return payload;
 			});
 			payload.value = output;
-			payload.fallback = true;
 			return payload;
 		};
 	});
@@ -13384,7 +15069,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return new ZodCatch({
 			type: "catch",
 			innerType,
-			catchValue: typeof catchValue === "function" ? catchValue : () => catchValue
+			catchValue: typeof catchValue === "function" ? catchValue : constantCatch(catchValue)
 		});
 	}
 	var ZodPipe = /*@__PURE__*/ $constructor("ZodPipe", (inst, def) => {
@@ -13424,8 +15109,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function superRefine(fn, params) {
 		return /* @__PURE__ */ _superRefine(fn, params);
 	}
+	var ZodInstanceOf = /*@__PURE__*/ $constructor("ZodInstanceOf", (inst, def) => {
+		ZodCustom.init(inst, def);
+	}, { properties(shape, params) {
+		return this.check(/* @__PURE__ */ _properties(shape, params));
+	} });
 	function _instanceof(cls, params = {}) {
-		const inst = new ZodCustom({
+		const inst = new ZodInstanceOf({
 			type: "custom",
 			check: "custom",
 			fn: (data) => data instanceof cls,
@@ -13444,8 +15134,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		return inst;
 	}
-	//#endregion
-	//#region src/components/forms/lib/allFields.ts
+	// src/components/forms/lib/allFields.ts
 	var allFields = {
 		salutation: {
 			key: "salutation",
@@ -13786,8 +15475,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 		}
 	};
-	//#endregion
-	//#region src/components/forms/lib/Field.svelte.ts
+	// src/components/forms/lib/Field.svelte.ts
 	function createField(data, required) {
 		return {
 			...data,
@@ -13823,8 +15511,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (!validation.success) field.errors = validation.error.format()._errors;
 		else field.errors = [];
 	}
-	//#endregion
-	//#region src/components/forms/lib/Forms.svelte.ts
+	// src/components/forms/lib/Forms.svelte.ts
 	var Forms = class Forms {
 		static #requiredApiKeysMap = {};
 		static defineForm(options) {
@@ -14010,8 +15697,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (!fields) return 0;
 		return fields.filter((f) => f.mounted && (f.errors?.length || f.apiErrors?.length)).length;
 	}
-	//#endregion
-	//#region src/components/annualTicketPersonalization/components/AnnualTicketPersonalizationForm.svelte
+	// src/components/annualTicketPersonalization/components/AnnualTicketPersonalizationForm.svelte
 	function AnnualTicketPersonalizationForm($$anchor, $$props) {
 		push($$props, true);
 		let token = prop($$props, "token", 7), ticketSaleId = prop($$props, "ticketSaleId", 7);
@@ -14177,8 +15863,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			type: "Number"
 		}
 	}, [], ["details"]));
-	//#endregion
-	//#region src/components/forms/ui/generic/FormDetails.svelte.ts
+	// src/components/forms/ui/generic/FormDetails.svelte.ts
 	var FormDetails = class {
 		formId;
 		form;
@@ -14402,8 +16087,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var KEY$4 = "go-form-details";
 	var setDetails$1 = createSetDetails(KEY$4);
 	var getDetails$1 = createGetDetails(KEY$4);
-	//#endregion
-	//#region src/components/forms/lib/formLifecycle.ts
+	// src/components/forms/lib/formLifecycle.ts
 	var NOTHING = {
 		status: "ok",
 		outcome: "nothing to do"
@@ -14487,8 +16171,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (finallyError !== void 0) throw finallyError;
 		return run.trail;
 	}
-	//#endregion
-	//#region src/components/forms/services/SubmitGuard.ts
+	// src/components/forms/services/SubmitGuard.ts
 	var SubmitGuard = class extends FormSubmitService {
 		current;
 		beforeValidation(run) {
@@ -14547,8 +16230,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if (host.classList.length === 0) host.removeAttribute("class");
 		}
 	};
-	//#endregion
-	//#region src/components/forms/services/FormEvents.ts
+	// src/components/forms/services/FormEvents.ts
 	var FormEvents = class extends FormSubmitService {
 		afterValidation({ details }) {
 			details.form.dispatchEvent(new Event("go-after-validation", {
@@ -14579,8 +16261,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			};
 		}
 	};
-	//#endregion
-	//#region src/components/forms/services/Validation.ts
+	// src/components/forms/services/Validation.ts
 	var Validation = class extends FormSubmitService {
 		beforeValidation({ details }) {
 			details.apiErrors = {};
@@ -14608,8 +16289,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			};
 		}
 	};
-	//#endregion
-	//#region src/components/forms/lib/apiActions.ts
+	// src/components/forms/lib/apiActions.ts
 	var apiActions = {
 		createCustomerAddress: {
 			requiresRecordId: false,
@@ -14638,8 +16318,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (!action) console.error(`(apiActions) Unknown api action "${name}"`);
 		return action;
 	}
-	//#endregion
-	//#region src/components/forms/services/ApiAction.ts
+	// src/components/forms/services/ApiAction.ts
 	var ApiAction = class extends FormSubmitService {
 		action;
 		afterValidation({ details, formId, apiAction }) {
@@ -14721,8 +16400,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (isArray(errors)) return errors.length === 0;
 		return Object.keys(errors).length === 0;
 	}
-	//#endregion
-	//#region src/lib/helpers/wrapInElement.ts
+	// src/lib/helpers/wrapInElement.ts
 	function wrapInElement(host, tag, props) {
 		const first = host.firstElementChild || void 0;
 		if (host.children?.length === 1 && first?.tagName.toLowerCase() === tag) return first;
@@ -14738,9 +16416,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		host.replaceChildren(element);
 		return element;
 	}
-	//#endregion
-	//#region src/components/forms/ui/generic/Form.svelte
-	var root$64 = /* @__PURE__ */ from_html(`<go-all-fields></go-all-fields> <go-form-feedback><go-errors-feedback></go-errors-feedback> <go-success-feedback></go-success-feedback></go-form-feedback> <go-submit> </go-submit>`, 3);
+	// src/components/forms/ui/generic/Form.svelte
+	var root$65 = /* @__PURE__ */ from_html(`<go-all-fields></go-all-fields> <go-form-feedback><go-errors-feedback></go-errors-feedback> <go-success-feedback></go-success-feedback></go-form-feedback> <go-submit> </go-submit>`, 3);
 	function Form($$anchor, $$props) {
 		push($$props, true);
 		let formId = prop($$props, "formId", 7), custom = prop($$props, "custom", 7), apiAction = prop($$props, "apiAction", 7), recordId = prop($$props, "recordId", 7);
@@ -14822,10 +16499,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
-			var fragment_1 = root$64();
-			var go_submit = sibling(sibling(first_child(fragment_1), 2), 2);
-			var text = child(go_submit, true);
-			reset(go_submit);
+			var fragment_1 = root$65();
+			var text = only_child(sibling(sibling(first_child(fragment_1), 2), 2), true);
 			template_effect(($0) => set_text(text, $0), [() => shop.t(Forms.getFormOptions(formId())?.submitLabel || "Submit")]);
 			append($$anchor, fragment_1);
 		};
@@ -14856,9 +16531,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			type: "Number"
 		}
 	}, [], ["details"]));
-	//#endregion
-	//#region src/components/auth/passwordReset/PasswordReset.svelte
-	var root$63 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
+	// src/components/auth/passwordReset/PasswordReset.svelte
+	var root$64 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
 	function PasswordReset($$anchor, $$props) {
 		push($$props, true);
 		let custom = prop($$props, "custom", 7, false), redirectUrl = prop($$props, "redirectUrl", 7, "");
@@ -14902,7 +16576,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var go_form = root$63();
+		var go_form = root$64();
 		set_custom_element_data(go_form, "formId", "passwordReset");
 		template_effect(() => set_custom_element_data(go_form, "custom", custom()));
 		event("submit", go_form, passwordReset);
@@ -14916,9 +16590,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		},
 		custom: {}
 	}, [], []));
-	//#endregion
-	//#region src/components/auth/setPassword/SetPassword.svelte
-	var root$62 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
+	// src/components/auth/setPassword/SetPassword.svelte
+	var root$63 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
 	function SetPassword($$anchor, $$props) {
 		push($$props, true);
 		let accessToken = prop($$props, "accessToken", 7, ""), client = prop($$props, "client", 7, ""), uid = prop($$props, "uid", 7, "");
@@ -14972,7 +16645,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var go_form = root$62();
+		var go_form = root$63();
 		set_custom_element_data(go_form, "formId", "setPassword");
 		event("submit", go_form, setNewPassword);
 		append($$anchor, go_form);
@@ -14992,8 +16665,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			type: "String"
 		}
 	}, [], []));
-	//#endregion
-	//#region src/components/auth/signIn/SignIn.svelte
+	// src/components/auth/signIn/SignIn.svelte
 	function SignIn($$anchor, $$props) {
 		push($$props, true);
 		Forms.defineForm({
@@ -15037,8 +16709,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reflect: true,
 		type: "Boolean"
 	} }, [], []));
-	//#endregion
-	//#region src/components/auth/signUp/SignUp.svelte
+	// src/components/auth/signUp/SignUp.svelte
 	function SignUp($$anchor, $$props) {
 		push($$props, true);
 		let custom = prop($$props, "custom", 7, false);
@@ -15105,8 +16776,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reflect: true,
 		type: "Boolean"
 	} }, [], []));
-	//#endregion
-	//#region src/components/cart/components/utils.ts
+	// src/components/cart/components/utils.ts
 	function getQuantity(value, fallback) {
 		if (typeof value === "number" && Number.isFinite(value)) return value;
 		if (value && typeof value === "object") {
@@ -15117,8 +16787,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		return fallback;
 	}
-	//#endregion
-	//#region src/components/cart/components/lib.ts
+	// src/components/cart/components/lib.ts
 	function resolveQuantitySource(attrs) {
 		return "quantity" in attrs && attrs.quantity !== void 0 ? attrs.quantity : attrs.quantities;
 	}
@@ -15170,8 +16839,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 		});
 	}
-	//#endregion
-	//#region src/components/cart/components/CartDetails.svelte.ts
+	// src/components/cart/components/CartDetails.svelte.ts
 	var CartDetails = class {
 		#displayCart = /* @__PURE__ */ state();
 		get displayCart() {
@@ -15223,10 +16891,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var KEY$3 = "go-cart-details";
 	var setCartDetails = createSetDetails(KEY$3);
 	var getCartDetails = createGetDetails(KEY$3);
-	//#endregion
-	//#region src/components/cart/components/itemTitles/Coupon.svelte
-	var root$61 = /* @__PURE__ */ from_html(`<span class="go-cart-item-subtitle" data-testid="cart-item-subtitle"> </span>`);
-	var root_1$25 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span> <!>`, 1);
+	// src/components/cart/components/itemTitles/Coupon.svelte
+	var root$62 = /* @__PURE__ */ from_html(`<span class="go-cart-item-subtitle" data-testid="cart-item-subtitle"> </span>`);
+	var root_1$26 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span> <!>`, 1);
 	function Coupon$1($$anchor, $$props) {
 		push($$props, true);
 		let cartItem = prop($$props, "cartItem", 7);
@@ -15239,15 +16906,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var fragment = root_1$25();
+		var fragment = root_1$26();
 		var span = first_child(fragment);
-		var text = child(span, true);
-		reset(span);
+		var text = only_child(span, true);
 		var node = sibling(span, 2);
 		var consequent = ($$anchor) => {
-			var span_1 = root$61();
-			var text_1 = child(span_1, true);
-			reset(span_1);
+			var span_1 = root$62();
+			var text_1 = only_child(span_1, true);
 			template_effect(() => set_text(text_1, cartItem().product.sub_title));
 			append($$anchor, span_1);
 		};
@@ -15260,10 +16925,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return pop($$exports);
 	}
 	create_custom_element(Coupon$1, { cartItem: {} }, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/cart/components/itemTitles/Event.svelte
-	var root$60 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span><span class="go-cart-item-time" data-testid="cart-item-time"> </span>`, 1);
-	var root_1$24 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"><span class="go-cart-item-title-event-title"> </span><span class="go-cart-item-title-ticket-title"> </span></span><!>`, 1);
+	// src/components/cart/components/itemTitles/Event.svelte
+	var root$61 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span><span class="go-cart-item-time" data-testid="cart-item-time"> </span>`, 1);
+	var root_1$25 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"><span class="go-cart-item-title-event-title"> </span><span class="go-cart-item-title-ticket-title"> </span></span><!>`, 1);
 	function Event$2($$anchor, $$props) {
 		push($$props, true);
 		let cartItem = prop($$props, "cartItem", 7);
@@ -15278,24 +16942,18 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var fragment = root_1$24();
+		var fragment = root_1$25();
 		var span = first_child(fragment);
 		var span_1 = child(span);
-		var text = child(span_1, true);
-		reset(span_1);
-		var span_2 = sibling(span_1);
-		var text_1 = child(span_2, true);
-		reset(span_2);
+		var text = only_child(span_1, true);
+		var text_1 = only_child(sibling(span_1), true);
 		reset(span);
 		var node = sibling(span);
 		var consequent = ($$anchor) => {
-			var fragment_1 = root$60();
+			var fragment_1 = root$61();
 			var span_3 = first_child(fragment_1);
-			var text_2 = child(span_3, true);
-			reset(span_3);
-			var span_4 = sibling(span_3);
-			var text_3 = child(span_4, true);
-			reset(span_4);
+			var text_2 = only_child(span_3, true);
+			var text_3 = only_child(sibling(span_3), true);
 			template_effect(($0, $1) => {
 				set_text(text_2, $0);
 				set_text(text_3, $1);
@@ -15313,10 +16971,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return pop($$exports);
 	}
 	create_custom_element(Event$2, { cartItem: {} }, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/cart/components/itemTitles/Ticket.svelte
-	var root$59 = /* @__PURE__ */ from_html(`<span class="go-cart-item-subtitle" data-testid="cart-item-subtitle"> </span>`);
-	var root_1$23 = /* @__PURE__ */ from_html(`<span class="go-cart-item-time" data-testid="cart-item-time"> </span>`);
+	// src/components/cart/components/itemTitles/Ticket.svelte
+	var root$60 = /* @__PURE__ */ from_html(`<span class="go-cart-item-subtitle" data-testid="cart-item-subtitle"> </span>`);
+	var root_1$24 = /* @__PURE__ */ from_html(`<span class="go-cart-item-time" data-testid="cart-item-time"> </span>`);
 	var root_2$16 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <!>`, 1);
 	var root_3$10 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span> <!> <!>`, 1);
 	function Ticket($$anchor, $$props) {
@@ -15333,13 +16990,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		var fragment = root_3$10();
 		var span = first_child(fragment);
-		var text = child(span, true);
-		reset(span);
+		var text = only_child(span, true);
 		var node = sibling(span, 2);
 		var consequent = ($$anchor) => {
-			var span_1 = root$59();
-			var text_1 = child(span_1, true);
-			reset(span_1);
+			var span_1 = root$60();
+			var text_1 = only_child(span_1, true);
 			template_effect(() => set_text(text_1, cartItem().product.sub_title));
 			append($$anchor, span_1);
 		};
@@ -15351,13 +17006,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var consequent_2 = ($$anchor) => {
 			var fragment_1 = root_2$16();
 			var span_2 = first_child(fragment_1);
-			var text_2 = child(span_2, true);
-			reset(span_2);
+			var text_2 = only_child(span_2, true);
 			var node_2 = sibling(span_2, 2);
 			var consequent_1 = ($$anchor) => {
-				var span_3 = root_1$23();
-				var text_3 = child(span_3, true);
-				reset(span_3);
+				var span_3 = root_1$24();
+				var text_3 = only_child(span_3, true);
 				template_effect(($0) => set_text(text_3, $0), [() => shop.formatTime(cartItem().time)]);
 				append($$anchor, span_3);
 			};
@@ -15375,10 +17028,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return pop($$exports);
 	}
 	create_custom_element(Ticket, { cartItem: {} }, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/cart/components/itemTitles/Tour.svelte
-	var root$58 = /* @__PURE__ */ from_html(`<span class="go-cart-item-time" data-testid="cart-item-time"> </span>`);
-	var root_1$22 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <!>`, 1);
+	// src/components/cart/components/itemTitles/Tour.svelte
+	var root$59 = /* @__PURE__ */ from_html(`<span class="go-cart-item-time" data-testid="cart-item-time"> </span>`);
+	var root_1$23 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <!>`, 1);
 	var root_2$15 = /* @__PURE__ */ from_html(`<span class="go-cart-item-custom" data-testid="cart-item-custom"> </span>`);
 	var root_3$9 = /* @__PURE__ */ from_html(`<span class="go-cart-item-title" data-testid="cart-item-title"> </span> <span class="go-cart-item-participants" data-testid="cart-item-participants"> </span> <!> <!>`, 1);
 	function Tour$1($$anchor, $$props) {
@@ -15412,22 +17064,18 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		var fragment = root_3$9();
 		var span = first_child(fragment);
-		var text = child(span, true);
-		reset(span);
+		var text = only_child(span, true);
 		var span_1 = sibling(span, 2);
-		var text_1 = child(span_1, true);
-		reset(span_1);
+		var text_1 = only_child(span_1, true);
 		var node = sibling(span_1, 2);
 		var consequent_1 = ($$anchor) => {
-			var fragment_1 = root_1$22();
+			var fragment_1 = root_1$23();
 			var span_2 = first_child(fragment_1);
-			var text_2 = child(span_2, true);
-			reset(span_2);
+			var text_2 = only_child(span_2, true);
 			var node_1 = sibling(span_2, 2);
 			var consequent = ($$anchor) => {
-				var span_3 = root$58();
-				var text_3 = child(span_3, true);
-				reset(span_3);
+				var span_3 = root$59();
+				var text_3 = only_child(span_3, true);
 				template_effect(() => set_text(text_3, get$2(slot).time));
 				append($$anchor, span_3);
 			};
@@ -15445,8 +17093,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			let key = () => get$2($$array)[0];
 			let value = () => get$2($$array)[1];
 			var span_4 = root_2$15();
-			var text_4 = child(span_4);
-			reset(span_4);
+			var text_4 = only_child(span_4);
 			template_effect(($0) => set_text(text_4, `${key() ?? ""}: ${$0 ?? ""}`), [() => displayCustom(value())]);
 			append($$anchor, span_4);
 		});
@@ -15458,8 +17105,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return pop($$exports);
 	}
 	create_custom_element(Tour$1, { cartItem: {} }, [], [], { mode: "open" });
-	//#endregion
-	//#region src/lib/models/cart/quantityStepper.ts
+	// src/lib/models/cart/quantityStepper.ts
 	/** `+`: from below the order minimum jump to it (at least `1`); otherwise step up by one. Capped at `max`. */
 	function increment(value, { min, max }) {
 		const target = value < min ? Math.max(min, 1) : value + 1;
@@ -15490,9 +17136,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function canDecrement(value, { floor = 0 }) {
 		return value > floor;
 	}
-	//#endregion
-	//#region src/components/shared/quantityStepper/QuantityStepper.svelte
-	var root$57 = /* @__PURE__ */ from_html(`<div class="go-quantity-stepper" role="group"><button type="button" tabindex="-1"><span aria-hidden="true"> </span></button> <input class="go-quantity-stepper-value" type="text" role="spinbutton" inputmode="numeric" autocomplete="off"/> <button type="button" class="go-quantity-stepper-button go-quantity-stepper-increment" tabindex="-1"><span aria-hidden="true">+</span></button></div>`);
+	// src/components/shared/quantityStepper/QuantityStepper.svelte
+	var root$58 = /* @__PURE__ */ from_html(`<div class="go-quantity-stepper" role="group"><button type="button" tabindex="-1"><span aria-hidden="true"> </span></button> <input class="go-quantity-stepper-value" type="text" role="spinbutton" inputmode="numeric" autocomplete="off"/> <button type="button" class="go-quantity-stepper-button go-quantity-stepper-increment" tabindex="-1"><span aria-hidden="true">+</span></button></div>`);
 	function QuantityStepper($$anchor, $$props) {
 		const inputId = props_id();
 		push($$props, true);
@@ -15645,12 +17290,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var div = root$57();
+		var div = root$58();
 		var button = child(div);
 		let classes;
-		var span = child(button);
-		var text = child(span, true);
-		reset(span);
+		var text = only_child(child(button), true);
 		reset(button);
 		var input = sibling(button, 2);
 		remove_input_defaults(input);
@@ -15703,8 +17346,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		removeLabel: {},
 		onChange: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region src/lib/models/cart/selectOptions.ts
+	// src/lib/models/cart/selectOptions.ts
 	function generateQuantityOptions(from, to, options = { floor: 0 }) {
 		const { floor } = options;
 		if (to === 0 || to === floor) return [option(floor)];
@@ -15723,10 +17365,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			label: value.toString()
 		};
 	}
-	//#endregion
-	//#region src/components/shared/quantityStepper/QuantityControl.svelte
-	var root$56 = /* @__PURE__ */ from_html(`<option> </option>`);
-	var root_1$21 = /* @__PURE__ */ from_html(`<select class="go-quantity-select"></select>`);
+	// src/components/shared/quantityStepper/QuantityControl.svelte
+	var root$57 = /* @__PURE__ */ from_html(`<option> </option>`);
+	var root_1$22 = /* @__PURE__ */ from_html(`<select class="go-quantity-select"></select>`);
 	function QuantityControl($$anchor, $$props) {
 		push($$props, true);
 		/** Current committed quantity. */
@@ -15854,16 +17495,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 		};
 		var alternate = ($$anchor) => {
-			var select = root_1$21();
+			var select = root_1$22();
 			each(select, 21, () => generateQuantityOptions(min(), max(), { floor: deselectable() ? floor() : min() }), (q) => q.value, ($$anchor, q) => {
-				var option = root$56();
-				var text = child(option, true);
-				reset(option);
+				var option = root$57();
+				var text = only_child(option, true);
 				var option_value = {};
 				template_effect(() => {
 					set_selected(option, value() === get$2(q).value);
 					set_text(text, get$2(q).label);
-					if (option_value !== (option_value = get$2(q).value)) option.value = (option.__value = get$2(q).value) ?? "";
+					if (option_value !== (option_value = get$2(q).value)) option.value = (option.__value = option_value) ?? "";
 				});
 				append($$anchor, option);
 			});
@@ -15890,9 +17530,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		onDecrementBelowMin: {},
 		onChange: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/dompurify@3.4.14/node_modules/dompurify/dist/purify.es.mjs
-	/*! @license DOMPurify 3.4.14 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.4.14/LICENSE */
+	// ../../node_modules/.pnpm/dompurify@3.4.17/node_modules/dompurify/dist/purify.es.mjs
+	/*! @license DOMPurify 3.4.17 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/3.4.17/LICENSE */
+	function _OverloadYield(e, d) {
+		this.v = e, this.k = d;
+	}
 	function _arrayLikeToArray(r, a) {
 		(null == a || a > r.length) && (a = r.length);
 		for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e];
@@ -15904,12 +17546,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function _iterableToArrayLimit(r, l) {
 		var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"];
 		if (null != t) {
-			var e, n, i, u, a = [], f = true, o = false;
+			var e, n, i, u, a = [], f = !0, o = !1;
 			try {
-				if (i = (t = t.call(r)).next, 0 === l);
-				else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
+				if (i = (t = t.call(r)).next, 0 === l) {
+					if (Object(t) !== t) return;
+					f = !1;
+				} else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0);
 			} catch (r) {
-				o = true, n = r;
+				o = !0, n = r;
 			} finally {
 				try {
 					if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return;
@@ -15923,6 +17567,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function _nonIterableRest() {
 		throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 	}
+	/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */
 	function _slicedToArray(r, e) {
 		return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest();
 	}
@@ -15933,6 +17578,53 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0;
 		}
 	}
+	function AsyncGenerator(e) {
+		var t, n;
+		function resume(t, n) {
+			try {
+				var r = e[t](n), o = r.value, u = o instanceof _OverloadYield;
+				Promise.resolve(u ? o.v : o).then(function(n) {
+					if (u) {
+						var i = "return" === t && o.k ? t : "next";
+						if (!o.k || n.done) return resume(i, n);
+						n = e[i](n).value;
+					}
+					settle(!!r.done, n);
+				}, function(e) {
+					resume("throw", e);
+				});
+			} catch (e) {
+				settle(2, e);
+			}
+		}
+		function settle(e, r) {
+			2 === e ? t.reject(r) : t.resolve({
+				value: r,
+				done: e
+			}), (t = t.next) ? resume(t.key, t.arg) : n = null;
+		}
+		this._invoke = function(e, r) {
+			return new Promise(function(o, u) {
+				var i = {
+					key: e,
+					arg: r,
+					resolve: o,
+					reject: u,
+					next: null
+				};
+				n ? n = n.next = i : (t = n = i, resume(e, r));
+			});
+		}, "function" != typeof e.return && (this.return = void 0);
+	}
+	AsyncGenerator.prototype["function" == typeof Symbol && Symbol.asyncIterator || "@@asyncIterator"] = function() {
+		return this;
+	}, AsyncGenerator.prototype.next = function(e) {
+		return this._invoke("next", e);
+	}, AsyncGenerator.prototype.throw = function(e) {
+		return this._invoke("throw", e);
+	}, AsyncGenerator.prototype.return = function(e) {
+		return this._invoke("return", e);
+	};
 	var entries = Object.entries;
 	var setPrototypeOf = Object.setPrototypeOf;
 	var isFrozen = Object.isFrozen;
@@ -15959,11 +17651,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return new Func(...args);
 	};
 	var arrayForEach = unapply(Array.prototype.forEach);
+	Array.prototype.indexOf;
 	var arrayLastIndexOf = unapply(Array.prototype.lastIndexOf);
 	var arrayPop = unapply(Array.prototype.pop);
 	var arrayPush = unapply(Array.prototype.push);
+	var arraySlice = unapply(Array.prototype.slice);
 	var arraySplice = unapply(Array.prototype.splice);
 	var arrayIsArray = Array.isArray;
+	var setCreate = unconstruct(Set);
+	var setAdd = unapply(Set.prototype.add);
+	var setHas = unapply(Set.prototype.has);
 	var stringToLowerCase = unapply(String.prototype.toLowerCase);
 	var stringToString = unapply(String.prototype.toString);
 	var stringMatch = unapply(String.prototype.match);
@@ -16107,6 +17804,25 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return null;
 		}
 		return fallbackValue;
+	}
+	/**
+	* Like lookupGetter, but for accessor properties only, and returns null
+	* instead of a null-returning fallback when no getter exists on the chain.
+	* Lets a caller fall back to a direct property read in environments that
+	* lack the getter, where a fallback returning null would be indistinguishable
+	* from a legitimate null value (e.g. namespaceURI of a no-namespace element).
+	*
+	* @param object - The object (usually a prototype) to start the lookup at.
+	* @param prop - The accessor property name.
+	* @returns The unapplied getter, or null if none was found.
+	*/
+	function lookupAccessor(object, prop) {
+		while (object !== null) {
+			const desc = getOwnPropertyDescriptor(object, prop);
+			if (desc) return desc.get ? unapply(desc.get) : null;
+			object = getPrototypeOf(object);
+		}
+		return null;
 	}
 	function isRegex(value) {
 		try {
@@ -16792,7 +18508,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		documentFragment: 11,
 		notation: 12
 	};
-	var LITERAL_TEXT_ELEMENT_NAMES = [
+	var LITERAL_TEXT_ELEMENTS = freeze(addToSet({}, [
 		"style",
 		"script",
 		"xmp",
@@ -16801,15 +18517,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"noframes",
 		"plaintext",
 		"noscript"
-	];
-	var LITERAL_TEXT_ELEMENTS = freeze(addToSet({}, LITERAL_TEXT_ELEMENT_NAMES));
-	var LITERAL_TEXT_CLOSE = function() {
-		const map = {};
-		arrayForEach(LITERAL_TEXT_ELEMENT_NAMES, (name) => {
-			map[name] = seal(new RegExp("</" + name + "(?=[\\t\\n\\f\\r />])", "i"));
-		});
-		return freeze(map);
-	}();
+	]));
 	var getGlobal = function getGlobal() {
 		return typeof window === "undefined" ? null : window;
 	};
@@ -16887,7 +18595,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function createDOMPurify() {
 		let window = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : getGlobal();
 		const DOMPurify = (root) => createDOMPurify(root);
-		DOMPurify.version = "3.4.14";
+		DOMPurify.version = "3.4.17";
 		DOMPurify.removed = [];
 		if (!window || !window.document || window.document.nodeType !== NODE_TYPE.document || !window.Element) {
 			DOMPurify.isSupported = false;
@@ -16904,6 +18612,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const ElementPrototype = Element.prototype;
 		const cloneNode = lookupGetter(ElementPrototype, "cloneNode");
 		const remove = lookupGetter(ElementPrototype, "remove");
+		const removeAttributeNode = lookupGetter(ElementPrototype, "removeAttributeNode");
 		const getNextSibling = lookupGetter(ElementPrototype, "nextSibling");
 		const getChildNodes = lookupGetter(ElementPrototype, "childNodes");
 		const getParentNode = lookupGetter(ElementPrototype, "parentNode");
@@ -16917,6 +18626,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		const _readNodeName = function _readNodeName(node) {
 			return getNodeName ? getNodeName(node) : node.nodeName;
+		};
+		const getNamespaceURI = lookupAccessor(ElementPrototype, "namespaceURI");
+		const _readNamespaceURI = function _readNamespaceURI(element) {
+			return getNamespaceURI ? getNamespaceURI(element) : element.namespaceURI;
 		};
 		if (typeof HTMLTemplateElement === "function") {
 			const template = document.createElement("template");
@@ -17038,6 +18751,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const SANITIZE_NAMED_PROPS_PREFIX = "user-content-";
 		let KEEP_CONTENT = true;
 		let IN_PLACE = false;
+		let IN_PLACE_VISITED = null;
 		let USE_PROFILES = {};
 		let FORBID_CONTENTS = null;
 		const DEFAULT_FORBID_CONTENTS = addToSet({}, [
@@ -17311,18 +19025,23 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		*  return. Return true otherwise.
 		*/
 		const _checkValidNamespace = function _checkValidNamespace(element) {
-			let parent = getParentNode(element);
-			if (!parent || !parent.tagName) parent = {
-				namespaceURI: NAMESPACE,
-				tagName: "template"
-			};
-			const tagName = stringToLowerCase(element.tagName);
-			const parentTagName = stringToLowerCase(parent.tagName);
-			if (!ALLOWED_NAMESPACES[element.namespaceURI]) return false;
-			if (element.namespaceURI === SVG_NAMESPACE) return _checkSvgNamespace(tagName, parent, parentTagName);
-			if (element.namespaceURI === MATHML_NAMESPACE) return _checkMathMlNamespace(tagName, parent, parentTagName);
-			if (element.namespaceURI === HTML_NAMESPACE) return _checkHtmlNamespace(tagName, parent, parentTagName);
-			if (PARSER_MEDIA_TYPE === "application/xhtml+xml" && ALLOWED_NAMESPACES[element.namespaceURI]) return true;
+			const elementNamespace = _readNamespaceURI(element);
+			const tagName = stringToLowerCase(_readNodeName(element));
+			const parentNode = getParentNode(element);
+			let parent;
+			let parentTagName;
+			if (parentNode && _readNodeType(parentNode) === NODE_TYPE.element) {
+				parent = { namespaceURI: _readNamespaceURI(parentNode) };
+				parentTagName = stringToLowerCase(_readNodeName(parentNode));
+			} else {
+				parent = { namespaceURI: NAMESPACE };
+				parentTagName = "template";
+			}
+			if (!ALLOWED_NAMESPACES[elementNamespace]) return false;
+			if (elementNamespace === SVG_NAMESPACE) return _checkSvgNamespace(tagName, parent, parentTagName);
+			if (elementNamespace === MATHML_NAMESPACE) return _checkMathMlNamespace(tagName, parent, parentTagName);
+			if (elementNamespace === HTML_NAMESPACE) return _checkHtmlNamespace(tagName, parent, parentTagName);
+			if (PARSER_MEDIA_TYPE === "application/xhtml+xml" && ALLOWED_NAMESPACES[elementNamespace]) return true;
 			return false;
 		};
 		/**
@@ -17358,7 +19077,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		*/
 		const _stripAttributeNode = function _stripAttributeNode(element, attribute, name) {
 			try {
-				element.removeAttributeNode(attribute);
+				removeAttributeNode(element, attribute);
 			} catch (_) {
 				try {
 					element.removeAttribute(name);
@@ -17366,36 +19085,21 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 		};
 		/**
-		* _neutralizeRoot
-		*
-		* Fail-closed teardown of an in-place root after the sanitize walk aborts
-		* (campaign-3 F2). An internal throw mid-walk — e.g. a page-registered
-		* custom element's reaction detaches a node so `_forceRemove`'s deliberate
-		* parentless guard throws, or any other re-entrant engine mutation — would
-		* otherwise leave the caller's *live* tree half-sanitized, with everything
-		* after the abort point still carrying its handlers. There is no safe way
-		* to resume the walk (the tree mutated under us), so we strip the root bare:
-		* remove every child and every attribute, then let the caller's catch see
-		* the original error. Clobber-safe (cached `remove`/`childNodes`/`attributes`
-		* getters; the root was already clobber-pre-flighted at the IN_PLACE entry).
+		* Fail-closed teardown of an in-place root: strip every disallowed attribute
+		* in the subtree first, so nothing armed is left behind, then remove all
+		* children and the root's own attributes.
 		*
 		* @param root the in-place root to empty
 		*/
 		const _neutralizeRoot = function _neutralizeRoot(root) {
 			_neutralizeSubtree(root);
 			const childNodes = getChildNodes(root);
-			if (childNodes) {
-				const snapshot = [];
-				arrayForEach(childNodes, (child) => {
-					arrayPush(snapshot, child);
-				});
-				arrayForEach(snapshot, (child) => {
-					try {
-						remove(child);
-					} catch (_) {}
-				});
-			}
-			const attributes = getAttributes(root);
+			if (childNodes) arrayForEach(arraySlice(childNodes), (child) => {
+				try {
+					remove(child);
+				} catch (_) {}
+			});
+			const attributes = _readNodeType(root) === NODE_TYPE.element ? getAttributes(root) : null;
 			if (attributes) for (let i = attributes.length - 1; i >= 0; --i) {
 				const attribute = attributes[i];
 				const name = attribute && attribute.name;
@@ -17403,18 +19107,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 		};
 		/**
-		* _removeAttribute
-		*
-		* Name-based getAttributeNode()/removeAttribute() ASCII-lowercase their
-		* lookup key for HTML elements in an HTML document, so they silently miss an
-		* attribute whose stored qualified name still contains uppercase ASCII
-		* letters. That happens when the node came from a case-preserving source
-		* (an XML/XHTML document imported via importNode(), or createAttributeNS()),
-		* where e.g. `ONERROR` survives the walk: the policy check lowercases to
-		* `onerror` and rejects it, but `removeAttribute('ONERROR')` looks up
-		* `onerror` and finds nothing. Remove the exact Attr node instead, which is
-		* case- and namespace-exact, and fall back to name-based removal only when
-		* the caller could not supply the node.
+		* Removes an attribute, preferably as its exact Attr node: name-based
+		* removal lowercases the name in HTML documents and misses case-preserved
+		* names, e.g. from imported XHTML.
 		*
 		* @param name an Attribute name
 		* @param element a DOM node
@@ -17431,7 +19126,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				from: element
 			});
 			try {
-				if (attr) element.removeAttributeNode(attr);
+				if (attr) removeAttributeNode(element, attr);
 				else element.removeAttribute(name);
 			} catch (_) {
 				try {
@@ -17448,12 +19143,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 		};
 		/**
-		* _stripDisallowedAttributes
-		*
-		* Removes every attribute the active configuration does not allow from a
-		* single element, using the same allowlist as the main attribute pass (so
-		* `on*` handlers go, but no `/^on/` blocklist is introduced). Used only to
-		* neutralise nodes that are being discarded from an in-place tree.
+		* Removes every attribute the configuration does not allow. Used to
+		* neutralize nodes discarded from an in-place tree.
 		*
 		* @param element the element to strip
 		*/
@@ -17468,77 +19159,158 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 		};
 		/**
-		* _neutralizeSubtree
+		* Iterative depth-first walk, so deep trees cannot overflow the call stack,
+		* reading through the cached getters, so clobbering cannot hide children.
+		* When `visit` returns false, the node's children are skipped. With
+		* `intoShadow`, open shadow roots are walked after their host's children.
 		*
-		* Completes the audit-5 F1 fix across every removal path. The KEEP_CONTENT
-		* move-hoist neutralises only disallowed-tag removals; clobber, mXSS-canary,
-		* namespace, comment, processing-instruction and KEEP_CONTENT:false removals
-		* all drop their subtree wholesale via `_forceRemove`. On the IN_PLACE path
-		* those dropped nodes are detached from the caller's LIVE tree but a
-		* handler-bearing original among them (an `<img onerror>`/`<video>` that was
-		* loading) keeps its queued resource event, which fires in page scope after
-		* sanitize returns. This walks a removed subtree and strips every attribute
-		* the active configuration does not allow — so `on*` handlers are cancelled
-		* through the SAME allowlist that governs kept nodes, not a separate `/^on/`
-		* blocklist. Run synchronously before sanitize returns, i.e. before any
-		* queued event can fire. Hook-free by design: these nodes leave the output,
-		* so firing attribute hooks for them would be surprising. Clobber-safe reads;
-		* a doomed clobbered node may shadow `removeAttribute` (its own attributes are
-		* irrelevant — it is discarded — while its non-clobbered descendants, e.g.
-		* the `<img>`, are reached and scrubbed).
-		*
-		* @param root the root of a removed subtree to neutralise
+		* @param root where to start
+		* @param visit called for every node
+		* @param intoShadow whether to enter open shadow roots
 		*/
-		const _neutralizeSubtree = function _neutralizeSubtree(root) {
+		const _walkTree = function _walkTree(root, visit) {
+			let intoShadow = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : false;
 			const stack = [root];
 			while (stack.length > 0) {
 				const node = stack.pop();
-				if (_readNodeType(node) === NODE_TYPE.element) _stripDisallowedAttributes(node);
+				if (visit(node) === false) continue;
+				if (intoShadow && _readNodeType(node) === NODE_TYPE.element) {
+					const shadowRoot = getShadowRoot(node);
+					if (_isDocumentFragment(shadowRoot)) stack.push(shadowRoot);
+				}
 				const childNodes = getChildNodes(node);
 				if (childNodes) for (let i = childNodes.length - 1; i >= 0; --i) stack.push(childNodes[i]);
 			}
 		};
 		/**
-		* _neutralizePatchLinkage
+		* Strips disallowed attributes from every element of a discarded subtree,
+		* so a handler that is already queued (a loading image) cannot fire.
 		*
-		* IN_PLACE entry pre-pass (declarative-partial-updates / streaming
-		* hardening, https://github.com/WICG/declarative-partial-updates).
-		*
-		* The main walk strips patch linkage (`for`/`patchsrc`) and removes range
-		* markers (PIs / markup comments) node-by-node, in document order, AS it
-		* reaches each node. On a live in-place root that leaves a window: from the
-		* moment the root is connected until the walk arrives at a given node, that
-		* node's linkage is live. A patch applied on connection/stream can fire as
-		* a microtask during the walk and inject or teleport an unsanitized DOM
-		* range into a region the iterator has already passed and will not revisit,
-		* so the post-return "tree is sanitized" contract is violated. Sweep the
-		* whole tree once up front and sever every linkage before the walk begins,
-		* closing that window.
-		*
-		* This CANNOT undo a patch that already fired before sanitize ran — that is
-		* the irreducible "do not IN_PLACE a live-connected attacker tree" caveat —
-		* but it closes everything from sanitize-start onward. Gated on SAFE_FOR_XML
-		* to group with the rest of the declarative-partial-updates handling and
-		* stay overridable, consistent with the codebase.
-		*
-		* Clobber-safe traversal (cached childNodes getter); per-node try/catch so a
-		* clobbered root cannot defeat the sweep of its non-clobbered descendants.
-		*
-		* NOTE (pending real-Chrome confirmation, see test/declarative-patch-probe
-		* .html Q1): this mirrors the existing policy of keeping `for` on
-		* <label>/<output>. If the shipping feature can drive a patch through a
-		* surviving `for`-on-label/output + `id` pair, this pre-pass and the
-		* attribute check at _isBasicCustomElement's caller must additionally drop
-		* that pair on the IN_PLACE path. Left as-is until the taxonomy is verified.
-		*
-		* @param root the in-place root to sweep
+		* @param root the root of a removed subtree
 		*/
+		const _neutralizeSubtree = function _neutralizeSubtree(root) {
+			_walkTree(root, (node) => {
+				if (_readNodeType(node) === NODE_TYPE.element) _stripDisallowedAttributes(node);
+			});
+		};
 		/**
-		* Central policy for declarative-partial-updates patch-linkage attributes,
-		* shared by the _neutralizePatchLinkage pre-pass and _isValidAttribute so
-		* the two sites cannot drift: `patchsrc` always links, `for` links
-		* everywhere except on <label>/<output>, and the whole policy is gated on
-		* SAFE_FOR_XML (see the rationale block in _isValidAttribute).
+		* All nodes under `root`, root first, including open shadow roots. Template
+		* content is not entered, it is inert.
+		*
+		* @param root the in-place root
+		* @return the nodes
+		*/
+		const _collectLiveNodes = function _collectLiveNodes(root) {
+			const nodes = [];
+			_walkTree(root, (node) => {
+				nodes.push(node);
+			}, true);
+			return nodes;
+		};
+		/**
+		* Strips disallowed attributes from every element that was under the
+		* in-place root when the call started and no longer is, whatever removed
+		* or moved it.
+		*
+		* @param root the in-place root
+		* @param before the root's nodes, collected before the walk
+		*/
+		const _neutralizeEscapedElements = function _neutralizeEscapedElements(root, before) {
+			const reachable = setCreate();
+			arrayForEach(_collectLiveNodes(root), (node) => {
+				if (_readNodeType(node) === NODE_TYPE.element) setAdd(reachable, node);
+			});
+			arrayForEach(before, (node) => {
+				if (_readNodeType(node) === NODE_TYPE.element && !setHas(reachable, node)) _stripDisallowedAttributes(node);
+			});
+		};
+		/**
+		* Neutralizes everything that left the in-place tree during the call: what
+		* DOMPurify removed, and what hooks or custom elements removed or moved out.
+		*
+		* @param root the in-place root
+		* @param before the root's nodes, collected before the walk
+		* @return true if the root itself was removed
+		*/
+		const _neutralizeDiscarded = function _neutralizeDiscarded(root, before) {
+			let rootRemoved = false;
+			arrayForEach(DOMPurify.removed, (entry) => {
+				if (entry.element) {
+					rootRemoved = rootRemoved || entry.element === root;
+					_neutralizeSubtree(entry.element);
+				}
+			});
+			_neutralizeEscapedElements(root, before);
+			return rootRemoved;
+		};
+		const MAX_UNVISITED_ROUNDS = 8;
+		/**
+		* The walk only moves forward, so a node moved to a position it already
+		* passed is never visited. Give every original node that is still in the
+		* tree but unvisited the normal treatment, hooks included. Nodes created
+		* during the call are left alone. Fails closed if the tree keeps changing.
+		*
+		* @param root the in-place root
+		* @param before the root's nodes, collected before the walk
+		*/
+		const _sanitizeUnvisitedNodes = function _sanitizeUnvisitedNodes(root, before) {
+			const visited = IN_PLACE_VISITED;
+			let original = null;
+			const getOriginal = () => {
+				if (!original) {
+					original = setCreate();
+					arrayForEach(before, (beforeNode) => {
+						setAdd(original, beforeNode);
+					});
+				}
+				return original;
+			};
+			for (let round = 0;; round++) {
+				const live = _collectLiveNodes(root);
+				const containers = [root];
+				let pending = false;
+				arrayForEach(live, (node) => {
+					if (_readNodeType(node) === NODE_TYPE.documentFragment) arrayPush(containers, node);
+					else if (!pending && !setHas(visited, node)) pending = setHas(getOriginal(), node);
+				});
+				if (!pending) return;
+				if (round >= MAX_UNVISITED_ROUNDS) throw typeErrorCreate("the tree kept changing during in-place sanitization; refusing to return it");
+				arrayForEach(containers, (container, index) => {
+					_sanitizeUnvisitedIn(container, index > 0, root, getOriginal());
+				});
+			}
+		};
+		/**
+		* One _sanitizeUnvisitedNodes pass over the root or an open shadow root.
+		*
+		* @param container the root or an open shadow root
+		* @param inShadow whether container is a shadow root
+		* @param root the in-place root
+		* @param original the root's nodes collected before the walk, as a set
+		*/
+		const _sanitizeUnvisitedIn = function _sanitizeUnvisitedIn(container, inShadow, root, original) {
+			const iterator = _createNodeIterator(container);
+			let node;
+			while (node = iterator.nextNode()) {
+				if (!setHas(original, node) || setHas(IN_PLACE_VISITED, node)) continue;
+				if (inShadow) _executeHooks(hooks.uponSanitizeShadowNode, node, null);
+				_sanitizeElements(node, root);
+				_sanitizeAttributes(node, root);
+				if (_isDocumentFragment(node.content)) _sanitizeShadowDOM2(node.content);
+			}
+		};
+		/**
+		* Records that _sanitizeElements processed `node`. No-op outside IN_PLACE.
+		*
+		* @param node the node being processed
+		*/
+		const _markVisited = function _markVisited(node) {
+			if (IN_PLACE_VISITED) setAdd(IN_PLACE_VISITED, node);
+		};
+		/**
+		* Patch-linkage attributes (declarative partial updates): `patchsrc`
+		* always, `for` everywhere except on <label> and <output>. Gated on
+		* SAFE_FOR_XML. Shared by the IN_PLACE pre-pass and _isValidAttribute.
 		*
 		* @param lcName the transformCaseFunc'd attribute name
 		* @param lcTag the transformCaseFunc'd tag name of the carrying element
@@ -17549,17 +19321,26 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if (lcName === "patchsrc") return true;
 			return lcName === "for" && lcTag !== "label" && lcTag !== "output";
 		};
+		/**
+		* IN_PLACE pre-pass: sever all patch linkage before the walk, so no patch
+		* can fire mid-walk into a part of the tree the walker already passed.
+		* Removes range markers (processing instructions, comments with markup)
+		* and strips linkage attributes. It cannot undo a patch that already fired.
+		*
+		* TODO: if the shipped feature can patch through `for` on <label>/<output>,
+		* drop that pair here too (see test/declarative-patch-probe.html).
+		*
+		* @param root the in-place root to sweep
+		*/
 		const _neutralizePatchLinkage = function _neutralizePatchLinkage(root) {
 			if (!SAFE_FOR_XML) return;
-			const stack = [root];
-			while (stack.length > 0) {
-				const node = stack.pop();
+			_walkTree(root, (node) => {
 				const nodeType = _readNodeType(node);
 				if (nodeType === NODE_TYPE.processingInstruction || nodeType === NODE_TYPE.comment && regExpTest(COMMENT_MARKUP_PROBE, node.data)) {
 					try {
 						remove(node);
 					} catch (_) {}
-					continue;
+					return false;
 				}
 				if (nodeType === NODE_TYPE.element) {
 					const element = node;
@@ -17569,9 +19350,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						if (element.hasAttribute && element.hasAttribute("for") && _isPatchLinkageAttribute("for", lcTag)) element.removeAttribute("for");
 					} catch (_) {}
 				}
-				const childNodes = getChildNodes(node);
-				if (childNodes) for (let i = childNodes.length - 1; i >= 0; --i) stack.push(childNodes[i]);
-			}
+				return true;
+			});
 		};
 		/**
 		* _initDocument
@@ -17648,6 +19428,27 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		*/
 		const _scrubTemplateExpressions2 = function _scrubTemplateExpressions(node) {
 			var _node$querySelectorAl;
+			_scrubOwnCharacterData(node);
+			const templates = (_node$querySelectorAl = node.querySelectorAll) === null || _node$querySelectorAl === void 0 ? void 0 : _node$querySelectorAl.call(node, "template");
+			if (templates) arrayForEach(templates, (tmpl) => {
+				if (_isDocumentFragment(tmpl.content)) _scrubTemplateExpressions2(tmpl.content);
+			});
+		};
+		/**
+		* _scrubOwnCharacterData
+		*
+		* Non-recursive core of _scrubTemplateExpressions: normalize `node` and
+		* strip template expressions from its own character data only. Does not
+		* enter <template>.content or attached shadow roots (NodeIterator never
+		* does). Used by _sanitizeShadowDOM, where every nested template content
+		* and shadow root is already walked - and therefore scrubbed - by its own
+		* recursive _sanitizeShadowDOM call; recursing here as well would rescrub
+		* each nested fragment once per ancestor, which is quadratic in nesting
+		* depth.
+		*
+		* @param node The root whose own character data should be scrubbed.
+		*/
+		const _scrubOwnCharacterData = function _scrubOwnCharacterData(node) {
 			node.normalize();
 			const doc = getOwnerDocument ? getOwnerDocument(node) : node.ownerDocument;
 			const walker = createNodeIterator.call(doc || node, node, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_CDATA_SECTION | NodeFilter.SHOW_PROCESSING_INSTRUCTION, null);
@@ -17656,10 +19457,6 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				currentNode.data = _stripTemplateExpressions(currentNode.data);
 				currentNode = walker.nextNode();
 			}
-			const templates = (_node$querySelectorAl = node.querySelectorAll) === null || _node$querySelectorAl === void 0 ? void 0 : _node$querySelectorAl.call(node, "template");
-			if (templates) arrayForEach(templates, (tmpl) => {
-				if (_isDocumentFragment(tmpl.content)) _scrubTemplateExpressions2(tmpl.content);
-			});
 		};
 		/**
 		* _isClobbered
@@ -17677,7 +19474,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			const realTagName = getNodeName ? getNodeName(element) : null;
 			if (typeof realTagName !== "string") return false;
 			if (transformCaseFunc(realTagName) !== "form") return false;
-			return typeof element.nodeName !== "string" || typeof element.textContent !== "string" || typeof element.removeChild !== "function" || element.attributes !== getAttributes(element) || typeof element.removeAttribute !== "function" || typeof element.setAttribute !== "function" || typeof element.namespaceURI !== "string" || typeof element.insertBefore !== "function" || typeof element.hasChildNodes !== "function" || element.nodeType !== getNodeType(element) || element.childNodes !== getChildNodes(element);
+			return typeof element.nodeName !== "string" || typeof element.textContent !== "string" || typeof element.removeChild !== "function" || element.attributes !== getAttributes(element) || typeof element.removeAttribute !== "function" || typeof element.removeAttributeNode !== "function" || typeof element.getAttributeNode !== "function" || typeof element.setAttribute !== "function" || typeof element.namespaceURI !== "string" || typeof element.insertBefore !== "function" || typeof element.hasChildNodes !== "function" || element.nodeType !== getNodeType(element) || element.childNodes !== getChildNodes(element);
 		};
 		/**
 		* Checks whether the given value is a DocumentFragment from any realm.
@@ -17735,7 +19532,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		*/
 		const _isUnsafeNode = function _isUnsafeNode(currentNode, tagName) {
 			if (SAFE_FOR_XML && currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && regExpTest(ELEMENT_MARKUP_PROBE, currentNode.textContent) && regExpTest(ELEMENT_MARKUP_PROBE, currentNode.innerHTML)) return true;
-			if (SAFE_FOR_XML && currentNode.namespaceURI === HTML_NAMESPACE && LITERAL_TEXT_ELEMENTS[tagName] && (_isNode(currentNode.firstElementChild) || typeof currentNode.textContent === "string" && regExpTest(LITERAL_TEXT_CLOSE[tagName], currentNode.textContent))) return true;
+			if (SAFE_FOR_XML && LITERAL_TEXT_ELEMENTS[tagName] && _readNodeType(currentNode) === NODE_TYPE.element && _readNamespaceURI(currentNode) === HTML_NAMESPACE && (_isNode(currentNode.firstElementChild) || typeof currentNode.textContent === "string" && regExpTest(ELEMENT_MARKUP_PROBE, currentNode.textContent))) return true;
 			if (currentNode.nodeType === NODE_TYPE.processingInstruction) return true;
 			if (SAFE_FOR_XML && currentNode.nodeType === NODE_TYPE.comment && regExpTest(COMMENT_MARKUP_PROBE, currentNode.data)) return true;
 			return false;
@@ -17779,7 +19576,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		*/
 		const _sanitizeDisallowedNode = function _sanitizeDisallowedNode(currentNode, tagName, root) {
 			if (!FORBID_TAGS[tagName] && _isBasicCustomElement(tagName) && _matchesNameCheck(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName)) return false;
-			if (KEEP_CONTENT && !FORBID_CONTENTS[tagName]) {
+			if (KEEP_CONTENT && !FORBID_CONTENTS[tagName] && !FORBID_CONTENTS[stringToLowerCase(tagName)]) {
 				const parentNode = getParentNode(currentNode);
 				const childNodes = getChildNodes(currentNode);
 				if (childNodes && parentNode) {
@@ -17812,35 +19609,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return set === defaultSet || set === setConfigSet ? clone(set) : set;
 		};
 		/**
-		* Shared guard for a node that a hook has detached from the walk tree,
-		* used after each element-hook site in _sanitizeElements. Detaching is a
-		* long-standing user pattern (issue #469; draw.io-style foreignObject
-		* filtering). Per the cached, unclobberable parentNode getter the node is
-		* genuinely out of the tree, so it can reach neither the serialized
-		* output nor an IN_PLACE live tree; treat it as removed and stop
-		* processing it. Without this guard, the unsafe-node / namespace checks
-		* would call _forceRemove on a parentless node and hit the REPORT-3
-		* fail-closed throw — which exists for nodes DOMPurify wants gone but
-		* *cannot* detach (clobbered / parentless roots), the opposite of a node
-		* that is already safely gone. The walk root is exempt: a detached
-		* IN_PLACE root is legitimate input and must still be fully sanitized,
-		* and a kill-decision on it must keep hitting the REPORT-3 throw.
-		*
-		* Nodes detached by hooks stay the hook's responsibility for placement:
-		* they are not recorded in DOMPurify.removed, so the post-walk IN_PLACE
-		* pass (which iterates DOMPurify.removed) does not reach them. But a
-		* hook-detached subtree can still hold a queued resource-event handler -
-		* e.g. an <img onload> that began loading when the caller built the live
-		* tree - which fires in page scope after sanitize returns even though the
-		* handler never reached the returned tree. That is the audit-5 F1 hazard,
-		* and the documented node.remove() hook pattern walks straight into it.
-		* So on the IN_PLACE path we neutralize the detached subtree inline,
-		* stripping its non-allow-listed attributes before returning, exactly as
-		* the post-walk pass does for _forceRemove'd subtrees.
+		* A hook may have detached the node it was called for. If so, treat it as
+		* removed and stop processing it; the walk root is exempt. On the IN_PLACE
+		* path the detached subtree is neutralized right away.
 		*
 		* @param currentNode the node a hook may have detached
 		* @param root the current walk root
-		* @return true if the node is detached and now handled, false otherwise
+		* @return true if the node was detached
 		*/
 		const _handleHookDetachedNode = function _handleHookDetachedNode(currentNode, root) {
 			if (currentNode === root || getParentNode(currentNode) !== null) return false;
@@ -17857,6 +19632,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		* @return true if node was killed, false if left alive
 		*/
 		const _sanitizeElements = function _sanitizeElements(currentNode, root) {
+			_markVisited(currentNode);
 			_executeHooks(hooks.beforeSanitizeElements, currentNode, null);
 			if (_handleHookDetachedNode(currentNode, root)) return true;
 			if (_isClobbered(currentNode)) {
@@ -17876,7 +19652,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 			if (FORBID_TAGS[tagName] || !(EXTRA_ELEMENT_HANDLING.tagCheck instanceof Function && EXTRA_ELEMENT_HANDLING.tagCheck(tagName)) && !ALLOWED_TAGS[tagName]) {
 				const removed = _sanitizeDisallowedNode(currentNode, tagName, root);
-				if (removed === false) _executeHooks(hooks.afterSanitizeElements, currentNode, null);
+				if (removed === false) {
+					_executeHooks(hooks.afterSanitizeElements, currentNode, null);
+					if (_handleHookDetachedNode(currentNode, root)) return true;
+				}
 				return removed;
 			}
 			if (_readNodeType(currentNode) === NODE_TYPE.element && !_checkValidNamespace(currentNode)) {
@@ -17895,7 +19674,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				}
 			}
 			_executeHooks(hooks.afterSanitizeElements, currentNode, null);
-			return false;
+			return _handleHookDetachedNode(currentNode, root);
 		};
 		/**
 		* _isValidAttribute
@@ -17962,25 +19741,55 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		/**
 		* Write a modified attribute value back onto the element. On
 		* success, re-probe for clobbering introduced by the new value and
-		* remove the element when found; otherwise pop the removal entry
-		* recorded by the earlier _removeAttribute (long-standing pairing
-		* with the SANITIZE_NAMED_PROPS path - do not "fix" casually). On
+		* remove the element when found; otherwise, when this writeback is the
+		* recreate half of the SANITIZE_NAMED_PROPS remove-and-recreate, pop the
+		* removal entry that path recorded so it does not show as removed. On
 		* failure, remove the attribute instead.
+		*
+		* Returns true only on a clean write (the value was set and the new value
+		* introduced no clobbering). The caller uses that, together with its own
+		* knowledge of whether this attribute pushed a DOMPurify.removed record, to
+		* decide whether to pop that record. The pop must happen ONLY for the
+		* named-prop remove-and-recreate; popping on any other value change (trim,
+		* template scrubbing, Trusted Types) would consume an unrelated _forceRemove
+		* subtree-cleanup record and let that detached subtree keep a live event
+		* handler through the IN_PLACE neutralization pass (SO-001).
 		*
 		* @param currentNode the element carrying the attribute
 		* @param name the attribute name as present on the element
 		* @param namespaceURI the attribute's namespace, if any
 		* @param value the new attribute value
+		* @return true if the value was written without introducing clobbering
 		*/
 		const _setAttributeValue = function _setAttributeValue(currentNode, name, namespaceURI, value) {
 			try {
 				if (namespaceURI) currentNode.setAttributeNS(namespaceURI, name, value);
 				else currentNode.setAttribute(name, value);
-				if (_isClobbered(currentNode)) _forceRemove(currentNode);
-				else arrayPop(DOMPurify.removed);
+				if (_isClobbered(currentNode)) {
+					_forceRemove(currentNode);
+					return false;
+				}
+				return true;
 			} catch (_) {
 				_removeAttribute(name, currentNode);
+				return false;
 			}
+		};
+		/**
+		* _isUnsafeAttributeValue
+		*
+		* Value-based attribute checks that the attribute walk applies before any
+		* hook can force-keep an attribute, shared with the public
+		* isValidAttribute() so that it never approves a value sanitize() would
+		* strip.
+		*
+		* @param name the attribute name as found on the node (case preserved)
+		* @param value the attribute value
+		* @returns true if the attribute must be removed because of its value
+		*/
+		const _isUnsafeAttributeValue = function _isUnsafeAttributeValue(name, value) {
+			if (SAFE_FOR_XML && regExpTest(/((--!?|])>)|<\/(style|script|title|xmp|textarea|noscript|iframe|noembed|noframes)/i, value)) return true;
+			return stringToLowerCase(name) === "attributename" && stringMatch(value, "href") !== null;
 		};
 		/**
 		* _sanitizeAttributes
@@ -17991,9 +19800,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		* @protect setAttribute
 		*
 		* @param currentNode to sanitize
+		* @param root the current walk root
 		*/
-		const _sanitizeAttributes = function _sanitizeAttributes(currentNode) {
+		const _sanitizeAttributes = function _sanitizeAttributes(currentNode, root) {
 			_executeHooks(hooks.beforeSanitizeAttributes, currentNode, null);
+			if (_handleHookDetachedNode(currentNode, root)) return;
 			const attributes = currentNode.attributes;
 			if (!attributes || _isClobbered(currentNode)) return;
 			ALLOWED_ATTR = _forkSharedAllowlist(hooks.uponSanitizeAttribute, ALLOWED_ATTR, DEFAULT_ALLOWED_ATTR, SET_CONFIG_ALLOWED_ATTR);
@@ -18012,6 +19823,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				const lcName = transformCaseFunc(name);
 				const initValue = attrValue;
 				let value = name === "value" ? initValue : stringTrim(initValue);
+				let recreatedNamedProp = false;
 				hookEvent.attrName = lcName;
 				hookEvent.attrValue = value;
 				hookEvent.keepAttr = true;
@@ -18021,12 +19833,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				if (SANITIZE_NAMED_PROPS && (lcName === "id" || lcName === "name") && stringIndexOf(value, SANITIZE_NAMED_PROPS_PREFIX) !== 0) {
 					_removeAttribute(name, currentNode, attr);
 					value = SANITIZE_NAMED_PROPS_PREFIX + value;
+					recreatedNamedProp = true;
 				}
-				if (SAFE_FOR_XML && regExpTest(/((--!?|])>)|<\/(style|script|title|xmp|textarea|noscript|iframe|noembed|noframes)/i, value)) {
-					_removeAttribute(name, currentNode, attr);
-					continue;
-				}
-				if (lcName === "attributename" && stringMatch(value, "href")) {
+				if (_isUnsafeAttributeValue(name, value)) {
 					_removeAttribute(name, currentNode, attr);
 					continue;
 				}
@@ -18045,9 +19854,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					continue;
 				}
 				value = _applyTrustedTypesToAttribute(lcTag, lcName, namespaceURI, value);
-				if (value !== initValue) _setAttributeValue(currentNode, name, namespaceURI, value);
+				if (value !== initValue) {
+					if (_setAttributeValue(currentNode, name, namespaceURI, value) && recreatedNamedProp) arrayPop(DOMPurify.removed);
+				}
 			}
 			_executeHooks(hooks.afterSanitizeAttributes, currentNode, null);
+			_handleHookDetachedNode(currentNode, root);
 		};
 		/**
 		* _sanitizeShadowDOM
@@ -18061,7 +19873,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			while (shadowNode = shadowIterator.nextNode()) {
 				_executeHooks(hooks.uponSanitizeShadowNode, shadowNode, null);
 				_sanitizeElements(shadowNode, fragment);
-				_sanitizeAttributes(shadowNode);
+				_sanitizeAttributes(shadowNode, fragment);
 				if (_isDocumentFragment(shadowNode.content)) _sanitizeShadowDOM2(shadowNode.content);
 				if (_readNodeType(shadowNode) === NODE_TYPE.element) {
 					const innerSr = getShadowRoot(shadowNode);
@@ -18071,24 +19883,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					}
 				}
 			}
+			if (SAFE_FOR_TEMPLATES) _scrubOwnCharacterData(fragment);
 			_executeHooks(hooks.afterSanitizeShadowDOM, fragment, null);
 		};
 		/**
-		* _sanitizeAttachedShadowRoots
-		*
-		* Walks `root` and feeds every attached shadow root we encounter into
-		* the existing _sanitizeShadowDOM pipeline. The default node iterator
-		* does not descend into shadow trees, so nodes inside an attached
-		* shadow root would otherwise be skipped entirely.
-		*
-		* Two real input paths put attached shadow roots in front of us:
-		*   1. IN_PLACE on a DOM node that already has shadow roots attached.
-		*   2. DOM-node input where importNode(dirty, true) deep-clones the
-		*      shadow root because it was created with `clonable: true`.
-		*
-		* This pass runs once, up front, so the main iteration loop (and the
-		* existing _sanitizeShadowDOM template-content recursion) stay
-		* untouched — string-input paths are not affected.
+		* Sanitizes every attached shadow root under `root`, since the node
+		* iterator does not enter shadow trees. Needed for IN_PLACE input and for
+		* DOM input whose clonable shadow roots were copied by importNode().
 		*
 		* @param root the subtree root to walk for attached shadow roots
 		*/
@@ -18153,6 +19954,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if (hooks.uponSanitizeAttribute.length > 0) ALLOWED_ATTR = clone(ALLOWED_ATTR);
 			DOMPurify.removed = [];
 			const inPlace = IN_PLACE && typeof dirty !== "string" && _isNode(dirty);
+			let inPlaceNodes = [];
+			const outerVisited = IN_PLACE_VISITED;
 			if (inPlace) {
 				_neutralizePatchLinkage(dirty);
 				const nn = _readNodeName(dirty);
@@ -18167,19 +19970,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					_neutralizeRoot(dirty);
 					throw typeErrorCreate("root node is clobbered and cannot be sanitized in-place");
 				}
-				try {
-					_sanitizeAttachedShadowRoots(dirty);
-				} catch (error) {
-					_neutralizeRoot(dirty);
-					throw error;
-				}
+				inPlaceNodes = _collectLiveNodes(dirty);
+				IN_PLACE_VISITED = setCreate();
 			} else if (_isNode(dirty)) {
 				body = _initDocument("<!---->");
 				importedNode = body.ownerDocument.importNode(dirty, true);
 				if (importedNode.nodeType === NODE_TYPE.element && importedNode.nodeName === "BODY") body = importedNode;
 				else if (importedNode.nodeName === "HTML") body = importedNode;
 				else body.appendChild(importedNode);
-				_sanitizeAttachedShadowRoots(importedNode);
+				_sanitizeAttachedShadowRoots(body);
 			} else {
 				if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT && dirty.indexOf("<") === -1) return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? _createTrustedHTML(dirty) : dirty;
 				body = _initDocument(dirty);
@@ -18188,25 +19987,25 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if (body && FORCE_BODY) _forceRemove(body.firstChild);
 			const walkRoot = inPlace ? dirty : body;
 			try {
+				if (inPlace) _sanitizeAttachedShadowRoots(dirty);
 				const nodeIterator = _createNodeIterator(walkRoot);
 				while (currentNode = nodeIterator.nextNode()) {
 					_sanitizeElements(currentNode, walkRoot);
-					_sanitizeAttributes(currentNode);
+					_sanitizeAttributes(currentNode, walkRoot);
 					if (_isDocumentFragment(currentNode.content)) _sanitizeShadowDOM2(currentNode.content);
 				}
+				if (inPlace) _sanitizeUnvisitedNodes(dirty, inPlaceNodes);
 			} catch (error) {
 				if (inPlace) {
 					_neutralizeRoot(dirty);
-					arrayForEach(DOMPurify.removed, (entry) => {
-						if (entry.element) _neutralizeSubtree(entry.element);
-					});
+					_neutralizeDiscarded(dirty, inPlaceNodes);
 				}
 				throw error;
+			} finally {
+				IN_PLACE_VISITED = outerVisited;
 			}
 			if (inPlace) {
-				arrayForEach(DOMPurify.removed, (entry) => {
-					if (entry.element) _neutralizeSubtree(entry.element);
-				});
+				if (_neutralizeDiscarded(dirty, inPlaceNodes)) throw typeErrorCreate("a node selected for removal could not be safely returned; refusing to sanitize in place");
 				if (SAFE_FOR_TEMPLATES) _scrubTemplateExpressions2(dirty);
 				return dirty;
 			}
@@ -18243,6 +20042,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if (!CONFIG) _parseConfig({});
 			const lcTag = transformCaseFunc(tag);
 			const lcName = transformCaseFunc(attr);
+			if (typeof value === "string" && (_isUnsafeAttributeValue(attr, value) || !ALLOW_SELF_CLOSE_IN_ATTR && regExpTest(SELF_CLOSING_TAG, value))) return false;
 			return _isValidAttribute(lcTag, lcName, value);
 		};
 		DOMPurify.addHook = function(entryPoint, hookFunction) {
@@ -18267,11 +20067,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		return DOMPurify;
 	}
-	var purify = createDOMPurify();
-	//#endregion
-	//#region src/components/cart/components/SubRow.svelte
-	var root$55 = /* @__PURE__ */ from_html(`<span class="go-sub-ticket-description"></span>`);
-	var root_1$20 = /* @__PURE__ */ from_html(`<span class="go-sub-ticket-quantity"> </span>`);
+	var purify_default = createDOMPurify();
+	// src/components/cart/components/SubRow.svelte
+	var root$56 = /* @__PURE__ */ from_html(`<span class="go-sub-ticket-description"></span>`);
+	var root_1$21 = /* @__PURE__ */ from_html(`<span class="go-sub-ticket-quantity"> </span>`);
 	var root_2$14 = /* @__PURE__ */ from_html(`<li><span class="go-sub-ticket-title"> </span> <!> <!></li>`);
 	function SubRow($$anchor, $$props) {
 		push($$props, true);
@@ -18317,12 +20116,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		var li = root_2$14();
 		var span = child(li);
-		var text = child(span, true);
-		reset(span);
+		var text = only_child(span, true);
 		var node = sibling(span, 2);
 		var consequent = ($$anchor) => {
-			var span_1 = root$55();
-			html$2(span_1, () => purify.sanitize(sub().description), true);
+			var span_1 = root$56();
+			html$2(span_1, () => purify_default.sanitize(sub().description), true);
 			reset(span_1);
 			append($$anchor, span_1);
 		};
@@ -18331,9 +20129,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		});
 		var node_1 = sibling(node, 2);
 		var consequent_1 = ($$anchor) => {
-			var span_2 = root_1$20();
-			var text_1 = child(span_2, true);
-			reset(span_2);
+			var span_2 = root_1$21();
+			var text_1 = only_child(span_2, true);
 			template_effect(() => {
 				set_attribute(span_2, "data-testid", `sub-ticket-${sub().id ?? ""}-quantity`);
 				set_text(text_1, quantity());
@@ -18388,8 +20185,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		onChange: {},
 		preview: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/shared/quantityStepper/quantityLabel.ts
+	// src/components/shared/quantityStepper/quantityLabel.ts
 	/**
 	* Accessible name for a line's QuantityControl, derived from the same source as
 	* the visible row title: event rows compose it from event_title + time because a
@@ -18406,16 +20202,17 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			product.title
 		].filter(Boolean).join(" - ") : product.title;
 	}
-	//#endregion
-	//#region src/components/cart/components/Item.svelte
-	var root$54 = /* @__PURE__ */ from_html(`<s class="go-cart-item-price-original"> </s> <span class="go-cart-item-price-discounted"> </span>`, 1);
-	var root_1$19 = /* @__PURE__ */ from_html(`<span class="go-cart-item-price-discounted"> </span>`);
-	var root_2$13 = /* @__PURE__ */ from_html(`<span data-testid="cart-item-participant-count"> </span>`);
-	var root_3$8 = /* @__PURE__ */ from_html(`<span data-testid="cart-item-voucher-quantity"> </span>`);
-	var root_4$4 = /* @__PURE__ */ from_html(`<span> </span>`);
-	var root_5$4 = /* @__PURE__ */ from_html(`<li class="go-cart-item-remove"><button class="go-cart-remove"> </button></li>`);
-	var root_6$2 = /* @__PURE__ */ from_html(`<ul class="go-sub-tickets" role="list"></ul>`);
-	var root_7$2 = /* @__PURE__ */ from_html(`<article class="go-cart-item-content"><ul><li class="go-cart-item-title-container"><!></li> <li class="go-cart-item-price"><!></li> <li class="go-cart-item-count"><!></li> <!> <li class="go-cart-item-sum"> </li></ul></article> <!>`, 1);
+	// src/components/cart/components/Item.svelte
+	var root$55 = /* @__PURE__ */ from_html(`<span class="go-cart-item-reservation" role="timer" data-testid="cart-item-reservation"> </span>`);
+	var root_1$20 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
+	var root_2$13 = /* @__PURE__ */ from_html(`<s class="go-cart-item-price-original"> </s> <span class="go-cart-item-price-discounted"> </span>`, 1);
+	var root_3$8 = /* @__PURE__ */ from_html(`<span class="go-cart-item-price-discounted"> </span>`);
+	var root_4$4 = /* @__PURE__ */ from_html(`<span data-testid="cart-item-participant-count"> </span>`);
+	var root_5$4 = /* @__PURE__ */ from_html(`<span data-testid="cart-item-voucher-quantity"> </span>`);
+	var root_6$2 = /* @__PURE__ */ from_html(`<span> </span>`);
+	var root_7$2 = /* @__PURE__ */ from_html(`<li class="go-cart-item-remove"><button class="go-cart-remove"> </button></li>`);
+	var root_8$2 = /* @__PURE__ */ from_html(`<ul class="go-sub-tickets" role="list"></ul>`);
+	var root_9$2 = /* @__PURE__ */ from_html(`<article class="go-cart-item-content"><ul><li class="go-cart-item-title-container"><!></li> <li class="go-cart-item-price"><!></li> <li class="go-cart-item-count"><!></li> <!> <li class="go-cart-item-sum"> </li></ul></article> <!>`, 1);
 	function Item$1($$anchor, $$props) {
 		push($$props, true);
 		let displayItem = prop($$props, "displayItem", 7), displayCart = prop($$props, "displayCart", 7), preview = prop($$props, "preview", 7);
@@ -18480,89 +20277,98 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		var fragment = comment();
 		var node = first_child(fragment);
-		var consequent_10 = ($$anchor) => {
-			var fragment_1 = root_7$2();
+		var consequent_11 = ($$anchor) => {
+			var fragment_1 = root_9$2();
 			var article = first_child(fragment_1);
 			var ul = child(article);
 			var li = child(ul);
 			var node_1 = child(li);
-			var consequent = ($$anchor) => {
-				Ticket($$anchor, { get cartItem() {
+			var consequent_1 = ($$anchor) => {
+				var fragment_2 = root_1$20();
+				var node_2 = first_child(fragment_2);
+				Ticket(node_2, { get cartItem() {
 					return displayItem();
 				} });
+				var node_3 = sibling(node_2, 2);
+				var consequent = ($$anchor) => {
+					var span = root$55();
+					var text = only_child(span, true);
+					template_effect(($0, $1) => {
+						set_attribute(span, "aria-label", $0);
+						set_text(text, $1);
+					}, [() => shop.t("ticket.reservations.timer"), () => formatRemaining(Date.parse(get$2(itemInMaincart).reservation.valid_until) - now())]);
+					append($$anchor, span);
+				};
+				if_block(node_3, ($$render) => {
+					if (configStore.config.ticketReservations && get$2(itemInMaincart)?.reservation) $$render(consequent);
+				});
+				append($$anchor, fragment_2);
 			};
-			var consequent_1 = ($$anchor) => {
+			var consequent_2 = ($$anchor) => {
 				Event$2($$anchor, { get cartItem() {
 					return displayItem();
 				} });
 			};
-			var consequent_2 = ($$anchor) => {
+			var consequent_3 = ($$anchor) => {
 				Coupon$1($$anchor, { get cartItem() {
 					return displayItem();
 				} });
 			};
-			var consequent_3 = ($$anchor) => {
+			var consequent_4 = ($$anchor) => {
 				Tour$1($$anchor, { get cartItem() {
 					return displayItem();
 				} });
 			};
 			if_block(node_1, ($$render) => {
-				if (displayItem().product.type === "Ticket") $$render(consequent);
-				else if (displayItem().product.type === "Event") $$render(consequent_1, 1);
-				else if (displayItem().product.type === "Coupon") $$render(consequent_2, 2);
-				else if (displayItem().product.type === "Tour") $$render(consequent_3, 3);
+				if (displayItem().product.type === "Ticket") $$render(consequent_1);
+				else if (displayItem().product.type === "Event") $$render(consequent_2, 1);
+				else if (displayItem().product.type === "Coupon") $$render(consequent_3, 2);
+				else if (displayItem().product.type === "Tour") $$render(consequent_4, 3);
 			});
 			reset(li);
 			var li_1 = sibling(li, 2);
-			var node_2 = child(li_1);
-			var consequent_4 = ($$anchor) => {
-				var fragment_6 = root$54();
+			var node_4 = child(li_1);
+			var consequent_5 = ($$anchor) => {
+				var fragment_6 = root_2$13();
 				var s = first_child(fragment_6);
-				var text = child(s, true);
-				reset(s);
-				var span = sibling(s, 2);
-				var text_1 = child(span, true);
-				reset(span);
+				var text_1 = only_child(s, true);
+				var text_2 = only_child(sibling(s, 2), true);
 				template_effect(($0, $1) => {
-					set_text(text, $0);
-					set_text(text_1, $1);
+					set_text(text_1, $0);
+					set_text(text_2, $1);
 				}, [() => formatCurrency(displayItem().display.originalPrice), () => formatCurrency(displayItem().final_price_cents)]);
 				append($$anchor, fragment_6);
 			};
 			var alternate = ($$anchor) => {
-				var span_1 = root_1$19();
-				var text_2 = child(span_1, true);
-				reset(span_1);
-				template_effect(($0) => set_text(text_2, $0), [() => formatCurrency(displayItem().final_price_cents)]);
-				append($$anchor, span_1);
+				var span_2 = root_3$8();
+				var text_3 = only_child(span_2, true);
+				template_effect(($0) => set_text(text_3, $0), [() => formatCurrency(displayItem().final_price_cents)]);
+				append($$anchor, span_2);
 			};
-			if_block(node_2, ($$render) => {
-				if (displayItem().display?.discounted) $$render(consequent_4);
+			if_block(node_4, ($$render) => {
+				if (displayItem().display?.discounted) $$render(consequent_5);
 				else $$render(alternate, -1);
 			});
 			reset(li_1);
 			var li_2 = sibling(li_1, 2);
-			var node_3 = child(li_2);
-			var consequent_5 = ($$anchor) => {
-				var span_2 = root_2$13();
-				var text_3 = child(span_2, true);
-				reset(span_2);
-				template_effect(() => set_text(text_3, displayItem().product.participants));
-				append($$anchor, span_2);
-			};
+			var node_5 = child(li_2);
 			var consequent_6 = ($$anchor) => {
-				var span_3 = root_3$8();
-				var text_4 = child(span_3, true);
-				reset(span_3);
-				template_effect(() => set_text(text_4, displayItem().quantity));
+				var span_3 = root_4$4();
+				var text_4 = only_child(span_3, true);
+				template_effect(() => set_text(text_4, displayItem().product.participants));
 				append($$anchor, span_3);
 			};
 			var consequent_7 = ($$anchor) => {
-				var span_4 = root_4$4();
-				var text_5 = child(span_4, true);
-				reset(span_4);
+				var span_4 = root_5$4();
+				var text_5 = only_child(span_4, true);
 				template_effect(() => set_text(text_5, displayItem().quantity));
 				append($$anchor, span_4);
+			};
+			var consequent_8 = ($$anchor) => {
+				var span_5 = root_6$2();
+				var text_6 = only_child(span_5, true);
+				template_effect(() => set_text(text_6, displayItem().quantity));
+				append($$anchor, span_5);
 			};
 			var alternate_1 = ($$anchor) => {
 				{
@@ -18587,38 +20393,35 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					});
 				}
 			};
-			if_block(node_3, ($$render) => {
-				if (displayItem().product.type === "Tour") $$render(consequent_5);
-				else if (displayItem().voucher?.code) $$render(consequent_6, 1);
-				else if (preview()) $$render(consequent_7, 2);
+			if_block(node_5, ($$render) => {
+				if (displayItem().product.type === "Tour") $$render(consequent_6);
+				else if (displayItem().voucher?.code) $$render(consequent_7, 1);
+				else if (preview()) $$render(consequent_8, 2);
 				else $$render(alternate_1, -1);
 			});
 			reset(li_2);
-			var node_4 = sibling(li_2, 2);
-			var consequent_8 = ($$anchor) => {
-				var li_3 = root_5$4();
+			var node_6 = sibling(li_2, 2);
+			var consequent_9 = ($$anchor) => {
+				var li_3 = root_7$2();
 				var button = child(li_3);
-				var text_6 = child(button, true);
-				reset(button);
+				var text_7 = only_child(button, true);
 				reset(li_3);
 				template_effect(($0, $1) => {
 					set_attribute(button, "aria-label", $0);
-					set_text(text_6, $1);
+					set_text(text_7, $1);
 				}, [() => shop.t("cart.item.aria.removeItem"), () => shop.t("cart.item.remove")]);
 				delegated("click", button, del);
 				append($$anchor, li_3);
 			};
-			if_block(node_4, ($$render) => {
-				if (!preview()) $$render(consequent_8);
+			if_block(node_6, ($$render) => {
+				if (!preview()) $$render(consequent_9);
 			});
-			var li_4 = sibling(node_4, 2);
-			var text_7 = child(li_4, true);
-			reset(li_4);
+			var text_8 = only_child(sibling(node_6, 2), true);
 			reset(ul);
 			reset(article);
-			var node_5 = sibling(article, 2);
-			var consequent_9 = ($$anchor) => {
-				var ul_1 = root_6$2();
+			var node_7 = sibling(article, 2);
+			var consequent_10 = ($$anchor) => {
+				var ul_1 = root_8$2();
 				each(ul_1, 21, () => subTicketDefs(get$2(mantleProduct)), (sub) => sub.id, ($$anchor, sub) => {
 					{
 						let $0 = /* @__PURE__ */ user_derived(() => displayItem().mantle?.composition?.[get$2(sub).id] ?? 0);
@@ -18643,14 +20446,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				template_effect(() => set_attribute(ul_1, "aria-label", get$2(mantleProduct).title));
 				append($$anchor, ul_1);
 			};
-			if_block(node_5, ($$render) => {
-				if (get$2(mantleProduct)) $$render(consequent_9);
+			if_block(node_7, ($$render) => {
+				if (get$2(mantleProduct)) $$render(consequent_10);
 			});
-			template_effect(($0) => set_text(text_7, $0), [() => formatCurrency(displayItem().total_price_cents)]);
+			template_effect(($0) => set_text(text_8, $0), [() => formatCurrency(displayItem().total_price_cents)]);
 			append($$anchor, fragment_1);
 		};
 		if_block(node, ($$render) => {
-			if (get$2(capacity)) $$render(consequent_10);
+			if (get$2(capacity)) $$render(consequent_11);
 		});
 		append($$anchor, fragment);
 		return pop($$exports);
@@ -18661,10 +20464,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		displayCart: {},
 		preview: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/cart/components/DonationRow.svelte
-	var root$53 = /* @__PURE__ */ from_html(`<li class="go-cart-item-remove"><button class="go-cart-remove"> </button></li>`);
-	var root_1$18 = /* @__PURE__ */ from_html(`<article class="go-cart-donation" data-testid="cart-donation"><ul><li class="go-cart-item-title-container"><span class="go-cart-donation-title"> </span></li> <li class="go-cart-item-price"></li> <li class="go-cart-item-count"></li> <!> <li class="go-cart-item-sum"> </li></ul></article>`);
+	// src/components/cart/components/DonationRow.svelte
+	var root$54 = /* @__PURE__ */ from_html(`<li class="go-cart-item-remove"><button class="go-cart-remove"> </button></li>`);
+	var root_1$19 = /* @__PURE__ */ from_html(`<article class="go-cart-donation" data-testid="cart-donation"><ul><li class="go-cart-item-title-container"><span class="go-cart-donation-title"> </span></li> <li class="go-cart-item-price"></li> <li class="go-cart-item-count"></li> <!> <li class="go-cart-item-sum"> </li></ul></article>`);
 	function DonationRow($$anchor, $$props) {
 		push($$props, true);
 		let donation = prop($$props, "donation", 7), preview = prop($$props, "preview", 7);
@@ -18688,19 +20490,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			}
 		};
-		var article = root_1$18();
+		var article = root_1$19();
 		var ul = child(article);
 		var li = child(ul);
-		var span = child(li);
-		var text = child(span, true);
-		reset(span);
+		var text = only_child(child(li), true);
 		reset(li);
 		var node = sibling(li, 6);
 		var consequent = ($$anchor) => {
-			var li_1 = root$53();
+			var li_1 = root$54();
 			var button = child(li_1);
-			var text_1 = child(button, true);
-			reset(button);
+			var text_1 = only_child(button, true);
 			reset(li_1);
 			template_effect(($0, $1) => {
 				set_attribute(button, "aria-label", $0);
@@ -18712,9 +20511,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if_block(node, ($$render) => {
 			if (!preview()) $$render(consequent);
 		});
-		var li_2 = sibling(node, 2);
-		var text_2 = child(li_2, true);
-		reset(li_2);
+		var text_2 = only_child(sibling(node, 2), true);
 		reset(ul);
 		reset(article);
 		template_effect(($0, $1) => {
@@ -18729,10 +20526,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		donation: {},
 		preview: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/cart/components/CartItems.svelte
-	var root$52 = /* @__PURE__ */ from_html(`<li class="go-cart-header-remove"></li>`);
-	var root_1$17 = /* @__PURE__ */ from_html(`<li class="go-cart-item"><!></li>`);
+	// src/components/cart/components/CartItems.svelte
+	var root$53 = /* @__PURE__ */ from_html(`<li class="go-cart-header-remove"></li>`);
+	var root_1$18 = /* @__PURE__ */ from_html(`<li class="go-cart-item"><!></li>`);
 	var root_2$12 = /* @__PURE__ */ from_html(`<ol data-testid="cart-items"><li class="go-cart-header"><ul><li class="go-cart-header-title"> </li> <li class="go-cart-header-price"> </li> <li class="go-cart-header-count"> </li> <!> <li class="go-cart-header-sum"> </li></ul></li> <!> <!></ol>`);
 	function CartItems($$anchor, $$props) {
 		push($$props, true);
@@ -18745,29 +20541,24 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var li = child(ol);
 			var ul = child(li);
 			var li_1 = child(ul);
-			var text = child(li_1, true);
-			reset(li_1);
+			var text = only_child(li_1, true);
 			var li_2 = sibling(li_1, 2);
-			var text_1 = child(li_2, true);
-			reset(li_2);
+			var text_1 = only_child(li_2, true);
 			var li_3 = sibling(li_2, 2);
-			var text_2 = child(li_3, true);
-			reset(li_3);
+			var text_2 = only_child(li_3, true);
 			var node_1 = sibling(li_3, 2);
 			var consequent = ($$anchor) => {
-				append($$anchor, root$52());
+				append($$anchor, root$53());
 			};
 			if_block(node_1, ($$render) => {
 				if (!get$2(details).preview) $$render(consequent);
 			});
-			var li_5 = sibling(node_1, 2);
-			var text_3 = child(li_5, true);
-			reset(li_5);
+			var text_3 = only_child(sibling(node_1, 2), true);
 			reset(ul);
 			reset(li);
 			var node_2 = sibling(li, 2);
 			each(node_2, 17, () => get$2(details).displayCart.items, (item) => item.uuid, ($$anchor, item) => {
-				var li_6 = root_1$17();
+				var li_6 = root_1$18();
 				Item$1(child(li_6), {
 					get displayItem() {
 						return get$2(item);
@@ -18783,7 +20574,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				append($$anchor, li_6);
 			});
 			each(sibling(node_2, 2), 17, () => get$2(details).displayCart.donations, (donation) => donation.campaign_id + "-" + donation.value, ($$anchor, donation) => {
-				var li_7 = root_1$17();
+				var li_7 = root_1$18();
 				DonationRow(child(li_7), {
 					get donation() {
 						return get$2(donation);
@@ -18816,10 +20607,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-cart-items", create_custom_element(CartItems, {}, [], []));
-	//#endregion
-	//#region src/components/cart/components/CartCoupons.svelte
-	var root$51 = /* @__PURE__ */ from_html(`<li class="go-cart-coupon-remove-cell"><button class="go-cart-remove go-cart-coupon-remove">⨉</button></li>`);
-	var root_1$16 = /* @__PURE__ */ from_html(`<li><article class="go-cart-coupon-content"><ul><li class="go-cart-coupon-code"> </li> <!></ul></article></li>`);
+	// src/components/cart/components/CartCoupons.svelte
+	var root$52 = /* @__PURE__ */ from_html(`<li class="go-cart-coupon-remove-cell"><button class="go-cart-remove go-cart-coupon-remove">⨉</button></li>`);
+	var root_1$17 = /* @__PURE__ */ from_html(`<li><article class="go-cart-coupon-content"><ul><li class="go-cart-coupon-code"> </li> <!></ul></article></li>`);
 	var root_2$11 = /* @__PURE__ */ from_html(`<ol data-testid="cart-coupons"></ol>`);
 	function CartCoupons($$anchor, $$props) {
 		push($$props, true);
@@ -18830,18 +20620,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var consequent_1 = ($$anchor) => {
 			var ol = root_2$11();
 			each(ol, 21, () => get$2(details).displayCart.coupons, (coupon) => coupon.code, ($$anchor, coupon) => {
-				var li = root_1$16();
+				var li = root_1$17();
 				let classes;
 				var article = child(li);
 				var ul = child(article);
 				var li_1 = child(ul);
-				var text = child(li_1, true);
-				reset(li_1);
+				var text = only_child(li_1, true);
 				var node_1 = sibling(li_1, 2);
 				var consequent = ($$anchor) => {
-					var li_2 = root$51();
-					var button = child(li_2);
-					reset(li_2);
+					var li_2 = root$52();
+					var button = only_child(li_2);
 					template_effect(($0) => set_attribute(button, "aria-label", $0), [() => shop.t("cart.coupons.remove")]);
 					delegated("click", button, () => shop.cart?.removeCoupon(get$2(coupon).code));
 					append($$anchor, li_2);
@@ -18869,9 +20657,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	delegate(["click"]);
 	customElements.define("go-cart-coupons", create_custom_element(CartCoupons, {}, [], []));
-	//#endregion
-	//#region src/components/cart/components/CartTotalAmount.svelte
-	var root$50 = /* @__PURE__ */ from_html(`<span class="go-cart-total-amount" data-testid="cart-total-amount"> </span>`);
+	// src/components/cart/components/CartTotalAmount.svelte
+	var root$51 = /* @__PURE__ */ from_html(`<span class="go-cart-total-amount" data-testid="cart-total-amount"> </span>`);
 	function CartTotalAmount($$anchor, $$props) {
 		push($$props, true);
 		const _details = getCartDetails($$props.$$host);
@@ -18879,9 +20666,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
-			var span = root$50();
-			var text = child(span, true);
-			reset(span);
+			var span = root$51();
+			var text = only_child(span, true);
 			template_effect(($0) => set_text(text, $0), [() => formatCurrency(get$2(details).totalPriceCents)]);
 			append($$anchor, span);
 		};
@@ -18892,8 +20678,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-cart-total-amount", create_custom_element(CartTotalAmount, {}, [], []));
-	//#endregion
-	//#region src/components/cart/components/Cart.svelte
+	// src/components/cart/components/Cart.svelte
 	function Cart($$anchor, $$props) {
 		push($$props, true);
 		const preview = prop($$props, "preview", 7, false);
@@ -18947,9 +20732,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reflect: true,
 		type: "Boolean"
 	} }, [], []));
-	//#endregion
-	//#region src/components/cart/components/CartSubtotalAmount.svelte
-	var root$49 = /* @__PURE__ */ from_html(`<span class="go-cart-subtotal-amount" data-testid="cart-subtotal-amount"> </span>`);
+	// src/components/cart/components/CartSubtotalAmount.svelte
+	var root$50 = /* @__PURE__ */ from_html(`<span class="go-cart-subtotal-amount" data-testid="cart-subtotal-amount"> </span>`);
 	function CartSubtotalAmount($$anchor, $$props) {
 		push($$props, true);
 		const _details = getCartDetails($$props.$$host);
@@ -18957,9 +20741,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
-			var span = root$49();
-			var text = child(span, true);
-			reset(span);
+			var span = root$50();
+			var text = only_child(span, true);
 			template_effect(($0) => set_text(text, $0), [() => formatCurrency(get$2(details).subtotalPriceCents)]);
 			append($$anchor, span);
 		};
@@ -18970,9 +20753,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-cart-subtotal-amount", create_custom_element(CartSubtotalAmount, {}, [], []));
-	//#endregion
-	//#region src/components/cart/components/CartDiscountedAmount.svelte
-	var root$48 = /* @__PURE__ */ from_html(`<span class="go-cart-discounted-amount" data-testid="cart-discounted-amount"><span class="go-cart-discounted-amount-sign">−</span> </span>`);
+	// src/components/cart/components/CartDiscountedAmount.svelte
+	var root$49 = /* @__PURE__ */ from_html(`<span class="go-cart-discounted-amount" data-testid="cart-discounted-amount"><span class="go-cart-discounted-amount-sign">−</span> </span>`);
 	function CartDiscountedAmount($$anchor, $$props) {
 		push($$props, true);
 		const _details = getCartDetails($$props.$$host);
@@ -18980,7 +20762,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var fragment = comment();
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
-			var span = root$48();
+			var span = root$49();
 			var text = sibling(child(span), 1, true);
 			reset(span);
 			template_effect(($0) => set_text(text, $0), [() => formatCurrency(get$2(details).discountedAmountCents)]);
@@ -18993,16 +20775,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-cart-discounted-amount", create_custom_element(CartDiscountedAmount, {}, [], []));
-	//#endregion
-	//#region src/components/cart/components/CartEmpty.svelte
+	// src/components/cart/components/CartEmpty.svelte
 	function CartEmpty($$anchor, $$props) {
 		push($$props, true);
 		wrapInElement($$props.$$host, "go-if", { when: "data.cart.items.length === 0" });
 		pop();
 	}
 	customElements.define("go-cart-empty", create_custom_element(CartEmpty, {}, [], []));
-	//#endregion
-	//#region src/components/cart/components/CartCounter.svelte
+	// src/components/cart/components/CartCounter.svelte
 	function CartCounter($$anchor, $$props) {
 		push($$props, true);
 		let cartCounter = /* @__PURE__ */ user_derived(() => shop.cart?.items.length);
@@ -19013,8 +20793,87 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-cart-counter", create_custom_element(CartCounter, {}, [], []));
-	//#endregion
-	//#region src/components/checkoutForm/services/UserCheckout.ts
+	// src/components/cart/components/ReservationTimer.svelte
+	var root$48 = /* @__PURE__ */ from_html(`<span class="go-reservation-timer-time" role="timer" data-testid="reservation-timer-time"> </span>`);
+	var root_1$16 = /* @__PURE__ */ from_html(`<!> <span class="sr-only" aria-live="polite" data-testid="reservation-timer-announcement"> </span>`, 1);
+	function ReservationTimer($$anchor, $$props) {
+		push($$props, true);
+		const EXPIRING_MS = 6e4;
+		const remaining = /* @__PURE__ */ user_derived(() => shop.cart?.reservations.remainingMs);
+		const phase = /* @__PURE__ */ user_derived(() => get$2(remaining) === void 0 ? void 0 : get$2(remaining) === 0 ? "expired" : get$2(remaining) <= EXPIRING_MS ? "expiring" : "running");
+		user_effect(() => {
+			const host = $$props.$$host;
+			host.toggleAttribute("data-expiring", get$2(phase) === "expiring");
+			host.toggleAttribute("data-expired", get$2(phase) === "expired");
+		});
+		const announcement = /* @__PURE__ */ user_derived(() => get$2(phase) === "expiring" ? shop.t("ticket.reservations.expiresSoon") : get$2(phase) === "expired" ? shop.t("ticket.reservations.expired") : "");
+		var fragment = root_1$16();
+		var node = first_child(fragment);
+		var consequent = ($$anchor) => {
+			var span = root$48();
+			var text = only_child(span, true);
+			template_effect(($0, $1) => {
+				set_attribute(span, "aria-label", $0);
+				set_text(text, $1);
+			}, [() => shop.t("ticket.reservations.timer"), () => formatRemaining(get$2(remaining))]);
+			append($$anchor, span);
+		};
+		if_block(node, ($$render) => {
+			if (get$2(remaining) !== void 0) $$render(consequent);
+		});
+		var text_1 = only_child(sibling(node, 2), true);
+		template_effect(() => set_text(text_1, get$2(announcement)));
+		append($$anchor, fragment);
+		pop();
+	}
+	customElements.define("go-reservation-timer", create_custom_element(ReservationTimer, {}, [], []));
+	// src/components/cart/components/ReservationRefresh.svelte
+	function ReservationRefresh($$anchor, $$props) {
+		push($$props, true);
+		let buttonClass = prop($$props, "buttonClass", 7, "");
+		let button = /* @__PURE__ */ state(void 0);
+		let defaultLabel = /* @__PURE__ */ state(false);
+		let refreshing = /* @__PURE__ */ state(false);
+		const hasHolds = /* @__PURE__ */ user_derived(() => shop.cart?.reservations.expiresAt !== void 0);
+		async function refresh() {
+			set(refreshing, true);
+			try {
+				await shop.cart?.reservations.refresh();
+			} finally {
+				set(refreshing, false);
+			}
+		}
+		onMount(() => {
+			const host = $$props.$$host;
+			set(defaultLabel, !host.textContent?.trim() && !host.firstElementChild, true);
+			set(button, wrapInElement(host, "button", {
+				type: "button",
+				class: buttonClass()
+			}), true);
+			get$2(button).addEventListener("click", refresh);
+		});
+		user_effect(() => {
+			if (get$2(button) && get$2(defaultLabel)) get$2(button).textContent = shop.t("ticket.reservations.extend");
+		});
+		user_effect(() => {
+			if (get$2(button)) get$2(button).disabled = get$2(refreshing) || !get$2(hasHolds);
+		});
+		return pop({
+			get buttonClass() {
+				return buttonClass();
+			},
+			set buttonClass($$value = "") {
+				buttonClass($$value);
+				flushSync();
+			}
+		});
+	}
+	customElements.define("go-reservation-refresh", create_custom_element(ReservationRefresh, { buttonClass: {
+		attribute: "button-class",
+		reflect: true,
+		type: "String"
+	} }, [], []));
+	// src/components/checkoutForm/services/UserCheckout.ts
 	var UserCheckout = class extends FormSubmitService {
 		beforeSubmit() {
 			if (!shop.cart) return {
@@ -19049,6 +20908,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					outcome: "no order in the answer"
 				};
 			}
+			cart.reservations.orderPlaced();
 			run.result = checkout;
 			run.keepLocked = true;
 			return {
@@ -19097,8 +20957,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		document.body.appendChild(form);
 		form.submit();
 	}
-	//#endregion
-	//#region src/components/checkoutForm/services/GuestCheckout.ts
+	// src/components/checkoutForm/services/GuestCheckout.ts
 	var GuestCheckout = class extends UserCheckout {
 		async sendOrder(run) {
 			const auth = await shop.signUp(run.details.formData, true);
@@ -19112,8 +20971,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return super.sendOrder(run);
 		}
 	};
-	//#endregion
-	//#region src/components/checkoutForm/lib.ts
+	// src/components/checkoutForm/lib.ts
+	var refreshReservations = () => void shop.cart?.reservations.refresh();
 	function setupGuestCheckout(host, custom) {
 		Forms.defineForm({
 			id: "checkoutGuest",
@@ -19150,6 +21009,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			"form-id": "checkoutGuest",
 			custom
 		});
+		refreshReservations();
 	}
 	function setupUserCheckout(host, custom) {
 		Forms.defineForm({
@@ -19168,9 +21028,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			"form-id": "checkoutUser",
 			custom
 		});
+		refreshReservations();
 	}
-	//#endregion
-	//#region src/components/checkoutForm/CheckoutForm.svelte
+	// src/components/checkoutForm/CheckoutForm.svelte
 	function CheckoutForm($$anchor, $$props) {
 		push($$props, true);
 		let custom = prop($$props, "custom", 7, false);
@@ -19186,8 +21046,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		});
 	}
 	customElements.define("go-checkout-form", create_custom_element(CheckoutForm, { custom: {} }, [], []));
-	//#endregion
-	//#region src/components/checkoutForm/CheckoutGuest.svelte
+	// src/components/checkoutForm/CheckoutGuest.svelte
 	function CheckoutGuest($$anchor, $$props) {
 		push($$props, true);
 		let custom = prop($$props, "custom", 7, false);
@@ -19203,8 +21062,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		});
 	}
 	customElements.define("go-checkout-guest", create_custom_element(CheckoutGuest, { custom: {} }, [], []));
-	//#endregion
-	//#region src/components/checkoutForm/CheckoutUser.svelte
+	// src/components/checkoutForm/CheckoutUser.svelte
 	function CheckoutUser($$anchor, $$props) {
 		push($$props, true);
 		let custom = prop($$props, "custom", 7, false);
@@ -19220,8 +21078,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		});
 	}
 	customElements.define("go-checkout-user", create_custom_element(CheckoutUser, { custom: {} }, [], []));
-	//#endregion
-	//#region src/components/couponRedemption/lib.ts
+	// src/components/couponRedemption/lib.ts
 	var APPLY_ORDER_DISCOUNT = "TokenActions::ApplyOrderDiscount";
 	async function redeem(token) {
 		if (!shop.cart) throw new Error("(go-coupon-redemption): cart not found");
@@ -19296,8 +21153,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			errors
 		};
 	}
-	//#endregion
-	//#region src/components/couponRedemption/CouponRedemption.svelte
+	// src/components/couponRedemption/CouponRedemption.svelte
 	var root$47 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
 	function CouponRedemption($$anchor, $$props) {
 		push($$props, true);
@@ -19347,8 +21203,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return pop($$exports);
 	}
 	customElements.define("go-coupon-redemption", create_custom_element(CouponRedemption, {}, [], ["flush"]));
-	//#endregion
-	//#region src/components/donations/components/DonationCheckbox.svelte
+	// src/components/donations/components/DonationCheckbox.svelte
 	var root$46 = /* @__PURE__ */ from_html(`<span class="go-donation-checkbox-label"></span>`);
 	var root_1$15 = /* @__PURE__ */ from_html(`<span class="go-donation-checkbox-label"> </span>`);
 	var root_2$10 = /* @__PURE__ */ from_html(`<label class="go-donation-checkbox"><input type="checkbox" data-testid="donation-checkbox"/> <!></label>`);
@@ -19416,8 +21271,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			};
 			var alternate = ($$anchor) => {
 				var span_2 = root_1$15();
-				var text = child(span_2, true);
-				reset(span_2);
+				var text = only_child(span_2, true);
 				template_effect(($0) => set_text(text, $0), [() => shop.t("donations.checkbox.label", {
 					campaign: get$2(campaign).name,
 					amount: formatCurrency(amountCents())
@@ -19457,11 +21311,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			type: "String"
 		}
 	}, [], []));
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/internal/flags/legacy.js
+	// ../../node_modules/.pnpm/svelte@5.57.3_@typescript-eslint+types@8.72.1/node_modules/svelte/src/internal/flags/legacy.js
 	enable_legacy_mode_flag();
-	//#endregion
-	//#region src/components/donations/lib/donation.svelte.ts
+	// src/components/donations/lib/donation.svelte.ts
 	var GoDonation = class {
 		#campaign = /* @__PURE__ */ state();
 		get campaign() {
@@ -19504,8 +21356,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 	};
 	var goDonation = new GoDonation();
-	//#endregion
-	//#region src/components/donations/components/DonationCampaign.svelte
+	// src/components/donations/components/DonationCampaign.svelte
 	var root$45 = /* @__PURE__ */ from_html(`<img alt="logo"/>`);
 	var root_1$14 = /* @__PURE__ */ from_html(`<div role="button" tabindex="0"><div class="donation-image"><!></div> <div class="donation-info"><p class="donation-info-title"> </p> <p class="donation-info-description"> </p></div></div>`);
 	function DonationCampaign($$anchor, $$props) {
@@ -19536,11 +21387,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reset(div_1);
 		var div_2 = sibling(div_1, 2);
 		var p = child(div_2);
-		var text = child(p, true);
-		reset(p);
-		var p_1 = sibling(p, 2);
-		var text_1 = child(p_1, true);
-		reset(p_1);
+		var text = only_child(p, true);
+		var text_1 = only_child(sibling(p, 2), true);
 		reset(div_2);
 		reset(div);
 		template_effect(() => {
@@ -19557,8 +21405,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	delegate(["click", "keydown"]);
 	create_custom_element(DonationCampaign, { campaign: {} }, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/donations/components/DonationSelector.svelte
+	// src/components/donations/components/DonationSelector.svelte
 	var root$44 = /* @__PURE__ */ from_html(`<button> </button>`);
 	var root_1$13 = /* @__PURE__ */ from_html(`<form id="donationForm" action="" novalidate=""><div class="donation-custom form-group"><label for="donation-custom-amount"> </label> <input class="form-control" id="donation-custom-amount" type="number" min="1"/></div></form>`);
 	var root_2$9 = /* @__PURE__ */ from_html(`<div class="donation-selection"><h3> </h3> <div class="donation-options"></div> <!></div>`);
@@ -19580,14 +21427,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		var div = root_2$9();
 		var h3 = child(div);
-		var text = child(h3, true);
-		reset(h3);
+		var text = only_child(h3, true);
 		var div_1 = sibling(h3, 2);
 		each(div_1, 20, () => goDonation.campaign?.options, (option) => option, ($$anchor, option) => {
 			var button = root$44();
 			let classes;
-			var text_1 = child(button, true);
-			reset(button);
+			var text_1 = only_child(button, true);
 			template_effect(($0) => {
 				classes = set_class(button, 1, "btn btn-default", null, classes, { selected: goDonation.amount === option });
 				set_text(text_1, $0);
@@ -19601,8 +21446,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var form_1 = root_1$13();
 			var div_2 = child(form_1);
 			var label = child(div_2);
-			var text_2 = child(label, true);
-			reset(label);
+			var text_2 = only_child(label, true);
 			var input = sibling(label, 2);
 			remove_input_defaults(input);
 			reset(div_2);
@@ -19626,8 +21470,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	delegate(["click", "input"]);
 	create_custom_element(DonationSelector, {}, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/donations/components/Donations.svelte
+	// src/components/donations/components/Donations.svelte
 	var root$43 = /* @__PURE__ */ from_html(`<div class="go-donations-list"><!> <!> <div class="donation-actions"><button class="btn btn-default"> </button> <button class="btn btn-primary"> </button></div></div>`);
 	function Donations($$anchor, $$props) {
 		push($$props, false);
@@ -19654,11 +21497,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			});
 			var div_1 = sibling(node_2, 2);
 			var button = child(div_1);
-			var text = child(button, true);
-			reset(button);
+			var text = only_child(button, true);
 			var button_1 = sibling(button, 2);
-			var text_1 = child(button_1, true);
-			reset(button_1);
+			var text_1 = only_child(button_1, true);
 			reset(div_1);
 			reset(div);
 			template_effect(($0, $1) => {
@@ -19682,8 +21523,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	delegate(["click"]);
 	customElements.define("go-donations", create_custom_element(Donations, {}, [], []));
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/is.js
+	// ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/svelte-toolbelt/dist/utils/is.js
 	function isFunction$1(value) {
 		return typeof value === "function";
 	}
@@ -19706,8 +21546,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		return false;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/box/box-extras.svelte.js
+	// ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/svelte-toolbelt/dist/box/box-extras.svelte.js
 	var BoxSymbol = Symbol("box");
 	var isWritableSymbol = Symbol("is-writable");
 	function boxWith(getter, setter) {
@@ -19755,8 +21594,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 		};
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/compose-handlers.js
+	// ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/svelte-toolbelt/dist/utils/compose-handlers.js
 	/**
 	* Composes event handlers into a single function that can be called with an event.
 	* If the previous handler cancels the event using `event.preventDefault()`, the handlers
@@ -19772,8 +21610,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 		};
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/inline-style-parser@0.2.7/node_modules/inline-style-parser/esm/index.mjs
+	// ../../node_modules/.pnpm/inline-style-parser@0.2.7/node_modules/inline-style-parser/esm/index.mjs
 	var COMMENT_REGEX = /\/\*[^*]*\*+([^/*][^*]*\*+)*\//g;
 	var NEWLINE_REGEX = /\n/g;
 	var WHITESPACE_REGEX = /^\s*/;
@@ -19970,8 +21807,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function trim(str) {
 		return str ? str.replace(TRIM_REGEX, EMPTY_STRING) : EMPTY_STRING;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/style-to-object@1.0.14/node_modules/style-to-object/esm/index.mjs
+	// ../../node_modules/.pnpm/style-to-object@1.0.14/node_modules/style-to-object/esm/index.mjs
 	/**
 	* Parses inline style to object.
 	*
@@ -20002,8 +21838,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		});
 		return styleObject;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/strings.js
+	// ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/svelte-toolbelt/dist/utils/strings.js
 	var NUMBER_CHAR_RE = /\d/;
 	var STR_SPLITTERS = [
 		"-",
@@ -20064,8 +21899,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function lowerFirst(str) {
 		return str ? str[0].toLowerCase() + str.slice(1) : "";
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/css-to-style-obj.js
+	// ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/svelte-toolbelt/dist/utils/css-to-style-obj.js
 	function cssToStyleObj(css) {
 		if (!css) return {};
 		const styleObj = {};
@@ -20083,8 +21917,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		StyleToObject(css, iterator);
 		return styleObj;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/execute-callbacks.js
+	// ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/svelte-toolbelt/dist/utils/execute-callbacks.js
 	/**
 	* Executes an array of callback functions with the same arguments.
 	* @template T The types of the arguments that the callback functions take.
@@ -20096,8 +21929,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			for (const callback of callbacks) if (typeof callback === "function") callback(...args);
 		};
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/style-to-css.js
+	// ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/svelte-toolbelt/dist/utils/style-to-css.js
 	function createParser(matcher, replacer) {
 		const regex = RegExp(matcher, "g");
 		return (str) => {
@@ -20111,8 +21943,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (!styleObj || typeof styleObj !== "object" || Array.isArray(styleObj)) throw new TypeError(`expected an argument of type object, but got ${typeof styleObj}`);
 		return Object.keys(styleObj).map((property) => `${camelToKebab(property)}: ${styleObj[property]};`).join("\n");
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/style.js
+	// ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/svelte-toolbelt/dist/utils/style.js
 	function styleToString(style = {}) {
 		return styleToCSS(style).replace("\n", " ");
 	}
@@ -20221,8 +22052,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"onwebkittransitionend",
 		"onwheel"
 	]);
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/merge-props.js
+	// ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/svelte-toolbelt/dist/utils/merge-props.js
 	/**
 	* Modified from https://github.com/adobe/react-spectrum/blob/main/packages/%40react-aria/utils/src/mergeProps.ts (see NOTICE.txt for source)
 	*/
@@ -20305,8 +22135,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		return result;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/sr-only-styles.js
+	// ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/svelte-toolbelt/dist/utils/sr-only-styles.js
 	var srOnlyStyles = {
 		position: "absolute",
 		width: "1px",
@@ -20320,14 +22149,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		transform: "translateX(-100%)"
 	};
 	var srOnlyStylesString = styleToString(srOnlyStyles);
-	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/internal/configurable-globals.js
+	// ../../node_modules/.pnpm/runed@0.35.1_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/runed/dist/internal/configurable-globals.js
 	var defaultWindow = typeof window !== "undefined" ? window : void 0;
 	typeof window !== "undefined" && window.document;
 	typeof window !== "undefined" && window.navigator;
 	typeof window !== "undefined" && window.location;
-	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/internal/utils/dom.js
+	// ../../node_modules/.pnpm/runed@0.35.1_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/runed/dist/internal/utils/dom.js
 	/**
 	* Handles getting the active element in a document or shadow root.
 	* If the active element is within a shadow root, it will traverse the shadow root
@@ -20346,202 +22173,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		return activeElement;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte@5.56.9_@typescript-eslint+types@8.67.0/node_modules/svelte/src/reactivity/map.js
-	/** @import { Source } from '#client' */
-	/**
-	* A reactive version of the built-in [`Map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) object.
-	* Reading contents of the map (by iterating, or by reading `map.size` or calling `map.get(...)` or `map.has(...)` as in the [tic-tac-toe example](https://svelte.dev/playground/0b0ff4aa49c9443f9b47fe5203c78293) below) in an [effect](https://svelte.dev/docs/svelte/$effect) or [derived](https://svelte.dev/docs/svelte/$derived)
-	* will cause it to be re-evaluated as necessary when the map is updated.
-	*
-	* Note that values in a reactive map are _not_ made [deeply reactive](https://svelte.dev/docs/svelte/$state#Deep-state).
-	*
-	* ```svelte
-	* <script>
-	* 	import { SvelteMap } from 'svelte/reactivity';
-	* 	import { result } from './game.js';
-	*
-	* 	let board = new SvelteMap();
-	* 	let player = $state('x');
-	* 	let winner = $derived(result(board));
-	*
-	* 	function reset() {
-	* 		player = 'x';
-	* 		board.clear();
-	* 	}
-	* <\/script>
-	*
-	* <div class="board">
-	* 	{#each Array(9), i}
-	* 		<button
-	* 			disabled={board.has(i) || winner}
-	* 			onclick={() => {
-	* 				board.set(i, player);
-	* 				player = player === 'x' ? 'o' : 'x';
-	* 			}}
-	* 		>{board.get(i)}</button>
-	* 	{/each}
-	* </div>
-	*
-	* {#if winner}
-	* 	<p>{winner} wins!</p>
-	* 	<button onclick={reset}>reset</button>
-	* {:else}
-	* 	<p>{player} is next</p>
-	* {/if}
-	* ```
-	*
-	* @template K
-	* @template V
-	* @extends {Map<K, V>}
-	*/
-	var SvelteMap = class extends Map {
-		/** @type {Map<K, Source<number>>} */
-		#sources = /* @__PURE__ */ new Map();
-		#version = /* @__PURE__ */ state(0);
-		#size = /* @__PURE__ */ state(0);
-		#update_version = update_version || -1;
-		/**
-		* @param {Iterable<readonly [K, V]> | null | undefined} [value]
-		*/
-		constructor(value) {
-			super();
-			if (value) {
-				for (var [key, v] of value) super.set(key, v);
-				this.#size.v = super.size;
-			}
-		}
-		/**
-		* If the source is being created inside the same reaction as the SvelteMap instance,
-		* we use `state` so that it will not be a dependency of the reaction. Otherwise we
-		* use `source` so it will be.
-		*
-		* @template T
-		* @param {T} value
-		* @returns {Source<T>}
-		*/
-		#source(value) {
-			return update_version === this.#update_version ? /* @__PURE__ */ state(value) : source(value);
-		}
-		/** @param {K} key */
-		has(key) {
-			var sources = this.#sources;
-			var s = sources.get(key);
-			if (s === void 0) {
-				if (super.has(key)) {
-					s = this.#source(0);
-					sources.set(key, s);
-				} else {
-					get$2(this.#version);
-					return false;
-				}
-			}
-			get$2(s);
-			return true;
-		}
-		/**
-		* @param {(value: V, key: K, map: Map<K, V>) => void} callbackfn
-		* @param {any} [this_arg]
-		*/
-		forEach(callbackfn, this_arg) {
-			this.#read_all();
-			super.forEach(callbackfn, this_arg);
-		}
-		/** @param {K} key */
-		get(key) {
-			var sources = this.#sources;
-			var s = sources.get(key);
-			if (s === void 0) {
-				if (super.has(key)) {
-					s = this.#source(0);
-					sources.set(key, s);
-				} else {
-					get$2(this.#version);
-					return;
-				}
-			}
-			get$2(s);
-			return super.get(key);
-		}
-		/**
-		* @param {K} key
-		* @param {V} value
-		* */
-		set(key, value) {
-			var sources = this.#sources;
-			var s = sources.get(key);
-			var prev_res = super.get(key);
-			var res = super.set(key, value);
-			var version = this.#version;
-			if (s === void 0) {
-				s = this.#source(0);
-				sources.set(key, s);
-				set(this.#size, super.size);
-				increment$1(version);
-			} else if (prev_res !== value) {
-				increment$1(s);
-				var v_reactions = version.reactions === null ? null : new Set(version.reactions);
-				if (v_reactions === null || !s.reactions?.every((r) => v_reactions.has(r))) increment$1(version);
-			}
-			return res;
-		}
-		/** @param {K} key */
-		delete(key) {
-			var sources = this.#sources;
-			var s = sources.get(key);
-			var res = super.delete(key);
-			if (s !== void 0) {
-				sources.delete(key);
-				set(s, -1);
-			}
-			if (res) {
-				set(this.#size, super.size);
-				increment$1(this.#version);
-			}
-			return res;
-		}
-		clear() {
-			if (super.size === 0) return;
-			super.clear();
-			var sources = this.#sources;
-			set(this.#size, 0);
-			for (var s of sources.values()) set(s, -1);
-			increment$1(this.#version);
-			sources.clear();
-		}
-		#read_all() {
-			get$2(this.#version);
-			var sources = this.#sources;
-			if (this.#size.v !== sources.size) {
-				for (var key of super.keys()) if (!sources.has(key)) {
-					var s = this.#source(0);
-					sources.set(key, s);
-				}
-			}
-			for ([, s] of this.#sources) get$2(s);
-		}
-		keys() {
-			get$2(this.#version);
-			return super.keys();
-		}
-		values() {
-			this.#read_all();
-			return super.values();
-		}
-		entries() {
-			this.#read_all();
-			return super.entries();
-		}
-		[Symbol.iterator]() {
-			return this.entries();
-		}
-		get size() {
-			get$2(this.#size);
-			return super.size;
-		}
-	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/utilities/active-element/active-element.svelte.js
+	// ../../node_modules/.pnpm/runed@0.35.1_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/runed/dist/utilities/active-element/active-element.svelte.js
 	var ActiveElement = class {
 		#document;
 		#subscribe;
@@ -20565,13 +22197,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	new ActiveElement();
-	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/internal/utils/is.js
+	// ../../node_modules/.pnpm/runed@0.35.1_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/runed/dist/internal/utils/is.js
 	function isFunction(value) {
 		return typeof value === "function";
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/utilities/context/context.js
+	// ../../node_modules/.pnpm/runed@0.35.1_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/runed/dist/utilities/context/context.js
 	var Context = class {
 		#name;
 		#key;
@@ -20632,8 +22262,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return setContext(this.#key, context);
 		}
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/utilities/watch/watch.svelte.js
+	// ../../node_modules/.pnpm/runed@0.35.1_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/runed/dist/utilities/watch/watch.svelte.js
 	function runEffect(flush, effect) {
 		switch (flush) {
 			case "post":
@@ -20689,14 +22318,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		runWatcherOnce(source, "pre", effect);
 	}
 	watchOnce.pre = watchOncePre;
-	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/internal/utils/get.js
+	// ../../node_modules/.pnpm/runed@0.35.1_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/runed/dist/internal/utils/get.js
 	function get$1(value) {
 		if (isFunction(value)) return value();
 		return value;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/utilities/element-size/element-size.svelte.js
+	// ../../node_modules/.pnpm/runed@0.35.1_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/runed/dist/utilities/element-size/element-size.svelte.js
 	var ElementSize = class {
 		#size = {
 			width: 0,
@@ -20778,8 +22405,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return get$2(this.#height);
 		}
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/runed@0.35.1_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plugin-svelte_80714411fd863a9ca5759c53cf24ab79/node_modules/runed/dist/utilities/resource/resource.svelte.js
+	// ../../node_modules/.pnpm/runed@0.35.1_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/runed/dist/utilities/resource/resource.svelte.js
 	function debounce$1(fn, delay) {
 		let timeoutId;
 		let lastResolve = null;
@@ -20890,8 +22516,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		});
 	}
 	resource.pre = resourcePre;
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/on-destroy-effect.svelte.js
+	// ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/svelte-toolbelt/dist/utils/on-destroy-effect.svelte.js
 	function onDestroyEffect(fn) {
 		user_effect(() => {
 			return () => {
@@ -20899,13 +22524,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			};
 		});
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/after-tick.js
+	// ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/svelte-toolbelt/dist/utils/after-tick.js
 	function afterTick(fn) {
 		tick().then(fn);
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/dom.js
+	// ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/svelte-toolbelt/dist/utils/dom.js
 	var ELEMENT_NODE = 1;
 	var DOCUMENT_NODE = 9;
 	var DOCUMENT_FRAGMENT_NODE = 11;
@@ -20959,8 +22582,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		return activeElement;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/dom-context.svelte.js
+	// ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/svelte-toolbelt/dist/utils/dom-context.svelte.js
 	var DOMContext = class {
 		element;
 		#root = /* @__PURE__ */ user_derived(() => {
@@ -21007,8 +22629,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return this.getWindow().clearTimeout(timeoutId);
 		};
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_@sveltejs+kit@2.65.1_@opentelemetry+api@1.9.1_@sveltejs+vite-plu_e02be4e45b41067c11b3b3b2a0c6e686/node_modules/svelte-toolbelt/dist/utils/attach-ref.js
+	// ../../node_modules/.pnpm/svelte-toolbelt@0.10.6_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/svelte-toolbelt/dist/utils/attach-ref.js
 	/**
 	* Creates a Svelte Attachment that attaches a DOM element to a ref.
 	* The ref can be either a WritableBox or a callback function.
@@ -21050,8 +22671,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			};
 		} };
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/attrs.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/attrs.js
 	function boolToStr(condition) {
 		return condition ? "true" : "false";
 	}
@@ -21096,16 +22716,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			getAttr: bitsAttrs.getAttr
 		};
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/kbd-constants.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/kbd-constants.js
 	var ARROW_DOWN = "ArrowDown";
 	var ARROW_LEFT = "ArrowLeft";
 	var ARROW_RIGHT = "ArrowRight";
 	var ARROW_UP = "ArrowUp";
 	var BACKSPACE = "Backspace";
 	var ENTER = "Enter";
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/is.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/is.js
 	var isBrowser = typeof document !== "undefined";
 	var isIOS = getIsIOS();
 	function getIsIOS() {
@@ -21132,8 +22750,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function isNotNull(value) {
 		return value !== null;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/animations-complete.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/animations-complete.js
 	var AnimationsComplete = class {
 		#opts;
 		#currentFrame = null;
@@ -21225,8 +22842,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			else execute();
 		}
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/presence-manager.svelte.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/presence-manager.svelte.js
 	var PresenceManager = class {
 		#opts;
 		#enabled;
@@ -21289,20 +22905,17 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			this.#transitionFrame = null;
 		}
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/noop.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/noop.js
 	/**
 	* A no operation function (does nothing)
 	*/
 	function noop() {}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/create-id.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/create-id.js
 	function createId(prefixOrUid, uid) {
 		if (uid === void 0) return `bits-${prefixOrUid}`;
 		return `bits-${prefixOrUid}-${uid}`;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/config/bits-config.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/config/bits-config.js
 	var BitsConfigContext = new Context("BitsConfig");
 	/**
 	* Gets the current Bits UI configuration state from the context.
@@ -21368,8 +22981,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			});
 		};
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/config/prop-resolvers.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/config/prop-resolvers.js
 	/**
 	* Creates a generic prop resolver that follows a standard priority chain:
 	* 1. The getter's prop value (if defined)
@@ -21394,8 +23006,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	* Default value: `"en"`
 	*/
 	var resolveLocaleProp = createPropResolver((config) => config.defaultLocale, "en");
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/debounce.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/debounce.js
 	function debounce(fn, wait = 500) {
 		let timeout = null;
 		let pendingArgs = null;
@@ -21420,16 +23031,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		};
 		return debounced;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/elements.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/elements.js
 	function isOrContainsTarget(node, target) {
 		return node === target || node.contains(target);
 	}
 	function getOwnerDocument(el) {
 		return el?.ownerDocument ?? document;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/dom.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/dom.js
 	/**
 	* Determines if the click event truly occurred outside the content node.
 	* This was added to handle password managers and other elements that may be injected
@@ -21440,12 +23049,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const rect = contentNode.getBoundingClientRect();
 		return clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/menu/context-menu-attributes.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/menu/context-menu-attributes.js
 	var CONTEXT_MENU_TRIGGER_ATTR = "data-context-menu-trigger";
 	var CONTEXT_MENU_CONTENT_ATTR = "data-context-menu-content";
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/dismissible-layer/use-dismissable-layer.svelte.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/dismissible-layer/use-dismissable-layer.svelte.js
 	globalThis.bitsDismissableLayers ??= /* @__PURE__ */ new Map();
 	var DismissibleLayerState = class DismissibleLayerState {
 		static create(opts) {
@@ -21663,8 +23270,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return e[prop];
 		} });
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/dismissible-layer/dismissible-layer.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/dismissible-layer/dismissible-layer.svelte
 	function Dismissible_layer($$anchor, $$props) {
 		push($$props, true);
 		let interactOutsideBehavior = prop($$props, "interactOutsideBehavior", 7, "close"), onInteractOutside = prop($$props, "onInteractOutside", 7, noop), onFocusOutside = prop($$props, "onFocusOutside", 7, noop), id = prop($$props, "id", 7), children = prop($$props, "children", 7), enabled = prop($$props, "enabled", 7), isValidEvent = prop($$props, "isValidEvent", 7, () => false), ref = prop($$props, "ref", 7);
@@ -21750,8 +23356,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		isValidEvent: {},
 		ref: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/escape-layer/use-escape-layer.svelte.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/escape-layer/use-escape-layer.svelte.js
 	globalThis.bitsEscapeLayers ??= /* @__PURE__ */ new Map();
 	var EscapeLayerState = class EscapeLayerState {
 		static create(opts) {
@@ -21799,8 +23404,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const [firstLayerNode] = layersArr[0];
 		return firstLayerNode === instance;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/escape-layer/escape-layer.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/escape-layer/escape-layer.svelte
 	function Escape_layer($$anchor, $$props) {
 		push($$props, true);
 		let escapeKeydownBehavior = prop($$props, "escapeKeydownBehavior", 7, "close"), onEscapeKeydown = prop($$props, "onEscapeKeydown", 7, noop), children = prop($$props, "children", 7), enabled = prop($$props, "enabled", 7), ref = prop($$props, "ref", 7);
@@ -21859,8 +23463,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		enabled: {},
 		ref: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope-manager.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope-manager.js
 	var FocusScopeManager = class FocusScopeManager {
 		static instance;
 		#scopeStack = simpleBox([]);
@@ -21906,10 +23509,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			this.#preFocusHistory.delete(scope);
 		}
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/tabbable@6.5.0/node_modules/tabbable/dist/index.esm.js
+	// ../../node_modules/.pnpm/tabbable@6.5.1/node_modules/tabbable/dist/index.esm.js
 	/*!
-	* tabbable 6.5.0
+	* tabbable 6.5.1
 	* @license MIT, https://github.com/focus-trap/tabbable/blob/master/LICENSE
 	*/
 	var candidateSelectors = [
@@ -21930,10 +23532,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var NoElement = typeof Element === "undefined";
 	var matches = NoElement ? function() {} : Element.prototype.matches || Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
 	var getRootNode = !NoElement && Element.prototype.getRootNode ? function(element) {
-		var _element$getRootNode;
-		return element === null || element === void 0 ? void 0 : (_element$getRootNode = element.getRootNode) === null || _element$getRootNode === void 0 ? void 0 : _element$getRootNode.call(element);
+		return element == null || element.getRootNode == null ? void 0 : element.getRootNode();
 	} : function(element) {
-		return element === null || element === void 0 ? void 0 : element.ownerDocument;
+		return element == null ? void 0 : element.ownerDocument;
 	};
 	/**
 	* Determines if a node is inert or in an inert ancestor.
@@ -21944,9 +23545,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	*  False if `node` is falsy.
 	*/
 	var _isInert = function isInert(node, lookUp) {
-		var _node$getAttribute;
 		if (lookUp === void 0) lookUp = true;
-		var inertAtt = node === null || node === void 0 ? void 0 : (_node$getAttribute = node.getAttribute) === null || _node$getAttribute === void 0 ? void 0 : _node$getAttribute.call(node, "inert");
+		var inertAtt = node == null || node.getAttribute == null ? void 0 : node.getAttribute("inert");
 		return inertAtt === "" || inertAtt === "true" || lookUp && node && (typeof node.closest === "function" ? node.closest("[inert]") : _isInert(node.parentNode));
 	};
 	/**
@@ -21955,9 +23555,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	* @returns True if it's content-editable; false if it's not or `node` is falsy.
 	*/
 	var isContentEditable = function isContentEditable(node) {
-		var _node$getAttribute2;
-		var attValue = node === null || node === void 0 ? void 0 : (_node$getAttribute2 = node.getAttribute) === null || _node$getAttribute2 === void 0 ? void 0 : _node$getAttribute2.call(node, "contenteditable");
-		return attValue === "" || attValue === "true";
+		var _node$getAttribute;
+		var attValue = node == null || node.getAttribute == null || (_node$getAttribute = node.getAttribute("contenteditable")) == null ? void 0 : _node$getAttribute.toLowerCase();
+		return attValue === "" || attValue === "true" || attValue === "plaintext-only";
 	};
 	/**
 	* @param {Element} el container to check in
@@ -22110,16 +23710,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var isNodeAttached = function isNodeAttached(node) {
 		var _nodeRoot;
 		var nodeRoot = node && getRootNode(node);
-		var nodeRootHost = (_nodeRoot = nodeRoot) === null || _nodeRoot === void 0 ? void 0 : _nodeRoot.host;
+		var nodeRootHost = (_nodeRoot = nodeRoot) == null ? void 0 : _nodeRoot.host;
 		var attached = false;
 		if (nodeRoot && nodeRoot !== node) {
-			var _nodeRootHost, _nodeRootHost$ownerDo, _node$ownerDocument;
-			attached = !!((_nodeRootHost = nodeRootHost) !== null && _nodeRootHost !== void 0 && (_nodeRootHost$ownerDo = _nodeRootHost.ownerDocument) !== null && _nodeRootHost$ownerDo !== void 0 && _nodeRootHost$ownerDo.contains(nodeRootHost) || node !== null && node !== void 0 && (_node$ownerDocument = node.ownerDocument) !== null && _node$ownerDocument !== void 0 && _node$ownerDocument.contains(node));
+			var _nodeRootHost, _node$ownerDocument;
+			attached = !!((_nodeRootHost = nodeRootHost) != null && (_nodeRootHost = _nodeRootHost.ownerDocument) != null && _nodeRootHost.contains(nodeRootHost) || node != null && (_node$ownerDocument = node.ownerDocument) != null && _node$ownerDocument.contains(node));
 			while (!attached && nodeRootHost) {
-				var _nodeRoot2, _nodeRootHost2, _nodeRootHost2$ownerD;
+				var _nodeRoot2, _nodeRootHost2;
 				nodeRoot = getRootNode(nodeRootHost);
-				nodeRootHost = (_nodeRoot2 = nodeRoot) === null || _nodeRoot2 === void 0 ? void 0 : _nodeRoot2.host;
-				attached = !!((_nodeRootHost2 = nodeRootHost) !== null && _nodeRootHost2 !== void 0 && (_nodeRootHost2$ownerD = _nodeRootHost2.ownerDocument) !== null && _nodeRootHost2$ownerD !== void 0 && _nodeRootHost2$ownerD.contains(nodeRootHost));
+				nodeRootHost = (_nodeRoot2 = nodeRoot) == null ? void 0 : _nodeRoot2.host;
+				attached = !!((_nodeRootHost2 = nodeRootHost) != null && (_nodeRootHost2 = _nodeRootHost2.ownerDocument) != null && _nodeRootHost2.contains(nodeRootHost));
 			}
 		}
 		return attached;
@@ -22252,8 +23852,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (matches.call(node, focusableCandidateSelector) === false) return false;
 		return isNodeMatchingSelectorFocusable(options, node);
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope.svelte.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope.svelte.js
 	function retargetToScopeTree(node, container) {
 		const scopeRoot = container.getRootNode();
 		while (node) {
@@ -22286,6 +23885,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			this.#cleanupFns = [];
 		}
 		mount(container) {
+			if (this.#container === container) return;
 			if (this.#container) this.unmount();
 			this.#container = container;
 			this.#manager.register(this);
@@ -22421,8 +24021,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			} };
 		}
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/focus-scope/focus-scope.svelte
 	function Focus_scope($$anchor, $$props) {
 		push($$props, true);
 		let enabled = prop($$props, "enabled", 7, false), trapFocus = prop($$props, "trapFocus", 7, false), loop = prop($$props, "loop", 7, false), onCloseAutoFocus = prop($$props, "onCloseAutoFocus", 7, noop), onOpenAutoFocus = prop($$props, "onOpenAutoFocus", 7, noop), focusScope = prop($$props, "focusScope", 7), ref = prop($$props, "ref", 7);
@@ -22499,8 +24098,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		focusScope: {},
 		ref: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/text-selection-layer/use-text-selection-layer.svelte.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/text-selection-layer/use-text-selection-layer.svelte.js
 	var noopPointer = () => {};
 	globalThis.bitsTextSelectionLayers ??= /* @__PURE__ */ new Map();
 	var TextSelectionLayerState = class TextSelectionLayerState {
@@ -22589,8 +24187,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (!highestLayer) return false;
 		return highestLayer[0] === instance;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/text-selection-layer/text-selection-layer.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/text-selection-layer/text-selection-layer.svelte
 	function Text_selection_layer($$anchor, $$props) {
 		push($$props, true);
 		let preventOverflowTextSelection = prop($$props, "preventOverflowTextSelection", 7, true), onPointerDown = prop($$props, "onPointerDown", 7, noop), onPointerUp = prop($$props, "onPointerUp", 7, noop), id = prop($$props, "id", 7), children = prop($$props, "children", 7), enabled = prop($$props, "enabled", 7), ref = prop($$props, "ref", 7);
@@ -22666,8 +24263,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		enabled: {},
 		ref: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/use-id.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/use-id.js
 	globalThis.bitsIdCounter ??= { current: 0 };
 	/**
 	* Generates a unique ID based on a global counter.
@@ -22676,8 +24272,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		globalThis.bitsIdCounter.current++;
 		return `${prefix}-${globalThis.bitsIdCounter.current}`;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/shared-state.svelte.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/shared-state.svelte.js
 	var SharedState = class {
 		#factory;
 		#subscribers = 0;
@@ -22707,8 +24302,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return get$2(this.#state);
 		}
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/body-scroll-lock.svelte.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/body-scroll-lock.svelte.js
 	var lockMap = new SvelteMap();
 	var MANAGED_PROPERTIES = [
 		"padding-right",
@@ -22909,8 +24503,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		for (const [_, value] of map) if (value) return true;
 		return false;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/scroll-lock/scroll-lock.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/scroll-lock/scroll-lock.svelte
 	function Scroll_lock($$anchor, $$props) {
 		push($$props, true);
 		let preventScroll = prop($$props, "preventScroll", 7, true), restoreScrollDelay = prop($$props, "restoreScrollDelay", 7, null);
@@ -22938,8 +24531,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		preventScroll: {},
 		restoreScrollDelay: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/date-time/announcer.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/date-time/announcer.js
 	/**
 	* Creates or gets an announcer element which is used to announce messages to screen readers.
 	* Within the date components, we use this to announce when the values of the individual segments
@@ -23002,8 +24594,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		return { announce };
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/date-time/utils.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/date-time/utils.js
 	var defaultDateDefaults = {
 		defaultValue: void 0,
 		granularity: "day"
@@ -23134,8 +24725,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (day > lastDayOfWeek) return date.add({ days: 7 - day + lastDayOfWeek });
 		return date.add({ days: lastDayOfWeek - day });
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/date-time/field/parts.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/date-time/field/parts.js
 	var DATE_SEGMENT_PARTS = [
 		"day",
 		"month",
@@ -23153,8 +24743,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var ALL_TIME_SEGMENT_PARTS = [...EDITABLE_TIME_SEGMENT_PARTS, ...NON_EDITABLE_SEGMENT_PARTS];
 	ALL_SEGMENT_PARTS.filter((part) => part !== "literal");
 	ALL_TIME_SEGMENT_PARTS.filter((part) => part !== "literal");
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/date-time/placeholders.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/date-time/placeholders.js
 	var supportedLocales = [
 		"ach",
 		"af",
@@ -23643,8 +25232,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (Intl.Locale) return new Intl.Locale(locale).language;
 		return locale.split("-")[0];
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/date-time/field/helpers.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/date-time/field/helpers.js
 	function initializeSegmentValues(granularity) {
 		const calendarDateTimeGranularities = [
 			"hour",
@@ -23997,8 +25585,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (parsedHour === 0) return "12";
 		return parsedHour > 12 ? `${parsedHour - 12}` : hour;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/date-time/field/segments.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/date-time/field/segments.js
 	/**
 	* Handles segment navigation based on the provided keyboard event and field ID.
 	*
@@ -24102,8 +25689,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function getFirstSegment(fieldNode) {
 		return getSegments(fieldNode)[0];
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/date-time/formatter.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/date-time/formatter.js
 	var defaultPartOptions = {
 		year: "numeric",
 		month: "numeric",
@@ -24190,8 +25776,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			dayOfWeek
 		};
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/arrays.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/arrays.js
 	/**
 	* Splits an array into chunks of a given size.
 	* @param arr The array to split.
@@ -24218,8 +25803,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function isValidIndex(index, arr) {
 		return index >= 0 && index < arr.length;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/date-time/calendar-helpers.svelte.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/date-time/calendar-helpers.svelte.js
 	function isCalendarDayNode(node) {
 		if (!isHTMLElement$1(node)) return false;
 		if (!node.hasAttribute("data-bits-day")) return false;
@@ -24336,16 +25920,33 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (useCalendarDayOffset) {
 			const currentValue = node.getAttribute("data-value");
 			if (!currentValue) return;
-			let targetDate = parseStringToDateValue(currentValue, placeholder.current).add({ days: add });
-			const renderedDates = Array.from(calendarNode?.querySelectorAll("[data-bits-day]:not([data-outside-visible-months])") ?? []).map((cell) => cell.getAttribute("data-value")).filter((value) => value !== null);
-			while (renderedDates.includes(targetDate.toString())) {
-				const nextCell = candidateCells.find((cell) => cell.getAttribute("data-value") === targetDate.toString());
-				if (nextCell) {
-					setPlaceholderToNodeValue(nextCell, placeholder);
-					return nextCell.focus();
+			/**
+			* Focuses the first enabled cell at `targetDate` or a whole number of weeks
+			* past it within the displayed months. Returns the first date that falls
+			* outside the displayed months if no cell was focused.
+			*/
+			const focusSameWeekday = (targetDate) => {
+				const renderedDates = Array.from(calendarNode?.querySelectorAll("[data-bits-day]:not([data-outside-visible-months])") ?? []).map((cell) => cell.getAttribute("data-value")).filter((value) => value !== null);
+				const cells = getSelectableCells(calendarNode);
+				while (renderedDates.includes(targetDate.toString())) {
+					const nextCell = cells.find((cell) => cell.getAttribute("data-value") === targetDate.toString());
+					if (nextCell) {
+						setPlaceholderToNodeValue(nextCell, placeholder);
+						nextCell.focus();
+						return;
+					}
+					targetDate = targetDate.add({ days: add });
 				}
-				targetDate = targetDate.add({ days: add });
-			}
+				return targetDate;
+			};
+			const outsideDate = focusSameWeekday(parseStringToDateValue(currentValue, placeholder.current).add({ days: add }));
+			if (!outsideDate) return;
+			if (add > 0 ? isNextButtonDisabled : isPrevButtonDisabled) return;
+			const firstMonth = months[0]?.value;
+			if (!firstMonth) return;
+			placeholder.current = add > 0 ? firstMonth.add({ months: numberOfMonths }) : firstMonth.subtract({ months: numberOfMonths });
+			afterTick(() => focusSameWeekday(outsideDate));
+			return;
 		}
 		const nextIndex = candidateCells.indexOf(node) + add;
 		/**
@@ -24705,8 +26306,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const totalYears = maxYear - minYear + 1;
 		return Array.from({ length: totalYears }, (_, i) => minYear + i);
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/calendar.svelte.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/calendar/calendar.svelte.js
 	var CalendarRootContext = new Context("Calendar.Root | RangeCalender.Root");
 	var CalendarRootState = class CalendarRootState {
 		static create(opts) {
@@ -25779,8 +27379,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			set(this.#props, value);
 		}
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/calendar/components/calendar.svelte
 	var rest_excludes$27 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -25818,7 +27417,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var root$42 = /* @__PURE__ */ from_html(`<div><!></div>`);
 	function Calendar$1($$anchor, $$props) {
 		push($$props, true);
-		let child$23 = prop($$props, "child", 7), children = prop($$props, "children", 7), id = prop($$props, "id", 23, useId), ref = prop($$props, "ref", 15, null), value = prop($$props, "value", 15), onValueChange = prop($$props, "onValueChange", 7, noop), placeholder = prop($$props, "placeholder", 15), onPlaceholderChange = prop($$props, "onPlaceholderChange", 7, noop), weekdayFormat = prop($$props, "weekdayFormat", 7, "narrow"), weekStartsOn = prop($$props, "weekStartsOn", 7), pagedNavigation = prop($$props, "pagedNavigation", 7, false), isDateDisabled = prop($$props, "isDateDisabled", 7, () => false), isDateUnavailable = prop($$props, "isDateUnavailable", 7, () => false), fixedWeeks = prop($$props, "fixedWeeks", 7, false), numberOfMonths = prop($$props, "numberOfMonths", 7, 1), locale = prop($$props, "locale", 7), calendarLabel = prop($$props, "calendarLabel", 7, "Event"), disabled = prop($$props, "disabled", 7, false), readonly = prop($$props, "readonly", 7, false), minValue = prop($$props, "minValue", 7, void 0), maxValue = prop($$props, "maxValue", 7, void 0), preventDeselect = prop($$props, "preventDeselect", 7, false), type = prop($$props, "type", 7), disableDaysOutsideMonth = prop($$props, "disableDaysOutsideMonth", 7, true), initialFocus = prop($$props, "initialFocus", 7, false), maxDays = prop($$props, "maxDays", 7), monthFormat = prop($$props, "monthFormat", 7, "long"), yearFormat = prop($$props, "yearFormat", 7, "numeric"), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$27);
+		let child$20 = prop($$props, "child", 7), children = prop($$props, "children", 7), id = prop($$props, "id", 23, useId), ref = prop($$props, "ref", 15, null), value = prop($$props, "value", 15), onValueChange = prop($$props, "onValueChange", 7, noop), placeholder = prop($$props, "placeholder", 15), onPlaceholderChange = prop($$props, "onPlaceholderChange", 7, noop), weekdayFormat = prop($$props, "weekdayFormat", 7, "narrow"), weekStartsOn = prop($$props, "weekStartsOn", 7), pagedNavigation = prop($$props, "pagedNavigation", 7, false), isDateDisabled = prop($$props, "isDateDisabled", 7, () => false), isDateUnavailable = prop($$props, "isDateUnavailable", 7, () => false), fixedWeeks = prop($$props, "fixedWeeks", 7, false), numberOfMonths = prop($$props, "numberOfMonths", 7, 1), locale = prop($$props, "locale", 7), calendarLabel = prop($$props, "calendarLabel", 7, "Event"), disabled = prop($$props, "disabled", 7, false), readonly = prop($$props, "readonly", 7, false), minValue = prop($$props, "minValue", 7, void 0), maxValue = prop($$props, "maxValue", 7, void 0), preventDeselect = prop($$props, "preventDeselect", 7, false), type = prop($$props, "type", 7), disableDaysOutsideMonth = prop($$props, "disableDaysOutsideMonth", 7, true), initialFocus = prop($$props, "initialFocus", 7, false), maxDays = prop($$props, "maxDays", 7), monthFormat = prop($$props, "monthFormat", 7, "long"), yearFormat = prop($$props, "yearFormat", 7, "numeric"), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$27);
 		const defaultPlaceholder = untrack(() => getDefaultDate({
 			defaultValue: value(),
 			minValue: minValue(),
@@ -25876,10 +27475,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const mergedProps = /* @__PURE__ */ user_derived(() => mergeProps(restProps, rootState.props));
 		var $$exports = {
 			get child() {
-				return child$23();
+				return child$20();
 			},
 			set child($$value) {
-				child$23($$value);
+				child$20($$value);
 				flushSync();
 			},
 			get children() {
@@ -26082,7 +27681,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					props: get$2(mergedProps),
 					...rootState.snippetProps
 				}));
-				snippet(node_1, child$23, () => get$2($0));
+				snippet(node_1, child$20, () => get$2($0));
 			}
 			append($$anchor, fragment_1);
 		};
@@ -26094,7 +27693,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, div);
 		};
 		if_block(node, ($$render) => {
-			if (child$23()) $$render(consequent);
+			if (child$20()) $$render(consequent);
 			else $$render(alternate, -1);
 		});
 		append($$anchor, fragment);
@@ -26130,8 +27729,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		monthFormat: {},
 		yearFormat: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-day.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/calendar/components/calendar-day.svelte
 	var rest_excludes$26 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -26146,7 +27744,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function Calendar_day($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
-		let children = prop($$props, "children", 7), child$22 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$26);
+		let children = prop($$props, "children", 7), child$19 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$26);
 		const dayState = CalendarDayState.create({
 			id: boxWith(() => id()),
 			ref: boxWith(() => ref(), (v) => ref(v))
@@ -26161,10 +27759,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			},
 			get child() {
-				return child$22();
+				return child$19();
 			},
 			set child($$value) {
-				child$22($$value);
+				child$19($$value);
 				flushSync();
 			},
 			get ref() {
@@ -26192,7 +27790,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					props: get$2(mergedProps),
 					...dayState.snippetProps
 				}));
-				snippet(node_1, child$22, () => get$2($0));
+				snippet(node_1, child$19, () => get$2($0));
 			}
 			append($$anchor, fragment_1);
 		};
@@ -26218,7 +27816,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, div);
 		};
 		if_block(node, ($$render) => {
-			if (child$22()) $$render(consequent);
+			if (child$19()) $$render(consequent);
 			else $$render(alternate_1, -1);
 		});
 		append($$anchor, fragment);
@@ -26230,8 +27828,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {},
 		id: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid.svelte
 	var rest_excludes$25 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -26246,7 +27843,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function Calendar_grid($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
-		let children = prop($$props, "children", 7), child$21 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$25);
+		let children = prop($$props, "children", 7), child$18 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$25);
 		const gridState = CalendarGridState.create({
 			id: boxWith(() => id()),
 			ref: boxWith(() => ref(), (v) => ref(v))
@@ -26261,10 +27858,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			},
 			get child() {
-				return child$21();
+				return child$18();
 			},
 			set child($$value) {
-				child$21($$value);
+				child$18($$value);
 				flushSync();
 			},
 			get ref() {
@@ -26286,7 +27883,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
 			var fragment_1 = comment();
-			snippet(first_child(fragment_1), child$21, () => ({ props: get$2(mergedProps) }));
+			snippet(first_child(fragment_1), child$18, () => ({ props: get$2(mergedProps) }));
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
@@ -26297,7 +27894,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, table);
 		};
 		if_block(node, ($$render) => {
-			if (child$21()) $$render(consequent);
+			if (child$18()) $$render(consequent);
 			else $$render(alternate, -1);
 		});
 		append($$anchor, fragment);
@@ -26309,8 +27906,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {},
 		id: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-body.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-body.svelte
 	var rest_excludes$24 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -26325,7 +27921,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function Calendar_grid_body($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
-		let children = prop($$props, "children", 7), child$20 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$24);
+		let children = prop($$props, "children", 7), child$17 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$24);
 		const gridBodyState = CalendarGridBodyState.create({
 			id: boxWith(() => id()),
 			ref: boxWith(() => ref(), (v) => ref(v))
@@ -26340,10 +27936,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			},
 			get child() {
-				return child$20();
+				return child$17();
 			},
 			set child($$value) {
-				child$20($$value);
+				child$17($$value);
 				flushSync();
 			},
 			get ref() {
@@ -26365,7 +27961,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
 			var fragment_1 = comment();
-			snippet(first_child(fragment_1), child$20, () => ({ props: get$2(mergedProps) }));
+			snippet(first_child(fragment_1), child$17, () => ({ props: get$2(mergedProps) }));
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
@@ -26376,7 +27972,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, tbody);
 		};
 		if_block(node, ($$render) => {
-			if (child$20()) $$render(consequent);
+			if (child$17()) $$render(consequent);
 			else $$render(alternate, -1);
 		});
 		append($$anchor, fragment);
@@ -26388,8 +27984,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {},
 		id: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-cell.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/calendar/components/calendar-cell.svelte
 	var rest_excludes$23 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -26406,7 +28001,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function Calendar_cell($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
-		let children = prop($$props, "children", 7), child$19 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), date = prop($$props, "date", 7), month = prop($$props, "month", 7), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$23);
+		let children = prop($$props, "children", 7), child$16 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), date = prop($$props, "date", 7), month = prop($$props, "month", 7), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$23);
 		const cellState = CalendarCellState.create({
 			id: boxWith(() => id()),
 			ref: boxWith(() => ref(), (v) => ref(v)),
@@ -26423,10 +28018,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			},
 			get child() {
-				return child$19();
+				return child$16();
 			},
 			set child($$value) {
-				child$19($$value);
+				child$16($$value);
 				flushSync();
 			},
 			get ref() {
@@ -26468,7 +28063,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					props: get$2(mergedProps),
 					...cellState.snippetProps
 				}));
-				snippet(node_1, child$19, () => get$2($0));
+				snippet(node_1, child$16, () => get$2($0));
 			}
 			append($$anchor, fragment_1);
 		};
@@ -26480,7 +28075,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, td);
 		};
 		if_block(node, ($$render) => {
-			if (child$19()) $$render(consequent);
+			if (child$16()) $$render(consequent);
 			else $$render(alternate, -1);
 		});
 		append($$anchor, fragment);
@@ -26494,8 +28089,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		date: {},
 		month: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-head.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-head.svelte
 	var rest_excludes$22 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -26510,249 +28104,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function Calendar_grid_head($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
-		let children = prop($$props, "children", 7), child$18 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$22);
+		let children = prop($$props, "children", 7), child$15 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$22);
 		const gridHeadState = CalendarGridHeadState.create({
 			id: boxWith(() => id()),
 			ref: boxWith(() => ref(), (v) => ref(v))
 		});
 		const mergedProps = /* @__PURE__ */ user_derived(() => mergeProps(restProps, gridHeadState.props));
-		var $$exports = {
-			get children() {
-				return children();
-			},
-			set children($$value) {
-				children($$value);
-				flushSync();
-			},
-			get child() {
-				return child$18();
-			},
-			set child($$value) {
-				child$18($$value);
-				flushSync();
-			},
-			get ref() {
-				return ref();
-			},
-			set ref($$value = null) {
-				ref($$value);
-				flushSync();
-			},
-			get id() {
-				return id();
-			},
-			set id($$value = createId(uid)) {
-				id($$value);
-				flushSync();
-			}
-		};
-		var fragment = comment();
-		var node = first_child(fragment);
-		var consequent = ($$anchor) => {
-			var fragment_1 = comment();
-			snippet(first_child(fragment_1), child$18, () => ({ props: get$2(mergedProps) }));
-			append($$anchor, fragment_1);
-		};
-		var alternate = ($$anchor) => {
-			var thead = root$37();
-			attribute_effect(thead, () => ({ ...get$2(mergedProps) }));
-			snippet(child(thead), () => children() ?? noop$1);
-			reset(thead);
-			append($$anchor, thead);
-		};
-		if_block(node, ($$render) => {
-			if (child$18()) $$render(consequent);
-			else $$render(alternate, -1);
-		});
-		append($$anchor, fragment);
-		return pop($$exports);
-	}
-	create_custom_element(Calendar_grid_head, {
-		children: {},
-		child: {},
-		ref: {},
-		id: {}
-	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-head-cell.svelte
-	var rest_excludes$21 = /* @__PURE__ */ new Set([
-		"$$slots",
-		"$$events",
-		"$$legacy",
-		"$$host",
-		"children",
-		"child",
-		"ref",
-		"id"
-	]);
-	var root$36 = /* @__PURE__ */ from_html(`<th><!></th>`);
-	function Calendar_head_cell($$anchor, $$props) {
-		const uid = props_id();
-		push($$props, true);
-		let children = prop($$props, "children", 7), child$17 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$21);
-		const headCellState = CalendarHeadCellState.create({
-			id: boxWith(() => id()),
-			ref: boxWith(() => ref(), (v) => ref(v))
-		});
-		const mergedProps = /* @__PURE__ */ user_derived(() => mergeProps(restProps, headCellState.props));
-		var $$exports = {
-			get children() {
-				return children();
-			},
-			set children($$value) {
-				children($$value);
-				flushSync();
-			},
-			get child() {
-				return child$17();
-			},
-			set child($$value) {
-				child$17($$value);
-				flushSync();
-			},
-			get ref() {
-				return ref();
-			},
-			set ref($$value = null) {
-				ref($$value);
-				flushSync();
-			},
-			get id() {
-				return id();
-			},
-			set id($$value = createId(uid)) {
-				id($$value);
-				flushSync();
-			}
-		};
-		var fragment = comment();
-		var node = first_child(fragment);
-		var consequent = ($$anchor) => {
-			var fragment_1 = comment();
-			snippet(first_child(fragment_1), child$17, () => ({ props: get$2(mergedProps) }));
-			append($$anchor, fragment_1);
-		};
-		var alternate = ($$anchor) => {
-			var th = root$36();
-			attribute_effect(th, () => ({ ...get$2(mergedProps) }));
-			snippet(child(th), () => children() ?? noop$1);
-			reset(th);
-			append($$anchor, th);
-		};
-		if_block(node, ($$render) => {
-			if (child$17()) $$render(consequent);
-			else $$render(alternate, -1);
-		});
-		append($$anchor, fragment);
-		return pop($$exports);
-	}
-	create_custom_element(Calendar_head_cell, {
-		children: {},
-		child: {},
-		ref: {},
-		id: {}
-	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-row.svelte
-	var rest_excludes$20 = /* @__PURE__ */ new Set([
-		"$$slots",
-		"$$events",
-		"$$legacy",
-		"$$host",
-		"children",
-		"child",
-		"ref",
-		"id"
-	]);
-	var root$35 = /* @__PURE__ */ from_html(`<tr><!></tr>`);
-	function Calendar_grid_row($$anchor, $$props) {
-		const uid = props_id();
-		push($$props, true);
-		let children = prop($$props, "children", 7), child$16 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$20);
-		const gridRowState = CalendarGridRowState.create({
-			id: boxWith(() => id()),
-			ref: boxWith(() => ref(), (v) => ref(v))
-		});
-		const mergedProps = /* @__PURE__ */ user_derived(() => mergeProps(restProps, gridRowState.props));
-		var $$exports = {
-			get children() {
-				return children();
-			},
-			set children($$value) {
-				children($$value);
-				flushSync();
-			},
-			get child() {
-				return child$16();
-			},
-			set child($$value) {
-				child$16($$value);
-				flushSync();
-			},
-			get ref() {
-				return ref();
-			},
-			set ref($$value = null) {
-				ref($$value);
-				flushSync();
-			},
-			get id() {
-				return id();
-			},
-			set id($$value = createId(uid)) {
-				id($$value);
-				flushSync();
-			}
-		};
-		var fragment = comment();
-		var node = first_child(fragment);
-		var consequent = ($$anchor) => {
-			var fragment_1 = comment();
-			snippet(first_child(fragment_1), child$16, () => ({ props: get$2(mergedProps) }));
-			append($$anchor, fragment_1);
-		};
-		var alternate = ($$anchor) => {
-			var tr = root$35();
-			attribute_effect(tr, () => ({ ...get$2(mergedProps) }));
-			snippet(child(tr), () => children() ?? noop$1);
-			reset(tr);
-			append($$anchor, tr);
-		};
-		if_block(node, ($$render) => {
-			if (child$16()) $$render(consequent);
-			else $$render(alternate, -1);
-		});
-		append($$anchor, fragment);
-		return pop($$exports);
-	}
-	create_custom_element(Calendar_grid_row, {
-		children: {},
-		child: {},
-		ref: {},
-		id: {}
-	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-header.svelte
-	var rest_excludes$19 = /* @__PURE__ */ new Set([
-		"$$slots",
-		"$$events",
-		"$$legacy",
-		"$$host",
-		"children",
-		"child",
-		"ref",
-		"id"
-	]);
-	var root$34 = /* @__PURE__ */ from_html(`<header><!></header>`);
-	function Calendar_header($$anchor, $$props) {
-		const uid = props_id();
-		push($$props, true);
-		let children = prop($$props, "children", 7), child$15 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$19);
-		const headerState = CalendarHeaderState.create({
-			id: boxWith(() => id()),
-			ref: boxWith(() => ref(), (v) => ref(v))
-		});
-		const mergedProps = /* @__PURE__ */ user_derived(() => mergeProps(restProps, headerState.props));
 		var $$exports = {
 			get children() {
 				return children();
@@ -26791,11 +28148,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
-			var header = root$34();
-			attribute_effect(header, () => ({ ...get$2(mergedProps) }));
-			snippet(child(header), () => children() ?? noop$1);
-			reset(header);
-			append($$anchor, header);
+			var thead = root$37();
+			attribute_effect(thead, () => ({ ...get$2(mergedProps) }));
+			snippet(child(thead), () => children() ?? noop$1);
+			reset(thead);
+			append($$anchor, thead);
 		};
 		if_block(node, ($$render) => {
 			if (child$15()) $$render(consequent);
@@ -26804,15 +28161,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		append($$anchor, fragment);
 		return pop($$exports);
 	}
-	create_custom_element(Calendar_header, {
+	create_custom_element(Calendar_grid_head, {
 		children: {},
 		child: {},
 		ref: {},
 		id: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-heading.svelte
-	var rest_excludes$18 = /* @__PURE__ */ new Set([
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/calendar/components/calendar-head-cell.svelte
+	var rest_excludes$21 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
 		"$$legacy",
@@ -26822,16 +28178,16 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"ref",
 		"id"
 	]);
-	var root$33 = /* @__PURE__ */ from_html(`<div><!></div>`);
-	function Calendar_heading($$anchor, $$props) {
+	var root$36 = /* @__PURE__ */ from_html(`<th><!></th>`);
+	function Calendar_head_cell($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
-		let children = prop($$props, "children", 7), child$14 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$18);
-		const headingState = CalendarHeadingState.create({
+		let children = prop($$props, "children", 7), child$14 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$21);
+		const headCellState = CalendarHeadCellState.create({
 			id: boxWith(() => id()),
 			ref: boxWith(() => ref(), (v) => ref(v))
 		});
-		const mergedProps = /* @__PURE__ */ user_derived(() => mergeProps(restProps, headingState.props));
+		const mergedProps = /* @__PURE__ */ user_derived(() => mergeProps(restProps, headCellState.props));
 		var $$exports = {
 			get children() {
 				return children();
@@ -26866,7 +28222,241 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
 			var fragment_1 = comment();
-			snippet(first_child(fragment_1), child$14, () => ({
+			snippet(first_child(fragment_1), child$14, () => ({ props: get$2(mergedProps) }));
+			append($$anchor, fragment_1);
+		};
+		var alternate = ($$anchor) => {
+			var th = root$36();
+			attribute_effect(th, () => ({ ...get$2(mergedProps) }));
+			snippet(child(th), () => children() ?? noop$1);
+			reset(th);
+			append($$anchor, th);
+		};
+		if_block(node, ($$render) => {
+			if (child$14()) $$render(consequent);
+			else $$render(alternate, -1);
+		});
+		append($$anchor, fragment);
+		return pop($$exports);
+	}
+	create_custom_element(Calendar_head_cell, {
+		children: {},
+		child: {},
+		ref: {},
+		id: {}
+	}, [], [], { mode: "open" });
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/calendar/components/calendar-grid-row.svelte
+	var rest_excludes$20 = /* @__PURE__ */ new Set([
+		"$$slots",
+		"$$events",
+		"$$legacy",
+		"$$host",
+		"children",
+		"child",
+		"ref",
+		"id"
+	]);
+	var root$35 = /* @__PURE__ */ from_html(`<tr><!></tr>`);
+	function Calendar_grid_row($$anchor, $$props) {
+		const uid = props_id();
+		push($$props, true);
+		let children = prop($$props, "children", 7), child$13 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$20);
+		const gridRowState = CalendarGridRowState.create({
+			id: boxWith(() => id()),
+			ref: boxWith(() => ref(), (v) => ref(v))
+		});
+		const mergedProps = /* @__PURE__ */ user_derived(() => mergeProps(restProps, gridRowState.props));
+		var $$exports = {
+			get children() {
+				return children();
+			},
+			set children($$value) {
+				children($$value);
+				flushSync();
+			},
+			get child() {
+				return child$13();
+			},
+			set child($$value) {
+				child$13($$value);
+				flushSync();
+			},
+			get ref() {
+				return ref();
+			},
+			set ref($$value = null) {
+				ref($$value);
+				flushSync();
+			},
+			get id() {
+				return id();
+			},
+			set id($$value = createId(uid)) {
+				id($$value);
+				flushSync();
+			}
+		};
+		var fragment = comment();
+		var node = first_child(fragment);
+		var consequent = ($$anchor) => {
+			var fragment_1 = comment();
+			snippet(first_child(fragment_1), child$13, () => ({ props: get$2(mergedProps) }));
+			append($$anchor, fragment_1);
+		};
+		var alternate = ($$anchor) => {
+			var tr = root$35();
+			attribute_effect(tr, () => ({ ...get$2(mergedProps) }));
+			snippet(child(tr), () => children() ?? noop$1);
+			reset(tr);
+			append($$anchor, tr);
+		};
+		if_block(node, ($$render) => {
+			if (child$13()) $$render(consequent);
+			else $$render(alternate, -1);
+		});
+		append($$anchor, fragment);
+		return pop($$exports);
+	}
+	create_custom_element(Calendar_grid_row, {
+		children: {},
+		child: {},
+		ref: {},
+		id: {}
+	}, [], [], { mode: "open" });
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/calendar/components/calendar-header.svelte
+	var rest_excludes$19 = /* @__PURE__ */ new Set([
+		"$$slots",
+		"$$events",
+		"$$legacy",
+		"$$host",
+		"children",
+		"child",
+		"ref",
+		"id"
+	]);
+	var root$34 = /* @__PURE__ */ from_html(`<header><!></header>`);
+	function Calendar_header($$anchor, $$props) {
+		const uid = props_id();
+		push($$props, true);
+		let children = prop($$props, "children", 7), child$12 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$19);
+		const headerState = CalendarHeaderState.create({
+			id: boxWith(() => id()),
+			ref: boxWith(() => ref(), (v) => ref(v))
+		});
+		const mergedProps = /* @__PURE__ */ user_derived(() => mergeProps(restProps, headerState.props));
+		var $$exports = {
+			get children() {
+				return children();
+			},
+			set children($$value) {
+				children($$value);
+				flushSync();
+			},
+			get child() {
+				return child$12();
+			},
+			set child($$value) {
+				child$12($$value);
+				flushSync();
+			},
+			get ref() {
+				return ref();
+			},
+			set ref($$value = null) {
+				ref($$value);
+				flushSync();
+			},
+			get id() {
+				return id();
+			},
+			set id($$value = createId(uid)) {
+				id($$value);
+				flushSync();
+			}
+		};
+		var fragment = comment();
+		var node = first_child(fragment);
+		var consequent = ($$anchor) => {
+			var fragment_1 = comment();
+			snippet(first_child(fragment_1), child$12, () => ({ props: get$2(mergedProps) }));
+			append($$anchor, fragment_1);
+		};
+		var alternate = ($$anchor) => {
+			var header = root$34();
+			attribute_effect(header, () => ({ ...get$2(mergedProps) }));
+			snippet(child(header), () => children() ?? noop$1);
+			reset(header);
+			append($$anchor, header);
+		};
+		if_block(node, ($$render) => {
+			if (child$12()) $$render(consequent);
+			else $$render(alternate, -1);
+		});
+		append($$anchor, fragment);
+		return pop($$exports);
+	}
+	create_custom_element(Calendar_header, {
+		children: {},
+		child: {},
+		ref: {},
+		id: {}
+	}, [], [], { mode: "open" });
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/calendar/components/calendar-heading.svelte
+	var rest_excludes$18 = /* @__PURE__ */ new Set([
+		"$$slots",
+		"$$events",
+		"$$legacy",
+		"$$host",
+		"children",
+		"child",
+		"ref",
+		"id"
+	]);
+	var root$33 = /* @__PURE__ */ from_html(`<div><!></div>`);
+	function Calendar_heading($$anchor, $$props) {
+		const uid = props_id();
+		push($$props, true);
+		let children = prop($$props, "children", 7), child$11 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$18);
+		const headingState = CalendarHeadingState.create({
+			id: boxWith(() => id()),
+			ref: boxWith(() => ref(), (v) => ref(v))
+		});
+		const mergedProps = /* @__PURE__ */ user_derived(() => mergeProps(restProps, headingState.props));
+		var $$exports = {
+			get children() {
+				return children();
+			},
+			set children($$value) {
+				children($$value);
+				flushSync();
+			},
+			get child() {
+				return child$11();
+			},
+			set child($$value) {
+				child$11($$value);
+				flushSync();
+			},
+			get ref() {
+				return ref();
+			},
+			set ref($$value = null) {
+				ref($$value);
+				flushSync();
+			},
+			get id() {
+				return id();
+			},
+			set id($$value = createId(uid)) {
+				id($$value);
+				flushSync();
+			}
+		};
+		var fragment = comment();
+		var node = first_child(fragment);
+		var consequent = ($$anchor) => {
+			var fragment_1 = comment();
+			snippet(first_child(fragment_1), child$11, () => ({
 				props: get$2(mergedProps),
 				headingValue: headingState.root.headingValue
 			}));
@@ -26894,7 +28484,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, div);
 		};
 		if_block(node, ($$render) => {
-			if (child$14()) $$render(consequent);
+			if (child$11()) $$render(consequent);
 			else $$render(alternate_1, -1);
 		});
 		append($$anchor, fragment);
@@ -26906,8 +28496,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {},
 		id: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-month-select.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/calendar/components/calendar-month-select.svelte
 	var rest_excludes$17 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -26923,12 +28512,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"aria-label"
 	]);
 	var root$32 = /* @__PURE__ */ from_html(`<option> </option>`);
-	var select_content$1 = /* @__PURE__ */ from_html(`<!>`, 1);
 	var root_1$12 = /* @__PURE__ */ from_html(`<select><!></select>`);
 	function Calendar_month_select($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
-		let children = prop($$props, "children", 7), child$13 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), months = prop($$props, "months", 23, () => [
+		let children = prop($$props, "children", 7), child$10 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), months = prop($$props, "months", 23, () => [
 			1,
 			2,
 			3,
@@ -26959,10 +28547,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			},
 			get child() {
-				return child$13();
+				return child$10();
 			},
 			set child($$value) {
-				child$13($$value);
+				child$10($$value);
 				flushSync();
 			},
 			get ref() {
@@ -27031,7 +28619,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					props: get$2(mergedProps),
 					...monthSelectState.snippetProps
 				}));
-				snippet(node_1, child$13, () => get$2($0));
+				snippet(node_1, child$10, () => get$2($0));
 			}
 			append($$anchor, fragment_1);
 		};
@@ -27040,7 +28628,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			attribute_effect(select, () => ({ ...get$2(mergedProps) }));
 			customizable_select(select, () => {
 				var anchor = child(select);
-				var fragment_2 = select_content$1();
+				var fragment_2 = comment();
 				var node_2 = first_child(fragment_2);
 				var consequent_1 = ($$anchor) => {
 					var fragment_3 = comment();
@@ -27051,13 +28639,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					var fragment_4 = comment();
 					each(first_child(fragment_4), 17, () => monthSelectState.monthItems, (month) => month.value, ($$anchor, month) => {
 						var option = root$32();
-						var text = child(option, true);
-						reset(option);
+						var text = only_child(option, true);
 						var option_value = {};
 						template_effect(() => {
 							set_selected(option, get$2(month).value === monthSelectState.currentMonth);
 							set_text(text, get$2(month).label);
-							if (option_value !== (option_value = get$2(month).value)) option.value = (option.__value = get$2(month).value) ?? "";
+							if (option_value !== (option_value = get$2(month).value)) option.value = (option.__value = option_value) ?? "";
 						});
 						append($$anchor, option);
 					});
@@ -27072,7 +28659,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, select);
 		};
 		if_block(node, ($$render) => {
-			if (child$13()) $$render(consequent);
+			if (child$10()) $$render(consequent);
 			else $$render(alternate_1, -1);
 		});
 		append($$anchor, fragment);
@@ -27088,8 +28675,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		disabled: {},
 		"aria-label": {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-next-button.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/calendar/components/calendar-next-button.svelte
 	var rest_excludes$16 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -27105,7 +28691,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function Calendar_next_button($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
-		let children = prop($$props, "children", 7), child$12 = prop($$props, "child", 7), id = prop($$props, "id", 23, () => createId(uid)), ref = prop($$props, "ref", 15, null), tabindex = prop($$props, "tabindex", 7, 0), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$16);
+		let children = prop($$props, "children", 7), child$9 = prop($$props, "child", 7), id = prop($$props, "id", 23, () => createId(uid)), ref = prop($$props, "ref", 15, null), tabindex = prop($$props, "tabindex", 7, 0), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$16);
 		const nextButtonState = CalendarNextButtonState.create({
 			id: boxWith(() => id()),
 			ref: boxWith(() => ref(), (v) => ref(v))
@@ -27120,10 +28706,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			},
 			get child() {
-				return child$12();
+				return child$9();
 			},
 			set child($$value) {
-				child$12($$value);
+				child$9($$value);
 				flushSync();
 			},
 			get id() {
@@ -27152,7 +28738,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
 			var fragment_1 = comment();
-			snippet(first_child(fragment_1), child$12, () => ({ props: get$2(mergedProps) }));
+			snippet(first_child(fragment_1), child$9, () => ({ props: get$2(mergedProps) }));
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
@@ -27163,7 +28749,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, button);
 		};
 		if_block(node, ($$render) => {
-			if (child$12()) $$render(consequent);
+			if (child$9()) $$render(consequent);
 			else $$render(alternate, -1);
 		});
 		append($$anchor, fragment);
@@ -27176,8 +28762,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {},
 		tabindex: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-prev-button.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/calendar/components/calendar-prev-button.svelte
 	var rest_excludes$15 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -27193,7 +28778,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function Calendar_prev_button($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
-		let children = prop($$props, "children", 7), child$11 = prop($$props, "child", 7), id = prop($$props, "id", 23, () => createId(uid)), ref = prop($$props, "ref", 15, null), tabindex = prop($$props, "tabindex", 7, 0), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$15);
+		let children = prop($$props, "children", 7), child$8 = prop($$props, "child", 7), id = prop($$props, "id", 23, () => createId(uid)), ref = prop($$props, "ref", 15, null), tabindex = prop($$props, "tabindex", 7, 0), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$15);
 		const prevButtonState = CalendarPrevButtonState.create({
 			id: boxWith(() => id()),
 			ref: boxWith(() => ref(), (v) => ref(v))
@@ -27208,10 +28793,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			},
 			get child() {
-				return child$11();
+				return child$8();
 			},
 			set child($$value) {
-				child$11($$value);
+				child$8($$value);
 				flushSync();
 			},
 			get id() {
@@ -27240,7 +28825,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
 			var fragment_1 = comment();
-			snippet(first_child(fragment_1), child$11, () => ({ props: get$2(mergedProps) }));
+			snippet(first_child(fragment_1), child$8, () => ({ props: get$2(mergedProps) }));
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
@@ -27251,7 +28836,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, button);
 		};
 		if_block(node, ($$render) => {
-			if (child$11()) $$render(consequent);
+			if (child$8()) $$render(consequent);
 			else $$render(alternate, -1);
 		});
 		append($$anchor, fragment);
@@ -27264,8 +28849,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {},
 		tabindex: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/calendar/components/calendar-year-select.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/calendar/components/calendar-year-select.svelte
 	var rest_excludes$14 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -27281,12 +28865,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"aria-label"
 	]);
 	var root$29 = /* @__PURE__ */ from_html(`<option> </option>`);
-	var select_content = /* @__PURE__ */ from_html(`<!>`, 1);
 	var root_1$11 = /* @__PURE__ */ from_html(`<select><!></select>`);
 	function Calendar_year_select($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
-		let children = prop($$props, "children", 7), child$10 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), years = prop($$props, "years", 7), yearFormat = prop($$props, "yearFormat", 7, "numeric"), disabled = prop($$props, "disabled", 7, false), ariaLabel = prop($$props, "aria-label", 7, "Select a year"), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$14);
+		let children = prop($$props, "children", 7), child$7 = prop($$props, "child", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), years = prop($$props, "years", 7), yearFormat = prop($$props, "yearFormat", 7, "numeric"), disabled = prop($$props, "disabled", 7, false), ariaLabel = prop($$props, "aria-label", 7, "Select a year"), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$14);
 		const yearSelectState = CalendarYearSelectState.create({
 			id: boxWith(() => id()),
 			ref: boxWith(() => ref(), (v) => ref(v)),
@@ -27304,10 +28887,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			},
 			get child() {
-				return child$10();
+				return child$7();
 			},
 			set child($$value) {
-				child$10($$value);
+				child$7($$value);
 				flushSync();
 			},
 			get ref() {
@@ -27363,7 +28946,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					props: get$2(mergedProps),
 					...yearSelectState.snippetProps
 				}));
-				snippet(node_1, child$10, () => get$2($0));
+				snippet(node_1, child$7, () => get$2($0));
 			}
 			append($$anchor, fragment_1);
 		};
@@ -27372,7 +28955,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			attribute_effect(select, () => ({ ...get$2(mergedProps) }));
 			customizable_select(select, () => {
 				var anchor = child(select);
-				var fragment_2 = select_content();
+				var fragment_2 = comment();
 				var node_2 = first_child(fragment_2);
 				var consequent_1 = ($$anchor) => {
 					var fragment_3 = comment();
@@ -27383,13 +28966,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					var fragment_4 = comment();
 					each(first_child(fragment_4), 17, () => yearSelectState.yearItems, (year) => year.value, ($$anchor, year) => {
 						var option = root$29();
-						var text = child(option, true);
-						reset(option);
+						var text = only_child(option, true);
 						var option_value = {};
 						template_effect(() => {
 							set_selected(option, get$2(year).value === yearSelectState.currentYear);
 							set_text(text, get$2(year).label);
-							if (option_value !== (option_value = get$2(year).value)) option.value = (option.__value = get$2(year).value) ?? "";
+							if (option_value !== (option_value = get$2(year).value)) option.value = (option.__value = option_value) ?? "";
 						});
 						append($$anchor, option);
 					});
@@ -27404,7 +28986,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, select);
 		};
 		if_block(node, ($$render) => {
-			if (child$10()) $$render(consequent);
+			if (child$7()) $$render(consequent);
 			else $$render(alternate_1, -1);
 		});
 		append($$anchor, fragment);
@@ -27420,8 +29002,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		disabled: {},
 		"aria-label": {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/hidden-input.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/hidden-input.svelte
 	var rest_excludes$13 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -27482,8 +29063,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return pop($$exports);
 	}
 	create_custom_element(Hidden_input, { value: {} }, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/floating-layer/floating-root.svelte.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/floating-layer/floating-root.svelte.js
 	var FloatingRootContext = new Context("Floating.Root");
 	var FloatingTooltipRootContext = new Context("Floating.Root");
 	var FloatingRootState = class FloatingRootState {
@@ -27515,8 +29095,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			else root.triggerNode = opts.ref;
 		}
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer.svelte
 	function Floating_layer($$anchor, $$props) {
 		push($$props, true);
 		let children = prop($$props, "children", 7), tooltip = prop($$props, "tooltip", 7, false);
@@ -27546,8 +29125,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		children: {},
 		tooltip: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/floating-svelte/floating-utils.svelte.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/floating-svelte/floating-utils.svelte.js
 	function get(valueOrGetValue) {
 		return typeof valueOrGetValue === "function" ? valueOrGetValue() : valueOrGetValue;
 	}
@@ -27568,8 +29146,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			[`--bits-${name}-anchor-height`]: `var(--bits-floating-anchor-height)`
 		};
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-anchor.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-anchor.svelte
 	function Floating_layer_anchor($$anchor, $$props) {
 		push($$props, true);
 		let id = prop($$props, "id", 7), children = prop($$props, "children", 7), virtualEl = prop($$props, "virtualEl", 7), ref = prop($$props, "ref", 7), tooltip = prop($$props, "tooltip", 7, false);
@@ -27627,8 +29204,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {},
 		tooltip: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/@floating-ui+utils@0.2.12/node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs
+	// ../../node_modules/.pnpm/@floating-ui+utils@0.2.12/node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs
 	/**
 	* Custom positioning reference element.
 	* @see https://floating-ui.com/docs/virtual-elements
@@ -27756,8 +29332,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			y
 		};
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/@floating-ui+core@1.8.0/node_modules/@floating-ui/core/dist/floating-ui.core.mjs
+	// ../../node_modules/.pnpm/@floating-ui+core@1.8.0/node_modules/@floating-ui/core/dist/floating-ui.core.mjs
 	function computeCoordsFromPlacement(_ref, placement, rtl) {
 		let { reference, floating } = _ref;
 		const sideAxis = getSideAxis(placement);
@@ -28297,8 +29872,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 		};
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/@floating-ui+utils@0.2.12/node_modules/@floating-ui/utils/dist/floating-ui.utils.dom.mjs
+	// ../../node_modules/.pnpm/@floating-ui+utils@0.2.12/node_modules/@floating-ui/utils/dist/floating-ui.utils.dom.mjs
 	function hasWindow() {
 		return typeof window !== "undefined";
 	}
@@ -28410,8 +29984,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function getFrameElement(win) {
 		return win.parent && Object.getPrototypeOf(win.parent) ? win.frameElement : null;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/@floating-ui+dom@1.8.0/node_modules/@floating-ui/dom/dist/floating-ui.dom.mjs
+	// ../../node_modules/.pnpm/@floating-ui+dom@1.8.0/node_modules/@floating-ui/dom/dist/floating-ui.dom.mjs
 	function getCssDimensions(element) {
 		const css = getComputedStyle$1(element);
 		let width = parseFloat(css.width) || 0;
@@ -28944,8 +30517,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			platform: platformWithCache
 		});
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/floating-svelte/use-floating.svelte.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/floating-svelte/use-floating.svelte.js
 	function useFloating(options) {
 		/** Options */
 		const whileElementsMountedOption = options.whileElementsMounted;
@@ -29108,8 +30680,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (node instanceof HTMLElement && node.hidden) return true;
 		return node.getClientRects().length === 0;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/floating-layer/use-floating-layer.svelte.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/floating-layer/use-floating-layer.svelte.js
 	var OPPOSITE_SIDE = {
 		top: "bottom",
 		right: "left",
@@ -29408,8 +30979,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function getAlignFromPlacement(placement) {
 		return getSideAndAlignFromPlacement(placement)[1];
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-content.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-content.svelte
 	function Floating_layer_content($$anchor, $$props) {
 		push($$props, true);
 		let content = prop($$props, "content", 7), side = prop($$props, "side", 7, "bottom"), sideOffset = prop($$props, "sideOffset", 7, 0), align = prop($$props, "align", 7, "center"), alignOffset = prop($$props, "alignOffset", 7, 0), id = prop($$props, "id", 7), arrowPadding = prop($$props, "arrowPadding", 7, 0), avoidCollisions = prop($$props, "avoidCollisions", 7, true), collisionBoundary = prop($$props, "collisionBoundary", 23, () => []), collisionPadding = prop($$props, "collisionPadding", 7, 0), hideWhenDetached = prop($$props, "hideWhenDetached", 7, false), onPlaced = prop($$props, "onPlaced", 7, () => {}), sticky = prop($$props, "sticky", 7, "partial"), updatePositionStrategy = prop($$props, "updatePositionStrategy", 7, "optimized"), strategy = prop($$props, "strategy", 7, "fixed"), dir = prop($$props, "dir", 7, "ltr"), style = prop($$props, "style", 23, () => ({})), wrapperId = prop($$props, "wrapperId", 23, useId), customAnchor = prop($$props, "customAnchor", 7, null), enabled = prop($$props, "enabled", 7), tooltip = prop($$props, "tooltip", 7, false);
@@ -29615,8 +31185,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		enabled: {},
 		tooltip: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-content-static.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/floating-layer/components/floating-layer-content-static.svelte
 	function Floating_layer_content_static($$anchor, $$props) {
 		push($$props, true);
 		let content = prop($$props, "content", 7), onPlaced = prop($$props, "onPlaced", 7);
@@ -29651,8 +31220,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		content: {},
 		onPlaced: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-content.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-content.svelte
 	var rest_excludes$12 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -29722,8 +31290,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		isStatic: {},
 		onPlaced: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer-inner.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer-inner.svelte
 	var rest_excludes$11 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -30297,8 +31864,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		tooltip: {},
 		contentPointerEvents: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer.svelte
 	var rest_excludes$10 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -30766,8 +32332,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {},
 		shouldRender: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer-force-mount.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/utilities/popper-layer/popper-layer-force-mount.svelte
 	var rest_excludes$9 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -31205,8 +32770,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		isStatic: {},
 		enabled: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-field/date-field.svelte.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/date-field/date-field.svelte.js
 	var dateFieldAttrs = createBitsAttrs({
 		component: "date-field",
 		parts: [
@@ -32401,8 +33965,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const diff = 4 - String(year).length;
 		return `${"0".repeat(diff)}${year}`;
 	}
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-field/components/date-field-hidden-input.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/date-field/components/date-field-hidden-input.svelte
 	function Date_field_hidden_input($$anchor, $$props) {
 		push($$props, false);
 		const hiddenInputState = DateFieldHiddenInputState.create();
@@ -32419,8 +33982,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	create_custom_element(Date_field_hidden_input, {}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-field/components/date-field-input.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/date-field/components/date-field-input.svelte
 	var rest_excludes$8 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -32437,7 +33999,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function Date_field_input($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
-		let id = prop($$props, "id", 23, () => createId(uid)), ref = prop($$props, "ref", 15, null), name = prop($$props, "name", 7, ""), children = prop($$props, "children", 7), child$9 = prop($$props, "child", 7), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$8);
+		let id = prop($$props, "id", 23, () => createId(uid)), ref = prop($$props, "ref", 15, null), name = prop($$props, "name", 7, ""), children = prop($$props, "children", 7), child$6 = prop($$props, "child", 7), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$8);
 		const inputState = DateFieldInputState.create({
 			id: boxWith(() => id()),
 			ref: boxWith(() => ref(), (v) => ref(v)),
@@ -32474,10 +34036,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			},
 			get child() {
-				return child$9();
+				return child$6();
 			},
 			set child($$value) {
-				child$9($$value);
+				child$6($$value);
 				flushSync();
 			}
 		};
@@ -32485,7 +34047,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
 			var fragment_1 = comment();
-			snippet(first_child(fragment_1), child$9, () => ({
+			snippet(first_child(fragment_1), child$6, () => ({
 				props: get$2(mergedProps),
 				segments: inputState.root.segmentContents
 			}));
@@ -32499,7 +34061,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, div);
 		};
 		if_block(node, ($$render) => {
-			if (child$9()) $$render(consequent);
+			if (child$6()) $$render(consequent);
 			else $$render(alternate, -1);
 		});
 		Date_field_hidden_input(sibling(node, 2), {});
@@ -32513,8 +34075,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		children: {},
 		child: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-field/components/date-field-label.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/date-field/components/date-field-label.svelte
 	var rest_excludes$7 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -32529,7 +34090,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function Date_field_label($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
-		let id = prop($$props, "id", 23, () => createId(uid)), ref = prop($$props, "ref", 15, null), children = prop($$props, "children", 7), child$8 = prop($$props, "child", 7), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$7);
+		let id = prop($$props, "id", 23, () => createId(uid)), ref = prop($$props, "ref", 15, null), children = prop($$props, "children", 7), child$5 = prop($$props, "child", 7), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$7);
 		const labelState = DateFieldLabelState.create({
 			id: boxWith(() => id()),
 			ref: boxWith(() => ref(), (v) => ref(v))
@@ -32558,10 +34119,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			},
 			get child() {
-				return child$8();
+				return child$5();
 			},
 			set child($$value) {
-				child$8($$value);
+				child$5($$value);
 				flushSync();
 			}
 		};
@@ -32569,7 +34130,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
 			var fragment_1 = comment();
-			snippet(first_child(fragment_1), child$8, () => ({ props: get$2(mergedProps) }));
+			snippet(first_child(fragment_1), child$5, () => ({ props: get$2(mergedProps) }));
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
@@ -32580,7 +34141,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, div);
 		};
 		if_block(node, ($$render) => {
-			if (child$8()) $$render(consequent);
+			if (child$5()) $$render(consequent);
 			else $$render(alternate, -1);
 		});
 		append($$anchor, fragment);
@@ -32592,8 +34153,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		children: {},
 		child: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-field/components/date-field-segment.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/date-field/components/date-field-segment.svelte
 	var rest_excludes$6 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -32609,7 +34169,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function Date_field_segment($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
-		let id = prop($$props, "id", 23, () => createId(uid)), ref = prop($$props, "ref", 15, null), children = prop($$props, "children", 7), child$7 = prop($$props, "child", 7), part = prop($$props, "part", 7), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$6);
+		let id = prop($$props, "id", 23, () => createId(uid)), ref = prop($$props, "ref", 15, null), children = prop($$props, "children", 7), child$4 = prop($$props, "child", 7), part = prop($$props, "part", 7), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$6);
 		const segmentState = DateFieldSegmentState.create(untrack(() => part()), {
 			id: boxWith(() => id()),
 			ref: boxWith(() => ref(), (v) => ref(v))
@@ -32638,10 +34198,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			},
 			get child() {
-				return child$7();
+				return child$4();
 			},
 			set child($$value) {
-				child$7($$value);
+				child$4($$value);
 				flushSync();
 			},
 			get part() {
@@ -32656,7 +34216,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var node = first_child(fragment);
 		var consequent = ($$anchor) => {
 			var fragment_1 = comment();
-			snippet(first_child(fragment_1), child$7, () => ({ props: get$2(mergedProps) }));
+			snippet(first_child(fragment_1), child$4, () => ({ props: get$2(mergedProps) }));
 			append($$anchor, fragment_1);
 		};
 		var alternate = ($$anchor) => {
@@ -32667,7 +34227,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, span);
 		};
 		if_block(node, ($$render) => {
-			if (child$7()) $$render(consequent);
+			if (child$4()) $$render(consequent);
 			else $$render(alternate, -1);
 		});
 		append($$anchor, fragment);
@@ -32680,8 +34240,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		child: {},
 		part: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-picker/date-picker.svelte.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/date-picker/date-picker.svelte.js
 	var DatePickerRootContext = new Context("DatePicker.Root");
 	var DatePickerRootState = class DatePickerRootState {
 		static create(opts) {
@@ -32692,8 +34251,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			this.opts = opts;
 		}
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/internal/safe-polygon.svelte.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/internal/safe-polygon.svelte.js
 	function isPointInPolygon(point, polygon) {
 		const [x, y] = point;
 		let isInside = false;
@@ -32938,8 +34496,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 		}
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/popover/popover.svelte.js
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/popover/popover.svelte.js
 	var popoverAttrs = createBitsAttrs({
 		component: "popover",
 		parts: [
@@ -33284,8 +34841,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			onEscapeKeydown: this.onEscapeKeydown
 		};
 	};
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-picker/components/date-picker.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/date-picker/components/date-picker.svelte
 	function Date_picker($$anchor, $$props) {
 		push($$props, true);
 		let open = prop($$props, "open", 15, false), onOpenChange = prop($$props, "onOpenChange", 7, noop), onOpenChangeComplete = prop($$props, "onOpenChangeComplete", 7, noop), value = prop($$props, "value", 15), onValueChange = prop($$props, "onValueChange", 7, noop), placeholder = prop($$props, "placeholder", 15), onPlaceholderChange = prop($$props, "onPlaceholderChange", 7, noop), isDateUnavailable = prop($$props, "isDateUnavailable", 7, () => false), validate = prop($$props, "validate", 7, noop), onInvalid = prop($$props, "onInvalid", 7, noop), minValue = prop($$props, "minValue", 7), maxValue = prop($$props, "maxValue", 7), disabled = prop($$props, "disabled", 7, false), readonly = prop($$props, "readonly", 7, false), granularity = prop($$props, "granularity", 7), readonlySegments = prop($$props, "readonlySegments", 23, () => []), hourCycle = prop($$props, "hourCycle", 7), locale = prop($$props, "locale", 7), hideTimeZone = prop($$props, "hideTimeZone", 7, false), required = prop($$props, "required", 7, false), calendarLabel = prop($$props, "calendarLabel", 7, "Event"), disableDaysOutsideMonth = prop($$props, "disableDaysOutsideMonth", 7, true), preventDeselect = prop($$props, "preventDeselect", 7, false), pagedNavigation = prop($$props, "pagedNavigation", 7, false), weekStartsOn = prop($$props, "weekStartsOn", 7), weekdayFormat = prop($$props, "weekdayFormat", 7, "narrow"), isDateDisabled = prop($$props, "isDateDisabled", 7, () => false), fixedWeeks = prop($$props, "fixedWeeks", 7, false), numberOfMonths = prop($$props, "numberOfMonths", 7, 1), closeOnDateSelect = prop($$props, "closeOnDateSelect", 7, true), initialFocus = prop($$props, "initialFocus", 7, false), errorMessageId = prop($$props, "errorMessageId", 7), children = prop($$props, "children", 7), monthFormat = prop($$props, "monthFormat", 7, "long"), yearFormat = prop($$props, "yearFormat", 7, "numeric");
@@ -33670,8 +35226,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		monthFormat: {},
 		yearFormat: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-calendar.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-calendar.svelte
 	var rest_excludes$5 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -33686,7 +35241,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function Date_picker_calendar($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
-		let children = prop($$props, "children", 7), child$6 = prop($$props, "child", 7), id = prop($$props, "id", 23, () => createId(uid)), ref = prop($$props, "ref", 15, null), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$5);
+		let children = prop($$props, "children", 7), child$3 = prop($$props, "child", 7), id = prop($$props, "id", 23, () => createId(uid)), ref = prop($$props, "ref", 15, null), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$5);
 		const datePickerRootState = DatePickerRootContext.get();
 		const calendarState = CalendarRootState.create({
 			id: boxWith(() => id()),
@@ -33726,10 +35281,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			},
 			get child() {
-				return child$6();
+				return child$3();
 			},
 			set child($$value) {
-				child$6($$value);
+				child$3($$value);
 				flushSync();
 			},
 			get id() {
@@ -33757,7 +35312,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					props: get$2(mergedProps),
 					...calendarState.snippetProps
 				}));
-				snippet(node_1, child$6, () => get$2($0));
+				snippet(node_1, child$3, () => get$2($0));
 			}
 			append($$anchor, fragment_1);
 		};
@@ -33769,7 +35324,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			append($$anchor, div);
 		};
 		if_block(node, ($$render) => {
-			if (child$6()) $$render(consequent);
+			if (child$3()) $$render(consequent);
 			else $$render(alternate, -1);
 		});
 		append($$anchor, fragment);
@@ -33781,8 +35336,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		id: {},
 		ref: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/popover/components/popover-content.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/popover/components/popover-content.svelte
 	var rest_excludes$4 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -33806,7 +35360,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function Popover_content($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
-		let child$5 = prop($$props, "child", 7), children = prop($$props, "children", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), forceMount = prop($$props, "forceMount", 7, false), onOpenAutoFocus = prop($$props, "onOpenAutoFocus", 7, noop), onCloseAutoFocus = prop($$props, "onCloseAutoFocus", 7, noop), onEscapeKeydown = prop($$props, "onEscapeKeydown", 7, noop), onInteractOutside = prop($$props, "onInteractOutside", 7, noop), trapFocus = prop($$props, "trapFocus", 7, true), preventScroll = prop($$props, "preventScroll", 7, false), customAnchor = prop($$props, "customAnchor", 7, null), style = prop($$props, "style", 7), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$4);
+		let child$2 = prop($$props, "child", 7), children = prop($$props, "children", 7), ref = prop($$props, "ref", 15, null), id = prop($$props, "id", 23, () => createId(uid)), forceMount = prop($$props, "forceMount", 7, false), onOpenAutoFocus = prop($$props, "onOpenAutoFocus", 7, noop), onCloseAutoFocus = prop($$props, "onCloseAutoFocus", 7, noop), onEscapeKeydown = prop($$props, "onEscapeKeydown", 7, noop), onInteractOutside = prop($$props, "onInteractOutside", 7, noop), trapFocus = prop($$props, "trapFocus", 7, true), preventScroll = prop($$props, "preventScroll", 7, false), customAnchor = prop($$props, "customAnchor", 7, null), style = prop($$props, "style", 7), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$4);
 		const contentState = PopoverContentState.create({
 			id: boxWith(() => id()),
 			ref: boxWith(() => ref(), (v) => ref(v)),
@@ -33822,10 +35376,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 		var $$exports = {
 			get child() {
-				return child$5();
+				return child$2();
 			},
 			set child($$value) {
-				child$5($$value);
+				child$2($$value);
 				flushSync();
 			},
 			get children() {
@@ -33932,7 +35486,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 								wrapperProps: wrapperProps(),
 								...contentState.snippetProps
 							}));
-							snippet(node_2, child$5, () => get$2($0));
+							snippet(node_2, child$2, () => get$2($0));
 						}
 						append($$anchor, fragment_3);
 					};
@@ -33947,7 +35501,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						append($$anchor, div);
 					};
 					if_block(node_1, ($$render) => {
-						if (child$5()) $$render(consequent);
+						if (child$2()) $$render(consequent);
 						else $$render(alternate, -1);
 					});
 					append($$anchor, fragment_2);
@@ -34002,7 +35556,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 								wrapperProps: wrapperProps(),
 								...contentState.snippetProps
 							}));
-							snippet(node_5, child$5, () => get$2($0));
+							snippet(node_5, child$2, () => get$2($0));
 						}
 						append($$anchor, fragment_6);
 					};
@@ -34017,7 +35571,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						append($$anchor, div_2);
 					};
 					if_block(node_4, ($$render) => {
-						if (child$5()) $$render(consequent_2);
+						if (child$2()) $$render(consequent_2);
 						else $$render(alternate_1, -1);
 					});
 					append($$anchor, fragment_5);
@@ -34077,8 +35631,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		customAnchor: {},
 		style: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-content.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-content.svelte
 	var rest_excludes$3 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -34121,8 +35674,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {},
 		onOpenAutoFocus: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/popover/components/popover-trigger.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/popover/components/popover-trigger.svelte
 	var rest_excludes$2 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -34142,7 +35694,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	function Popover_trigger($$anchor, $$props) {
 		const uid = props_id();
 		push($$props, true);
-		let children = prop($$props, "children", 7), child$4 = prop($$props, "child", 7), id = prop($$props, "id", 23, () => createId(uid)), ref = prop($$props, "ref", 15, null), type = prop($$props, "type", 7, "button"), disabled = prop($$props, "disabled", 7, false), openOnHover = prop($$props, "openOnHover", 7, false), openDelay = prop($$props, "openDelay", 7, 700), closeDelay = prop($$props, "closeDelay", 7, 300), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$2);
+		let children = prop($$props, "children", 7), child$1 = prop($$props, "child", 7), id = prop($$props, "id", 23, () => createId(uid)), ref = prop($$props, "ref", 15, null), type = prop($$props, "type", 7, "button"), disabled = prop($$props, "disabled", 7, false), openOnHover = prop($$props, "openOnHover", 7, false), openDelay = prop($$props, "openDelay", 7, 700), closeDelay = prop($$props, "closeDelay", 7, 300), restProps = /* @__PURE__ */ rest_props($$props, rest_excludes$2);
 		const triggerState = PopoverTriggerState.create({
 			id: boxWith(() => id()),
 			ref: boxWith(() => ref(), (v) => ref(v)),
@@ -34161,10 +35713,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				flushSync();
 			},
 			get child() {
-				return child$4();
+				return child$1();
 			},
 			set child($$value) {
-				child$4($$value);
+				child$1($$value);
 				flushSync();
 			},
 			get id() {
@@ -34229,7 +35781,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				var node = first_child(fragment_1);
 				var consequent = ($$anchor) => {
 					var fragment_2 = comment();
-					snippet(first_child(fragment_2), child$4, () => ({ props: get$2(mergedProps) }));
+					snippet(first_child(fragment_2), child$1, () => ({ props: get$2(mergedProps) }));
 					append($$anchor, fragment_2);
 				};
 				var alternate = ($$anchor) => {
@@ -34240,7 +35792,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					append($$anchor, button);
 				};
 				if_block(node, ($$render) => {
-					if (child$4()) $$render(consequent);
+					if (child$1()) $$render(consequent);
 					else $$render(alternate, -1);
 				});
 				append($$anchor, fragment_1);
@@ -34260,8 +35812,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		openDelay: {},
 		closeDelay: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region ../../node_modules/.pnpm/bits-ui@2.20.2_@internationalized+date@3.12.3_@sveltejs+kit@2.65.1_@opentelemetry+api@1_83898f8dd74159e679607a5e4f663681/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-trigger.svelte
+	// ../../node_modules/.pnpm/bits-ui@2.20.3_@internationalized+date@3.12.4_svelte@5.57.3_@typescript-eslint+types@8.72.1_/node_modules/bits-ui/dist/bits/date-picker/components/date-picker-trigger.svelte
 	var rest_excludes$1 = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -34311,8 +35862,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		ref: {},
 		onkeydown: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/forms/ui/generic/DatePicker.svelte
+	// src/components/forms/ui/generic/DatePicker.svelte
 	var root$20 = /* @__PURE__ */ from_html(`<!> <!>`, 1);
 	var root_1$9 = /* @__PURE__ */ from_html(`<button></button>`);
 	var root_2$8 = /* @__PURE__ */ from_html(`<!> <!> <!>`, 1);
@@ -34723,8 +36273,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		inputClass: {},
 		labelText: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/forms/ui/generic/InputAndLabel.svelte
+	// src/components/forms/ui/generic/InputAndLabel.svelte
 	var rest_excludes = /* @__PURE__ */ new Set([
 		"$$slots",
 		"$$events",
@@ -34800,8 +36349,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var node_4 = sibling(input_1, 2);
 			var consequent_2 = ($$anchor) => {
 				var button = root_2$7();
-				var text_1 = child(button, true);
-				reset(button);
+				var text_1 = only_child(button, true);
 				template_effect(($0) => {
 					set_attribute(button, "aria-pressed", get$2(passwordRevealed));
 					set_attribute(button, "aria-controls", get$2(inputId));
@@ -34868,9 +36416,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var consequent_3 = ($$anchor) => {
 				var figure = root_5$3();
 				var img = child(figure);
-				var figcaption = sibling(img, 2);
-				var text_2 = child(figcaption, true);
-				reset(figcaption);
+				var text_2 = only_child(sibling(img, 2), true);
 				reset(figure);
 				template_effect(($0) => {
 					set_attribute(figure, "data-field-preview", field().key);
@@ -34932,17 +36478,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var consequent_4 = ($$anchor) => {
 				var fragment_7 = root_8$1();
 				var option_1 = first_child(fragment_7);
-				var text_3 = child(option_1, true);
-				reset(option_1);
+				var text_3 = only_child(option_1, true);
 				option_1.value = option_1.__value = "";
 				each(sibling(option_1, 2), 17, () => field().options(), (option) => option.value, ($$anchor, option) => {
 					var option_2 = root_7$1();
-					var text_4 = child(option_2, true);
-					reset(option_2);
+					var text_4 = only_child(option_2, true);
 					var option_2_value = {};
 					template_effect(() => {
 						set_text(text_4, get$2(option).label);
-						if (option_2_value !== (option_2_value = get$2(option).value)) option_2.value = (option_2.__value = get$2(option).value) ?? "";
+						if (option_2_value !== (option_2_value = get$2(option).value)) option_2.value = (option_2.__value = option_2_value) ?? "";
 					});
 					append($$anchor, option_2);
 				});
@@ -35023,8 +36567,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				};
 				var alternate_1 = ($$anchor) => {
 					var span_3 = root_12();
-					var text_5 = child(span_3, true);
-					reset(span_3);
+					var text_5 = only_child(span_3, true);
 					template_effect(() => set_text(text_5, get$2(mode).name));
 					append($$anchor, span_3);
 				};
@@ -35128,7 +36671,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			onblur
 		}));
 		let label = /* @__PURE__ */ user_derived(() => shop.t(field().label) || field().label);
-		let labelHtml = /* @__PURE__ */ user_derived(() => purify.sanitize(get$2(label), {
+		let labelHtml = /* @__PURE__ */ user_derived(() => purify_default.sanitize(get$2(label), {
 			ALLOWED_TAGS: [
 				"a",
 				"b",
@@ -35225,8 +36768,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		inputClass: {},
 		host: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/forms/ui/generic/Field.svelte
+	// src/components/forms/ui/generic/Field.svelte
 	var root$18 = /* @__PURE__ */ from_html(`<span> </span>`);
 	var root_1$7 = /* @__PURE__ */ from_html(`<li> </li>`);
 	var root_2$6 = /* @__PURE__ */ from_html(`<ul class="go-field-errors"></ul>`);
@@ -35311,8 +36853,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var node_1 = sibling(node, 2);
 		var consequent = ($$anchor) => {
 			var span = root$18();
-			var text = child(span, true);
-			reset(span);
+			var text = only_child(span, true);
 			template_effect(() => {
 				set_attribute(span, "id", get$2(descriptionId));
 				set_text(text, get$2(field).description);
@@ -35327,8 +36868,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var ul = root_2$6();
 			each(ul, 21, () => get$2(allErrors), index$1, ($$anchor, error) => {
 				var li = root_1$7();
-				var text_1 = child(li, true);
-				reset(li);
+				var text_1 = only_child(li, true);
 				template_effect(() => set_text(text_1, get$2(error)));
 				append($$anchor, li);
 			});
@@ -35364,8 +36904,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			type: "String"
 		}
 	}, [], ["getField"]));
-	//#endregion
-	//#region src/components/forms/ui/generic/AllFields.svelte
+	// src/components/forms/ui/generic/AllFields.svelte
 	var root$17 = /* @__PURE__ */ from_html(`<go-field></go-field>`, 2);
 	function AllFields($$anchor, $$props) {
 		push($$props, true);
@@ -35383,8 +36922,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-all-fields", create_custom_element(AllFields, {}, [], []));
-	//#endregion
-	//#region src/components/forms/ui/generic/ErrorsFeedback.svelte
+	// src/components/forms/ui/generic/ErrorsFeedback.svelte
 	var root$16 = /* @__PURE__ */ from_html(`<p aria-hidden="true"> </p>`);
 	var root_1$6 = /* @__PURE__ */ from_html(`<li> </li>`);
 	var root_2$5 = /* @__PURE__ */ from_html(`<ul class="go-error-feedback-api-errors"></ul>`);
@@ -35428,8 +36966,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var node_1 = sibling(p, 2);
 		var consequent_1 = ($$anchor) => {
 			var p_1 = root$16();
-			var text_1 = child(p_1, true);
-			reset(p_1);
+			var text_1 = only_child(p_1, true);
 			template_effect(($0) => set_text(text_1, $0), [() => shop.t("forms.errorSummary", { count: get$2(errorsRealtime) })]);
 			append($$anchor, p_1);
 		};
@@ -35442,8 +36979,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var ul = root_2$5();
 			each(ul, 21, () => get$2(apiErrors), index$1, ($$anchor, error) => {
 				var li = root_1$6();
-				var text_2 = child(li, true);
-				reset(li);
+				var text_2 = only_child(li, true);
 				template_effect(() => set_text(text_2, get$2(error)));
 				append($$anchor, li);
 			});
@@ -35459,8 +36995,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-errors-feedback", create_custom_element(ErrorsFeedback, {}, [], []));
-	//#endregion
-	//#region src/components/forms/ui/generic/FormFeedback.svelte
+	// src/components/forms/ui/generic/FormFeedback.svelte
 	var root$15 = /* @__PURE__ */ from_html(`<div class="go-form-feedback"><!></div>`);
 	function FormFeedback($$anchor, $$props) {
 		var div = root$15();
@@ -35469,8 +37004,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		append($$anchor, div);
 	}
 	customElements.define("go-form-feedback", create_custom_element(FormFeedback, {}, ["default"], []));
-	//#endregion
-	//#region src/components/forms/ui/generic/Submit.svelte
+	// src/components/forms/ui/generic/Submit.svelte
 	function Submit($$anchor, $$props) {
 		push($$props, true);
 		let buttonClass = prop($$props, "buttonClass", 7, "");
@@ -35501,8 +37035,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reflect: true,
 		type: "String"
 	} }, [], []));
-	//#endregion
-	//#region src/components/forms/ui/generic/SuccessFeedback.svelte
+	// src/components/forms/ui/generic/SuccessFeedback.svelte
 	var root$14 = /* @__PURE__ */ from_html(`<div aria-live="assertive"> </div>`);
 	function SuccessFeedback($$anchor, $$props) {
 		push($$props, true);
@@ -35510,8 +37043,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const details = /* @__PURE__ */ user_derived(() => _details.value);
 		var div = root$14();
 		let classes;
-		var text = child(div, true);
-		reset(div);
+		var text = only_child(div, true);
 		template_effect(() => {
 			classes = set_class(div, 1, "go-success-feedback go-feedback", null, classes, { "is-successful": get$2(details)?.successMessage });
 			set_text(text, get$2(details)?.successMessage ?? "");
@@ -35520,8 +37052,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-success-feedback", create_custom_element(SuccessFeedback, {}, [], []));
-	//#endregion
-	//#region ../../node_modules/.pnpm/expr-eval@2.0.2/node_modules/expr-eval/dist/index.mjs
+	// ../../node_modules/.pnpm/expr-eval@2.0.2/node_modules/expr-eval/dist/index.mjs
 	var INUMBER = "INUMBER";
 	var IOP1 = "IOP1";
 	var IOP2 = "IOP2";
@@ -36887,8 +38418,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	to acknowledge its original source. If you feel like it, I enjoy hearing about projects that use my code,
 	but don't feel like you have to let me know or ask permission.
 	*/
-	//#endregion
-	//#region src/components/if/expression.ts
+	// src/components/if/expression.ts
 	var OPTIONAL_CHAIN_PATH_REGEX = /\b[$A-Za-z_][$\w]*(?:(?:\?\.)|\.)[$A-Za-z_][$\w]*(?:(?:\?\.)[$A-Za-z_][$\w]*|(?:\.)[$A-Za-z_][$\w]*)*/g;
 	var LENGTH_ACCESS_REGEX = /\b([$A-Za-z_][$\w]*(?:\.[$A-Za-z_][$\w]*)*)\.length\b/g;
 	var OPTIONAL_LENGTH_ACCESS_REGEX = /(__optional\("[^"]+"\))\.length\b/g;
@@ -36947,8 +38477,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			console.error(`Error while evaluating when (${expression}) in go-if: ${error.message}`);
 		}
 	}
-	//#endregion
-	//#region src/components/ticketSelection/filters/types.ts
+	// src/components/ticketSelection/filters/types.ts
 	var FILTER_NAMES = [
 		"ticket:timeslot",
 		"ticket:day",
@@ -36965,8 +38494,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"coupon",
 		"tour"
 	];
-	//#endregion
-	//#region src/components/ticketSelection/filters/_helpers.ts
+	// src/components/ticketSelection/filters/_helpers.ts
 	var TWO_HOURS_MS = 72e5;
 	/**
 	* The common tail of every ticket filter's `addToCart`: given the ticket
@@ -37073,8 +38601,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return sign * (typeof x === "number" && typeof y === "number" ? x - y : String(x).localeCompare(String(y)));
 		});
 	}
-	//#endregion
-	//#region src/components/ticketSelection/filters/ticket/timeslot.ts
+	// src/components/ticketSelection/filters/ticket/timeslot.ts
 	async function loadTimeslotTickets(filters, selectedTime) {
 		const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
 			by_bookable: true,
@@ -37138,8 +38665,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: tsd.selectedTime }));
 		}
 	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/ticket/day.ts
+	// src/components/ticketSelection/filters/ticket/day.ts
 	async function loadDayTickets(filters) {
 		const { tickets, quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
 			by_bookable: true,
@@ -37188,8 +38714,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: ticket.selectedTime }));
 		}
 	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/ticket/annual.ts
+	// src/components/ticketSelection/filters/ticket/annual.ts
 	async function loadAnnualTickets(filters) {
 		const tickets = await shop.asyncFetch(() => shop.tickets({
 			by_bookable: true,
@@ -37226,8 +38751,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket));
 		}
 	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/ticket/flex.ts
+	// src/components/ticketSelection/filters/ticket/flex.ts
 	async function loadFlexTickets(filters) {
 		const tickets = await shop.asyncFetch(() => shop.tickets({
 			by_bookable: true,
@@ -37266,8 +38790,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket));
 		}
 	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/event/admission.ts
+	// src/components/ticketSelection/filters/event/admission.ts
 	var filter$9 = {
 		name: "event:admission",
 		calendarEndpoint: "events",
@@ -37310,8 +38833,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			for (const ticket of uiTickets) segment.preCart.addItem(createCartItem(ticket, { time: tsd.selectedTime }));
 		}
 	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/event/admission-day.ts
+	// src/components/ticketSelection/filters/event/admission-day.ts
 	var filter$8 = {
 		name: "event:admission:day",
 		calendarEndpoint: "events",
@@ -37344,8 +38866,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time: t.selectedTime }));
 		}
 	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/event/admission-timeslot.ts
+	// src/components/ticketSelection/filters/event/admission-timeslot.ts
 	var filter$7 = {
 		name: "event:admission:timeslot",
 		calendarEndpoint: "events",
@@ -37395,8 +38916,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			for (const t of uiTickets) segment.preCart.addItem(createCartItem(t, { time: tsd.selectedTime }));
 		}
 	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/event/price.ts
+	// src/components/ticketSelection/filters/event/price.ts
 	var filter$6 = {
 		name: "event:price",
 		calendarEndpoint: "events",
@@ -37423,8 +38943,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if (date.seats) shop.capacityManager.addSeats(date.id, date.seats);
 		}
 	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/events/admission.ts
+	// src/components/ticketSelection/filters/events/admission.ts
 	var filter$5 = {
 		name: "events:admission",
 		calendarEndpoint: "events",
@@ -37469,8 +38988,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 		}
 	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/events/admission-day.ts
+	// src/components/ticketSelection/filters/events/admission-day.ts
 	var filter$4 = {
 		name: "events:admission:day",
 		calendarEndpoint: "events",
@@ -37516,8 +39034,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 		}
 	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/events/admission-timeslot.ts
+	// src/components/ticketSelection/filters/events/admission-timeslot.ts
 	var filter$3 = {
 		name: "events:admission:timeslot",
 		calendarEndpoint: "events",
@@ -37562,8 +39079,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 		}
 	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/events/price.ts
+	// src/components/ticketSelection/filters/events/price.ts
 	var filter$2 = {
 		name: "events:price",
 		calendarEndpoint: "events",
@@ -37603,8 +39119,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}
 		}
 	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/coupon.ts
+	// src/components/ticketSelection/filters/coupon.ts
 	/**
 	* `coupon` — sells the shop's purchasable coupons (German "Wertgutschein" /
 	* gift card). Coupons are fixed-value, standalone products:
@@ -37624,8 +39139,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			for (const coupon of coupons ?? []) segment.preCart.addItem(createCartItem(createUICoupon(coupon)));
 		}
 	};
-	//#endregion
-	//#region src/components/ticketSelection/filters/tour.ts
+	// src/components/ticketSelection/filters/tour.ts
 	var REQUIRED = [
 		"id",
 		"time",
@@ -37634,8 +39148,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"totalPriceCents",
 		"title"
 	];
-	//#endregion
-	//#region src/components/ticketSelection/filters/registry.ts
+	// src/components/ticketSelection/filters/registry.ts
 	var REGISTRY = {
 		"ticket:timeslot": filter$13,
 		"ticket:day": filter$12,
@@ -37690,8 +39203,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return filter;
 	}
 	var validFilterNames = FILTER_NAMES;
-	//#endregion
-	//#region src/components/ticketSelection/TicketSelectionDetails.svelte.ts
+	// src/components/ticketSelection/TicketSelectionDetails.svelte.ts
 	var lastUId = 0;
 	var TicketSelectionDetails = class {
 		uid = lastUId++;
@@ -37796,8 +39308,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var KEY$2 = "go-ticket-selection";
 	var setTicketSelectionDetails = createSetDetails(KEY$2);
 	var getTicketSelectionDetails = createGetDetails(KEY$2);
-	//#endregion
-	//#region src/components/if/If.svelte
+	// src/components/if/If.svelte
 	var hiddenContent = /* @__PURE__ */ new WeakMap();
 	function If($$anchor, $$props) {
 		push($$props, true);
@@ -37875,8 +39386,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			type: "String"
 		}
 	}, [], ["_setData", "_getData"]));
-	//#endregion
-	//#region src/components/init/GomusInit.svelte
+	// src/components/init/GomusInit.svelte
 	function GomusInit($$anchor, $$props) {
 		push($$props, true);
 		let apiUrl = prop($$props, "apiUrl", 7), shopDomain = prop($$props, "shopDomain", 7), locale = prop($$props, "locale", 7);
@@ -37925,8 +39435,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			type: "String"
 		}
 	}, [], []));
-	//#endregion
-	//#region src/components/init/Init.svelte
+	// src/components/init/Init.svelte
 	function Init($$anchor, $$props) {
 		push($$props, true);
 		let apiDomain = prop($$props, "apiDomain", 7), shopDomain = prop($$props, "shopDomain", 7), locale = prop($$props, "locale", 7);
@@ -37981,8 +39490,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			type: "String"
 		}
 	}, [], []));
-	//#endregion
-	//#region src/components/link/Link.svelte
+	// src/components/link/Link.svelte
 	function Link($$anchor, $$props) {
 		push($$props, true);
 		const to = prop($$props, "to", 7);
@@ -38019,8 +39527,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reflect: true,
 		type: "String"
 	} }, [], []));
-	//#endregion
-	//#region src/components/membershipActivation/MembershipActivation.svelte
+	// src/components/membershipActivation/MembershipActivation.svelte
 	function MembershipActivation($$anchor, $$props) {
 		push($$props, true);
 		let custom = prop($$props, "custom", 7, false);
@@ -38060,8 +39567,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reflect: true,
 		type: "Boolean"
 	} }, [], []));
-	//#endregion
-	//#region src/components/order/lib/OrderDetails.svelte.ts
+	// src/components/order/lib/OrderDetails.svelte.ts
 	var OrderDetails = class {
 		#token = /* @__PURE__ */ state();
 		get token() {
@@ -38092,8 +39598,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var KEY$1 = "go-order-details";
 	var setDetails = createSetDetails(KEY$1);
 	var getDetails = createGetDetails(KEY$1);
-	//#endregion
-	//#region src/components/order/components/Order.svelte
+	// src/components/order/components/Order.svelte
 	function Order($$anchor, $$props) {
 		push($$props, true);
 		let token = prop($$props, "token", 7);
@@ -38128,8 +39633,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reflect: true,
 		type: "String"
 	} }, [], ["orderDetails"]));
-	//#endregion
-	//#region src/components/order/components/subcomponents/breakdown/items/Coupon.svelte
+	// src/components/order/components/subcomponents/breakdown/items/Coupon.svelte
 	var root$13 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count"> </li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span> <br/> <a class="go-ticket-download" target="_blank" rel="noopener noreferrer"> </a></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"></li></ul></article></li>`);
 	function Coupon($$anchor, $$props) {
 		push($$props, true);
@@ -38155,19 +39659,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var article = child(li);
 		var ul = child(article);
 		var li_1 = child(ul);
-		var text = child(li_1, true);
-		reset(li_1);
+		var text = only_child(li_1, true);
 		var li_2 = sibling(li_1, 2);
 		var span = child(li_2);
-		var text_1 = child(span, true);
-		reset(span);
+		var text_1 = only_child(span, true);
 		var a = sibling(span, 4);
-		var text_2 = child(a, true);
-		reset(a);
+		var text_2 = only_child(a, true);
 		reset(li_2);
-		var li_3 = sibling(li_2, 2);
-		var text_3 = child(li_3, true);
-		reset(li_3);
+		var text_3 = only_child(sibling(li_2, 2), true);
 		next(2);
 		reset(ul);
 		reset(article);
@@ -38190,8 +39689,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		item: {},
 		orderDetails: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/order/components/subcomponents/breakdown/items/Donation.svelte
+	// src/components/order/components/subcomponents/breakdown/items/Donation.svelte
 	var root$12 = /* @__PURE__ */ from_html(`<li class="go-order-breakdown-donation"><article><ul><li class="go-order-breakdown-count">1</li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"></li></ul></article></li>`);
 	function Donation($$anchor, $$props) {
 		push($$props, true);
@@ -38210,13 +39708,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var article = child(li);
 		var ul = child(article);
 		var li_1 = sibling(child(ul), 2);
-		var span = child(li_1);
-		var text = child(span, true);
-		reset(span);
+		var text = only_child(child(li_1), true);
 		reset(li_1);
-		var li_2 = sibling(li_1, 2);
-		var text_1 = child(li_2, true);
-		reset(li_2);
+		var text_1 = only_child(sibling(li_1, 2), true);
 		next(2);
 		reset(ul);
 		reset(article);
@@ -38229,8 +39723,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return pop($$exports);
 	}
 	create_custom_element(Donation, { donation: {} }, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/order/components/subcomponents/breakdown/items/Event.svelte
+	// src/components/order/components/subcomponents/breakdown/items/Event.svelte
 	var root$11 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <span class="go-cart-item-time" data-testid="cart-item-time"> </span>`, 1);
 	var root_1$5 = /* @__PURE__ */ from_html(`<br/> <span class="go-order-item-quantities"> </span>`, 1);
 	var root_2$4 = /* @__PURE__ */ from_html(`<a aria-label="iCal link"> </a>`);
@@ -38259,17 +39752,13 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var ul = child(article);
 		var li_1 = sibling(child(ul), 2);
 		var span = child(li_1);
-		var text = child(span, true);
-		reset(span);
+		var text = only_child(span, true);
 		var node = sibling(span, 2);
 		var consequent = ($$anchor) => {
 			var fragment = root$11();
 			var span_1 = first_child(fragment);
-			var text_1 = child(span_1, true);
-			reset(span_1);
-			var span_2 = sibling(span_1, 2);
-			var text_2 = child(span_2, true);
-			reset(span_2);
+			var text_1 = only_child(span_1, true);
+			var text_2 = only_child(sibling(span_1, 2), true);
 			template_effect(($0, $1) => {
 				set_text(text_1, $0);
 				set_text(text_2, $1);
@@ -38282,25 +39771,20 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var node_1 = sibling(node, 2);
 		each(node_1, 17, () => item().attributes.quantities, (scalePrice) => scalePrice.id, ($$anchor, scalePrice) => {
 			var fragment_1 = root_1$5();
-			var span_3 = sibling(first_child(fragment_1), 2);
-			var text_3 = child(span_3);
-			reset(span_3);
+			var text_3 = only_child(sibling(first_child(fragment_1), 2));
 			template_effect(() => set_text(text_3, `${get$2(scalePrice).quantity ?? ""} x ${get$2(scalePrice).title ?? ""}`));
 			append($$anchor, fragment_1);
 		});
 		var a = sibling(node_1, 2);
-		var text_4 = child(a, true);
-		reset(a);
+		var text_4 = only_child(a, true);
 		reset(li_1);
 		var li_2 = sibling(li_1, 2);
-		var text_5 = child(li_2, true);
-		reset(li_2);
+		var text_5 = only_child(li_2, true);
 		var li_3 = sibling(li_2, 4);
 		var node_2 = child(li_3);
 		var consequent_1 = ($$anchor) => {
 			var a_1 = root_2$4();
-			var text_6 = child(a_1, true);
-			reset(a_1);
+			var text_6 = only_child(a_1, true);
 			template_effect(($0) => {
 				set_attribute(a_1, "href", shop.apiUrl + item().attributes.ical_url);
 				set_text(text_6, $0);
@@ -38331,8 +39815,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		item: {},
 		orderDetails: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/order/components/subcomponents/breakdown/items/Merchandise.svelte
+	// src/components/order/components/subcomponents/breakdown/items/Merchandise.svelte
 	var root$10 = /* @__PURE__ */ from_html(`<li><article><ul><li class="go-order-breakdown-count"> </li> <li class="go-order-breakdown-product"><span class="go-order-item-title"> </span></li> <li class="go-order-breakdown-item-price"> </li> <li class="go-order-breakdown-passbook"></li></ul></article></li>`);
 	function Merchandise($$anchor, $$props) {
 		push($$props, true);
@@ -38350,16 +39833,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var article = child(li);
 		var ul = child(article);
 		var li_1 = child(ul);
-		var text = child(li_1, true);
-		reset(li_1);
+		var text = only_child(li_1, true);
 		var li_2 = sibling(li_1, 2);
-		var span = child(li_2);
-		var text_1 = child(span, true);
-		reset(span);
+		var text_1 = only_child(child(li_2), true);
 		reset(li_2);
-		var li_3 = sibling(li_2, 2);
-		var text_2 = child(li_3, true);
-		reset(li_3);
+		var text_2 = only_child(sibling(li_2, 2), true);
 		next(2);
 		reset(ul);
 		reset(article);
@@ -38373,8 +39851,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return pop($$exports);
 	}
 	create_custom_element(Merchandise, { item: {} }, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/order/components/subcomponents/breakdown/items/TicketSale.svelte
+	// src/components/order/components/subcomponents/breakdown/items/TicketSale.svelte
 	var root$9 = /* @__PURE__ */ from_html(`<span class="go-order-item-subtitle" data-testid="order-item-subtitle"> </span>`);
 	var root_1$4 = /* @__PURE__ */ from_html(`<br/> <span class="go-order-item-quantities" data-testid="order-sub-ticket"> </span>`, 1);
 	var root_2$3 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date"> </span> <span class="go-cart-item-time"> </span>`, 1);
@@ -38419,13 +39896,11 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				li_1.textContent = "1";
 				var li_2 = sibling(li_1, 2);
 				var span = child(li_2);
-				var text = child(span, true);
-				reset(span);
+				var text = only_child(span, true);
 				var node_2 = sibling(span, 2);
 				var consequent = ($$anchor) => {
 					var span_1 = root$9();
-					var text_1 = child(span_1, true);
-					reset(span_1);
+					var text_1 = only_child(span_1, true);
 					template_effect(() => set_text(text_1, item().attributes.sub_title));
 					append($$anchor, span_1);
 				};
@@ -38435,9 +39910,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				var node_3 = sibling(node_2, 2);
 				each(node_3, 17, () => get$2(subTicketSales), (sub) => sub.id, ($$anchor, sub) => {
 					var fragment_2 = root_1$4();
-					var span_2 = sibling(first_child(fragment_2), 2);
-					var text_2 = child(span_2);
-					reset(span_2);
+					var text_2 = only_child(sibling(first_child(fragment_2), 2));
 					template_effect(() => set_text(text_2, `${get$2(sub).quantity ?? ""} x ${get$2(sub).title ?? ""}`));
 					append($$anchor, fragment_2);
 				});
@@ -38449,11 +39922,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					var consequent_1 = ($$anchor) => {
 						var fragment_4 = root_2$3();
 						var span_3 = first_child(fragment_4);
-						var text_3 = child(span_3, true);
-						reset(span_3);
-						var span_4 = sibling(span_3, 2);
-						var text_4 = child(span_4, true);
-						reset(span_4);
+						var text_3 = only_child(span_3, true);
+						var text_4 = only_child(sibling(span_3, 2), true);
 						template_effect(($0, $1) => {
 							set_text(text_3, $0);
 							set_text(text_4, $1);
@@ -38462,8 +39932,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					};
 					var consequent_2 = ($$anchor) => {
 						var span_5 = root_3$3();
-						var text_5 = child(span_5, true);
-						reset(span_5);
+						var text_5 = only_child(span_5, true);
 						template_effect(($0) => set_text(text_5, $0), [() => shop.formatDate(item().attributes.start_time, "dayMonth")]);
 						append($$anchor, span_5);
 					};
@@ -38472,8 +39941,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 						else if (item().attributes.ticket_type === "normal" && item().attributes.start_time) $$render(consequent_2, 1);
 					});
 					var a = sibling(node_5, 4);
-					var text_6 = child(a, true);
-					reset(a);
+					var text_6 = only_child(a, true);
 					template_effect(($0, $1) => {
 						set_attribute(a, "href", $0);
 						set_text(text_6, $1);
@@ -38483,8 +39951,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				var alternate = ($$anchor) => {
 					var fragment_5 = root_5$2();
 					var a_1 = sibling(first_child(fragment_5), 2);
-					var text_7 = child(a_1, true);
-					reset(a_1);
+					var text_7 = only_child(a_1, true);
 					template_effect(($0, $1) => {
 						set_attribute(a_1, "href", $0);
 						set_text(text_7, $1);
@@ -38497,14 +39964,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				});
 				reset(li_2);
 				var li_3 = sibling(li_2, 2);
-				var text_8 = child(li_3, true);
-				reset(li_3);
+				var text_8 = only_child(li_3, true);
 				var li_4 = sibling(li_3, 2);
 				var node_6 = child(li_4);
 				var consequent_4 = ($$anchor) => {
 					var a_2 = root_6();
-					var text_9 = child(a_2, true);
-					reset(a_2);
+					var text_9 = only_child(a_2, true);
 					template_effect(($0) => {
 						set_attribute(a_2, "href", shop.apiUrl + item().attributes.barcodes[index]?.passbook_url);
 						set_text(text_9, $0);
@@ -38519,8 +39984,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				var node_7 = child(li_5);
 				var consequent_5 = ($$anchor) => {
 					var a_3 = root_7();
-					var text_10 = child(a_3, true);
-					reset(a_3);
+					var text_10 = only_child(a_3, true);
 					template_effect(($0) => {
 						set_attribute(a_3, "href", shop.apiUrl + item().attributes.ical_url);
 						set_text(text_10, $0);
@@ -38547,17 +40011,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var article_1 = child(li_6);
 			var ul_1 = child(article_1);
 			var li_7 = child(ul_1);
-			var text_11 = child(li_7, true);
-			reset(li_7);
+			var text_11 = only_child(li_7, true);
 			var li_8 = sibling(li_7, 2);
 			var span_6 = child(li_8);
-			var text_12 = child(span_6, true);
-			reset(span_6);
+			var text_12 = only_child(span_6, true);
 			var node_8 = sibling(span_6, 2);
 			var consequent_7 = ($$anchor) => {
 				var span_7 = root$9();
-				var text_13 = child(span_7, true);
-				reset(span_7);
+				var text_13 = only_child(span_7, true);
 				template_effect(() => set_text(text_13, item().attributes.sub_title));
 				append($$anchor, span_7);
 			};
@@ -38567,8 +40028,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var node_9 = sibling(node_8, 2);
 			var consequent_8 = ($$anchor) => {
 				var a_4 = root_9();
-				var text_14 = child(a_4, true);
-				reset(a_4);
+				var text_14 = only_child(a_4, true);
 				template_effect(($0, $1) => {
 					set_attribute(a_4, "href", $0);
 					set_text(text_14, $1);
@@ -38577,8 +40037,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			};
 			var alternate_1 = ($$anchor) => {
 				var a_5 = root_10();
-				var text_15 = child(a_5, true);
-				reset(a_5);
+				var text_15 = only_child(a_5, true);
 				template_effect(($0, $1) => {
 					set_attribute(a_5, "href", $0);
 					set_text(text_15, $1);
@@ -38590,9 +40049,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				else $$render(alternate_1, -1);
 			});
 			reset(li_8);
-			var li_9 = sibling(li_8, 2);
-			var text_16 = child(li_9, true);
-			reset(li_9);
+			var text_16 = only_child(sibling(li_8, 2), true);
 			next(2);
 			reset(ul_1);
 			reset(article_1);
@@ -38615,8 +40072,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		item: {},
 		orderDetails: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/order/components/subcomponents/breakdown/items/Tour.svelte
+	// src/components/order/components/subcomponents/breakdown/items/Tour.svelte
 	var root$8 = /* @__PURE__ */ from_html(`<span class="go-cart-item-date" data-testid="cart-item-date"> </span> <span class="go-cart-item-time" data-testid="cart-item-time"> </span>`, 1);
 	var root_1$3 = /* @__PURE__ */ from_html(`<br/> <span class="go-order-item-quantities"> </span>`, 1);
 	var root_2$2 = /* @__PURE__ */ from_html(`<a aria-label="iCal link"> </a>`);
@@ -38639,20 +40095,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var ul = child(article);
 		var li_1 = sibling(child(ul), 2);
 		var span = child(li_1);
-		var text = child(span, true);
-		reset(span);
+		var text = only_child(span, true);
 		var span_1 = sibling(span, 2);
-		var text_1 = child(span_1, true);
-		reset(span_1);
+		var text_1 = only_child(span_1, true);
 		var node = sibling(span_1, 2);
 		var consequent = ($$anchor) => {
 			var fragment = root$8();
 			var span_2 = first_child(fragment);
-			var text_2 = child(span_2, true);
-			reset(span_2);
-			var span_3 = sibling(span_2, 2);
-			var text_3 = child(span_3, true);
-			reset(span_3);
+			var text_2 = only_child(span_2, true);
+			var text_3 = only_child(sibling(span_2, 2), true);
 			template_effect(($0, $1) => {
 				set_text(text_2, $0);
 				set_text(text_3, $1);
@@ -38664,22 +40115,18 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		});
 		each(sibling(node, 2), 17, () => get$2(priceRows), (row) => row.title, ($$anchor, row) => {
 			var fragment_1 = root_1$3();
-			var span_4 = sibling(first_child(fragment_1), 2);
-			var text_4 = child(span_4);
-			reset(span_4);
+			var text_4 = only_child(sibling(first_child(fragment_1), 2));
 			template_effect(() => set_text(text_4, `${get$2(row).quantity ?? ""} x ${get$2(row).title ?? ""}`));
 			append($$anchor, fragment_1);
 		});
 		reset(li_1);
 		var li_2 = sibling(li_1, 2);
-		var text_5 = child(li_2, true);
-		reset(li_2);
+		var text_5 = only_child(li_2, true);
 		var li_3 = sibling(li_2, 4);
 		var node_2 = child(li_3);
 		var consequent_1 = ($$anchor) => {
 			var a = root_2$2();
-			var text_6 = child(a, true);
-			reset(a);
+			var text_6 = only_child(a, true);
 			template_effect(($0) => {
 				set_attribute(a, "href", shop.apiUrl + item().attributes.ical_url);
 				set_text(text_6, $0);
@@ -38702,8 +40149,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return pop($$exports);
 	}
 	create_custom_element(Tour, { item: {} }, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/order/components/subcomponents/breakdown/Breakdown.svelte
+	// src/components/order/components/subcomponents/breakdown/Breakdown.svelte
 	var root$7 = /* @__PURE__ */ from_html(`<ol><li class="data-go-order-breakdown-header"><ul><li class="go-order-breakdown-header-count"> </li> <li class="go-order-breakdown-header-product"> </li> <li class="go-order-breakdown-header-price"> </li> <li class="go-order-breakdown-header-passbook"></li></ul></li> <!> <!> <li class="go-order-breakdown-footer"><ul><li class="go-cart-footer-title"></li> <li class="go-cart-footer-count"></li> <li class="go-cart-footer-price"> </li> <li class="go-cart-footer-passbook"></li></ul></li></ol>`);
 	function Breakdown($$anchor, $$props) {
 		push($$props, true);
@@ -38717,14 +40163,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var li = child(ol);
 			var ul = child(li);
 			var li_1 = child(ul);
-			var text = child(li_1, true);
-			reset(li_1);
+			var text = only_child(li_1, true);
 			var li_2 = sibling(li_1, 2);
-			var text_1 = child(li_2, true);
-			reset(li_2);
-			var li_3 = sibling(li_2, 2);
-			var text_2 = child(li_3, true);
-			reset(li_3);
+			var text_1 = only_child(li_2, true);
+			var text_2 = only_child(sibling(li_2, 2), true);
 			next(2);
 			reset(ul);
 			reset(li);
@@ -38789,9 +40231,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			});
 			var li_4 = sibling(node_3, 2);
 			var ul_1 = child(li_4);
-			var li_5 = sibling(child(ul_1), 4);
-			var text_3 = child(li_5, true);
-			reset(li_5);
+			var text_3 = only_child(sibling(child(ul_1), 4), true);
 			next(2);
 			reset(ul_1);
 			reset(li_4);
@@ -38816,8 +40256,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-order-breakdown", create_custom_element(Breakdown, {}, [], []));
-	//#endregion
-	//#region src/components/order/components/subcomponents/invoiceId/InvoiceId.svelte
+	// src/components/order/components/subcomponents/invoiceId/InvoiceId.svelte
 	function InvoiceId($$anchor, $$props) {
 		push($$props, true);
 		const _orderDetails = getDetails($$props.$$host);
@@ -38830,8 +40269,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-order-invoice-id", create_custom_element(InvoiceId, {}, [], []));
-	//#endregion
-	//#region src/components/profile/password/Password.svelte
+	// src/components/profile/password/Password.svelte
 	var root$6 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
 	function Password($$anchor, $$props) {
 		push($$props, false);
@@ -38871,8 +40309,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-profile-password", create_custom_element(Password, {}, [], []));
-	//#endregion
-	//#region src/components/profile/details/Details.svelte
+	// src/components/profile/details/Details.svelte
 	var root$5 = /* @__PURE__ */ from_html(`<go-form></go-form>`, 2);
 	function Details$2($$anchor, $$props) {
 		push($$props, true);
@@ -38921,8 +40358,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-profile-details", create_custom_element(Details$2, {}, [], []));
-	//#endregion
-	//#region src/components/profile/overview/Overview.svelte
+	// src/components/profile/overview/Overview.svelte
 	var root$4 = /* @__PURE__ */ from_html(`<div class="go-profile-fullname"> </div> <div class="go-profile-email"> </div>`, 1);
 	function Overview($$anchor, $$props) {
 		push($$props, true);
@@ -38933,11 +40369,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		var consequent = ($$anchor) => {
 			var fragment_1 = root$4();
 			var div = first_child(fragment_1);
-			var text = child(div);
-			reset(div);
-			var div_1 = sibling(div, 2);
-			var text_1 = child(div_1, true);
-			reset(div_1);
+			var text = only_child(div);
+			var text_1 = only_child(sibling(div, 2), true);
 			template_effect(() => {
 				set_text(text, `${get$2(data).name ?? ""}
     ${get$2(data).surname ?? ""}`);
@@ -38958,8 +40391,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-profile-overview", create_custom_element(Overview, {}, [], []));
-	//#endregion
-	//#region src/components/ticketSelection/TicketSelection.svelte
+	// src/components/ticketSelection/TicketSelection.svelte
 	function TicketSelection($$anchor, $$props) {
 		push($$props, true);
 		function parseFilters(value) {
@@ -39102,8 +40534,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			type: "String"
 		}
 	}, [], ["details"]));
-	//#endregion
-	//#region src/components/ticketSelection/subcomponents/tickets/Tickets.svelte
+	// src/components/ticketSelection/subcomponents/tickets/Tickets.svelte
 	function Tickets($$anchor, $$props) {
 		push($$props, true);
 		const _tsd = getTicketSelectionDetails($$props.$$host);
@@ -39116,8 +40547,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-tickets", create_custom_element(Tickets, {}, [], []));
-	//#endregion
-	//#region src/components/ticketSelection/subcomponents/tickets/TicketsEmpty.svelte
+	// src/components/ticketSelection/subcomponents/tickets/TicketsEmpty.svelte
 	function TicketsEmpty($$anchor, $$props) {
 		push($$props, true);
 		const _tsd = getTicketSelectionDetails($$props.$$host);
@@ -39132,8 +40562,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-tickets-empty", create_custom_element(TicketsEmpty, {}, [], []));
-	//#endregion
-	//#region src/components/ticketSelection/subcomponents/tickets/subcomponents/TicketsSum.svelte
+	// src/components/ticketSelection/subcomponents/tickets/subcomponents/TicketsSum.svelte
 	function TicketsSum($$anchor, $$props) {
 		push($$props, true);
 		const _tsd = getTicketSelectionDetails($$props.$$host);
@@ -39146,8 +40575,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-tickets-sum", create_custom_element(TicketsSum, {}, [], []));
-	//#endregion
-	//#region src/components/ticketSelection/subcomponents/tickets/subcomponents/segment/SegmentDetails.svelte.ts
+	// src/components/ticketSelection/subcomponents/tickets/subcomponents/segment/SegmentDetails.svelte.ts
 	var SegmentDetails = class {
 		#ticketSelectionDetails;
 		get ticketSelectionDetails() {
@@ -39260,8 +40688,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	var KEY = "go-ticket-segment";
 	var setSegmentDetails = createSetDetails(KEY);
 	var getSegmentDetails = createGetDetails(KEY);
-	//#endregion
-	//#region src/components/ticketSelection/subcomponents/tickets/subcomponents/segment/TicketSegment.svelte
+	// src/components/ticketSelection/subcomponents/tickets/subcomponents/segment/TicketSegment.svelte
 	function TicketSegment($$anchor, $$props) {
 		push($$props, true);
 		const filters = prop($$props, "filters", 7), dateId = prop($$props, "dateId", 7), query = prop($$props, "query", 7), limit = prop($$props, "limit", 7), ticketGroupIds = prop($$props, "ticketGroupIds", 7), languageIds = prop($$props, "languageIds", 7), catchWordIds = prop($$props, "catchWordIds", 7), museumIds = prop($$props, "museumIds", 7), orderBy = prop($$props, "orderBy", 7), withContent = prop($$props, "withContent", 7);
@@ -39440,8 +40867,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			type: "Boolean"
 		}
 	}, [], ["details"]));
-	//#endregion
-	//#region src/components/ticketSelection/subcomponents/tickets/subcomponents/segment/TicketSegmentEmpty.svelte
+	// src/components/ticketSelection/subcomponents/tickets/subcomponents/segment/TicketSegmentEmpty.svelte
 	function TicketSegmentEmpty($$anchor, $$props) {
 		push($$props, true);
 		const tsd = getTicketSelectionDetails($$props.$$host).value;
@@ -39456,8 +40882,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-ticket-segment-empty", create_custom_element(TicketSegmentEmpty, {}, [], []));
-	//#endregion
-	//#region src/components/ticketSelection/subcomponents/tickets/subcomponents/segment/Item.svelte
+	// src/components/ticketSelection/subcomponents/tickets/subcomponents/segment/Item.svelte
 	var root$3 = /* @__PURE__ */ from_html(`<span class="go-tickets-item-title-event-title"> </span> <span class="go-tickets-item-title-product-title"> </span>`, 1);
 	var root_1$2 = /* @__PURE__ */ from_html(`<span class="go-tickets-item-subtitle" data-testid="ticket-subtitle"> </span>`);
 	var root_2$1 = /* @__PURE__ */ from_html(`<li class="go-tickets-item-info"><button type="button" data-testid="ticket-info-toggle"></button></li>`);
@@ -39470,11 +40895,8 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		const scaled_title = ($$anchor) => {
 			var fragment = root$3();
 			var span = first_child(fragment);
-			var text = child(span);
-			reset(span);
-			var span_1 = sibling(span, 2);
-			var text_1 = child(span_1, true);
-			reset(span_1);
+			var text = only_child(span);
+			var text_1 = only_child(sibling(span, 2), true);
 			template_effect(($0) => {
 				set_text(text, `${item().product.event_title ?? ""} - ${$0 ?? ""}`);
 				set_text(text_1, item().product.title);
@@ -39537,8 +40959,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var node_2 = sibling(node_1, 2);
 			var consequent = ($$anchor) => {
 				var span_2 = root_1$2();
-				var text_3 = child(span_2, true);
-				reset(span_2);
+				var text_3 = only_child(span_2, true);
 				template_effect(() => set_text(text_3, item().product.sub_title));
 				append($$anchor, span_2);
 			};
@@ -39549,8 +40970,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var node_3 = sibling(li_1, 2);
 			var consequent_1 = ($$anchor) => {
 				var li_2 = root_2$1();
-				var button = child(li_2);
-				reset(li_2);
+				var button = only_child(li_2);
 				template_effect(($0) => {
 					set_class(button, 1, clsx(["go-ticket-info-icon", get$2(infoExpanded) && "is-active"]));
 					set_attribute(button, "aria-expanded", get$2(infoExpanded));
@@ -39564,13 +40984,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				if (get$2(reductionReason)) $$render(consequent_1);
 			});
 			var li_3 = sibling(node_3, 2);
-			html$2(li_3, () => purify.sanitize(item().product.description), true);
+			html$2(li_3, () => purify_default.sanitize(item().product.description), true);
 			reset(li_3);
 			var node_4 = sibling(li_3, 2);
 			var consequent_2 = ($$anchor) => {
 				var li_4 = root_3$1();
-				var text_4 = child(li_4, true);
-				reset(li_4);
+				var text_4 = only_child(li_4, true);
 				template_effect(($0) => {
 					set_attribute(li_4, "id", infoPanelId);
 					set_attribute(li_4, "hidden", !get$2(infoExpanded));
@@ -39582,8 +41001,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 				if (get$2(reductionReason)) $$render(consequent_2);
 			});
 			var li_5 = sibling(node_4, 2);
-			var text_5 = child(li_5, true);
-			reset(li_5);
+			var text_5 = only_child(li_5, true);
 			var li_6 = sibling(li_5, 2);
 			var node_5 = child(li_6);
 			{
@@ -39653,8 +41071,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		item: {},
 		details: {}
 	}, [], [], { mode: "open" });
-	//#endregion
-	//#region src/components/ticketSelection/subcomponents/tickets/subcomponents/segment/Body.svelte
+	// src/components/ticketSelection/subcomponents/tickets/subcomponents/segment/Body.svelte
 	var root$2 = /* @__PURE__ */ from_html(`<ol class="go-tickets" data-testid="tickets"><li class="go-tickets-header" data-go-tickets-header="" data-testid="tickets-header"><ul><li class="go-tickets-header-title" data-go-tickets-title=""> </li> <li class="go-tickets-header-description" data-go-tickets-description=""> </li> <li class="go-tickets-header-price" data-go-tickets-price=""> </li> <li class="go-tickets-header-quality" data-go-tickets-quality=""> </li></ul></li> <!></ol>`);
 	function Body($$anchor, $$props) {
 		push($$props, true);
@@ -39668,17 +41085,12 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			var li = child(ol);
 			var ul = child(li);
 			var li_1 = child(ul);
-			var text = child(li_1, true);
-			reset(li_1);
+			var text = only_child(li_1, true);
 			var li_2 = sibling(li_1, 2);
-			var text_1 = child(li_2, true);
-			reset(li_2);
+			var text_1 = only_child(li_2, true);
 			var li_3 = sibling(li_2, 2);
-			var text_2 = child(li_3, true);
-			reset(li_3);
-			var li_4 = sibling(li_3, 2);
-			var text_3 = child(li_4, true);
-			reset(li_4);
+			var text_2 = only_child(li_3, true);
+			var text_3 = only_child(sibling(li_3, 2), true);
 			reset(ul);
 			reset(li);
 			each(sibling(li, 2), 17, () => get$2(details).preCart.items, (ci) => ci.uuid, ($$anchor, ci) => {
@@ -39712,8 +41124,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-ticket-segment-body", create_custom_element(Body, {}, [], []));
-	//#endregion
-	//#region src/components/ticketSelection/subcomponents/tickets/subcomponents/segment/Sum.svelte
+	// src/components/ticketSelection/subcomponents/tickets/subcomponents/segment/Sum.svelte
 	function Sum($$anchor, $$props) {
 		push($$props, true);
 		const _details = getSegmentDetails($$props.$$host);
@@ -39725,8 +41136,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		pop();
 	}
 	customElements.define("go-ticket-segment-sum", create_custom_element(Sum, {}, [], []));
-	//#endregion
-	//#region src/components/ticketSelection/subcomponents/timeslots/lib/lib.svelte.ts
+	// src/components/ticketSelection/subcomponents/timeslots/lib/lib.svelte.ts
 	var Details$1 = class {
 		#tsd;
 		get tsd() {
@@ -39767,8 +41177,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			}));
 		}
 	};
-	//#endregion
-	//#region src/components/ticketSelection/subcomponents/timeslots/Timeslots.svelte
+	// src/components/ticketSelection/subcomponents/timeslots/Timeslots.svelte
 	var root$1 = /* @__PURE__ */ from_html(`<li><label> <input type="radio" name="timeslot"/></label></li>`);
 	var root_1$1 = /* @__PURE__ */ from_html(`<ul data-testid="timeslots"></ul>`);
 	function Timeslots($$anchor, $$props) {
@@ -39841,7 +41250,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 					set_text(text, `${get$2(timeslot).timeFormatted ?? ""} `);
 					input.disabled = get$2(disabled);
 					set_attribute(input, "aria-disabled", get$2(disabled));
-					if (input_value !== (input_value = get$2(timeslot).startAt)) input.value = (input.__value = get$2(timeslot).startAt) ?? "";
+					if (input_value !== (input_value = get$2(timeslot).startAt)) input.value = (input.__value = input_value) ?? "";
 				});
 				delegated("change", input, change);
 				bind_group(binding_group, [], input, () => {
@@ -39861,8 +41270,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	delegate(["change"]);
 	customElements.define("go-timeslots", create_custom_element(Timeslots, {}, [], ["details"]));
-	//#endregion
-	//#region src/components/ticketSelection/subcomponents/calendar/lib/calendar.svelte.ts
+	// src/components/ticketSelection/subcomponents/calendar/lib/calendar.svelte.ts
 	function describeAvailability(value) {
 		if (typeof value === "string") return `'${value}'`;
 		if (value === null || value === void 0) return String(value);
@@ -39992,8 +41400,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return this.#mergedDates((params) => shop.ticketsCalendar(params));
 		}
 	};
-	//#endregion
-	//#region src/components/ticketSelection/subcomponents/calendar/components/CalendarUI.svelte
+	// src/components/ticketSelection/subcomponents/calendar/components/CalendarUI.svelte
 	var root_1 = /* @__PURE__ */ from_html(`<button> </button>`);
 	var root_2 = /* @__PURE__ */ from_html(`<!> <!> <!>`, 1);
 	var root_3 = /* @__PURE__ */ from_html(`<div> </div>`);
@@ -40038,22 +41445,21 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 							var fragment_1 = root_2();
 							var node_2 = first_child(fragment_1);
 							{
-								const child$1 = ($$anchor, $$arg0) => {
+								const child = ($$anchor, $$arg0) => {
 									let props = () => ($$arg0?.()).props;
 									var button = root_1();
 									attribute_effect(button, ($0) => ({
 										...props(),
 										"aria-label": $0
 									}), [() => shop.t("calendar.previousMonth", { month: get$2(previousMonth) })]);
-									var text = child(button, true);
-									reset(button);
+									var text = only_child(button, true);
 									template_effect(() => set_text(text, get$2(previousMonth)));
 									append($$anchor, button);
 								};
 								component(node_2, () => Calendar_prev_button, ($$anchor, Calendar_PrevButton) => {
 									Calendar_PrevButton($$anchor, {
 										class: "go-calendar-prev-button",
-										child: child$1,
+										child,
 										$$slots: { child: true }
 									});
 								});
@@ -40064,22 +41470,21 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 							});
 							var node_4 = sibling(node_3, 2);
 							{
-								const child$2 = ($$anchor, $$arg0) => {
+								const child = ($$anchor, $$arg0) => {
 									let props = () => ($$arg0?.()).props;
 									var button_1 = root_1();
 									attribute_effect(button_1, ($0) => ({
 										...props(),
 										"aria-label": $0
 									}), [() => shop.t("calendar.nextMonth", { month: get$2(nextMonth) })]);
-									var text_1 = child(button_1, true);
-									reset(button_1);
+									var text_1 = only_child(button_1, true);
 									template_effect(() => set_text(text_1, get$2(nextMonth)));
 									append($$anchor, button_1);
 								};
 								component(node_4, () => Calendar_next_button, ($$anchor, Calendar_NextButton) => {
 									Calendar_NextButton($$anchor, {
 										class: "go-calendar-next-button",
-										child: child$2,
+										child,
 										$$slots: { child: true }
 									});
 								});
@@ -40113,8 +41518,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 																Calendar_HeadCell($$anchor, {
 																	children: ($$anchor, $$slotProps) => {
 																		var div_1 = root_3();
-																		var text_2 = child(div_1, true);
-																		reset(div_1);
+																		var text_2 = only_child(div_1, true);
 																		template_effect(($0) => set_text(text_2, $0), [() => get$2(day).slice(0, 2)]);
 																		append($$anchor, div_1);
 																	},
@@ -40160,15 +41564,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 																			var fragment_11 = comment();
 																			var node_16 = first_child(fragment_11);
 																			{
-																				const child$3 = ($$anchor, $$arg0) => {
+																				const child = ($$anchor, $$arg0) => {
 																					let props = () => ($$arg0?.()).props;
 																					var div_2 = root_3();
 																					attribute_effect(div_2, ($0) => ({
 																						...props(),
 																						"aria-label": $0
 																					}), [() => calendarClass().isDateUnavailable(get$2(date)) ? `${props()["aria-label"]}, ${shop.t("ticket.timeSlot.noAvailable")}` : String(props()["aria-label"])]);
-																					var text_3 = child(div_2, true);
-																					reset(div_2);
+																					var text_3 = only_child(div_2, true);
 																					template_effect(() => set_text(text_3, get$2(date).day));
 																					append($$anchor, div_2);
 																				};
@@ -40183,7 +41586,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 																						get class() {
 																							return get$2($0);
 																						},
-																						child: child$3,
+																						child,
 																						$$slots: { child: true }
 																					});
 																				});
@@ -40256,8 +41659,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		return pop($$exports);
 	}
 	create_custom_element(CalendarUI, { calendarClass: {} }, [], ["details"], { mode: "open" });
-	//#endregion
-	//#region src/components/ticketSelection/subcomponents/calendar/components/Calendar.svelte
+	// src/components/ticketSelection/subcomponents/calendar/components/Calendar.svelte
 	function Calendar_1($$anchor, $$props) {
 		push($$props, true);
 		/**
@@ -40317,8 +41719,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		attribute: "availability-override",
 		type: "String"
 	} }, [], ["details"]));
-	//#endregion
-	//#region src/components/ticketSelection/subcomponents/addToCartButton/AddToCartButton.svelte.ts
+	// src/components/ticketSelection/subcomponents/addToCartButton/AddToCartButton.svelte.ts
 	var Details = class {
 		#ticketSelectionDetails;
 		get ticketSelectionDetails() {
@@ -40360,16 +41761,14 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return this.ticketSelectionDetails.preCarts.some((cart) => cart.items.some((item) => item.quantity > 0));
 		}
 	};
-	//#endregion
-	//#region src/components/ticketSelection/subcomponents/addToCartButton/AddToCartButton.svelte
+	// src/components/ticketSelection/subcomponents/addToCartButton/AddToCartButton.svelte
 	var root = /* @__PURE__ */ from_html(`<button data-add-to-cart-button="" data-testid="go-add-to-cart-button__button"> </button>`);
 	function AddToCartButton($$anchor, $$props) {
 		push($$props, true);
 		const details = new Details(getTicketSelectionDetails($$props.$$host));
 		var $$exports = { details };
 		var button = root();
-		var text = child(button, true);
-		reset(button);
+		var text = only_child(button, true);
 		template_effect(($0, $1, $2) => {
 			button.disabled = $0;
 			set_attribute(button, "data-x", $1);
@@ -40385,8 +41784,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	}
 	delegate(["click"]);
 	customElements.define("go-add-to-cart-button", create_custom_element(AddToCartButton, {}, [], ["details"]));
-	//#endregion
-	//#region src/components/withdrawal/Withdrawal.svelte
+	// src/components/withdrawal/Withdrawal.svelte
 	function Withdrawal($$anchor, $$props) {
 		push($$props, true);
 		let custom = prop($$props, "custom", 7, false);
@@ -40445,8 +41843,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		reflect: true,
 		type: "Boolean"
 	} }, [], []));
-	//#endregion
-	//#region src/go/cart.ts
+	// src/go/cart.ts
 	/** Resolves with the new cart line's uuid. Throws if the filter can't add to
 	* the cart, or on the filter's own validation / availability errors. */
 	async function addItem({ filter, ...options }) {
@@ -40455,8 +41852,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		if (!module?.addToCart) throw new Error(`(go.cart.addItem) filter '${filter}' cannot add to the cart`);
 		return module.addToCart(options);
 	}
-	//#endregion
-	//#region src/go/go.ts
+	// src/go/go.ts
 	var initPromise = null;
 	async function ensureShopReady() {
 		if (initPromise) return initPromise;
@@ -40545,5 +41941,4 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	(async () => {
 		await initGo(window);
 	})();
-	//#endregion
 })();

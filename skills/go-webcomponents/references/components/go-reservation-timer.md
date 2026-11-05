@@ -1,0 +1,491 @@
+# `<go-cart>`
+
+Since `v1.0.0`
+
+The `go-cart` is a **composable** shopping basket. It is a shell that coordinates
+a set of subcomponents, each rendering one slice of the cart (items, coupons,
+totals). Place the subcomponents you need as direct children of `<go-cart>`.
+
+The cart lives in the customer's browser and persists across pages and reloads;
+it expires about 15 minutes after the last change _(Since `v3.4.2`)_.
+
+## Examples
+
+The minimal HTML markup that produces the layout above:
+
+```html
+<go-cart>
+  <div class="cart-grid">
+    <div class="cart-main">
+      <section>
+        <header>Your items</header>
+        <go-cart-items></go-cart-items>
+      </section>
+
+      <section>
+        <header>Coupons</header>
+        <go-cart-coupons></go-cart-coupons>
+        <go-coupon-redemption></go-coupon-redemption>
+      </section>
+    </div>
+
+    <aside>
+      <header>Summary</header>
+      <dl>
+        <go-if when="data.cartView.isDiscounted">
+          <div>
+            <dt>Subtotal</dt>
+            <dd><go-cart-subtotal-amount></go-cart-subtotal-amount></dd>
+          </div>
+        </go-if>
+        <div>
+          <dt>Discount</dt>
+          <dd><go-cart-discounted-amount></go-cart-discounted-amount></dd>
+        </div>
+        <div>
+          <dt>Total</dt>
+          <dd><go-cart-total-amount></go-cart-total-amount></dd>
+        </div>
+      </dl>
+      <go-submit>To Payment</go-submit>
+    </aside>
+  </div>
+</go-cart>
+
+<go-cart-empty>
+  <h3>Cart is empty</h3>
+</go-cart-empty>
+```
+
+### Custom layout
+
+Compose only the parts you want, in any order. The cart subcomponents read their
+state from the parent `<go-cart>`, so wrap order is up to you.
+
+```html
+<go-cart>
+  <go-cart-items></go-cart-items>
+  <go-cart-coupons></go-cart-coupons>
+  <go-cart-subtotal-amount></go-cart-subtotal-amount>
+  <go-cart-discounted-amount></go-cart-discounted-amount>
+  <go-cart-total-amount></go-cart-total-amount>
+</go-cart>
+```
+
+`<go-cart-counter>` is standalone — drop it anywhere (e.g. a header badge) to show
+how many items are in the cart:
+
+```html
+<span class="cart-badge"><go-cart-counter></go-cart-counter></span>
+```
+
+## Attributes
+
+| Attribute | Type    | Default | Description                                                                                                                            | Since    |
+| --------- | ------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `preview` | boolean | `false` | Read-only cart view — hides each item's quantity control and remove button, the coupon remove buttons, and the donation remove buttons | `v1.3.0` |
+
+## Events
+
+| Event                    | Description                                                                                                                                          | `detail`                            | bubbles                       | Since        |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ----------------------------- | ------------ |
+| `go-cart-item-added`     | An item was added to the cart                                                                                                                        | the new item count (number)         | fires on `document`           |              |
+| `go-cart-item-removed`   | An item was removed from the cart                                                                                                                    | the new item count (number)         | fires on `document`           |              |
+| `go-reservation-expired` | The cart's earliest ticket hold ran out — see _Ticket reservations_ below                                                                            | `{ expiry: 'keep' \| 'clearCart' }` | fires on `document`           | `v4.32.0` |
+| `go-submit`              | The cart is ready to check out — fires after a `<go-submit>` click once any pending coupon applies cleanly; does **not** fire if a coupon is invalid | `{ ok: true }`                      | yes (on the `<go-cart>` host) | `v3.0.0`     |
+
+The item-count events fire on `document`, so listen there:
+
+```js
+document.addEventListener('go-cart-item-added', event => {
+  // event.detail is the new number of items in the cart
+  console.log(event.detail)
+})
+```
+
+The `go-submit` event is covered in _Submitting the cart_ below.
+
+## Styling
+
+Each subcomponent renders stable class hooks:
+
+- `.go-cart-item` — one per cart line; `.go-cart-item-price-original` (struck-through pre-discount price) and `.go-cart-item-price-discounted` appear when a line is discounted
+- `.go-cart-item-subtitle` — a ticket's subtitle, rendered beneath the title when the ticket has one _(Since `v4.11.0`)_; coupon lines render theirs the same way _(Since `v4.25.0`)_
+- `.go-cart-item-participants` — the participant-count label on a tour line; `.go-cart-item-custom` — one per `key: value` custom-field line _(Since `v4.3.0`)_
+- `.go-quantity-stepper` — each item's `− qty +` quantity stepper (the default control): `.go-quantity-stepper-button` (both buttons; `.go-quantity-stepper-decrement` / `.go-quantity-stepper-increment` target each) and `.go-quantity-stepper-value` (the editable spinbutton input). Once a line is at its lowest quantity the `−` button becomes a remove control (it renders `✕` and gets `.go-quantity-stepper-remove`); pressing it — or clearing the input — removes the line, so a cart line never sits at `0` _(Since `v4.13.0`)_. With `go.config({ quantityStepperAtMinimum: 'disable' })` the `−` instead stays a plain button that disables at the line's lowest quantity (`aria-disabled`), a typed `0` clamps back up, and only the standalone ✕ button removes _(Since `v4.17.0`)_. The standalone ✕ button removes a line too. With `go.config({ quantityStepper: false })` the item renders a `.go-quantity-select` `<select>` instead _(Since `v4.0.0`)_
+- `.go-cart-remove` — the ✕ button on items and coupons
+- `.go-cart-item-reservation` — the `m:ss` countdown on a held ticket line, inside the title container _(Since `v4.32.0`)_
+- `go-reservation-timer[data-expiring]` / `go-reservation-timer[data-expired]` — the standalone timer in its last minute / after the hold has run out. `.go-reservation-timer-time` wraps its `m:ss` text, and `.sr-only` marks its screen-reader live region. See _Ticket reservations_ below _(Since `v4.32.0`)_
+- `.go-cart-donation` — one per donation row; `.go-cart-donation-title` wraps the campaign name _(Since `v4.16.0`)_
+- `.go-cart-coupon` — one per coupon row
+- `.go-cart-coupon.go-cart-coupon-inactive` — a coupon the backend did not apply _(Since `v1.53.0`)_; style it greyed-out / struck-through
+- `.go-cart-subtotal-amount`, `.go-cart-discounted-amount`, `.go-cart-total-amount` — the three amount spans; `.go-cart-discounted-amount-sign` wraps the leading `−`
+
+Bundle-ticket (Mantelticket) lines render an indented list of sub-ticket rows beneath the line _(Since `v4.0.0`)_:
+
+- `.go-sub-tickets` — the `<ul>` wrapping a bundle line's sub-ticket rows
+- `.go-sub-ticket` — one row per sub-ticket; state classes: `.is-fixed` (quantity is fixed, shown as text), `.is-empty` (quantity is `0`), `.is-preview` (read-only, inside `<go-cart preview>`)
+- `.go-sub-ticket-title` — the sub-ticket's name
+- `.go-sub-ticket-description` — its optional description
+- editable sub-rows render the shared quantity control — the `.go-quantity-stepper` stepper by default, or a `.go-quantity-select` `<select>` with `go.config({ quantityStepper: false })`
+- `.go-sub-ticket-quantity` — the quantity shown as text (fixed or preview rows)
+
+```css
+.go-cart-coupon.go-cart-coupon-inactive {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+.go-sub-tickets {
+  margin-left: 1.5rem;
+}
+.go-sub-ticket.is-empty {
+  opacity: 0.5;
+}
+```
+
+## Nesting
+
+The cart's display subcomponents — `<go-cart-items>`, `<go-cart-coupons>`,
+`<go-cart-subtotal-amount>`, `<go-cart-discounted-amount>`, and
+`<go-cart-total-amount>` — must be placed inside `<go-cart>`; they read the
+re-priced cart from it and render nothing on their own. `<go-cart-counter>`,
+`<go-cart-empty>`, `<go-reservation-timer>` and `<go-reservation-refresh>` read the
+cart directly and can be placed anywhere on the page.
+
+## Subcomponents
+
+| Tag                           | Renders                                                                                                                                                                                                                                                |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `<go-cart-items>`             | Item table (header + line per item, with quantity stepper + remove). Bundle-ticket lines also render editable sub-ticket rows — see _Bundle tickets_ below — and donations held in the cart render alongside as removable rows — see _Donations_ below |
+| `<go-cart-coupons>`           | One row per coupon. Inactive coupons get `go-cart-coupon-inactive`                                                                                                                                                                                     |
+| `<go-cart-subtotal-amount>`   | Pre-discount total (original line prices plus any donations)                                                                                                                                                                                           |
+| `<go-cart-discounted-amount>` | Saved amount, prefixed with a `−` sign                                                                                                                                                                                                                 |
+| `<go-cart-total-amount>`      | Final amount to pay after coupon and voucher projection, donations included                                                                                                                                                                            |
+| `<go-cart-counter>`           | A live count of the number of items in the cart — text only, no markup                                                                                                                                                                                 |
+| `<go-cart-empty>`             | Shows its own children only while the cart has no items _(Since `v1.11.0`)_                                                                                                                                                                            |
+| `<go-reservation-timer>`      | Time left on the cart's earliest ticket hold, as `m:ss` text — see _Ticket reservations_ below _(Since `v4.32.0`)_                                                                                                                                  |
+| `<go-reservation-refresh>`    | Wraps its content in a button that restarts every ticket hold — see _Ticket reservations_ below _(Since `v4.32.0`)_                                                                                                                                 |
+
+Each subcomponent is independently mountable and renders nothing when its data is
+absent (e.g. `go-cart-coupons` is empty until a coupon is added).
+
+All prices in the cart — line prices, sums, and the amount subcomponents — are
+formatted in your shop's configured currency, using the `locale` you pass to
+`go.init({ locale })` for the number format (e.g. a Swiss shop with
+`locale: 'de-CH'` renders `CHF 12.34`). Without a configured currency or locale,
+formatting falls back to EUR in German conventions (`12,34 €`) _(Since `v4.10.0`)_.
+
+### Bundle tickets (Mantelticket)
+
+Since `v4.0.0`
+
+When a cart line is a **bundle ticket** (a Mantelticket — a ticket composed of
+several sub-tickets), `<go-cart-items>` renders the normal line and, indented
+beneath it, one editable row per sub-ticket so the visitor can compose the bundle
+(e.g. _2 Adult, 1 Child_). This happens automatically for bundle products — there
+is no attribute to enable it.
+
+Each sub-row carries a quantity selector; changing it re-prices the whole cart and
+updates the line and totals. The selector is bounded by the sub-ticket's minimum
+and maximum persons — only a sub with a minimum of `0` can be set to `0`. A
+sub-ticket whose quantity is fixed (its minimum equals its maximum) shows the
+count as plain text instead of a selector. In a read-only cart
+(`<go-cart preview>`) every sub-row shows its count as text.
+
+The bundle still checks out as a **single** cart item carrying the chosen
+composition — your `go-submit` handler and checkout flow are unchanged.
+
+You author only `<go-cart-items>` — a bundle line renders its editable sub-ticket
+rows automatically (the styling hooks are listed under [Styling](#styling)):
+
+## Coupons & action token redemption
+
+Coupons (a.k.a. **action tokens**) are redeemed by the user through
+`<go-coupon-redemption>`, and removed with the ✕ button each row renders. While at
+least one coupon is active, `<go-cart>` re-prices the cart and shows the discounted
+figures.
+
+`<go-cart-coupons>` renders one row per coupon currently in the cart:
+
+- Coupons the backend **applies** render normally.
+- Coupons the backend **does not apply** render with the `go-cart-coupon-inactive`
+  class — useful for greyed-out / strikethrough styling.
+
+The `<go-cart-subtotal-amount>`, `<go-cart-discounted-amount>`, and
+`<go-cart-total-amount>` reflect the projected pricing. `<go-cart-discounted-amount>`
+renders nothing while the discount is zero, so an empty discount row stays empty
+rather than showing a formatted zero (e.g. `0,00 €`). The subtotal and total render
+nothing while the cart holds no ticket lines — a donation alone does not render
+them.
+
+### Value vouchers (Wertgutschein)
+
+A **Wertgutschein** redeemed through `<go-coupon-redemption>` is gift-card credit
+rather than an order discount: its balance is subtracted from the payable total.
+Because it is applied client-side (the backend never echoes it), it always renders
+active in `<go-cart-coupons>` — never with the `go-cart-coupon-inactive` class. Its
+credit is folded into `<go-cart-discounted-amount>` and reflected in
+`<go-cart-total-amount>`.
+
+### Service vouchers (Leistungsgutschein)
+
+Since `v3.8.0`
+
+A **service voucher** redeemed through `<go-coupon-redemption>` adds its
+associated ticket to the cart as a zero-cost line. Its quantity is fixed at `1`
+and renders as plain text — no stepper or select _(Since `v4.6.0`)_. The line and
+its voucher code are one redemption: removing the line with ✕ also removes the
+code from `<go-cart-coupons>`, and removing the code removes the line.
+
+## Conditional rendering with `<go-if>`
+
+`<go-if>` placed inside `<go-cart>` reads the live cart projection through
+`data.cartView`:
+
+| Handle                                | Type      | Description                                       |
+| ------------------------------------- | --------- | ------------------------------------------------- |
+| `data.cartView.isDiscounted`          | `boolean` | `true` when a coupon or voucher reduced the total |
+| `data.cartView.subtotalPriceCents`    | `number`  | Pre-discount total                                |
+| `data.cartView.totalPriceCents`       | `number`  | Final amount to pay                               |
+| `data.cartView.discountedAmountCents` | `number`  | Subtotal − total, clamped to ≥ 0                  |
+
+To gate on whether the cart is empty, use the `data.cart.items.length` handle (this
+is what `<go-cart-empty>` itself uses internally). To gate on ticket holds, use
+`data.cart.reservations` — see _Ticket reservations_ below.
+
+Example — show the subtotal row only when a coupon actually discounts the cart:
+
+```html
+<go-cart>
+  <go-cart-items></go-cart-items>
+  <go-cart-coupons></go-cart-coupons>
+  <go-if when="data.cartView.isDiscounted">
+    <go-cart-subtotal-amount></go-cart-subtotal-amount>
+  </go-if>
+  <go-cart-discounted-amount></go-cart-discounted-amount>
+  <go-cart-total-amount></go-cart-total-amount>
+</go-cart>
+```
+
+## Submitting the cart
+
+Place a `<go-submit>` inside `<go-cart>` to act as the checkout button. Clicking it
+first applies any coupon code still sitting unsubmitted in a
+`<go-coupon-redemption>` field. If a coupon is invalid, that component shows the
+error inline and `go-submit` **does not fire** — the customer stays on the cart.
+Otherwise the cart dispatches a `go-submit` event on the `<go-cart>` host. The cart
+does **not** navigate or proceed on its own — you wire the next step (e.g. show the
+checkout form, redirect to a payment page) in the listener.
+
+`<go-submit>` placed inside `<go-coupon-redemption>` is ignored (that one is the
+coupon's own apply button).
+
+```html
+<go-cart>
+  ...
+  <go-coupon-redemption></go-coupon-redemption>
+  <go-submit>To Payment</go-submit>
+</go-cart>
+
+<script>
+  document.querySelector('go-cart').addEventListener('go-submit', () => {
+    // go-submit only fires once any pending coupon has applied cleanly, so it is
+    // safe to proceed straight to checkout here.
+    showCheckoutForm()
+  })
+</script>
+```
+
+## Tour lines
+
+Since `v4.3.0`
+
+Guided-group-tour bookings added programmatically via
+`go.cart.addItem({ filter: 'tour', … })` (documented under _The Go Interface_)
+render as regular lines in `<go-cart-items>`. The title cell shows the tour
+title, the participant count, the start date and time, and one `key: value`
+line per custom field passed to the booking. Three things differ from ticket
+lines:
+
+- **Fixed participant count.** The quantity cell shows the booking's participant
+  count as plain text — no stepper or select, even with
+  `go.config({ quantityStepper: false })`. Participants are fixed when the booking
+  is added; to change them, remove the line and add a new booking.
+- **Your total, unmultiplied.** The line's price and sum are the `totalPriceCents`
+  passed with the booking — the participant count does not multiply them.
+- **One line per booking.** Every tour add creates its own line; two identical
+  bookings render as two separately removable lines (the ✕ removes the whole
+  booking). A booking counts as one item in `<go-cart-counter>`, regardless of
+  participants.
+
+## Donations
+
+Since `v4.16.0`
+
+A donation opted into via `<go-donation-checkbox>` (documented under _Donation
+Checkbox Component_) holds itself in the cart and renders as its own row inside
+`<go-cart-items>`, alongside ticket and tour lines.
+
+- **Removable.** The row shows the campaign name — falling back to the
+  `cart.donation.title` translation if the campaign no longer resolves (e.g. it
+  was removed from the shop config after the donation was added) — the amount
+  in the sum column, and a remove button. The unit-price and quantity cells stay
+  empty: a donation has no unit price × quantity semantics. Removing it here has
+  the same effect as unchecking the matching `<go-donation-checkbox>`.
+- **Included in both the subtotal and the total.** A donation's amount is added
+  into `<go-cart-subtotal-amount>` as well as `<go-cart-total-amount>`; there is
+  no separate donations subtotal.
+- **Never voucher-paid.** Value-voucher (Wertgutschein) credit offsets the
+  ticket lines only — a donation's amount is always payable on top.
+- **No quantity control.** A donation is either in the cart or not, so its row
+  renders no stepper or select — the quantity cell stays empty.
+- **Not an item.** A donation does not increment `<go-cart-counter>` and does not
+  count toward the `data.cart.items.length` handle — `<go-cart-empty>` still shows
+  its children when the cart holds only a donation.
+- **Submitted with the order** as `donations: [{ value, campaign_id }]`.
+
+## Ticket reservations
+
+Since `v4.32.0`
+
+With `go.config({ ticketReservations: true })` the cart holds the capacity of each
+dated ticket line on the backend while it sits in the cart, so nobody else can book
+those seats. Bundle-ticket (Mantelticket) lines, annual tickets, service-voucher
+lines, event lines and tour lines are not held, and they show no countdown. Holds last the backend's hold time (5 minutes by default) and run out
+on their own. The order request sends each line's hold, and the backend redeems it.
+
+- **Holds end together.** Whenever a line is added or its quantity changes, every
+  other hold is restarted too, so all of them run out at the same moment. The backend
+  never keeps a hold longer than 60 minutes after it was taken, so a very old one can
+  end earlier.
+- **Entering checkout** (`<go-checkout-guest>`, `<go-checkout-user>`,
+  `<go-checkout-form>`) restarts every hold, so the customer gets the full hold time
+  to fill in the form.
+- **When the earliest hold runs out**, `go-reservation-expired` fires on `document`.
+  What else happens depends on `go.config({ ticketReservationExpiry })`:
+  - `'keep'` (default): the cart stays as it is. The lines are not reserved again on
+    their own. They are reserved again once the customer changes the cart, presses
+    `<go-reservation-refresh>`, or enters checkout. Reloading the page does not
+    reserve them again. Until then the lapsed hold stays in the cart, so
+    `go-reservation-expired` fires again on every page load. An order placed
+    meanwhile still succeeds as long as the tickets are available.
+  - `'clearCart'`: the cart is emptied — tickets, other items, coupons and donations.
+    A cart whose hold ran out while the customer was away is emptied on the next page
+    load.
+
+```html
+<header>
+  <go-if when="data.cart.reservations.expiresAt">
+    Your tickets are reserved for <go-reservation-timer></go-reservation-timer>
+    <go-reservation-refresh>More time</go-reservation-refresh>
+  </go-if>
+</header>
+```
+
+```js
+document.addEventListener('go-reservation-expired', event => {
+  // event.detail.expiry is 'keep' or 'clearCart'
+  showMessage('Your reservation has expired.')
+})
+```
+
+### `<go-reservation-timer>`
+
+Renders the time left on the cart's earliest hold as `m:ss` text
+(`.go-reservation-timer-time`, `role="timer"`). It renders nothing while no ticket
+line is held: an empty cart, `ticketReservations` turned off, or a line the backend
+refused to hold. It works anywhere on the page. In the last minute the element gets
+the `data-expiring` attribute, and once the hold has run out `data-expired`, for
+styling:
+
+```css
+go-reservation-timer[data-expiring] {
+  color: darkorange;
+}
+go-reservation-timer[data-expired] {
+  color: firebrick;
+}
+```
+
+Screen readers hear `ticket.reservations.expiresSoon` once when the last minute
+starts and `ticket.reservations.expired` once when the hold runs out, through a
+live region (not every second). The live region is a `<span class="sr-only">` inside
+the element, and the element brings no styles of its own. If your stylesheet has
+no `.sr-only` rule, add one that hides it visually. Otherwise the announcement text
+shows on the page.
+
+```css
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+```
+
+Each held ticket line in `<go-cart-items>` also shows its own countdown
+(`.go-cart-item-reservation`).
+
+### `<go-reservation-refresh>`
+
+Wraps its content in a `<button type="button">` that restarts every hold in the cart;
+a lapsed hold is reserved afresh. Left empty, the button reads
+`ticket.reservations.extend`. It is disabled while no ticket line in the cart is
+held (an empty cart, `ticketReservations` off, or every hold refused) and while a
+refresh is running.
+
+| Attribute      | Type   | Default | Description                       |
+| -------------- | ------ | ------- | --------------------------------- |
+| `button-class` | string | `''`    | Class names put on the `<button>` |
+
+If the only child is already a `<button>`, that button is used as is. It gets the
+click and disabled handling, but neither `button-class` nor `type="button"`, so
+inside a `<form>` add `type="button"` yourself:
+
+```html
+<go-reservation-refresh>
+  <button type="button" class="btn btn-link">More time</button>
+</go-reservation-refresh>
+```
+
+### `<go-if>` handles
+
+| Handle                               | Type                   | Description                                                   |
+| ------------------------------------ | ---------------------- | ------------------------------------------------------------- |
+| `data.cart.reservations.expiresAt`   | `number` / `undefined` | When the earliest hold ends (ms since epoch); unset with none |
+| `data.cart.reservations.remainingMs` | `number` / `undefined` | Time left on the earliest hold in ms, updated every second    |
+| `data.cart.reservations.expired`     | `boolean`              | The earliest hold has run out                                 |
+
+## Localization
+
+The `go-cart` component uses the following translation keys for its interface and validation:
+
+### Cart Table
+
+| Key                           | Purpose                                                                |
+| ----------------------------- | ---------------------------------------------------------------------- |
+| `cart.content.table.desc`     | Description/Title column header                                        |
+| `cart.content.table.price`    | Price column header                                                    |
+| `cart.content.table.quantity` | Quantity column header                                                 |
+| `cart.content.table.total`    | Total column header                                                    |
+| `cart.content.table.edit`     | Quantity-selector aria-label                                           |
+| `cart.item.participants`      | Participant count on a tour line                                       |
+| `cart.item.remove`            | Item and donation remove-button text (default `✕`)                     |
+| `cart.item.aria.removeItem`   | Item and donation remove-button `aria-label`                           |
+| `cart.coupons.remove`         | Coupon remove-button aria-label                                        |
+| `cart.donation.title`         | Donation row title fallback, used when the campaign no longer resolves |
+| `quantity.remove`             | Accessible name of the `−` button when it acts as the remove control   |
+| `quantity.remove.label`       | Visible label of that remove control (default `✕`)                     |
+
+### Ticket reservations
+
+| Key                               | Purpose                                                                     |
+| --------------------------------- | --------------------------------------------------------------------------- |
+| `ticket.reservations.timer`       | Accessible name of the countdowns (default _Time left on your reservation_) |
+| `ticket.reservations.expiresSoon` | Announced once the last minute starts                                       |
+| `ticket.reservations.expired`     | Announced once the hold has run out                                         |
+| `ticket.reservations.extend`      | Label of an empty `<go-reservation-refresh>` (default _Extend reservation_) |

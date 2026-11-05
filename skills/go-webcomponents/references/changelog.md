@@ -4,6 +4,47 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.32.0
+
+_Released 2026-11-04_
+
+The cart can now hold the seats of the tickets in it, so no one else can book them while the
+customer shops. You can show the customer a countdown and let them extend the hold. This is off
+by default, so your current pages work as before.
+
+## New
+
+- `go.config({ ticketReservations: true })`: while a ticket for a set date and time is in the
+  cart, the cart holds its seats on the backend and sends the hold with the order. Annual tickets,
+  bundle tickets (Mantelticket) and service-voucher tickets are never held. All holds in the cart
+  end at the same moment (5 minutes by default). Adding a ticket or changing a quantity restarts
+  all of them, and so does opening `<go-checkout-guest>`, `<go-checkout-user>` or
+  `<go-checkout-form>`. While holds are active, `<go-tickets>` and `<go-timeslots>` still show
+  the correct number of free places.
+- `go.config({ ticketReservationExpiry })` and the `go-reservation-expired` event: when the
+  first hold in the cart runs out, `go-reservation-expired` fires on `document` with
+  `detail.expiry`. With `'keep'` (the default) the cart stays as it is, and an order still goes
+  through as long as the tickets are available. With `'clearCart'` the whole cart is emptied.
+- `<go-reservation-timer>` shows the time left on the hold as `m:ss`
+  (`.go-reservation-timer-time`). It gets `data-expiring` in the last minute and `data-expired`
+  once the hold has run out, so you can style each state. `<go-reservation-refresh>` wraps its
+  content in a button that restarts every hold (`button-class` sets the button's classes). Both
+  tags work anywhere on the page. Each held line in `<go-cart-items>` also shows its own
+  countdown (`.go-cart-item-reservation`).
+- `<go-if>` handles `data.cart.reservations.expiresAt`, `data.cart.reservations.remainingMs` and
+  `data.cart.reservations.expired`, plus the translation keys `ticket.reservations.timer`,
+  `ticket.reservations.expiresSoon`, `ticket.reservations.expired` and
+  `ticket.reservations.extend`.
+
+  ```html
+  <go-if when="data.cart.reservations.expiresAt">
+    Your tickets are reserved for <go-reservation-timer></go-reservation-timer>
+    <go-reservation-refresh>More time</go-reservation-refresh>
+  </go-if>
+  ```
+
+---
+
 # v4.31.6
 
 _Released 2026-11-03_

@@ -87,11 +87,12 @@ how many items are in the cart:
 
 ## Events
 
-| Event                  | Description                                                                                                                                          | `detail`                    | bubbles                       | Since    |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ----------------------------- | -------- |
-| `go-cart-item-added`   | An item was added to the cart                                                                                                                        | the new item count (number) | fires on `document`           |          |
-| `go-cart-item-removed` | An item was removed from the cart                                                                                                                    | the new item count (number) | fires on `document`           |          |
-| `go-submit`            | The cart is ready to check out — fires after a `<go-submit>` click once any pending coupon applies cleanly; does **not** fire if a coupon is invalid | `{ ok: true }`              | yes (on the `<go-cart>` host) | `v3.0.0` |
+| Event                    | Description                                                                                                                                          | `detail`                            | bubbles                       | Since        |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ----------------------------- | ------------ |
+| `go-cart-item-added`     | An item was added to the cart                                                                                                                        | the new item count (number)         | fires on `document`           |              |
+| `go-cart-item-removed`   | An item was removed from the cart                                                                                                                    | the new item count (number)         | fires on `document`           |              |
+| `go-reservation-expired` | The cart's earliest ticket hold ran out — see _Ticket reservations_ below                                                                            | `{ expiry: 'keep' \| 'clearCart' }` | fires on `document`           | `v4.32.0` |
+| `go-submit`              | The cart is ready to check out — fires after a `<go-submit>` click once any pending coupon applies cleanly; does **not** fire if a coupon is invalid | `{ ok: true }`                      | yes (on the `<go-cart>` host) | `v3.0.0`     |
 
 The item-count events fire on `document`, so listen there:
 
@@ -113,6 +114,8 @@ Each subcomponent renders stable class hooks:
 - `.go-cart-item-participants` — the participant-count label on a tour line; `.go-cart-item-custom` — one per `key: value` custom-field line _(Since `v4.3.0`)_
 - `.go-quantity-stepper` — each item's `− qty +` quantity stepper (the default control): `.go-quantity-stepper-button` (both buttons; `.go-quantity-stepper-decrement` / `.go-quantity-stepper-increment` target each) and `.go-quantity-stepper-value` (the editable spinbutton input). Once a line is at its lowest quantity the `−` button becomes a remove control (it renders `✕` and gets `.go-quantity-stepper-remove`); pressing it — or clearing the input — removes the line, so a cart line never sits at `0` _(Since `v4.13.0`)_. With `go.config({ quantityStepperAtMinimum: 'disable' })` the `−` instead stays a plain button that disables at the line's lowest quantity (`aria-disabled`), a typed `0` clamps back up, and only the standalone ✕ button removes _(Since `v4.17.0`)_. The standalone ✕ button removes a line too. With `go.config({ quantityStepper: false })` the item renders a `.go-quantity-select` `<select>` instead _(Since `v4.0.0`)_
 - `.go-cart-remove` — the ✕ button on items and coupons
+- `.go-cart-item-reservation` — the `m:ss` countdown on a held ticket line, inside the title container _(Since `v4.32.0`)_
+- `go-reservation-timer[data-expiring]` / `go-reservation-timer[data-expired]` — the standalone timer in its last minute / after the hold has run out. `.go-reservation-timer-time` wraps its `m:ss` text, and `.sr-only` marks its screen-reader live region. See _Ticket reservations_ below _(Since `v4.32.0`)_
 - `.go-cart-donation` — one per donation row; `.go-cart-donation-title` wraps the campaign name _(Since `v4.16.0`)_
 - `.go-cart-coupon` — one per coupon row
 - `.go-cart-coupon.go-cart-coupon-inactive` — a coupon the backend did not apply _(Since `v1.53.0`)_; style it greyed-out / struck-through
@@ -146,8 +149,9 @@ Bundle-ticket (Mantelticket) lines render an indented list of sub-ticket rows be
 The cart's display subcomponents — `<go-cart-items>`, `<go-cart-coupons>`,
 `<go-cart-subtotal-amount>`, `<go-cart-discounted-amount>`, and
 `<go-cart-total-amount>` — must be placed inside `<go-cart>`; they read the
-re-priced cart from it and render nothing on their own. `<go-cart-counter>` and
-`<go-cart-empty>` read the cart directly and can be placed anywhere on the page.
+re-priced cart from it and render nothing on their own. `<go-cart-counter>`,
+`<go-cart-empty>`, `<go-reservation-timer>` and `<go-reservation-refresh>` read the
+cart directly and can be placed anywhere on the page.
 
 ## Subcomponents
 
@@ -160,6 +164,8 @@ re-priced cart from it and render nothing on their own. `<go-cart-counter>` and
 | `<go-cart-total-amount>`      | Final amount to pay after coupon and voucher projection, donations included                                                                                                                                                                            |
 | `<go-cart-counter>`           | A live count of the number of items in the cart — text only, no markup                                                                                                                                                                                 |
 | `<go-cart-empty>`             | Shows its own children only while the cart has no items _(Since `v1.11.0`)_                                                                                                                                                                            |
+| `<go-reservation-timer>`      | Time left on the cart's earliest ticket hold, as `m:ss` text — see _Ticket reservations_ below _(Since `v4.32.0`)_                                                                                                                                  |
+| `<go-reservation-refresh>`    | Wraps its content in a button that restarts every ticket hold — see _Ticket reservations_ below _(Since `v4.32.0`)_                                                                                                                                 |
 
 Each subcomponent is independently mountable and renders nothing when its data is
 absent (e.g. `go-cart-coupons` is empty until a coupon is added).
@@ -245,7 +251,8 @@ code from `<go-cart-coupons>`, and removing the code removes the line.
 | `data.cartView.discountedAmountCents` | `number`  | Subtotal − total, clamped to ≥ 0                  |
 
 To gate on whether the cart is empty, use the `data.cart.items.length` handle (this
-is what `<go-cart-empty>` itself uses internally).
+is what `<go-cart-empty>` itself uses internally). To gate on ticket holds, use
+`data.cart.reservations` — see _Ticket reservations_ below.
 
 Example — show the subtotal row only when a coupon actually discounts the cart:
 
@@ -338,6 +345,121 @@ Checkbox Component_) holds itself in the cart and renders as its own row inside
   its children when the cart holds only a donation.
 - **Submitted with the order** as `donations: [{ value, campaign_id }]`.
 
+## Ticket reservations
+
+Since `v4.32.0`
+
+With `go.config({ ticketReservations: true })` the cart holds the capacity of each
+dated ticket line on the backend while it sits in the cart, so nobody else can book
+those seats. Bundle-ticket (Mantelticket) lines, annual tickets, service-voucher
+lines, event lines and tour lines are not held, and they show no countdown. Holds last the backend's hold time (5 minutes by default) and run out
+on their own. The order request sends each line's hold, and the backend redeems it.
+
+- **Holds end together.** Whenever a line is added or its quantity changes, every
+  other hold is restarted too, so all of them run out at the same moment. The backend
+  never keeps a hold longer than 60 minutes after it was taken, so a very old one can
+  end earlier.
+- **Entering checkout** (`<go-checkout-guest>`, `<go-checkout-user>`,
+  `<go-checkout-form>`) restarts every hold, so the customer gets the full hold time
+  to fill in the form.
+- **When the earliest hold runs out**, `go-reservation-expired` fires on `document`.
+  What else happens depends on `go.config({ ticketReservationExpiry })`:
+  - `'keep'` (default): the cart stays as it is. The lines are not reserved again on
+    their own. They are reserved again once the customer changes the cart, presses
+    `<go-reservation-refresh>`, or enters checkout. Reloading the page does not
+    reserve them again. Until then the lapsed hold stays in the cart, so
+    `go-reservation-expired` fires again on every page load. An order placed
+    meanwhile still succeeds as long as the tickets are available.
+  - `'clearCart'`: the cart is emptied — tickets, other items, coupons and donations.
+    A cart whose hold ran out while the customer was away is emptied on the next page
+    load.
+
+```html
+<header>
+  <go-if when="data.cart.reservations.expiresAt">
+    Your tickets are reserved for <go-reservation-timer></go-reservation-timer>
+    <go-reservation-refresh>More time</go-reservation-refresh>
+  </go-if>
+</header>
+```
+
+```js
+document.addEventListener('go-reservation-expired', event => {
+  // event.detail.expiry is 'keep' or 'clearCart'
+  showMessage('Your reservation has expired.')
+})
+```
+
+### `<go-reservation-timer>`
+
+Renders the time left on the cart's earliest hold as `m:ss` text
+(`.go-reservation-timer-time`, `role="timer"`). It renders nothing while no ticket
+line is held: an empty cart, `ticketReservations` turned off, or a line the backend
+refused to hold. It works anywhere on the page. In the last minute the element gets
+the `data-expiring` attribute, and once the hold has run out `data-expired`, for
+styling:
+
+```css
+go-reservation-timer[data-expiring] {
+  color: darkorange;
+}
+go-reservation-timer[data-expired] {
+  color: firebrick;
+}
+```
+
+Screen readers hear `ticket.reservations.expiresSoon` once when the last minute
+starts and `ticket.reservations.expired` once when the hold runs out, through a
+live region (not every second). The live region is a `<span class="sr-only">` inside
+the element, and the element brings no styles of its own. If your stylesheet has
+no `.sr-only` rule, add one that hides it visually. Otherwise the announcement text
+shows on the page.
+
+```css
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+```
+
+Each held ticket line in `<go-cart-items>` also shows its own countdown
+(`.go-cart-item-reservation`).
+
+### `<go-reservation-refresh>`
+
+Wraps its content in a `<button type="button">` that restarts every hold in the cart;
+a lapsed hold is reserved afresh. Left empty, the button reads
+`ticket.reservations.extend`. It is disabled while no ticket line in the cart is
+held (an empty cart, `ticketReservations` off, or every hold refused) and while a
+refresh is running.
+
+| Attribute      | Type   | Default | Description                       |
+| -------------- | ------ | ------- | --------------------------------- |
+| `button-class` | string | `''`    | Class names put on the `<button>` |
+
+If the only child is already a `<button>`, that button is used as is. It gets the
+click and disabled handling, but neither `button-class` nor `type="button"`, so
+inside a `<form>` add `type="button"` yourself:
+
+```html
+<go-reservation-refresh>
+  <button type="button" class="btn btn-link">More time</button>
+</go-reservation-refresh>
+```
+
+### `<go-if>` handles
+
+| Handle                               | Type                   | Description                                                   |
+| ------------------------------------ | ---------------------- | ------------------------------------------------------------- |
+| `data.cart.reservations.expiresAt`   | `number` / `undefined` | When the earliest hold ends (ms since epoch); unset with none |
+| `data.cart.reservations.remainingMs` | `number` / `undefined` | Time left on the earliest hold in ms, updated every second    |
+| `data.cart.reservations.expired`     | `boolean`              | The earliest hold has run out                                 |
+
 ## Localization
 
 The `go-cart` component uses the following translation keys for its interface and validation:
@@ -358,3 +480,12 @@ The `go-cart` component uses the following translation keys for its interface an
 | `cart.donation.title`         | Donation row title fallback, used when the campaign no longer resolves |
 | `quantity.remove`             | Accessible name of the `−` button when it acts as the remove control   |
 | `quantity.remove.label`       | Visible label of that remove control (default `✕`)                     |
+
+### Ticket reservations
+
+| Key                               | Purpose                                                                     |
+| --------------------------------- | --------------------------------------------------------------------------- |
+| `ticket.reservations.timer`       | Accessible name of the countdowns (default _Time left on your reservation_) |
+| `ticket.reservations.expiresSoon` | Announced once the last minute starts                                       |
+| `ticket.reservations.expired`     | Announced once the hold has run out                                         |
+| `ticket.reservations.extend`      | Label of an empty `<go-reservation-refresh>` (default _Extend reservation_) |
