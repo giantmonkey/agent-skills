@@ -4,6 +4,57 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.34.0
+
+_Released 2026-11-05_
+
+You can now let visitors pick their seats on a room plan with the new `<go-seating-plan>`. The cart shows and holds the picked seats.
+
+## New
+
+- `<go-seating-plan>` shows the room plan of one seating date, with `event-id` and `date-id` attributes.
+  Place it inside `<go-ticket-selection filters="event:price" event-ids="…">`, in place of the price list.
+  Picked seats count in `<go-tickets-sum>`, and `<go-add-to-cart-button>` moves them into the cart:
+
+  ```html
+  <go-ticket-selection filters="event:price" event-ids="280">
+    <go-seating-plan event-id="280" date-id="1234"></go-seating-plan>
+    <go-tickets-empty><p>No seats for this date.</p></go-tickets-empty>
+    <p>Selected: <go-tickets-sum></go-tickets-sum></p>
+    <go-add-to-cart-button></go-add-to-cart-button>
+  </go-ticket-selection>
+  ```
+
+  - A click or Enter on a free seat holds it for the visitor. When a seat has more than one price, a dialog asks which price.
+    The arrow keys move between free seats. The plan zooms with its buttons or ctrl/⌘ + wheel, and you drag it to move it.
+  - The plan checks the seats every few seconds, so seats that other visitors take turn grey.
+  - Below the plan you see the picked seats with their prices and the total. It also shows the event's limit of seats per order,
+    and the cart's seats count toward that limit.
+  - `<go-ticket-selection>` does not switch to the seating plan by itself. For a date with a seating plan, your page places
+    `<go-seating-plan>`.
+
+- Styling hooks for `<go-seating-plan>`: CSS custom properties `--go-seat-selected`, `--go-seat-blocked`, `--go-seat-focus`,
+  `--go-seating-surface`, `--go-seating-border`, `--go-seating-muted` and `--go-seating-radius`. Seat shapes carry
+  `data-go-seat` with `data-state="available"`, `"selected"` or `"blocked"`, and the parts use `.go-seating-plan__*` classes.
+  All default rules sit in `:where()`, so your own CSS wins.
+- `<go-tickets-empty>` also shows when the date of a `<go-seating-plan>` has no seats.
+- Seat lines in `<go-cart-items>` show the seat (`.go-cart-item-title-seat`) and its category
+  (`.go-cart-item-title-seat-category`) next to the event title. Each line is one seat, with a fixed quantity and no stepper.
+  You change seats on the plan.
+- Seats stay held while the visitor is on your shop, in the cart and on the plan, across pages.
+  A seat whose hold ran out leaves the cart, and the plan names it. A seat removed from the cart is freed for other visitors
+  right away.
+- Translation keys `seatingPlan.*` (legend, zoom, loading, error, selection, seat limit, notices and the price dialog). The
+  built-in texts cover en and de. A shop can override them in its translations.
+
+## Fixed
+
+- `<go-order-breakdown>` and `<go-add-to-cart-button>` showed raw keys such as `common.download` or `common.table.total`
+  when your shop had no translation for them. They now show built-in en/de texts ("Download", "Personalize", "Calendar",
+  "Quantity", "Product", "Price", "Total: …", "Add to cart"). Your shop's own translations still win.
+
+---
+
 # v4.32.0
 
 _Released 2026-11-04_

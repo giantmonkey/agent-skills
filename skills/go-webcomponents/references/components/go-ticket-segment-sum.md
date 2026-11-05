@@ -294,7 +294,7 @@ Shows the price sum of all selected tickets across every segment.
 
 Since `v1.31.0`
 
-The `go-tickets-empty` component displays your own markup while no tickets are available (or while the tickets step is hidden), and hides as soon as any segment has tickets. It toggles the same `is-visible` / `is-hidden` classes and `display` style as `go-tickets`.
+The `go-tickets-empty` component displays your own markup while there is nothing to choose: every `go-ticket-segment` has no tickets and every `<go-seating-plan>` in the selection has no seats. It also shows while the tickets step is hidden. It hides as soon as any segment has tickets or any seating plan has seats, even before a seat is picked. It toggles the same `is-visible` / `is-hidden` classes and `display` style as `go-tickets`.
 
 #### Example
 

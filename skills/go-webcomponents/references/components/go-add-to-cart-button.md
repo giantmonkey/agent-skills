@@ -42,6 +42,17 @@ The `go-ticket-selection` component wraps all scenarios of selecting a ticket.
 </go-ticket-selection>
 ```
 
+With a seating plan instead of the price list (a seated event date). Visitors pick seats in the plan. The sum, the empty state and the add-to-cart button work with the picked seats:
+
+```html
+<go-ticket-selection filters="event:price" event-ids="280">
+  <go-seating-plan event-id="280" date-id="3788"></go-seating-plan>
+  <go-tickets-empty><p>There are no seats for this date.</p></go-tickets-empty>
+  <p>Selected: <go-tickets-sum></go-tickets-sum></p>
+  <go-add-to-cart-button></go-add-to-cart-button>
+</go-ticket-selection>
+```
+
 ## Attributes
 
 | Attribute           | Type   | Default | Description                                                            | Since     |
@@ -204,6 +215,7 @@ Standalone — no required parent.
 - `<go-timeslots>`
 - `<go-tickets>` (with `<go-ticket-segment>`, `<go-ticket-segment-body>`, `<go-ticket-segment-sum>`, `<go-tickets-sum>`)
 - `<go-add-to-cart-button>`
+- `<go-seating-plan>`: a seat map for a seated event date, used in place of `<go-tickets>`. Picked seats count for `<go-tickets-sum>` and `<go-add-to-cart-button>`, and `<go-tickets-empty>` shows when the date has no seats. _(Since `v4.34.0`)_
 
 ## Conditional rendering with `<go-if>`
 
@@ -224,8 +236,9 @@ is the pattern shown in the example above. Useful handles:
 Since `v1.0.0`
 
 The button that completes the selection. It stays disabled until at least one ticket in the
-selection has a quantity above zero. Clicking it moves every selected ticket into the cart, resets
-all quantities in the selection back to zero, and — if you configured
+selection has a quantity above zero, or a seat is picked in `<go-seating-plan>`. Clicking it moves
+every selected ticket and picked seat into the cart, resets all quantities in the selection back to
+zero, and — if you configured
 `go.config({ urls: { cart: () => '…' } })` — navigates to your cart page. Must be placed inside
 `<go-ticket-selection>`.
 

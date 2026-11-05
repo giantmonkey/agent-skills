@@ -1,6 +1,6 @@
 # Components
 
-Library version: 4.33.0
+Library version: 4.34.0
 
 | Tag | Attributes |
 | --- | --- |
@@ -40,6 +40,7 @@ Library version: 4.33.0
 | [`<go-profile-password>`](./go-profile-password.md) | 0 |
 | [`<go-reservation-refresh>`](./go-reservation-refresh.md) | 1 |
 | [`<go-reservation-timer>`](./go-reservation-timer.md) | 0 |
+| [`<go-seating-plan>`](./go-seating-plan.md) | 2 |
 | [`<go-set-password>`](./go-set-password.md) | 3 |
 | [`<go-sign-in>`](./go-sign-in.md) | 1 |
 | [`<go-sign-up>`](./go-sign-up.md) | 1 |

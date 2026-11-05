@@ -112,6 +112,7 @@ Each subcomponent renders stable class hooks:
 - `.go-cart-item` — one per cart line; `.go-cart-item-price-original` (struck-through pre-discount price) and `.go-cart-item-price-discounted` appear when a line is discounted
 - `.go-cart-item-subtitle` — a ticket's subtitle, rendered beneath the title when the ticket has one _(Since `v4.11.0`)_; coupon lines render theirs the same way _(Since `v4.25.0`)_
 - `.go-cart-item-participants` — the participant-count label on a tour line; `.go-cart-item-custom` — one per `key: value` custom-field line _(Since `v4.3.0`)_
+- `.go-cart-item-title-seat` — the seat name on a seat line (e.g. _Reihe A / Platz 1_); `.go-cart-item-title-seat-category` — the seat's category beside it _(Since `v4.34.0`)_
 - `.go-quantity-stepper` — each item's `− qty +` quantity stepper (the default control): `.go-quantity-stepper-button` (both buttons; `.go-quantity-stepper-decrement` / `.go-quantity-stepper-increment` target each) and `.go-quantity-stepper-value` (the editable spinbutton input). Once a line is at its lowest quantity the `−` button becomes a remove control (it renders `✕` and gets `.go-quantity-stepper-remove`); pressing it — or clearing the input — removes the line, so a cart line never sits at `0` _(Since `v4.13.0`)_. With `go.config({ quantityStepperAtMinimum: 'disable' })` the `−` instead stays a plain button that disables at the line's lowest quantity (`aria-disabled`), a typed `0` clamps back up, and only the standalone ✕ button removes _(Since `v4.17.0`)_. The standalone ✕ button removes a line too. With `go.config({ quantityStepper: false })` the item renders a `.go-quantity-select` `<select>` instead _(Since `v4.0.0`)_
 - `.go-cart-remove` — the ✕ button on items and coupons
 - `.go-cart-item-reservation` — the `m:ss` countdown on a held ticket line, inside the title container _(Since `v4.32.0`)_
@@ -318,6 +319,25 @@ lines:
   bookings render as two separately removable lines (the ✕ removes the whole
   booking). A booking counts as one item in `<go-cart-counter>`, regardless of
   participants.
+
+## Seat lines
+
+Since `v4.34.0`
+
+Seats a visitor picks on `<go-seating-plan>` show up in `<go-cart-items>` as
+normal lines, one line per seat. The title cell shows the event title, the seat
+(e.g. _Reihe A / Platz 1_), the seat's category, the price title, and the date and
+time. Three things differ from ticket lines:
+
+- **Fixed quantity of 1.** The quantity cell shows `1` as plain text, with no
+  stepper or select, even with `go.config({ quantityStepper: false })`. Visitors
+  change their seats on the seating plan.
+- **Removing frees the seat.** The ✕ removes the line and releases the seat right
+  away, so other visitors can pick it.
+- **Held while in the cart.** Seats in the cart stay reserved for the visitor while
+  a page of your shop is open. A seat whose hold ran out (for example, the visitor
+  was away longer than the hold time set in the admin) leaves the cart on its own.
+  `<go-seating-plan>` names the seats that left.
 
 ## Donations
 
