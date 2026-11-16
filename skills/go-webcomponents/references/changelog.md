@@ -4,6 +4,22 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.34.1
+
+_Released 2026-11-16_
+
+A time-slot ticket whose entry window has ended can no longer be added to the cart.
+
+## Changed (behavior)
+
+- `<go-add-to-cart-button>` rendered only its `<button>`. It now always renders an empty `<div class="go-add-to-cart-error-live" role="alert">` after the button, also when no error ever shows. The error is put into it so screen readers announce it. If you lay out the button's children with flex or grid gaps, or style them with `go-add-to-cart-button > *`, check that the extra element does not shift your layout.
+
+## Fixed
+
+- `<go-add-to-cart-button>` no longer adds a time-slot ticket once its entry window has ended (slot start plus the ticket's entry duration, by the visitor's clock). A page that was left open kept showing such a slot, and the ticket went into the cart although it could not be ordered anymore. Now nothing is added, the cart page is not opened, and an error shows under the button (`.go-add-to-cart-error`) until the visitor picks another time slot or clicks the button again. The error text is the new translation key `timeslots.ended`, with English and German defaults.
+
+---
+
 # v4.34.0
 
 _Released 2026-11-05_

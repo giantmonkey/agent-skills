@@ -246,13 +246,36 @@ zero, and — if you configured
 <go-add-to-cart-button></go-add-to-cart-button>
 ```
 
-It renders a single `<button data-add-to-cart-button>`; style the inactive state via the standard
-`[disabled]` attribute:
+A time-slot ticket can be bought until its entry window ends (slot start plus the ticket's entry
+duration). A slot stays on the page after that, for example when the page was left open, and an
+order on it would be refused. So the click checks the picked slot against the visitor's clock: once
+the window has ended, nothing goes into the cart (other tickets selected alongside it included),
+the cart page is not opened and an error shows under the button (`.go-add-to-cart-error`,
+translation key `timeslots.ended`). Screen readers announce it, again on every refused click. The
+selection is left as it is: the quantities are kept, and the slot stays selected and stays listed
+in `<go-timeslots>`, so the visitor has to pick another slot. The error goes away when the visitor
+picks another time slot or clicks the button again. Only time-slot tickets are checked; day, annual
+and flex tickets and event prices are added as before. The check trusts the device's clock: with a
+wrong clock it can let an ended slot through (the order is then refused) or refuse a slot that is
+still open.
+_(Since `v4.34.1`)_
+
+It renders a `<button data-add-to-cart-button>` followed by a
+`<div class="go-add-to-cart-error-live" role="alert">`. That div is always there and empty until an
+error shows; then it holds an unstyled `<p class="go-add-to-cart-error">`. Keep the div rendered (no
+`display: none`): screen readers announce a message most reliably when it arrives in a region that
+was already on the page. Style the inactive state via the standard `[disabled]` attribute:
 
 ```css
 go-add-to-cart-button button[data-add-to-cart-button][disabled] {
   opacity: 0.5;
 }
+
+go-add-to-cart-button .go-add-to-cart-error {
+  color: #b00020;
+}
 ```
 
-The label comes from the `common.actions.cart` translation key (default: "Add to basket").
+The label comes from the `common.actions.cart` translation key (default: "Add to cart"), the error
+text from `timeslots.ended` (default: "This time slot is no longer available. Please choose another
+one."). Both ship English and German defaults; your shop's own translations override them.
