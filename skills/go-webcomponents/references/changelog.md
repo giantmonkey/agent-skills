@@ -4,6 +4,18 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.34.2
+
+_Released 2026-11-17_
+
+The `<go-ticket-selection>` calendar now follows the experimental `includeCustomerCategoryTickets` setting.
+
+## Fixed
+
+- With `experimental.includeCustomerCategoryTickets` on, the `<go-ticket-selection>` calendar for the `ticket:timeslot` and `ticket:day` filters now also opens days that only have tickets for the signed-in customer's own category. Before, those days stayed closed, so the customer could not reach these tickets. With the setting off, nothing changes.
+
+---
+
 # v4.34.1
 
 _Released 2026-11-16_

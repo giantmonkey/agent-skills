@@ -10626,9 +10626,10 @@ createHTML: (html) => {
 			return this.#authedWrite(VALIDATE_TOKEN_ENDPOINT, () => this.apiPut(AUTH_ENDPOINT, { body: params }));
 		}
 		ticketsCalendar(params) {
-			return this.fetchAndCache(TICKETS_CALENDAR_ENDPOINT, `ticketsCalendar-${JSON.stringify(params)}`, "data", {
+			const query = this.#withTicketsExperiments(params);
+			return this.fetchAndCache(TICKETS_CALENDAR_ENDPOINT, `ticketsCalendar-${JSON.stringify(query)}`, "data", {
 				cache: 60,
-				query: params
+				query
 			});
 		}
 		calendar(params) {
