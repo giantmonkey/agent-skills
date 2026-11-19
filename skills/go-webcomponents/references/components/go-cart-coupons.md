@@ -87,12 +87,12 @@ how many items are in the cart:
 
 ## Events
 
-| Event                    | Description                                                                                                                                          | `detail`                            | bubbles                       | Since        |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ----------------------------- | ------------ |
-| `go-cart-item-added`     | An item was added to the cart                                                                                                                        | the new item count (number)         | fires on `document`           |              |
-| `go-cart-item-removed`   | An item was removed from the cart                                                                                                                    | the new item count (number)         | fires on `document`           |              |
+| Event                    | Description                                                                                                                                          | `detail`                            | bubbles                       | Since     |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ----------------------------- | --------- |
+| `go-cart-item-added`     | An item was added to the cart                                                                                                                        | the new item count (number)         | fires on `document`           |           |
+| `go-cart-item-removed`   | An item was removed from the cart                                                                                                                    | the new item count (number)         | fires on `document`           |           |
 | `go-reservation-expired` | The cart's earliest ticket hold ran out — see _Ticket reservations_ below                                                                            | `{ expiry: 'keep' \| 'clearCart' }` | fires on `document`           | `v4.32.0` |
-| `go-submit`              | The cart is ready to check out — fires after a `<go-submit>` click once any pending coupon applies cleanly; does **not** fire if a coupon is invalid | `{ ok: true }`                      | yes (on the `<go-cart>` host) | `v3.0.0`     |
+| `go-submit`              | The cart is ready to check out — fires after a `<go-submit>` click once any pending coupon applies cleanly; does **not** fire if a coupon is invalid | `{ ok: true }`                      | yes (on the `<go-cart>` host) | `v3.0.0`  |
 
 The item-count events fire on `document`, so listen there:
 
@@ -112,6 +112,7 @@ Each subcomponent renders stable class hooks:
 - `.go-cart-item` — one per cart line; `.go-cart-item-price-original` (struck-through pre-discount price) and `.go-cart-item-price-discounted` appear when a line is discounted
 - `.go-cart-item-subtitle` — a ticket's subtitle, rendered beneath the title when the ticket has one _(Since `v4.11.0`)_; coupon lines render theirs the same way _(Since `v4.25.0`)_
 - `.go-cart-item-participants` — the participant-count label on a tour line; `.go-cart-item-custom` — one per `key: value` custom-field line _(Since `v4.3.0`)_
+- `.go-cart-item-booking-detail` — one per choice of a tour booking (language, age group, school class); `.go-cart-item-surcharge` — one per optional surcharge taken _(Since `v4.35.0`)_
 - `.go-cart-item-title-seat` — the seat name on a seat line (e.g. _Reihe A / Platz 1_); `.go-cart-item-title-seat-category` — the seat's category beside it _(Since `v4.34.0`)_
 - `.go-quantity-stepper` — each item's `− qty +` quantity stepper (the default control): `.go-quantity-stepper-button` (both buttons; `.go-quantity-stepper-decrement` / `.go-quantity-stepper-increment` target each) and `.go-quantity-stepper-value` (the editable spinbutton input). Once a line is at its lowest quantity the `−` button becomes a remove control (it renders `✕` and gets `.go-quantity-stepper-remove`); pressing it — or clearing the input — removes the line, so a cart line never sits at `0` _(Since `v4.13.0`)_. With `go.config({ quantityStepperAtMinimum: 'disable' })` the `−` instead stays a plain button that disables at the line's lowest quantity (`aria-disabled`), a typed `0` clamps back up, and only the standalone ✕ button removes _(Since `v4.17.0`)_. The standalone ✕ button removes a line too. With `go.config({ quantityStepper: false })` the item renders a `.go-quantity-select` `<select>` instead _(Since `v4.0.0`)_
 - `.go-cart-remove` — the ✕ button on items and coupons
@@ -165,8 +166,8 @@ cart directly and can be placed anywhere on the page.
 | `<go-cart-total-amount>`      | Final amount to pay after coupon and voucher projection, donations included                                                                                                                                                                            |
 | `<go-cart-counter>`           | A live count of the number of items in the cart — text only, no markup                                                                                                                                                                                 |
 | `<go-cart-empty>`             | Shows its own children only while the cart has no items _(Since `v1.11.0`)_                                                                                                                                                                            |
-| `<go-reservation-timer>`      | Time left on the cart's earliest ticket hold, as `m:ss` text — see _Ticket reservations_ below _(Since `v4.32.0`)_                                                                                                                                  |
-| `<go-reservation-refresh>`    | Wraps its content in a button that restarts every ticket hold — see _Ticket reservations_ below _(Since `v4.32.0`)_                                                                                                                                 |
+| `<go-reservation-timer>`      | Time left on the cart's earliest ticket hold, as `m:ss` text — see _Ticket reservations_ below _(Since `v4.32.0`)_                                                                                                                                     |
+| `<go-reservation-refresh>`    | Wraps its content in a button that restarts every ticket hold — see _Ticket reservations_ below _(Since `v4.32.0`)_                                                                                                                                    |
 
 Each subcomponent is independently mountable and renders nothing when its data is
 absent (e.g. `go-cart-coupons` is empty until a coupon is added).
@@ -302,12 +303,16 @@ coupon's own apply button).
 
 Since `v4.3.0`
 
-Guided-group-tour bookings added programmatically via
-`go.cart.addItem({ filter: 'tour', … })` (documented under _The Go Interface_)
-render as regular lines in `<go-cart-items>`. The title cell shows the tour
-title, the participant count, the start date and time, and one `key: value`
-line per custom field passed to the booking. Three things differ from ticket
-lines:
+Guided-group-tour bookings — made in a `<go-ticket-selection filters="tour">` or
+added programmatically via `go.cart.addItem({ filter: 'tour', … })` (documented
+under _The Go Interface_) — render as regular lines in `<go-cart-items>`. The
+title cell shows the tour title, the participant count, the start date and time,
+and one `key: value` line per custom field passed to the booking. It also names
+the booking's language, age group and school class (`Language: Deutsch`), and
+lists each optional surcharge taken with its quantity and amount
+(`Zuschlag Audioguide × 3 · 9,00 €`): the kind of the surcharge as gomus labels
+it, then the surcharge's own name _(Since `v4.35.0`)_. Three things differ from
+ticket lines:
 
 - **Fixed participant count.** The quantity cell shows the booking's participant
   count as plain text — no stepper or select, even with
@@ -486,20 +491,21 @@ The `go-cart` component uses the following translation keys for its interface an
 
 ### Cart Table
 
-| Key                           | Purpose                                                                |
-| ----------------------------- | ---------------------------------------------------------------------- |
-| `cart.content.table.desc`     | Description/Title column header                                        |
-| `cart.content.table.price`    | Price column header                                                    |
-| `cart.content.table.quantity` | Quantity column header                                                 |
-| `cart.content.table.total`    | Total column header                                                    |
-| `cart.content.table.edit`     | Quantity-selector aria-label                                           |
-| `cart.item.participants`      | Participant count on a tour line                                       |
-| `cart.item.remove`            | Item and donation remove-button text (default `✕`)                     |
-| `cart.item.aria.removeItem`   | Item and donation remove-button `aria-label`                           |
-| `cart.coupons.remove`         | Coupon remove-button aria-label                                        |
-| `cart.donation.title`         | Donation row title fallback, used when the campaign no longer resolves |
-| `quantity.remove`             | Accessible name of the `−` button when it acts as the remove control   |
-| `quantity.remove.label`       | Visible label of that remove control (default `✕`)                     |
+| Key                           | Purpose                                                                             |
+| ----------------------------- | ----------------------------------------------------------------------------------- |
+| `cart.content.table.desc`     | Description/Title column header                                                     |
+| `cart.content.table.price`    | Price column header                                                                 |
+| `cart.content.table.quantity` | Quantity column header                                                              |
+| `cart.content.table.total`    | Total column header                                                                 |
+| `cart.content.table.edit`     | Quantity-selector aria-label                                                        |
+| `cart.item.participants`      | Participant count on a tour line; ships a default _(Since `v4.35.0`)_            |
+| `tour.select.*.label`         | Labels of a tour line's language, age group and school class _(Since `v4.35.0`)_ |
+| `cart.item.remove`            | Item and donation remove-button text (default `✕`)                                  |
+| `cart.item.aria.removeItem`   | Item and donation remove-button `aria-label`                                        |
+| `cart.coupons.remove`         | Coupon remove-button aria-label                                                     |
+| `cart.donation.title`         | Donation row title fallback, used when the campaign no longer resolves              |
+| `quantity.remove`             | Accessible name of the `−` button when it acts as the remove control                |
+| `quantity.remove.label`       | Visible label of that remove control (default `✕`)                                  |
 
 ### Ticket reservations
 

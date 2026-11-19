@@ -4,6 +4,68 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.35.0
+
+_Released 2026-11-19_
+
+Visitors can now book a group tour on your page: `<go-ticket-selection>` takes a `tour-id`, and four new components let them choose the headcount, the language, a start time and the prices.
+
+## New
+
+- `<go-ticket-selection filters="tour" tour-id="…">` books one group tour. The visitor chooses the headcount and the language,
+  picks a day and a start time, sees the prices and adds the booking to the cart:
+
+  ```html
+  <go-ticket-selection filters="tour" tour-id="188">
+    <go-participants></go-participants>
+    <go-select data="tour:language"></go-select>
+    <go-select data="tour:age-group"></go-select>
+    <go-select data="tour:grade"></go-select>
+    <go-calendar></go-calendar>
+    <go-tour-timeslots></go-tour-timeslots>
+    <go-tour-prices></go-tour-prices>
+    <go-add-to-cart-button></go-add-to-cart-button>
+  </go-ticket-selection>
+  ```
+
+  - `<go-participants>` is a select for the headcount, from the tour's smallest group to its largest.
+  - `<go-select>` is a select for one choice of the booking. Its `data` attribute names it: `tour:language`, `tour:age-group`
+    or `tour:grade`. A tour that offers nothing for a choice shows no select; a single entry is picked already.
+  - `<go-calendar>` opens the days the tour has a start time on, for the chosen headcount and language.
+  - `<go-tour-timeslots>` lists the start times of the picked day.
+  - `<go-tour-prices>` shows the group price or the prices per person, the surcharges and the subtotal. The visitor splits the
+    group over several prices per person there and takes optional surcharges.
+  - `<go-add-to-cart-button>` adds the booking as one cart line. A blank `<go-select>` stops the click: it shows its error and
+    takes the focus. After a booking the start time, the split and the optional surcharges are cleared, so the same tour
+    can be booked again. A booking the cart refuses keeps its start time and shows an error (`tour.booking.failed`).
+
+- `go-tour-price-change` fires on `<go-tour-prices>` and bubbles, whenever the prices of the booking change. Its `detail` is
+  `{ totalPriceCents, quantities, surcharges }`, all `undefined` when the booking has no price any more.
+- `<go-ticket-selection>`'s `details` (`data.ticketSelection` in `<go-if>`) has `participants`, the chosen headcount, and
+  `tourId`.
+- Tour lines in `<go-cart-items>` name the booking's language, age group and school class
+  (`.go-cart-item-booking-detail`) and list the optional surcharges taken with quantity and amount (`.go-cart-item-surcharge`).
+  A surcharge is named by its kind and its own name, e.g. `Zuschlag Audioguide × 3 · 9,00 €`.
+- Tour rows in `<go-order-breakdown>` name the language and the age group (`.go-order-item-booking-detail`), and each price
+  line names the price by its kind and its own name and ends with its amount, e.g. `3 x Zuschlag Audioguide · 9,00 €`.
+- `go.cart.addItem({ filter: 'tour', … })` takes three more optional display fields: `ageGroup`, `grade` and
+  `pickedSurcharges` (`[{ title, description?, quantity, totalPriceCents }]`). The cart line shows them.
+- Translation keys `tour.participants.*`, `tour.select.*`, `tour.timeslots.*`, `tour.prices.*` and `tour.booking.failed`. The built-in texts cover en
+  and de. A shop can override them in its translations.
+
+## Changed (behavior)
+
+- The `tour` filter name was only for `go.cart.addItem`. It now also works in the `filters` attribute of
+  `<go-ticket-selection>`, together with `tour-id`. Next to `tour` every other filter of the selection is ignored.
+
+## Fixed
+
+- Tour lines in `<go-cart-items>` and tour rows in `<go-order-breakdown>` showed the raw key `cart.item.participants` when
+  your shop had no translation for it, so the headcount was missing. They now show a built-in en/de text ("Participants: 12").
+  Your shop's own translation still wins.
+
+---
+
 # v4.34.2
 
 _Released 2026-11-17_

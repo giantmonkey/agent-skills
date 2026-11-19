@@ -53,18 +53,35 @@ With a seating plan instead of the price list (a seated event date). Visitors pi
 </go-ticket-selection>
 ```
 
+A group tour booking. `tour-id` names the tour; the visitor chooses the headcount, the language, a
+day and a start time, sees the prices and adds the booking to the cart — see _Group tours_ below:
+
+```html
+<go-ticket-selection filters="tour" tour-id="188">
+  <go-participants></go-participants>
+  <go-select data="tour:language"></go-select>
+  <go-select data="tour:age-group"></go-select>
+  <go-select data="tour:grade"></go-select>
+  <go-calendar></go-calendar>
+  <go-tour-timeslots></go-tour-timeslots>
+  <go-tour-prices></go-tour-prices>
+  <go-add-to-cart-button></go-add-to-cart-button>
+</go-ticket-selection>
+```
+
 ## Attributes
 
-| Attribute           | Type   | Default | Description                                                            | Since     |
-| ------------------- | ------ | ------- | ---------------------------------------------------------------------- | --------- |
-| `filters`           | string | —       | **Required.** Comma-separated list of filters to apply (see below)     |           |
-| `event-ids`         | string | —       | Comma-separated event IDs to filter by — required by `event:*` filters | `v1.21.0` |
-| `museum-ids`        | string | —       | Comma-separated museum IDs to filter by                                |           |
-| `exhibition-ids`    | string | —       | Comma-separated exhibition IDs to filter by                            |           |
-| `ticket-ids`        | string | —       | Comma-separated ticket IDs to include                                  |           |
-| `ticket-group-ids`  | string | —       | Comma-separated ticket group IDs to include                            | `v1.4.0`  |
-| `selected-date`     | string | —       | Pre-selects a date (`YYYY-MM-DD`); reflected — see below               | `v1.22.0` |
-| `selected-timeslot` | string | —       | Pre-selects a timeslot (ISO datetime); reflected — see below           | `v1.25.0` |
+| Attribute           | Type   | Default | Description                                                            | Since        |
+| ------------------- | ------ | ------- | ---------------------------------------------------------------------- | ------------ |
+| `filters`           | string | —       | **Required.** Comma-separated list of filters to apply (see below)     |              |
+| `event-ids`         | string | —       | Comma-separated event IDs to filter by — required by `event:*` filters | `v1.21.0`    |
+| `museum-ids`        | string | —       | Comma-separated museum IDs to filter by                                |              |
+| `exhibition-ids`    | string | —       | Comma-separated exhibition IDs to filter by                            |              |
+| `ticket-ids`        | string | —       | Comma-separated ticket IDs to include                                  |              |
+| `ticket-group-ids`  | string | —       | Comma-separated ticket group IDs to include                            | `v1.4.0`     |
+| `selected-date`     | string | —       | Pre-selects a date (`YYYY-MM-DD`); reflected — see below               | `v1.22.0`    |
+| `selected-timeslot` | string | —       | Pre-selects a timeslot (ISO datetime); reflected — see below           | `v1.25.0`    |
+| `tour-id`           | string | —       | The group tour to book — required by the `tour` filter; see below      | `v4.35.0` |
 
 The element also exposes a read-only
 [`details`](https://app.unpkg.com/@gomusdev/web-components/files/dist-js/components/ticketSelection/lib.svelte.d.ts)
@@ -77,26 +94,25 @@ Each filter declares its calendar/timeslot/ticket visibility, what it loads, and
 
 Available filter names:
 
-| Name                        | Calendar source | Description                                                                                                 |
-| --------------------------- | --------------- | ----------------------------------------------------------------------------------------------------------- |
-| `ticket:timeslot`           | tickets         | Timeslot tickets (timed entry). Calendar + timeslots required, then tickets shown.                          |
-| `ticket:day`                | tickets         | Day tickets — valid all day. Calendar required, no timeslots.                                               |
-| `ticket:annual`             | —               | Annual tickets. No calendar, tickets shown directly.                                                        |
-| `ticket:flex`               | —               | Flex tickets — no date or entry time. No calendar, tickets shown directly. _(Since `v4.28.0`)_              |
-| `event:admission`           | events          | Single event admission tickets, all types combined. Requires `event-ids`.                                   |
-| `event:admission:day`       | events          | Single event, day admission tickets only (valid all day). Calendar, no timeslot.                            |
-| `event:admission:timeslot`  | events          | Single event, timed-entry admission tickets only. Calendar + timeslot.                                      |
-| `event:price`               | events          | Single event, any price type (flat or scaled). Requires `event-ids` and a `date-id` on the segment.         |
-| `events:admission`          | events          | Multiple events, each event's admission tickets. Calendar + timeslot + tickets all visible.                 |
-| `events:admission:day`      | events          | Multiple events, day admission tickets only (valid all day).                                                |
-| `events:admission:timeslot` | events          | Multiple events, timed-entry admission tickets only.                                                        |
-| `events:price`              | events          | Multiple events, any price type. Calendar + timeslot + tickets all visible.                                 |
-| `coupon`                    | —               | Purchasable gift-card coupons (fixed value), listed directly — no calendar or timeslots. _(Since `v3.6.0`)_ |
+| Name                        | Calendar source | Description                                                                                                                              |
+| --------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `ticket:timeslot`           | tickets         | Timeslot tickets (timed entry). Calendar + timeslots required, then tickets shown.                                                       |
+| `ticket:day`                | tickets         | Day tickets — valid all day. Calendar required, no timeslots.                                                                            |
+| `ticket:annual`             | —               | Annual tickets. No calendar, tickets shown directly.                                                                                     |
+| `ticket:flex`               | —               | Flex tickets — no date or entry time. No calendar, tickets shown directly. _(Since `v4.28.0`)_                                           |
+| `event:admission`           | events          | Single event admission tickets, all types combined. Requires `event-ids`.                                                                |
+| `event:admission:day`       | events          | Single event, day admission tickets only (valid all day). Calendar, no timeslot.                                                         |
+| `event:admission:timeslot`  | events          | Single event, timed-entry admission tickets only. Calendar + timeslot.                                                                   |
+| `event:price`               | events          | Single event, any price type (flat or scaled). Requires `event-ids` and a `date-id` on the segment.                                      |
+| `events:admission`          | events          | Multiple events, each event's admission tickets. Calendar + timeslot + tickets all visible.                                              |
+| `events:admission:day`      | events          | Multiple events, day admission tickets only (valid all day).                                                                             |
+| `events:admission:timeslot` | events          | Multiple events, timed-entry admission tickets only.                                                                                     |
+| `events:price`              | events          | Multiple events, any price type. Calendar + timeslot + tickets all visible.                                                              |
+| `coupon`                    | —               | Purchasable gift-card coupons (fixed value), listed directly — no calendar or timeslots. _(Since `v3.6.0`)_                              |
+| `tour`                      | tour            | A group tour booking. Requires `tour-id`; uses the tour components instead of `<go-tickets>` — see _Group tours_. _(Since `v4.35.0`)_ |
 
-The `ticket:*` filters can also add a ticket to the cart programmatically via
-`go.cart.addItem({ filter, … })` — see **The Go Interface** doc. One extra filter name, `tour`,
-exists solely for that programmatic path (group-tour bookings): it lists nothing inside a ticket
-selection, so don't use it in the `filters` attribute. _(Since `v4.14.0`)_
+The `ticket:*` filters and `tour` can also add to the cart programmatically via
+`go.cart.addItem({ filter, … })` — see **The Go Interface** doc. _(Since `v4.14.0`)_
 
 ### Segment filters and inheritance
 
@@ -160,6 +176,12 @@ Optional comma-separated string of specific ticket IDs (e.g., `"10,20,30"`). Whe
 
 Optional comma-separated string of specific ticket group IDs (e.g., `"10,20,30"`). When provided, only these specific tickets from those ticket groups will be available for selection.
 
+### tourId
+
+The id of the group tour to book, a positive integer (e.g. `"188"`). Used with `filters="tour"`.
+Anything else is ignored with a console warning, and without a tour the tour components and the
+calendar render nothing.
+
 ### selectedDate
 
 Optional date string (`YYYY-MM-DD`, e.g. `"2026-05-20"`). When provided, that date is pre-selected
@@ -178,13 +200,14 @@ current timeslot directly from the element via `el.getAttribute('selected-timesl
 
 ## Events
 
-Both events originate in the subcomponents and bubble, so you can listen for them on
+The events originate in the subcomponents and bubble, so you can listen for them on
 `<go-ticket-selection>` itself:
 
-| Event                | Description                                                                                      | `detail`                                                                                                        | bubbles |
-| -------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------- |
-| `go-date-select`     | The selected date changes; also fires once on load, before anything is selected                  | `{ selected }` — the picked date, `undefined` before the first selection; `String(selected)` gives `YYYY-MM-DD` | yes     |
-| `go-timeslot-select` | A timeslot becomes selected — by a click, or auto-selected when the date's only slot is bookable | `{ selected }` — the chosen slot's start time as an ISO 8601 string                                             | yes     |
+| Event                  | Description                                                                                      | `detail`                                                                                                        | bubbles |
+| ---------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------- |
+| `go-date-select`       | The selected date changes; also fires once on load, before anything is selected                  | `{ selected }` — the picked date, `undefined` before the first selection; `String(selected)` gives `YYYY-MM-DD` | yes     |
+| `go-timeslot-select`   | A timeslot becomes selected — by a click, or auto-selected when the date's only slot is bookable | `{ selected }` — the chosen slot's start time as an ISO 8601 string                                             | yes     |
+| `go-tour-price-change` | The prices of a group tour booking changed — see `<go-tour-prices>` _(Since `v4.35.0`)_       | `{ totalPriceCents, quantities, surcharges }`                                                                   | yes     |
 
 ```js
 document
@@ -215,6 +238,7 @@ Standalone — no required parent.
 - `<go-timeslots>`
 - `<go-tickets>` (with `<go-ticket-segment>`, `<go-ticket-segment-body>`, `<go-ticket-segment-sum>`, `<go-tickets-sum>`)
 - `<go-add-to-cart-button>`
+- `<go-participants>`, `<go-select>`, `<go-tour-timeslots>`, `<go-tour-prices>`: the parts of a group tour booking — see _Group tours_. _(Since `v4.35.0`)_
 - `<go-seating-plan>`: a seat map for a seated event date, used in place of `<go-tickets>`. Picked seats count for `<go-tickets-sum>` and `<go-add-to-cart-button>`, and `<go-tickets-empty>` shows when the date has no seats. _(Since `v4.34.0`)_
 
 ## Conditional rendering with `<go-if>`
@@ -230,6 +254,44 @@ is the pattern shown in the example above. Useful handles:
   <p>Almost there — pick your tickets below.</p>
 </go-if>
 ```
+
+## Group tours
+
+Since `v4.35.0`
+
+With `filters="tour"` and a `tour-id`, the selection books one group tour. A tour has no ticket
+list: the booking is put together from these parts, each documented on its own page. A `tour-id`
+without the `tour` filter is ignored, with a console warning: such a selection sells its tickets
+as before.
+
+A tour is booked on its own. Next to `tour` every other filter in `filters` is ignored
+(`filters="tour, ticket:day"` is a tour selection), and tickets listed by a `<go-ticket-segment>`
+inside it are not added to the cart. To sell tickets on the same page, put them in a second
+`<go-ticket-selection>`.
+
+| Component                 | What the visitor does there                                            |
+| ------------------------- | ---------------------------------------------------------------------- |
+| `<go-participants>`       | chooses the headcount, within the tour's smallest and largest group    |
+| `<go-select>`             | chooses the language, the age group and the school class               |
+| `<go-calendar>`           | picks a day the tour has a start time on                               |
+| `<go-tour-timeslots>`     | picks one of the day's start times                                     |
+| `<go-tour-prices>`        | sees the prices, splits the group over them, takes optional surcharges |
+| `<go-add-to-cart-button>` | adds the booking to the cart                                           |
+
+- **Each choice narrows the next.** The calendar and the start times follow the headcount and the
+  picked language; the prices follow all four choices and are asked for again when one changes.
+- **The booking goes into the cart as one line** with its total, like one added with
+  `go.cart.addItem({ filter: 'tour', … })`. The cart line and the order page name the headcount,
+  the start, the language, age group and school class, and the surcharges the visitor took.
+- **Afterwards the start time is cleared**, and so are the split over the prices and the optional
+  surcharges. The headcount and the selects are kept, so the visitor can book the same tour for
+  another start time.
+- **Leave out what you don't need.** A part you leave off the page is not asked for — apart from the
+  language select for a tour with several languages, and `<go-tour-prices>` for a tour with several
+  prices per person, which the visitor needs to split the group.
+
+The headcount is `data.ticketSelection.participants` in `<go-if>`, next to `selectedDate` and
+`selectedTimeslot`.
 
 ## `<go-add-to-cart-button>`
 
@@ -260,6 +322,21 @@ wrong clock it can let an ended slot through (the order is then refused) or refu
 still open.
 _(Since `v4.34.1`)_
 
+For a group tour (`filters="tour"`) the button works on the booking instead _(Since `v4.35.0`)_:
+
+- It is enabled once a start time is picked, and disabled again when the booking cannot be made: the
+  prices could not be loaded, the split over the prices per person does not add up, the tour has
+  no language, or it has several and the page has no `<go-select data="tour:language">`.
+- A click with a blank `<go-select>` adds nothing. Each blank select shows its error, and the focus
+  moves to the first one.
+- A click while prices are still loading — for example right after the visitor picked a language —
+  is not lost: the booking is added once the new prices have arrived, with those prices.
+- A click on a start time that has passed while the page stood open adds nothing and shows the
+  error of an ended time slot (`timeslots.ended`), judged by the visitor's clock.
+- A booking the cart refuses adds nothing either. The start time stays picked and an error shows
+  under the button (translation key `tour.booking.failed`); the reason is in the console.
+- After the booking is added, the start time, the split and the optional surcharges are cleared.
+
 It renders a `<button data-add-to-cart-button>` followed by a
 `<div class="go-add-to-cart-error-live" role="alert">`. That div is always there and empty until an
 error shows; then it holds an unstyled `<p class="go-add-to-cart-error">`. Keep the div rendered (no
@@ -278,4 +355,6 @@ go-add-to-cart-button .go-add-to-cart-error {
 
 The label comes from the `common.actions.cart` translation key (default: "Add to cart"), the error
 text from `timeslots.ended` (default: "This time slot is no longer available. Please choose another
-one."). Both ship English and German defaults; your shop's own translations override them.
+one.") or, for a group tour the cart refused, from `tour.booking.failed` (default: "The tour could
+not be added to the cart. Please try again." _(Since `v4.35.0`)_). All ship English and German
+defaults; your shop's own translations override them.

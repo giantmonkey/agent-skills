@@ -218,6 +218,16 @@ window.isBoxOfficeDate = function (data) {
 }
 ```
 
+## Group tours
+
+Since `v4.35.0`
+
+Inside a selection with `filters="tour"`, a day is clickable when the tour has a start time on it
+for the chosen headcount and, once one is picked, the language. The days are asked for again when
+either changes, so a day can become blocked while it is selected — `<go-tour-timeslots>` then lists
+no start time for it. Without a `tour-id` on the selection the calendar renders nothing.
+`availability-override` works as for tickets.
+
 ## Localization
 
 Since `v4.31.1`
@@ -231,9 +241,9 @@ The month buttons show the name of the month they go to, e.g. "Oktober" and "Dez
 what the button does, e.g. "Oktober, vorheriger Monat". A shop without those texts gets built-in
 ones in de, en, fr, it, nl and lb, and English in any other language. _(Since `v4.31.6`)_
 
-| Key                           | Purpose                                                                                                                                                                                                                      |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Key                           | Purpose                                                                                                                                                                                                                   |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `calendar.previousMonth`      | Screen-reader name of the previous-month button (`.go-calendar-prev-button`). `{{month}}` is the month the button shows. Keep it at the start, so the name begins with the visible text (WCAG 2.5.3). _(Since `v4.31.6`)_ |
 | `calendar.nextMonth`          | Screen-reader name of the next-month button (`.go-calendar-next-button`). `{{month}}` is the month the button shows. Keep it at the start. _(Since `v4.31.6`)_                                                            |
-| `datepicker.aria.select`      | Screen-reader name of the calendar, followed by the shown month.                                                                                                                                                             |
-| `ticket.timeSlot.noAvailable` | Added to a sold-out day's screen-reader name after the date, e.g. "donderdag 5 november 2026, Uitverkocht". Blocked days keep the plain date. _(Since `v4.31.3`)_                                                            |
+| `datepicker.aria.select`      | Screen-reader name of the calendar, followed by the shown month.                                                                                                                                                          |
+| `ticket.timeSlot.noAvailable` | Added to a sold-out day's screen-reader name after the date, e.g. "donderdag 5 november 2026, Uitverkocht". Blocked days keep the plain date. _(Since `v4.31.3`)_                                                         |

@@ -1,6 +1,6 @@
 # Components
 
-Library version: 4.34.2
+Library version: 4.35.0
 
 | Tag | Attributes |
 | --- | --- |
@@ -34,6 +34,7 @@ Library version: 4.34.2
 | [`<go-order>`](./go-order.md) | 1 |
 | [`<go-order-breakdown>`](./go-order-breakdown.md) | 0 |
 | [`<go-order-invoice-id>`](./go-order-invoice-id.md) | 0 |
+| [`<go-participants>`](./go-participants.md) | 0 |
 | [`<go-password-reset>`](./go-password-reset.md) | 1 |
 | [`<go-profile-details>`](./go-profile-details.md) | 0 |
 | [`<go-profile-overview>`](./go-profile-overview.md) | 0 |
@@ -41,6 +42,7 @@ Library version: 4.34.2
 | [`<go-reservation-refresh>`](./go-reservation-refresh.md) | 1 |
 | [`<go-reservation-timer>`](./go-reservation-timer.md) | 0 |
 | [`<go-seating-plan>`](./go-seating-plan.md) | 2 |
+| [`<go-select>`](./go-select.md) | 1 |
 | [`<go-set-password>`](./go-set-password.md) | 3 |
 | [`<go-sign-in>`](./go-sign-in.md) | 1 |
 | [`<go-sign-up>`](./go-sign-up.md) | 1 |
@@ -50,10 +52,12 @@ Library version: 4.34.2
 | [`<go-ticket-segment-body>`](./go-ticket-segment-body.md) | 0 |
 | [`<go-ticket-segment-empty>`](./go-ticket-segment-empty.md) | 0 |
 | [`<go-ticket-segment-sum>`](./go-ticket-segment-sum.md) | 0 |
-| [`<go-ticket-selection>`](./go-ticket-selection.md) | 8 |
+| [`<go-ticket-selection>`](./go-ticket-selection.md) | 9 |
 | [`<go-tickets>`](./go-tickets.md) | 0 |
 | [`<go-tickets-empty>`](./go-tickets-empty.md) | 0 |
 | [`<go-tickets-sum>`](./go-tickets-sum.md) | 0 |
 | [`<go-timeslots>`](./go-timeslots.md) | 0 |
+| [`<go-tour-prices>`](./go-tour-prices.md) | 0 |
+| [`<go-tour-timeslots>`](./go-tour-timeslots.md) | 0 |
 | [`<go-withdrawal-form>`](./go-withdrawal-form.md) | 1 |
 | [`<gomus-init>`](./gomus-init.md) | 3 |

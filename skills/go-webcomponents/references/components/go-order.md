@@ -38,6 +38,7 @@ Everything renders in light DOM — target the tags and these classes:
 - `.go-order-item-subtitle` — ticket subtitle, shown under the title when the ticket has one _(Since `v4.11.0`)_
 - `.go-order-item-quantities` — the `quantity x label` price rows
 - `.go-order-item-participants` — participants line of a tour booking _(Since `v4.3.0`)_
+- `.go-order-item-booking-detail` — language and age group of a tour booking, one line each _(Since `v4.35.0`)_
 - `.go-cart-item-date`, `.go-cart-item-time` — date and time of dated items
 - `.go-ticket-download`, `.go-ticket-personalization` — PDF download and personalization links
 - `.go-order-breakdown-passbook` — Apple Wallet cell
@@ -62,7 +63,7 @@ go-order-breakdown .go-order-item-title {
 
 Renders the order's line items followed by the order total. Timeslot and day tickets render one row per ticket, each with its own PDF download link and, when available, an Apple Wallet pass — a plain text link (`.go-ticket-passbook`, label from the `common.wallet` translation key, default "Add to wallet") that integrators can decorate with an icon via CSS _(Since `v4.20.0`)_. Bundle tickets (Mantelticket) list their composition beneath the title — one `quantity x label` line per sub-ticket (`.go-order-item-quantities`) _(Since `v4.0.0`)_. Annual tickets render one row linking to personalization (vouchers link to a PDF download instead). Tickets configured with a subtitle show it beneath the title on every row _(Since `v4.11.0`)_. Flex tickets, which are booked without a date or entry time, render like day tickets — one row per ticket with its PDF download and, when available, Wallet pass — but with no date and no iCal link _(Since `v4.28.0`)_. Events render one row per booking with a `quantity x label` line per price and a PDF download link. Rows with a date also offer an iCal link when the order provides one.
 
-Tour bookings added via `go.cart.addItem({ filter: 'tour', … })` render one row per booking _(Since `v4.3.0`)_: count `1`, the tour title, a participants line, the booking's date and time, and a `quantity x label` line per price. Tours have no PDF download — the iCal link is the only attachment.
+Tour bookings — made in a `<go-ticket-selection filters="tour">` or added via `go.cart.addItem({ filter: 'tour', … })` — render one row per booking _(Since `v4.3.0`)_: count `1`, the tour title, a participants line, the booking's date and time, and a `quantity x label` line per price. The row also names the booking's language and age group, and each price line names the price by its kind and its own name and ends with its amount (`3 x Zuschlag Audioguide · 9,00 €`) _(Since `v4.35.0`)_. Tours have no PDF download — the iCal link is the only attachment.
 
 Coupon and merchandise items render a plain row with quantity, title, and price _(Since `v4.15.0`)_. A coupon's price cell shows `attributes.value_cents` when it's a positive number (value vouchers carry their amount there and have `price_cents` of `0`), otherwise the order item's `price_cents` (fixed-price coupons carry it there instead). Each coupon row also links to the coupon's PDF document — the voucher the customer bought — via the same `.go-ticket-download` link tickets use _(Since `v4.15.0`)_.
 
@@ -85,6 +86,7 @@ Displays the order's invoice ID.
 | `common.calendar`        | Text for calendar link                                                              | -                                          |
 | `common.personalize`     | Text for the annual-ticket personalization link                                     | -                                          |
 | `common.table.donation`  | Fallback label for a donation row without a configured campaign _(Since `v4.15.0`)_ | -                                          |
-| `cart.item.participants` | Participants line of a tour booking                                                 | {"{{count}}"} - the number of participants |
+| `cart.item.participants` | Participants line of a tour booking; ships a default _(Since `v4.35.0`)_         | {"{{count}}"} - the number of participants |
+| `tour.select.*.label`    | Labels of a tour booking's language and age group _(Since `v4.35.0`)_            | -                                          |
 
 - {"{{value}}"} — words in double brackets are automatically replaced with real values when the text is displayed, as long as the translation supports it.
