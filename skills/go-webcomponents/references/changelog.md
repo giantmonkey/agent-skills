@@ -4,6 +4,40 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.36.0
+
+_Released 2026-11-23_
+
+A day-ticket shop can now offer the events of the chosen day next to its day tickets, with the new `events:price:day` filter.
+
+## New
+
+- `events:price:day` filter for `<go-ticket-selection>` and `<go-ticket-segment>`. It lists the events on the day the visitor picks
+  in `<go-calendar>` and sells them at their date prices, flat or scaled. The visitor picks no timeslot. Every event date that
+  day that has not started yet and still has free seats is listed. Add it as a second segment next to `ticket:day`, and list
+  `ticket:day` first in the selection's `filters` so that the calendar shows the days when day tickets are on sale:
+
+  ```html
+  <go-ticket-selection filters="ticket:day,events:price:day" museum-ids="2">
+    <go-calendar></go-calendar>
+    <go-tickets>
+      <go-ticket-segment filters="ticket:day">
+        <go-ticket-segment-body></go-ticket-segment-body>
+      </go-ticket-segment>
+      <go-ticket-segment filters="events:price:day">
+        <go-ticket-segment-body></go-ticket-segment-body>
+      </go-ticket-segment>
+    </go-tickets>
+    <go-add-to-cart-button></go-add-to-cart-button>
+  </go-ticket-selection>
+  ```
+
+  The filter supports the same narrowing attributes as `events:price`: `museum-ids`, `event-ids`, `exhibition-ids` on the selection,
+  and `museum-ids`, `query`, `language-ids`, `catch-word-ids`, `limit` on the segment. If you use it on its own, the calendar shows
+  the days that have bookable events.
+
+---
+
 # v4.35.0
 
 _Released 2026-11-19_

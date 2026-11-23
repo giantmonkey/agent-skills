@@ -39002,6 +39002,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		"events:admission:day",
 		"events:admission:timeslot",
 		"events:price",
+		"events:price:day",
 		"coupon",
 		"tour"
 	];
@@ -39072,6 +39073,55 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			return datePart === selectedDate && startMs >= selectedMs && startMs <= selectedMs + TWO_HOURS_MS && (d.seats?.available ?? 0) > 0;
 		});
 	}
+	/**
+	* Keep the event dates that start on the selected day, have not started yet and still
+	* have free seats — the day-ticket counterpart of filterDatesInWindow.
+	*/
+	function filterUpcomingDatesOnDay(dates, selectedDate) {
+		const now = Date.now();
+		return dates.filter((date) => {
+			const datePart = date.start_time.slice(0, 10);
+			const startMs = Date.parse(date.start_time);
+			return datePart === selectedDate && startMs >= now && (date.seats?.available ?? 0) > 0;
+		});
+	}
+	/**
+	* Fetch the bookable event dates from the selected day onward for an events:* listing,
+	* narrowed by the selection's and the segment's ids. `endAt` stops the listing at that
+	* day, so the page size is not spent on later days. `defaultLimit` is the page size
+	* when the segment sets no `limit`. The bracketed array keys are backend query keys
+	* absent from getDates' params type, so the object is cast.
+	*/
+	function loadListingDates({ segment, selectedDate, endAt, defaultLimit = 30 }) {
+		const tsd = segment.ticketSelectionDetails;
+		return shop.asyncFetch(() => shop.getDates({
+			by_bookable: true,
+			"by_museum_ids[]": segment.museumIds ?? tsd?.museumIds,
+			"by_exhibition_ids[]": tsd?.exhibitionIds,
+			"by_event_ids[]": tsd?.eventIds,
+			"by_language_ids[]": segment.languageIds,
+			"by_catch_word_ids[]": segment.catchWordIds,
+			start_at: selectedDate,
+			end_at: endAt,
+			per_page: segment.limit || defaultLimit
+		}));
+	}
+	/**
+	* Add every price of the given event dates to the segment's preCart, keeping only
+	* prices whose title contains the segment's query, and register each date's seats.
+	*/
+	function addEventPricesToPreCart({ segment, dates }) {
+		const query = segment.query;
+		for (const date of dates) {
+			if (!date.prices?.length) continue;
+			const prices = query ? date.prices.filter((price) => price.title?.includes(query)) : date.prices;
+			for (const price of prices) {
+				const ticket = createUIEventTicket(price, date.id, { event_title: date.event_title });
+				segment.preCart.addItem(createCartItem(ticket, { time: date.start_time }));
+			}
+			if (date.seats) shop.capacityManager.addSeats(date.id, date.seats);
+		}
+	}
 	async function loadEventsTimeslots(tsd) {
 		if (!tsd?.selectedDate) return;
 		const { quotas } = await shop.asyncFetch(() => shop.ticketsAndQuotas({
@@ -39122,7 +39172,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		shop.capacityManager.addQuotas(quotas);
 		return initUITimeslotTickets(filterAvailabletickets(tickets, selectedTime), selectedTime);
 	}
-	var filter$13 = {
+	var filter$14 = {
 		name: "ticket:timeslot",
 		calendarEndpoint: "tickets",
 		apiToken: "time_slot",
@@ -39187,7 +39237,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		shop.capacityManager.addQuotas(quotas);
 		return initUIDayTickets(tickets);
 	}
-	var filter$12 = {
+	var filter$13 = {
 		name: "ticket:day",
 		calendarEndpoint: "tickets",
 		apiToken: "normal",
@@ -39234,7 +39284,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}));
 		return Object.values(tickets).map((t) => createUITicket(t));
 	}
-	var filter$11 = {
+	var filter$12 = {
 		name: "ticket:annual",
 		calendarEndpoint: null,
 		apiToken: "annual",
@@ -39272,7 +39322,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}));
 		return Object.values(tickets).map((t) => createUITicket(t));
 	}
-	var filter$10 = {
+	var filter$11 = {
 		name: "ticket:flex",
 		calendarEndpoint: null,
 		requires: [],
@@ -39302,7 +39352,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	// src/components/ticketSelection/filters/event/admission.ts
-	var filter$9 = {
+	var filter$10 = {
 		name: "event:admission",
 		calendarEndpoint: "events",
 		requires: [{
@@ -39345,7 +39395,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	// src/components/ticketSelection/filters/event/admission-day.ts
-	var filter$8 = {
+	var filter$9 = {
 		name: "event:admission:day",
 		calendarEndpoint: "events",
 		requires: [{
@@ -39378,7 +39428,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	// src/components/ticketSelection/filters/event/admission-timeslot.ts
-	var filter$7 = {
+	var filter$8 = {
 		name: "event:admission:timeslot",
 		calendarEndpoint: "events",
 		requires: [
@@ -39428,7 +39478,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	// src/components/ticketSelection/filters/event/price.ts
-	var filter$6 = {
+	var filter$7 = {
 		name: "event:price",
 		calendarEndpoint: "events",
 		requires: [{
@@ -39455,7 +39505,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	// src/components/ticketSelection/filters/events/admission.ts
-	var filter$5 = {
+	var filter$6 = {
 		name: "events:admission",
 		calendarEndpoint: "events",
 		requires: [{
@@ -39500,7 +39550,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	// src/components/ticketSelection/filters/events/admission-day.ts
-	var filter$4 = {
+	var filter$5 = {
 		name: "events:admission:day",
 		calendarEndpoint: "events",
 		requires: [{
@@ -39546,7 +39596,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	// src/components/ticketSelection/filters/events/admission-timeslot.ts
-	var filter$3 = {
+	var filter$4 = {
 		name: "events:admission:timeslot",
 		calendarEndpoint: "events",
 		requires: [{
@@ -39591,7 +39641,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		}
 	};
 	// src/components/ticketSelection/filters/events/price.ts
-	var filter$2 = {
+	var filter$3 = {
 		name: "events:price",
 		calendarEndpoint: "events",
 		requires: [{
@@ -39608,26 +39658,44 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 		async loadProducts(segment) {
 			const tsd = segment.ticketSelectionDetails;
 			if (!tsd?.selectedDate || !tsd.selectedTime) return;
-			const dates = filterDatesInWindow(await shop.asyncFetch(() => shop.getDates({
-				by_bookable: true,
-				"by_museum_ids[]": segment.museumIds ?? tsd.museumIds,
-				"by_exhibition_ids[]": tsd.exhibitionIds,
-				"by_event_ids[]": tsd.eventIds,
-				"by_language_ids[]": segment.languageIds,
-				"by_catch_word_ids[]": segment.catchWordIds,
-				start_at: tsd.selectedDate.toString(),
-				per_page: segment.limit || 30
-			})), tsd.selectedDate.toString(), tsd.selectedTime);
-			const query = segment.query;
-			for (const date of dates) {
-				if (!date.prices?.length) continue;
-				const prices = query ? date.prices.filter((p) => p.title?.includes(query)) : date.prices;
-				for (const price of prices) {
-					const ticket = createUIEventTicket(price, date.id, { event_title: date.event_title });
-					segment.preCart.addItem(createCartItem(ticket, { time: date.start_time }));
-				}
-				if (date.seats) shop.capacityManager.addSeats(date.id, date.seats);
-			}
+			const selectedDate = tsd.selectedDate.toString();
+			addEventPricesToPreCart({
+				segment,
+				dates: filterDatesInWindow(await loadListingDates({
+					segment,
+					selectedDate
+				}), selectedDate, tsd.selectedTime)
+			});
+		}
+	};
+	// src/components/ticketSelection/filters/events/price-day.ts
+	var MOST_DATES_PER_REQUEST = 100;
+	var filter$2 = {
+		name: "events:price:day",
+		calendarEndpoint: "events",
+		requires: [{
+			kind: "tsd",
+			field: "selectedDate"
+		}],
+		isCalendarVisible: () => true,
+		isTimeslotsVisible: () => false,
+		isTicketsVisible: (tsd) => Boolean(tsd.selectedDate),
+		async loadTimeslots() {},
+		async loadProducts(segment) {
+			const selectedDate = segment.ticketSelectionDetails?.selectedDate?.toString();
+			if (!selectedDate) return;
+			const preCart = segment.preCart;
+			const all = await loadListingDates({
+				segment,
+				selectedDate,
+				endAt: selectedDate,
+				defaultLimit: MOST_DATES_PER_REQUEST
+			});
+			if (segment.preCart !== preCart) return;
+			addEventPricesToPreCart({
+				segment,
+				dates: filterUpcomingDatesOnDay(all, selectedDate)
+			});
 		}
 	};
 	// src/components/ticketSelection/filters/coupon.ts
@@ -39661,18 +39729,19 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 	];
 	// src/components/ticketSelection/filters/registry.ts
 	var REGISTRY = {
-		"ticket:timeslot": filter$13,
-		"ticket:day": filter$12,
-		"ticket:annual": filter$11,
-		"ticket:flex": filter$10,
-		"event:admission": filter$9,
-		"event:admission:day": filter$8,
-		"event:admission:timeslot": filter$7,
-		"event:price": filter$6,
-		"events:admission": filter$5,
-		"events:admission:day": filter$4,
-		"events:admission:timeslot": filter$3,
-		"events:price": filter$2,
+		"ticket:timeslot": filter$14,
+		"ticket:day": filter$13,
+		"ticket:annual": filter$12,
+		"ticket:flex": filter$11,
+		"event:admission": filter$10,
+		"event:admission:day": filter$9,
+		"event:admission:timeslot": filter$8,
+		"event:price": filter$7,
+		"events:admission": filter$6,
+		"events:admission:day": filter$5,
+		"events:admission:timeslot": filter$4,
+		"events:price": filter$3,
+		"events:price:day": filter$2,
 		coupon: filter$1,
 		tour: {
 			name: "tour",

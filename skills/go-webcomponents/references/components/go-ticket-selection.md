@@ -71,16 +71,16 @@ day and a start time, sees the prices and adds the booking to the cart — see _
 
 ## Attributes
 
-| Attribute           | Type   | Default | Description                                                            | Since        |
-| ------------------- | ------ | ------- | ---------------------------------------------------------------------- | ------------ |
-| `filters`           | string | —       | **Required.** Comma-separated list of filters to apply (see below)     |              |
-| `event-ids`         | string | —       | Comma-separated event IDs to filter by — required by `event:*` filters | `v1.21.0`    |
-| `museum-ids`        | string | —       | Comma-separated museum IDs to filter by                                |              |
-| `exhibition-ids`    | string | —       | Comma-separated exhibition IDs to filter by                            |              |
-| `ticket-ids`        | string | —       | Comma-separated ticket IDs to include                                  |              |
-| `ticket-group-ids`  | string | —       | Comma-separated ticket group IDs to include                            | `v1.4.0`     |
-| `selected-date`     | string | —       | Pre-selects a date (`YYYY-MM-DD`); reflected — see below               | `v1.22.0`    |
-| `selected-timeslot` | string | —       | Pre-selects a timeslot (ISO datetime); reflected — see below           | `v1.25.0`    |
+| Attribute           | Type   | Default | Description                                                            | Since     |
+| ------------------- | ------ | ------- | ---------------------------------------------------------------------- | --------- |
+| `filters`           | string | —       | **Required.** Comma-separated list of filters to apply (see below)     |           |
+| `event-ids`         | string | —       | Comma-separated event IDs to filter by — required by `event:*` filters | `v1.21.0` |
+| `museum-ids`        | string | —       | Comma-separated museum IDs to filter by                                |           |
+| `exhibition-ids`    | string | —       | Comma-separated exhibition IDs to filter by                            |           |
+| `ticket-ids`        | string | —       | Comma-separated ticket IDs to include                                  |           |
+| `ticket-group-ids`  | string | —       | Comma-separated ticket group IDs to include                            | `v1.4.0`  |
+| `selected-date`     | string | —       | Pre-selects a date (`YYYY-MM-DD`); reflected — see below               | `v1.22.0` |
+| `selected-timeslot` | string | —       | Pre-selects a timeslot (ISO datetime); reflected — see below           | `v1.25.0` |
 | `tour-id`           | string | —       | The group tour to book — required by the `tour` filter; see below      | `v4.35.0` |
 
 The element also exposes a read-only
@@ -94,21 +94,22 @@ Each filter declares its calendar/timeslot/ticket visibility, what it loads, and
 
 Available filter names:
 
-| Name                        | Calendar source | Description                                                                                                                              |
-| --------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `ticket:timeslot`           | tickets         | Timeslot tickets (timed entry). Calendar + timeslots required, then tickets shown.                                                       |
-| `ticket:day`                | tickets         | Day tickets — valid all day. Calendar required, no timeslots.                                                                            |
-| `ticket:annual`             | —               | Annual tickets. No calendar, tickets shown directly.                                                                                     |
-| `ticket:flex`               | —               | Flex tickets — no date or entry time. No calendar, tickets shown directly. _(Since `v4.28.0`)_                                           |
-| `event:admission`           | events          | Single event admission tickets, all types combined. Requires `event-ids`.                                                                |
-| `event:admission:day`       | events          | Single event, day admission tickets only (valid all day). Calendar, no timeslot.                                                         |
-| `event:admission:timeslot`  | events          | Single event, timed-entry admission tickets only. Calendar + timeslot.                                                                   |
-| `event:price`               | events          | Single event, any price type (flat or scaled). Requires `event-ids` and a `date-id` on the segment.                                      |
-| `events:admission`          | events          | Multiple events, each event's admission tickets. Calendar + timeslot + tickets all visible.                                              |
-| `events:admission:day`      | events          | Multiple events, day admission tickets only (valid all day).                                                                             |
-| `events:admission:timeslot` | events          | Multiple events, timed-entry admission tickets only.                                                                                     |
-| `events:price`              | events          | Multiple events, any price type. Calendar + timeslot + tickets all visible.                                                              |
-| `coupon`                    | —               | Purchasable gift-card coupons (fixed value), listed directly — no calendar or timeslots. _(Since `v3.6.0`)_                              |
+| Name                        | Calendar source | Description                                                                                                                           |
+| --------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `ticket:timeslot`           | tickets         | Timeslot tickets (timed entry). Calendar + timeslots required, then tickets shown.                                                    |
+| `ticket:day`                | tickets         | Day tickets — valid all day. Calendar required, no timeslots.                                                                         |
+| `ticket:annual`             | —               | Annual tickets. No calendar, tickets shown directly.                                                                                  |
+| `ticket:flex`               | —               | Flex tickets — no date or entry time. No calendar, tickets shown directly. _(Since `v4.28.0`)_                                        |
+| `event:admission`           | events          | Single event admission tickets, all types combined. Requires `event-ids`.                                                             |
+| `event:admission:day`       | events          | Single event, day admission tickets only (valid all day). Calendar, no timeslot.                                                      |
+| `event:admission:timeslot`  | events          | Single event, timed-entry admission tickets only. Calendar + timeslot.                                                                |
+| `event:price`               | events          | Single event, any price type (flat or scaled). Requires `event-ids` and a `date-id` on the segment.                                   |
+| `events:admission`          | events          | Multiple events, each event's admission tickets. Calendar + timeslot + tickets all visible.                                           |
+| `events:admission:day`      | events          | Multiple events, day admission tickets only (valid all day).                                                                          |
+| `events:admission:timeslot` | events          | Multiple events, timed-entry admission tickets only.                                                                                  |
+| `events:price`              | events          | Multiple events, any price type. Calendar + timeslot + tickets all visible.                                                           |
+| `events:price:day`          | events          | Multiple events on the chosen day, any price type. Calendar, no timeslot; pairs with `ticket:day`. _(Since `v4.36.0`)_             |
+| `coupon`                    | —               | Purchasable gift-card coupons (fixed value), listed directly — no calendar or timeslots. _(Since `v3.6.0`)_                           |
 | `tour`                      | tour            | A group tour booking. Requires `tour-id`; uses the tour components instead of `<go-tickets>` — see _Group tours_. _(Since `v4.35.0`)_ |
 
 The `ticket:*` filters and `tour` can also add to the cart programmatically via
@@ -207,7 +208,7 @@ The events originate in the subcomponents and bubble, so you can listen for them
 | ---------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- | ------- |
 | `go-date-select`       | The selected date changes; also fires once on load, before anything is selected                  | `{ selected }` — the picked date, `undefined` before the first selection; `String(selected)` gives `YYYY-MM-DD` | yes     |
 | `go-timeslot-select`   | A timeslot becomes selected — by a click, or auto-selected when the date's only slot is bookable | `{ selected }` — the chosen slot's start time as an ISO 8601 string                                             | yes     |
-| `go-tour-price-change` | The prices of a group tour booking changed — see `<go-tour-prices>` _(Since `v4.35.0`)_       | `{ totalPriceCents, quantities, surcharges }`                                                                   | yes     |
+| `go-tour-price-change` | The prices of a group tour booking changed — see `<go-tour-prices>` _(Since `v4.35.0`)_          | `{ totalPriceCents, quantities, surcharges }`                                                                   | yes     |
 
 ```js
 document

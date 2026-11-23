@@ -18,6 +18,7 @@ Filters drive what `<go-ticket-selection>` renders. Pass them via the `filters` 
 | `events:admission:day` | always | always | always | a selected date, a selected timeslot |
 | `events:admission:timeslot` | always | always | always | a selected date, a selected timeslot |
 | `events:price` | always | always | always | a selected date, a selected timeslot |
+| `events:price:day` | always | conditional | conditional | a selected date |
 
 ## Filter details (from source documentation)
 
@@ -103,6 +104,12 @@ Sell day tickets — visitor picks a date, then quantities. Valid all day, no ti
   </go-if>
 </go-ticket-selection>
 ```
+
+## With the day's events
+
+Since `v4.36.0`
+
+To offer the events of the chosen day next to the day tickets, add a second segment with `events:price:day` — see that filter's page for the full example.
 
 ## Scripted add to cart
 
@@ -588,6 +595,75 @@ Browse many events on a chosen day and time, then book any of them. Mixes flat a
   <go-if when="data.ticketSelection.isTicketsVisible" then="show">
     <go-tickets>
       <go-ticket-segment filters="events:price">
+        <go-ticket-segment-body></go-ticket-segment-body>
+      </go-ticket-segment>
+    </go-tickets>
+    <go-add-to-cart-button></go-add-to-cart-button>
+  </go-if>
+</go-ticket-selection>
+```
+
+### `events:price:day`
+
+# `events:price:day`
+
+Since `v4.36.0`
+
+Lists the events on a chosen day and sells them at their date prices (flat or scaled). There is no timeslot to pick: every event date that day that has not started yet and still has free seats is listed.
+
+**Use when:** your shop sells day tickets and you want to offer the day's events next to them. For shops with timed entry, use `events:price`, which lists the events in the 2 hours after the chosen timeslot.
+
+**Required attributes:**
+
+- `selected-date` on `<go-ticket-selection>` — set when the visitor picks a date in `<go-calendar>`; the events appear only after.
+
+**Optional attributes:**
+
+- `museum-ids`, `event-ids`, `exhibition-ids` on `<go-ticket-selection>` — limit the listing to specific museums, events, or exhibitions.
+- `museum-ids` on `<go-ticket-segment>` — overrides the selection-level `museum-ids` for this segment.
+- `query` on `<go-ticket-segment>` — free-text filter on price title.
+- `language-ids`, `catch-word-ids` on `<go-ticket-segment>` — further narrow the listing.
+- `limit` on `<go-ticket-segment>` — caps the number of event dates fetched for the chosen day (default 100, the most the backend returns in one request).
+
+**Renders:** `<go-calendar>`, `<go-tickets>`.
+
+## Example: events next to day tickets
+
+The visitor picks a date, then sees the day tickets in one segment and the day's events in a second one. One `<go-add-to-cart-button>` adds both.
+
+List `ticket:day` first in the selection's `filters`: the calendar follows the first filter, so it shows the days on which day tickets are on sale.
+
+```html
+<go-ticket-selection filters="ticket:day,events:price:day" museum-ids="2">
+  <go-if when="data.ticketSelection.isCalendarVisible" then="show">
+    <go-calendar></go-calendar>
+  </go-if>
+  <go-if when="data.ticketSelection.isTicketsVisible" then="show">
+    <go-tickets>
+      <go-ticket-segment filters="ticket:day">
+        <go-ticket-segment-body></go-ticket-segment-body>
+      </go-ticket-segment>
+      <go-ticket-segment filters="events:price:day">
+        <go-ticket-segment-body></go-ticket-segment-body>
+      </go-ticket-segment>
+    </go-tickets>
+    <go-add-to-cart-button></go-add-to-cart-button>
+  </go-if>
+</go-ticket-selection>
+```
+
+## Example: events only
+
+On its own, the calendar shows the days with bookable events.
+
+```html
+<go-ticket-selection filters="events:price:day" museum-ids="2">
+  <go-if when="data.ticketSelection.isCalendarVisible" then="show">
+    <go-calendar></go-calendar>
+  </go-if>
+  <go-if when="data.ticketSelection.isTicketsVisible" then="show">
+    <go-tickets>
+      <go-ticket-segment filters="events:price:day">
         <go-ticket-segment-body></go-ticket-segment-body>
       </go-ticket-segment>
     </go-tickets>
