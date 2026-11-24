@@ -317,11 +317,18 @@ the cart page is not opened and an error shows under the button (`.go-add-to-car
 translation key `timeslots.ended`). Screen readers announce it, again on every refused click. The
 selection is left as it is: the quantities are kept, and the slot stays selected and stays listed
 in `<go-timeslots>`, so the visitor has to pick another slot. The error goes away when the visitor
-picks another time slot or clicks the button again. Only time-slot tickets are checked; day, annual
-and flex tickets and event prices are added as before. The check trusts the device's clock: with a
-wrong clock it can let an ended slot through (the order is then refused) or refuse a slot that is
-still open.
+picks another time slot or clicks the button again. Day, annual and flex tickets have no entry
+window and are added as before. The check trusts the device's clock: with a wrong clock it can let
+an ended slot through (the order is then refused) or refuse a slot that is still open.
 _(Since `v4.34.1`)_
+
+An event price, or a seat of a seating plan, is checked in the same way against the start of its
+event date. The event dates on the page are loaded once, so a page that was left open can still show
+a date that has started since. Once the date has started, the click adds nothing (other tickets
+selected alongside it included), the cart page is not opened and the error shows under the button
+(translation key `events.started`). The selection is left as it is. The error goes away when the
+visitor clicks the button again or picks another time slot.
+_(Since `v4.36.1`)_
 
 For a group tour (`filters="tour"`) the button works on the booking instead _(Since `v4.35.0`)_:
 
@@ -356,6 +363,8 @@ go-add-to-cart-button .go-add-to-cart-error {
 
 The label comes from the `common.actions.cart` translation key (default: "Add to cart"), the error
 text from `timeslots.ended` (default: "This time slot is no longer available. Please choose another
-one.") or, for a group tour the cart refused, from `tour.booking.failed` (default: "The tour could
-not be added to the cart. Please try again." _(Since `v4.35.0`)_). All ship English and German
+one."), from `events.started` for an event date that has started (default: "This event has already
+started. Please choose another one." _(Since `v4.36.1`)_) or, for a group tour the cart refused,
+from `tour.booking.failed` (default: "The tour could not be added to the cart. Please try again."
+_(Since `v4.35.0`)_). All ship English and German
 defaults; your shop's own translations override them.

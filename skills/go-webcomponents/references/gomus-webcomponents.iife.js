@@ -6571,6 +6571,7 @@ createHTML: (html) => {
 			"ticket.reservations.expired": "Your reservation has expired.",
 			"ticket.reservations.extend": "Extend reservation",
 			"timeslots.ended": "This time slot is no longer available. Please choose another one.",
+			"events.started": "This event has already started. Please choose another one.",
 			"common.download": "Download",
 			"common.actions.cart": "Add to cart",
 			"common.calendar": "Calendar",
@@ -6653,6 +6654,7 @@ createHTML: (html) => {
 			"ticket.reservations.expired": "Ihre Reservierung ist abgelaufen.",
 			"ticket.reservations.extend": "Reservierung verlängern",
 			"timeslots.ended": "Dieses Zeitfenster ist nicht mehr verfügbar. Bitte wählen Sie ein anderes.",
+			"events.started": "Diese Veranstaltung hat bereits begonnen. Bitte wählen Sie eine andere.",
 			"common.download": "Herunterladen",
 			"common.actions.cart": "In den Warenkorb",
 			"common.calendar": "Kalender",
@@ -44036,6 +44038,7 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			this.error = void 0;
 			if (this.ticketSelectionDetails.tourId !== void 0) return this.#addTour(this.ticketSelectionDetails);
 			if (hasEndedTimeslot(this.ticketSelectionDetails)) return this.#refuse(shop.t("timeslots.ended"));
+			if (hasStartedEvent(this.ticketSelectionDetails)) return this.#refuse(shop.t("events.started"));
 			const preCarts = this.ticketSelectionDetails.preCarts;
 			const newItems = preCarts.flatMap((pc) => {
 				return pc.nonEmptyItems.map((i) => {
@@ -44102,6 +44105,9 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
 			if (!isUITicket(product) || product.subtype !== "timeslot" || !item.time || !product.entry_duration) return false;
 			return Date.parse(item.time) + product.entry_duration * 6e4 < Date.now();
 		}));
+	}
+	function hasStartedEvent(tsd) {
+		return tsd.preCarts.some((preCart) => preCart.nonEmptyItems.some((item) => isEventTicket(item.product) && Date.parse(item.time) < Date.now()));
 	}
 	// src/components/ticketSelection/subcomponents/addToCartButton/AddToCartButton.svelte
 	var root$4 = /* @__PURE__ */ from_html(`<p class="go-add-to-cart-error" data-testid="go-add-to-cart-button__error"> </p>`);

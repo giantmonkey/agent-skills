@@ -4,6 +4,18 @@ What changed for integrators, newest first. Each entry lists New / Changed / Dep
 
 ---
 
+# v4.36.1
+
+_Released 2026-11-24_
+
+An event price whose event date has already started can no longer be added to the cart.
+
+## Fixed
+
+- `<go-add-to-cart-button>` no longer adds an event price, or a seat of a seating plan, once its event date has started (by the visitor's clock). The event dates on a page are loaded once, so a page that was left open kept showing such a date, and its price went into the cart although it could not be ordered anymore. Now nothing is added, the cart page is not opened, and an error shows under the button (`.go-add-to-cart-error`) until the visitor clicks the button again or picks another time slot. The error text is the new translation key `events.started`, with English and German defaults.
+
+---
+
 # v4.36.0
 
 _Released 2026-11-23_
